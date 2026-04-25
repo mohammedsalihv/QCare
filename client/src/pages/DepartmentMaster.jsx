@@ -15,7 +15,6 @@ import {
   Trash2,
   Users,
   MapPin,
-  Stethoscope,
   X,
   Code2,
   User as UserIcon
@@ -223,7 +222,6 @@ const DepartmentMaster = () => {
                     <td className="px-6 py-4 text-xs font-bold font-mono text-slate-600">{dept.code}</td>
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
-                          <Stethoscope className="w-3.5 h-3.5 text-slate-300" />
                           <span className="text-xs font-semibold text-slate-600">{dept.head}</span>
                        </div>
                     </td>

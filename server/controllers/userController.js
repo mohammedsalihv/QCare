@@ -1,4 +1,6 @@
 const User = require("../models/users");
+const Settings = require("../models/Settings");
+const { authenticateLDAP } = require("../utils/ldapAuth");
 const jwt = require("jsonwebtoken");
 
 // @desc    Auth user & get token
@@ -7,9 +9,15 @@ const jwt = require("jsonwebtoken");
 const loginUser = async (req, res) => {
   try {
     const { employeeId, password } = req.body;
+    const loginIdentifier = employeeId; // Contains either EMP ID, Username, or Email
 
-    // Find user by employeeId
-    const user = await User.findOne({ employeeId });
+    // Find user by employeeId, username (stored in employeeId for AD), or email
+    const user = await User.findOne({
+      $or: [
+        { employeeId: loginIdentifier },
+        { email: loginIdentifier.toLowerCase() }
+      ]
+    });
 
     if (user && (await user.matchPassword(password))) {
       // Check if user account is blocked or inactive
@@ -49,6 +57,77 @@ const loginUser = async (req, res) => {
         token: token,
       });
     } else {
+      // If local authentication fails, check LDAP
+      const settings = await Settings.findOne();
+      if (settings && settings.ldapEnabled) {
+        try {
+          // If the user was found locally by email, use their stored employeeId (AD username) for LDAP bind
+          const ldapLookupId = user ? user.employeeId : loginIdentifier;
+          
+          const ldapUser = await authenticateLDAP(ldapLookupId, password);
+          if (ldapUser) {
+            // Find or provision user locally using the canonical LDAP ID
+            let userDoc = await User.findOne({ employeeId: ldapLookupId });
+            
+            // Construct best-effort name from AD fields if standard name field is missing
+            const fullName = ldapUser.name || 
+                             (ldapUser.firstName && ldapUser.lastName ? `${ldapUser.firstName} ${ldapUser.lastName}` : null) || 
+                             ldapLookupId;
+
+            if (!userDoc) {
+              // JIT Provisioning for LDAP users
+              userDoc = await User.create({
+                employeeId: ldapLookupId,
+                employeeName: fullName,
+                email: ldapUser.email || `${ldapLookupId}@internal.com`,
+                password: password, // Store encrypted for local fallback if desired
+                role: 'user', // Default role (fixed from 'staff' which was not in enum)
+                department: ldapUser.department || ldapUser.office || 'Unassigned',
+                designation: ldapUser.designation || 'LDAP User',
+                status: 'active'
+              });
+            } else {
+              // Optional: Update local user data with fresh AD data on each login
+              let updated = false;
+              if (fullName !== ldapLookupId && userDoc.employeeName !== fullName) { userDoc.employeeName = fullName; updated = true; }
+              if (ldapUser.email && userDoc.email !== ldapUser.email) { userDoc.email = ldapUser.email; updated = true; }
+              if (ldapUser.department && userDoc.department !== ldapUser.department) { userDoc.department = ldapUser.department; updated = true; }
+              if (ldapUser.designation && userDoc.designation !== ldapUser.designation) { userDoc.designation = ldapUser.designation; updated = true; }
+              
+              if (updated) {
+                await userDoc.save();
+              }
+            }
+
+            // Standard login logic for the LDAP user
+            if (userDoc.status === 'blocked' || userDoc.status === 'inactive' || userDoc.isActive === false) {
+              return res.status(403).json({ message: "Your account is restricted. Contact administrator." });
+            }
+
+            const token = jwt.sign(
+              { id: userDoc._id, role: userDoc.role },
+              process.env.JWT_SECRET || "default_secret",
+              { expiresIn: "30d" }
+            );
+
+            userDoc.lastLogin = new Date();
+            await userDoc.save();
+
+            return res.json({
+              _id: userDoc._id,
+              employeeId: userDoc.employeeId,
+              employeeName: userDoc.employeeName,
+              email: userDoc.email,
+              role: userDoc.role,
+              department: userDoc.department,
+              designation: userDoc.designation,
+              token: token,
+            });
+          }
+        } catch (ldapError) {
+          console.error("LDAP Auth Failed:", ldapError.message);
+        }
+      }
       res.status(401).json({ message: "Invalid Employee ID or Password" });
     }
   } catch (error) {

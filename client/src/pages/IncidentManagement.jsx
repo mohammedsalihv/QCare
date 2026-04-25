@@ -339,10 +339,10 @@ const IncidentManagement = () => {
       {showModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setShowModal(false)} />
-          <div className="relative bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+          <div className="relative bg-white rounded-[2.5rem] shadow-2xl w-full max-w-5xl overflow-hidden animate-in zoom-in-95 duration-300">
             <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-[#b59662] flex items-center justify-center text-white shadow-lg shadow-[#b59662]/20">
+                <div className="w-12 h-12 rounded-2xl bg-[#b59662] flex items-center justify-center text-white shadow-lg shadow-[#b59662]/30">
                   <AlertCircle className="w-6 h-6" />
                 </div>
                 <div>
@@ -353,18 +353,18 @@ const IncidentManagement = () => {
               <button onClick={() => setShowModal(false)} className="p-2 rounded-xl hover:bg-white hover:shadow-sm text-slate-400 transition-all"><X className="w-6 h-6" /></button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-8 grid grid-cols-2 gap-6">
-              <div className="col-span-2">
-                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest block mb-2">Incident Title</label>
+            <form onSubmit={handleSubmit} className="p-10 grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6 max-h-[80vh] overflow-y-auto">
+              <div className="md:col-span-3">
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Incident Title / Summary</label>
                 <input 
                   type="text" name="title" required value={formData.title} onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[#b59662] focus:ring-4 focus:ring-[#b59662]/5 transition-all text-sm font-semibold"
+                  className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-bold text-slate-800 shadow-inner-sm"
                   placeholder="e.g., Medication Error at Ward 4"
                 />
               </div>
               
               <div className="col-span-1">
-                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest block mb-2">Category</label>
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Category</label>
                 <Dropdown 
                   options={categoryOptions}
                   value={formData.category}
@@ -374,16 +374,16 @@ const IncidentManagement = () => {
               </div>
 
               <div className="col-span-1">
-                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest block mb-2">Location</label>
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Location / Unit</label>
                 <input 
                   type="text" name="location" required value={formData.location} onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-semibold"
+                  className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-bold text-slate-800 shadow-inner-sm"
                   placeholder="e.g., Emergency Room"
                 />
               </div>
 
               <div className="col-span-1">
-                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest block mb-2">Date of Incident</label>
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Date & Time of Incident</label>
                 <div className="relative">
                   <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#b59662] pointer-events-none z-10" />
                   <input 
@@ -393,13 +393,13 @@ const IncidentManagement = () => {
                     value={formData.dateOfIncident} 
                     onChange={handleInputChange}
                     max={new Date().toISOString().split('.')[0].slice(0, 16)}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-semibold appearance-none"
+                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-slate-800 appearance-none shadow-inner-sm"
                   />
                 </div>
               </div>
 
               <div className="col-span-1">
-                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest block mb-2">Initial Severity</label>
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Initial Severity</label>
                 <Dropdown 
                   options={severityOptions}
                   value={formData.severity}
@@ -408,18 +408,18 @@ const IncidentManagement = () => {
                 />
               </div>
 
-              <div className="col-span-2">
-                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest block mb-2">Detailed Description</label>
+              <div className="md:col-span-3">
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Detailed Description & Immediate Actions</label>
                 <textarea 
                   name="description" required value={formData.description} onChange={handleInputChange} rows="4"
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-semibold resize-none"
+                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-bold text-slate-800 resize-none shadow-inner-sm"
                   placeholder="Provide a clear and detailed account of the incident..."
                 ></textarea>
               </div>
 
-              <div className="col-span-2 pt-4">
-                <button type="submit" className="w-full py-4 bg-[#b59662] hover:bg-[#a68959] text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-xl shadow-[#b59662]/30 active:scale-[0.98]">
-                  Submit Official Report
+              <div className="md:col-span-3 pt-6 border-t border-slate-100">
+                <button type="submit" className="w-full py-4 bg-gradient-to-r from-[#b59662] to-[#9e8254] text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl shadow-[#b59662]/30 hover:shadow-3xl active:scale-[0.98]">
+                  Submit Official Incident Report
                 </button>
               </div>
             </form>

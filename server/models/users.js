@@ -71,6 +71,11 @@ const userSchema = new mongoose.Schema(
       enum: ['active', 'blocked', 'inactive'],
       default: 'active',
     },
+
+    authSource: {
+      type: String,
+      default: 'local',
+    },
   },
   {
     timestamps: true, 

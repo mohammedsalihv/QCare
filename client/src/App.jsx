@@ -8,6 +8,12 @@ import DepartmentMaster from "./pages/DepartmentMaster";
 import KPIMonitor from "./pages/KPIMonitor";
 import IncidentManagement from "./pages/IncidentManagement";
 import Notifications from "./pages/Notifications";
+import RiskManagement from "./pages/RiskManagement";
+import AuditManagement from "./pages/AuditManagement";
+import PatientFeedback from "./pages/PatientFeedback";
+import SystemSettings from "./pages/SystemSettings";
+import HelpDesk from "./pages/HelpDesk";
+import UserManuals from "./pages/UserManuals";
 
 function App() {
   return (
@@ -22,6 +28,12 @@ function App() {
           <Route path="/dashboard/kpi" element={<KPIMonitor/>} />
           <Route path="/dashboard/incidents" element={<IncidentManagement/>} />
           <Route path="/notifications" element={<Notifications/>} />
+          <Route path="/dashboard/risk" element={<RiskManagement/>} />
+          <Route path="/dashboard/audit" element={<AuditManagement/>} />
+          <Route path="/dashboard/feedback" element={<PatientFeedback/>} />
+          <Route path="/dashboard/settings" element={<SystemSettings/>} />
+          <Route path="/dashboard/support" element={<HelpDesk/>} />
+          <Route path="/dashboard/manuals" element={<UserManuals/>} />
         </Routes>
       </BrowserRouter>
     </NotificationProvider>

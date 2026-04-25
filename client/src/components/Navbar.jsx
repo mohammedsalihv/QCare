@@ -14,7 +14,8 @@ import {
   X,
   ThumbsUp,
   PanelLeftOpen,
-  PanelLeftClose
+  PanelLeftClose,
+  BookOpen
 } from 'lucide-react';
 import Dropdown from './Dropdown';
 import { useNavigate } from 'react-router-dom';
@@ -78,7 +79,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
 
   const profileOptions = [
     { label: 'My Profile', icon: User, value: 'profile' },
-    { label: 'Settings', icon: Settings, value: 'settings' },
+    ...(user.role === 'superadmin' || user.role === 'admin' ? [{ label: 'System Settings', icon: Settings, value: 'settings' }] : []),
     { label: 'Notifications', icon: Bell, value: 'notifications' },
     { label: 'Logout', icon: LogOut, value: 'logout', variant: 'danger' }
   ];
@@ -90,6 +91,8 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
       navigate('/notifications');
     } else if (val === 'profile') {
       openProfileDrawer();
+    } else if (val === 'settings') {
+      navigate('/dashboard/settings');
     }
   };
 
@@ -127,7 +130,24 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 pr-2 border-r border-slate-100 hidden md:flex">
+             <button 
+               onClick={() => navigate('/dashboard/manuals')}
+               className="p-2.5 text-slate-400 hover:text-[#b59662] hover:bg-[#b59662]/10 rounded-xl transition-all duration-300 active:scale-95"
+               title="Documentation"
+             >
+               <BookOpen className="w-5 h-5" />
+             </button>
+             <button 
+               onClick={() => navigate('/dashboard/support')}
+               className="p-2.5 text-slate-400 hover:text-[#b59662] hover:bg-[#b59662]/10 rounded-xl transition-all duration-300 active:scale-95"
+               title="Help Desk"
+             >
+               <HelpCircle className="w-5 h-5" />
+             </button>
+          </div>
+
           <div className="relative">
                <button 
                 onClick={() => setShowNotifications(!showNotifications)}

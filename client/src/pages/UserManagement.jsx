@@ -422,6 +422,11 @@ const UserManagement = () => {
                             {isOwnRow && (
                               <span className="inline-flex px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest bg-[#b59662]/10 text-[#b59662] border border-[#b59662]/20">You</span>
                             )}
+                            {user.authSource && user.authSource !== 'local' && (
+                              <span className="inline-flex px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-600 border border-indigo-100" title="Synchronized from Active Directory">
+                                {user.authSource}
+                              </span>
+                            )}
                           </div>
                           <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider">{user.designation}</span>
                         </div>

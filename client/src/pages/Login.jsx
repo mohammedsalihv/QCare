@@ -154,10 +154,10 @@ function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1">
-              <label className="text-[13px] font-semibold text-slate-700" htmlFor="employeeId">Employee ID</label>
+              <label className="text-[13px] font-semibold text-slate-700" htmlFor="employeeId">Employee ID / Username</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <Mail className="h-4.5 w-4.5 text-slate-400 group-focus-within:text-[#b59662] transition-colors" />
+                  <User className="h-4.5 w-4.5 text-slate-400 group-focus-within:text-[#b59662] transition-colors" />
                 </div>
                 <input
                   id="employeeId"
@@ -167,7 +167,7 @@ function Login() {
                   onChange={(e) => setEmployeeId(e.target.value)}
                   disabled={loading}
                   className="block w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-[#b59662]/10 focus:border-[#b59662] focus:bg-white transition-all shadow-sm"
-                  placeholder="EMPXXXXX"
+                  placeholder="EMPXXXXX or username"
                 />
               </div>
             </div>

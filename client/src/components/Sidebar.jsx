@@ -11,7 +11,9 @@ import {
   ShieldCheck,
   Settings,
   HelpCircle,
-  Bell
+  Bell,
+  FileCheck,
+  MessageSquare
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -30,29 +32,30 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   const sections = [
     {
-      title: 'Main Navigation',
+      title: 'Workplace',
       items: [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+        { id: 'incidents', label: 'Incident Reporting', icon: AlertTriangle, path: '/dashboard/incidents' },
         { id: 'docs', label: 'Document Library', icon: Library, path: '/dashboard/documents' },
-        { id: 'incidents', label: 'Incidents', icon: AlertTriangle, path: '/dashboard/incidents' },
       ]
     },
     {
-      title: 'Administration',
+      title: 'Quality Assurance',
       roles: ['superadmin', 'admin'],
       items: [
-        { id: 'users', label: 'User Management', icon: Users, path: '/dashboard/users' },
-        { id: 'departments', label: 'Dept. Master', icon: Building2, path: '/dashboard/departments' },
-        { id: 'notifications', label: 'Notification Center', icon: Bell, path: '/notifications' },
-        { id: 'settings', label: 'System Settings', icon: Settings, path: '/dashboard/settings' },
+        { id: 'risk', label: 'Risk Register', icon: ShieldCheck, path: '/dashboard/risk' },
+        { id: 'audit', label: 'Audit Control', icon: FileCheck, path: '/dashboard/audit' },
+        { id: 'feedback', label: 'Patient Feedback', icon: MessageSquare, path: '/dashboard/feedback' },
+        { id: 'kpi', label: 'KPI Analytics', icon: BarChart3, path: '/dashboard/kpi' },
       ]
     },
     {
-      title: 'Analytics & help',
+      title: 'System Management',
+      roles: ['superadmin', 'admin'],
       items: [
-        { id: 'kpi', label: 'KPI Monitor', icon: BarChart3, path: '/dashboard/kpi' },
-        { id: 'manuals', label: 'User Manuals', icon: BookOpen, path: '/dashboard/manuals' },
-        { id: 'support', label: 'Help Desk', icon: HelpCircle, path: '/dashboard/support' },
+        { id: 'users', label: 'User Directory', icon: Users, path: '/dashboard/users' },
+        { id: 'departments', label: 'Departments', icon: Building2, path: '/dashboard/departments' },
+        { id: 'settings', label: 'System Settings', icon: Settings, path: '/dashboard/settings' },
       ]
     }
   ];
@@ -61,12 +64,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     <aside className={`fixed top-0 left-0 h-full bg-slate-900 text-white transition-all duration-300 z-50 ${isOpen ? 'w-64' : 'w-20'} border-r border-slate-800`}>
       <div className="flex flex-col h-full">
         {/* Logo Section */}
-        <div className="px-4 py-6 flex items-center gap-3">
-          <div className="min-w-[60px] h-[60px] overflow-hidden">
-            <img src="/logo.svg" alt="QCare" className="w-full h-full object-contain" />
+        <div className={`py-6 flex items-center transition-all duration-300 ${isOpen ? 'px-4 gap-3' : 'justify-center'}`}>
+          <div className={`shrink-0 overflow-hidden transition-all duration-300 ${isOpen ? 'w-[56px] h-[56px]' : 'w-11 h-11'}`}>
+            <img src="/logo.svg" alt="QCare" className="w-full h-full object-contain drop-shadow-sm" />
           </div>
           {isOpen && (
-            <div className="flex flex-col overflow-hidden">
+            <div className="flex flex-col overflow-hidden animate-in fade-in duration-300">
               <span className="font-black text-lg tracking-tight whitespace-nowrap">QCare Portal</span>
               <span className="text-[10px] text-[#b59662] font-black tracking-[0.1em] uppercase">CMC Holding</span>
             </div>
@@ -88,6 +91,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                  )}
                  <div className="space-y-1">
                    {section.items.map((item) => {
+                     if (item.role && item.role !== userRole) return null;
                      const isActive = location.pathname === item.path;
                      const Icon = item.icon;
 

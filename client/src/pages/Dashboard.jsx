@@ -26,7 +26,9 @@ import {
   History,
   ExternalLink,
   Zap,
-  ShieldCheck
+  ShieldCheck,
+  MessageSquare,
+  FileCheck
 } from 'lucide-react';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
@@ -67,17 +69,17 @@ const Dashboard = () => {
   const isAdmin = userRole === 'admin' || userRole === 'superadmin';
 
   const adminStats = [
-    { title: 'System-wide Pending', count: 124, icon: Clock, color: 'text-rose-500', trend: '+12%', trendUp: false },
-    { title: 'Total Resolved', count: 892, icon: CheckCircle2, color: 'text-emerald-500', trend: '+24%', trendUp: true },
-    { title: 'Active Depts', count: 18, icon: Layers, color: 'text-violet-500', trend: 'Stable', trendUp: true },
-    { title: 'New (This Month)', count: 45, icon: AlertCircle, color: 'text-blue-500', trend: '+8%', trendUp: true },
+    { title: 'Open Risks', count: 12, icon: AlertCircle, color: 'text-rose-500', trend: 'High Priority', trendUp: false },
+    { title: 'Scheduled Audits', count: 5, icon: Calendar, color: 'text-blue-500', trend: 'Next: 25 Apr', trendUp: true },
+    { title: 'Patient Feedback', count: 48, icon: MessageSquare, color: 'text-emerald-500', trend: '+15% Satisfaction', trendUp: true },
+    { title: 'Pending Incidents', count: 24, icon: Clock, color: 'text-violet-500', trend: '-5% vs last month', trendUp: true },
   ];
 
   const userStats = [
     { title: 'My Reported Cases', count: 8, icon: History, color: 'text-blue-500', trend: 'Active', trendUp: true },
-    { title: 'Awaiting Action', count: 2, icon: Clock, color: 'text-rose-500', trend: 'High Priority', trendUp: false },
-    { title: 'Resolved for Me', count: 15, icon: CheckCircle2, color: 'text-emerald-500', trend: '100% Success', trendUp: true },
-    { title: 'Dept. Ranking', count: '#4', icon: TrendingUp, color: 'text-violet-500', trend: 'Top 10%', trendUp: true },
+    { title: 'Risk Participations', count: 3, icon: ShieldCheck, color: 'text-rose-500', trend: 'Critical Area', trendUp: false },
+    { title: 'Audit Participations', count: 2, icon: FileCheck, color: 'text-emerald-500', trend: 'Upcoming', trendUp: true },
+    { title: 'Recent Feedback', count: 5, icon: MessageSquare, color: 'text-violet-500', trend: 'View all', trendUp: true },
   ];
 
   const pieData = [

@@ -11,6 +11,9 @@ const kpiRoutes = require("./routes/kpiRoutes");
 const documentRoutes = require("./routes/documentRoutes");
 const incidentRoutes = require("./routes/incidentRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const riskRoutes = require("./routes/riskRoutes");
+const auditRoutes = require("./routes/auditRoutes");
+const feedbackRoutes = require("./routes/feedbackRoutes");
 const path = require("path");
 
 dotenv.config();
@@ -37,6 +40,16 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect Database
 connectDB();
+
+// Initialize Cron Jobs
+const cron = require("node-cron");
+const { syncLDAPUsers } = require("./utils/ldapSync");
+
+// Run LDAP Sync daily at midnight
+cron.schedule("0 0 * * *", () => {
+  console.log("Running scheduled LDAP Sync...");
+  syncLDAPUsers();
+});
 
 // Socket.io connection logic
 io.on("connection", (socket) => {
@@ -65,6 +78,10 @@ app.use("/api/kpis", kpiRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/incidents", incidentRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/risks", riskRoutes);
+app.use("/api/audits", auditRoutes);
+app.use("/api/feedback", feedbackRoutes);
+app.use("/api/settings", require("./routes/settingsRoutes"));
 
 const PORT = process.env.PORT || 5000;
 
