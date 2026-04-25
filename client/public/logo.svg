@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <!-- CMC Holding Professional Recreated Logo -->
+  <style>
+    .gold { fill: #b59662; }
+    .cmc { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 700; font-size: 130px; letter-spacing: -2px; }
+    .holding { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 400; font-size: 38px; letter-spacing: 12px; }
+    .arabic { font-family: 'Arial', sans-serif; font-weight: 600; font-size: 32px; }
+  </style>
+
+  <!-- Main CMC Text -->
+  <text x="200" y="130" text-anchor="middle" class="gold cmc">CMC</text>
+  
+  <!-- Separator Line -->
+  <line x1="40" y1="150" x2="360" y2="150" stroke="#b59662" stroke-width="1.5" />
+  
+  <!-- HOLDING Text -->
+  <text x="200" y="195" text-anchor="middle" class="gold holding">HOLDING</text>
+  
+  <!-- Arabic Text -->
+  <text x="200" y="245" text-anchor="middle" class="gold arabic" dir="rtl">سي ام سي القابضة</text>
+</svg>

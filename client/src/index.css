@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  /* Reduced heading sizes */
+  --font-size-xl: 1.125rem;    /* Default 1.25rem */
+  --font-size-2xl: 1.25rem;    /* Default 1.5rem */
+  --font-size-3xl: 1.5rem;     /* Default 1.875rem */
+  --font-size-4xl: 1.875rem;   /* Default 2.25rem */
+  --font-size-5xl: 2.25rem;    /* Default 3rem */
+}
+
+html {
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+button {
+  cursor: pointer;
+}

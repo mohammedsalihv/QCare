@@ -1,0 +1,16 @@
+# Environment variables (any folder)
+**/.env
+**/.env.local
+**/.env.production
+
+# Dependencies (any folder)
+**/node_modules/
+
+# Build outputs
+client/build/
+client/.next/
+client/dist/
+
+# OS files
+.DS_Store
+Thumbs.db
