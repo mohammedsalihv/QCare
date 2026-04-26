@@ -11,7 +11,22 @@ import {
   Globe, 
   Save, 
   RefreshCcw,
-  Network
+  Network,
+  Trash2,
+  Edit,
+  History,
+  UserPlus,
+  Play,
+  CheckCircle,
+  XCircle,
+  Clock,
+  ExternalLink,
+  ChevronRight,
+  Info,
+  Layers,
+  X,
+  Eye,
+  Activity
 } from 'lucide-react';
 
 const SystemSettings = () => {
@@ -25,23 +40,21 @@ const SystemSettings = () => {
   const [expandedLogId, setExpandedLogId] = useState(null);
   const [ldapEditModes, setLdapEditModes] = useState({});
   const [settings, setSettings] = useState({
-    ldapEnabled: false,
-    ldapUrl: '',
-    ldapBaseDN: '',
-    ldapBindDN: '',
-    ldapBindPassword: '',
-    ldapUserFilter: '(sAMAccountName={{username}})',
-    ldapEmailField: 'mail',
-    ldapNameField: 'displayName',
+    ldapConfigs: [],
     minPasswordLength: 8,
     requireSpecialChar: true,
     requireNumbers: true,
     maxLoginAttempts: 5,
     sessionTimeout: 60,
     hospitalName: 'CMC Holding',
-    primaryColor: '#b59662',
+    primaryColor: '#2dd4bf',
     allowPublicRegistration: false
   });
+
+  const [isLdapModalOpen, setIsLdapModalOpen] = useState(false);
+  const [editingLdapIndex, setEditingLdapIndex] = useState(null);
+  const [ldapModalTab, setLdapModalTab] = useState('configuration');
+  const [testingConnection, setTestingConnection] = useState(false);
 
   const { showNotification } = useNotification();
 
@@ -166,113 +179,393 @@ const SystemSettings = () => {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-[60vh]">
-          <RefreshCcw className="w-8 h-8 text-[#b59662] animate-spin" />
+          <RefreshCcw className="w-8 h-8 text-[#2dd4bf] animate-spin" />
         </div>
       </DashboardLayout>
     );
   }
 
+  const openLdapModal = (index = null) => {
+    if (index !== null) {
+      setEditingLdapIndex(index);
+    } else {
+      setEditingLdapIndex(null);
+      const newConfigs = [...(settings.ldapConfigs || [])];
+      newConfigs.push({
+        configName: '',
+        ldapEnabled: true,
+        ldapUrl: 'ldap://',
+        ldapBaseDN: '',
+        ldapBindDN: '',
+        ldapBindPassword: '',
+        ldapUserFilter: '(sAMAccountName={{username}})',
+        ldapEmailField: 'mail',
+        ldapNameField: 'displayName',
+        syncBlockedUsers: false,
+        scheduleFrequency: 'Daily',
+        scheduleEnabled: true,
+        serverType: 'Microsoft AD'
+      });
+      setSettings({ ...settings, ldapConfigs: newConfigs });
+      setEditingLdapIndex(newConfigs.length - 1);
+    }
+    setIsLdapModalOpen(true);
+    setLdapModalTab('configuration');
+  };
+
+  const closeLdapModal = () => {
+    setIsLdapModalOpen(false);
+    setEditingLdapIndex(null);
+  };
+
+  const handleTestConnection = async () => {
+    const config = settings.ldapConfigs[editingLdapIndex];
+    if (!config.ldapUrl || !config.ldapBindDN || !config.ldapBindPassword) {
+      showNotification('Please fill in URL, Bind DN, and Password first', 'warning');
+      return;
+    }
+
+    setTestingConnection(true);
+    try {
+      const { data } = await axios.post('http://localhost:5000/api/settings/ldap-test', {
+        ldapUrl: config.ldapUrl,
+        ldapBindDN: config.ldapBindDN,
+        ldapBindPassword: config.ldapBindPassword
+      }, getAuthConfig());
+      showNotification(data.message, 'success');
+    } catch (err) {
+      showNotification(err.response?.data?.message || 'Connection failed', 'error');
+    } finally {
+      setTestingConnection(false);
+    }
+  };
   const renderTabContent = () => {
     switch (activeTab) {
       case 'ldap':
         return (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
-            {settings.ldapConfigs && settings.ldapConfigs.map((config, index) => (
-              <div key={index} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden relative">
-                 <div className="p-6 border-b border-slate-50 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                       <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
-                          <Server className="w-5 h-5" />
-                       </div>
-                       <div>
-                          <input 
-                            type="text" 
-                            name="configName"
-                            value={config.configName}
-                            onChange={(e) => handleLdapChange(index, e)}
-                            disabled={!ldapEditModes[index]}
-                            className={`text-sm font-black text-slate-900 uppercase tracking-widest bg-transparent outline-none ${ldapEditModes[index] ? 'border-b border-dashed border-slate-300 focus:border-blue-500' : 'cursor-not-allowed'}`}
-                          />
-                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-1">Authentication Source</p>
-                       </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      {settings.ldapConfigs.length > 1 && (
-                        <button 
-                          onClick={() => removeLdapConfig(index)}
-                          className="text-[10px] font-bold text-rose-500 uppercase tracking-widest hover:text-rose-600 px-3 py-1 bg-rose-50 rounded-lg"
-                        >
-                          Remove
-                        </button>
-                      )}
+            <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden relative">
+               <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+                  <div>
+                    <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">LDAP Configurations</h2>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Manage multiple authentication sources & synchronization schedules</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button className="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95">
+                      Self Service Settings
+                    </button>
+                    <button 
+                      onClick={() => openLdapModal()}
+                      className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 active:scale-95"
+                    >
+                      Create LDAP Configurations
+                    </button>
+                    <button 
+                      onClick={handleTriggerSync}
+                      disabled={syncing}
+                      className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 active:scale-95 flex items-center gap-2"
+                    >
+                      <UserPlus className="w-3.5 h-3.5 text-[#2dd4bf]" />
+                      Import Users
+                    </button>
+                  </div>
+               </div>
 
-                      {ldapEditModes[index] ? (
+               <div className="overflow-x-auto">
+                 <table className="w-full text-left border-collapse">
+                   <thead>
+                     <tr className="bg-white border-b border-slate-50">
+                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Name</th>
+                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">URL</th>
+                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Schedule Frequency</th>
+                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Next Execution</th>
+                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center">Status</th>
+                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center">Schedule</th>
+                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right">Actions</th>
+                     </tr>
+                   </thead>
+                   <tbody className="divide-y divide-slate-50">
+                     {(!settings.ldapConfigs || settings.ldapConfigs.length === 0) ? (
+                       <tr>
+                         <td colSpan="7" className="py-20 text-center">
+                            <div className="flex flex-col items-center gap-4 opacity-20">
+                               <Network size={48} />
+                               <span className="text-[10px] font-black uppercase tracking-widest">No LDAP sources configured</span>
+                            </div>
+                         </td>
+                       </tr>
+                     ) : (
+                       settings.ldapConfigs.map((config, index) => (
+                         <tr key={index} className="hover:bg-slate-50/50 transition-colors group">
+                           <td className="py-6 px-8 whitespace-nowrap">
+                             <div className="flex items-center gap-3">
+                               <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                 <Server size={14} />
+                               </div>
+                               <span className="text-xs font-black text-slate-900 uppercase tracking-tight">{config.configName}</span>
+                             </div>
+                           </td>
+                           <td className="py-6 px-8">
+                             <span className="px-3 py-1.5 bg-slate-100 rounded-lg text-[10px] font-bold text-slate-500 font-mono tracking-tight">
+                               {config.ldapUrl || 'Not configured'}
+                             </span>
+                           </td>
+                           <td className="py-6 px-8">
+                              <span className="text-[11px] font-bold text-slate-600">{config.scheduleFrequency || 'Daily'}</span>
+                           </td>
+                           <td className="py-6 px-8">
+                              <div className="flex flex-col">
+                                <span className="text-[11px] font-black text-slate-800">
+                                  {config.nextExecutionTime ? new Date(config.nextExecutionTime).toLocaleString() : 'Not scheduled'}
+                                </span>
+                                <span className="text-[9px] text-slate-400 font-bold uppercase mt-0.5">
+                                  Last: {config.lastExecutionDate ? new Date(config.lastExecutionDate).toLocaleDateString() : 'Never'}
+                                </span>
+                              </div>
+                           </td>
+                           <td className="py-6 px-8 text-center">
+                              <span className={`inline-flex px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                                config.executionStatus === 'Success' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                config.executionStatus === 'Failed' ? 'bg-rose-50 text-rose-600 border-rose-100' :
+                                config.executionStatus === 'Running' ? 'bg-blue-50 text-blue-600 border-blue-100 animate-pulse' :
+                                'bg-slate-50 text-slate-500 border-slate-100'
+                              }`}>
+                                {config.executionStatus || 'Idle'}
+                              </span>
+                           </td>
+                           <td className="py-6 px-8 text-center">
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  checked={config.scheduleEnabled} 
+                                  onChange={(e) => handleLdapChange(index, { target: { name: 'scheduleEnabled', value: e.target.checked, type: 'checkbox', checked: e.target.checked } })}
+                                  className="sr-only peer" 
+                                />
+                                <div className="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                              </label>
+                           </td>
+                           <td className="py-6 px-8 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                 <button onClick={() => setActiveTab('logs')} className="w-9 h-9 rounded-xl bg-white border border-slate-100 text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all shadow-sm">
+                                    <History size={14} />
+                                 </button>
+                                 <button onClick={() => openLdapModal(index)} className="w-9 h-9 rounded-xl bg-white border border-slate-100 text-slate-400 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                                    <Edit size={14} />
+                                 </button>
+                                 <button onClick={() => removeLdapConfig(index)} className="w-9 h-9 rounded-xl bg-white border border-slate-100 text-slate-400 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all shadow-sm">
+                                    <Trash2 size={14} />
+                                 </button>
+                              </div>
+                           </td>
+                         </tr>
+                       ))
+                     )}
+                   </tbody>
+                 </table>
+               </div>
+            </div>
+
+            {/* Pagination / Item Count Footnote */}
+            <div className="flex items-center justify-between px-4 opacity-50">
+               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Showing {settings.ldapConfigs?.length || 0} Sources</span>
+               <div className="flex items-center gap-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                  <span>10 items per page</span>
+               </div>
+            </div>
+
+            {/* LDAP Configuration Modal */}
+            {isLdapModalOpen && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-10 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300">
+                <div className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+                  
+                  {/* Modal Header */}
+                  <div className="p-8 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                     <div>
+                        <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">
+                          {editingLdapIndex !== null ? 'Edit LDAP Configuration' : 'Create LDAP Configuration'}
+                        </h3>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Configure active directory connectivity and mapping</p>
+                     </div>
+                     <button onClick={closeLdapModal} className="w-10 h-10 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-slate-900 hover:rotate-90 transition-all flex items-center justify-center">
+                        <X size={20} />
+                     </button>
+                  </div>
+
+                  {/* Modal Tabs */}
+                  <div className="px-8 pt-6 flex items-center gap-8 border-b border-slate-100 bg-white">
+                     <button 
+                        onClick={() => setLdapModalTab('configuration')}
+                        className={`pb-4 text-[11px] font-black uppercase tracking-widest transition-all relative ${ldapModalTab === 'configuration' ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+                     >
+                        Configuration
+                        {ldapModalTab === 'configuration' && <div className="absolute bottom-0 left-0 w-full h-1 bg-blue-600 rounded-t-full"></div>}
+                     </button>
+                     <button 
+                        onClick={() => setLdapModalTab('mapping')}
+                        className={`pb-4 text-[11px] font-black uppercase tracking-widest transition-all relative ${ldapModalTab === 'mapping' ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+                     >
+                        Mapping
+                        {ldapModalTab === 'mapping' && <div className="absolute bottom-0 left-0 w-full h-1 bg-blue-600 rounded-t-full"></div>}
+                     </button>
+                  </div>
+
+                  {/* Modal Body */}
+                  <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                     {ldapModalTab === 'configuration' ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                           <Field 
+                              label="Name *" 
+                              name="configName" 
+                              value={settings.ldapConfigs[editingLdapIndex]?.configName || ''} 
+                              onChange={(e) => handleLdapChange(editingLdapIndex, e)} 
+                              placeholder="e.g. Corporate AD"
+                           />
+                           <Field 
+                              label="URL *" 
+                              name="ldapUrl" 
+                              value={settings.ldapConfigs[editingLdapIndex]?.ldapUrl || ''} 
+                              onChange={(e) => handleLdapChange(editingLdapIndex, e)} 
+                              placeholder="ldap://192.168.1.10"
+                           />
+                           <div className="md:col-span-2 py-4 border-y border-slate-50 bg-slate-50/50 -mx-8 px-8 my-2">
+                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <Info size={12} className="text-blue-500" />
+                                Configure multiple LDAP servers for failover and load balancing.
+                              </p>
+                              <button className="text-[10px] font-black text-blue-600 uppercase tracking-widest flex items-center gap-1.5 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-all">
+                                 + Add URL
+                              </button>
+                           </div>
+                           <Field 
+                              label="Base DN *" 
+                              name="ldapBaseDN" 
+                              value={settings.ldapConfigs[editingLdapIndex]?.ldapBaseDN || ''} 
+                              onChange={(e) => handleLdapChange(editingLdapIndex, e)} 
+                              placeholder="OU=Users,DC=example,DC=com"
+                           />
+                           <Field 
+                              label="User ID *" 
+                              name="ldapUserFilter" 
+                              value={settings.ldapConfigs[editingLdapIndex]?.ldapUserFilter || ''} 
+                              onChange={(e) => handleLdapChange(editingLdapIndex, e)} 
+                              placeholder="sAMAccountName={{username}}"
+                           />
+                           <Field 
+                              label="Bind DN / Service Account *" 
+                              name="ldapBindDN" 
+                              value={settings.ldapConfigs[editingLdapIndex]?.ldapBindDN || ''} 
+                              onChange={(e) => handleLdapChange(editingLdapIndex, e)} 
+                              placeholder="salih@domain.local"
+                           />
+                           <Field 
+                              label="Password *" 
+                              name="ldapBindPassword" 
+                              type="password"
+                              value={settings.ldapConfigs[editingLdapIndex]?.ldapBindPassword || ''} 
+                              onChange={(e) => handleLdapChange(editingLdapIndex, e)} 
+                              placeholder="••••••••••••"
+                           />
+                           <div className="space-y-1.5">
+                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Schedule Frequency</label>
+                              <select 
+                                 name="scheduleFrequency"
+                                 value={settings.ldapConfigs[editingLdapIndex]?.scheduleFrequency || 'Daily'}
+                                 onChange={(e) => handleLdapChange(editingLdapIndex, e)}
+                                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-blue-500 transition-all text-sm font-bold text-slate-800"
+                              >
+                                 <option value="Daily">Daily</option>
+                                 <option value="Weekly">Weekly</option>
+                                 <option value="Hourly">Hourly</option>
+                                 <option value="Manual">Manual</option>
+                              </select>
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Server Type</label>
+                              <select 
+                                 name="serverType"
+                                 value={settings.ldapConfigs[editingLdapIndex]?.serverType || 'Microsoft AD'}
+                                 onChange={(e) => handleLdapChange(editingLdapIndex, e)}
+                                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-blue-500 transition-all text-sm font-bold text-slate-800"
+                              >
+                                 <option value="Microsoft AD">Microsoft AD</option>
+                                 <option value="OpenLDAP">OpenLDAP</option>
+                                 <option value="Generic">Generic / Other</option>
+                              </select>
+                           </div>
+                           <div className="md:col-span-2 pt-4">
+                              <Checkbox 
+                                 label="Block missing users (if not blocked, missing users will be deleted)"
+                                 name="syncBlockedUsers"
+                                 checked={settings.ldapConfigs[editingLdapIndex]?.syncBlockedUsers || false}
+                                 onChange={(e) => handleLdapChange(editingLdapIndex, e)}
+                              />
+                           </div>
+                        </div>
+                     ) : (
+                        <div className="space-y-8 animate-in slide-in-from-right-4 duration-300">
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              <Field 
+                                 label="Full Name Attribute" 
+                                 name="ldapNameField" 
+                                 value={settings.ldapConfigs[editingLdapIndex]?.ldapNameField || 'displayName'} 
+                                 onChange={(e) => handleLdapChange(editingLdapIndex, e)} 
+                                 placeholder="displayName"
+                              />
+                              <Field 
+                                 label="Email Attribute" 
+                                 name="ldapEmailField" 
+                                 value={settings.ldapConfigs[editingLdapIndex]?.ldapEmailField || 'mail'} 
+                                 onChange={(e) => handleLdapChange(editingLdapIndex, e)} 
+                                 placeholder="mail"
+                              />
+                           </div>
+                           <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
+                              <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <Layers size={14} className="text-blue-600" />
+                                Advanced Attribute Mapping
+                              </h4>
+                              <p className="text-xs text-slate-500 font-medium leading-relaxed mb-6">
+                                Map additional AD attributes to QCare user profiles (Department, Designation, Office, etc.)
+                              </p>
+                              <div className="space-y-4">
+                                 {['department', 'title', 'physicalDeliveryOfficeName'].map((attr) => (
+                                    <div key={attr} className="flex items-center gap-4">
+                                       <div className="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest">{attr}</div>
+                                       <ChevronRight size={16} className="text-slate-300" />
+                                       <div className="flex-1 px-4 py-3 bg-white border border-blue-100 rounded-xl text-[10px] font-black text-blue-600 uppercase tracking-widest">Profile {attr}</div>
+                                    </div>
+                                 ))}
+                              </div>
+                           </div>
+                        </div>
+                     )}
+                  </div>
+
+                  {/* Modal Footer */}
+                  <div className="p-8 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                     <button 
+                        onClick={handleTestConnection}
+                        disabled={testingConnection}
+                        className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-900 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all disabled:opacity-50"
+                     >
+                        {testingConnection ? <RefreshCcw size={16} className="animate-spin text-blue-600" /> : <Play size={16} className="text-emerald-500" />}
+                        Test Connection
+                     </button>
+                     <div className="flex items-center gap-3">
+                        <button onClick={closeLdapModal} className="px-8 py-3 text-slate-500 text-[11px] font-black uppercase tracking-widest hover:text-slate-900 transition-all">Cancel</button>
                         <button 
-                          onClick={() => saveLdapConfig(index)}
+                          onClick={() => saveLdapConfig(editingLdapIndex)}
                           disabled={saving}
-                          className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest hover:text-emerald-700 px-4 py-1.5 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors flex items-center gap-1"
+                          className="px-8 py-3 bg-blue-600 text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-200 active:scale-95 transition-all flex items-center gap-2"
                         >
-                          {saving ? <RefreshCcw className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
-                          Save
+                           {saving && <RefreshCcw size={16} className="animate-spin" />}
+                           Update
                         </button>
-                      ) : (
-                        <button 
-                          onClick={() => toggleLdapEdit(index)}
-                          className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:text-blue-700 px-4 py-1.5 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors flex items-center gap-1"
-                        >
-                          <Settings className="w-3 h-3" />
-                          Edit
-                        </button>
-                      )}
-
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          name="ldapEnabled" 
-                          checked={config.ldapEnabled} 
-                          onChange={(e) => handleLdapChange(index, e)}
-                          disabled={!ldapEditModes[index]}
-                          className="sr-only peer" 
-                        />
-                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#b59662]"></div>
-                      </label>
-                    </div>
-                 </div>
-
-                 <div className={`p-6 space-y-6 transition-all duration-500 ${!config.ldapEnabled ? 'opacity-40 grayscale' : ''}`}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                       <Field label="Server URL" name="ldapUrl" value={config.ldapUrl || ''} onChange={(e) => handleLdapChange(index, e)} placeholder="ldap://your-server:389" disabled={!ldapEditModes[index]} />
-                       <Field label="Base DN" name="ldapBaseDN" value={config.ldapBaseDN || ''} onChange={(e) => handleLdapChange(index, e)} placeholder="dc=example,dc=com" disabled={!ldapEditModes[index]} />
-                       <Field label="Bind DN (Service Account)" name="ldapBindDN" value={config.ldapBindDN || ''} onChange={(e) => handleLdapChange(index, e)} placeholder="cn=admin,dc=example,dc=com" disabled={!ldapEditModes[index]} />
-                       <Field label="Bind Password" name="ldapBindPassword" value={config.ldapBindPassword || ''} onChange={(e) => handleLdapChange(index, e)} type="password" placeholder="••••••••••••" disabled={!ldapEditModes[index]} />
-                    </div>
-
-                    <div className="pt-6 border-t border-slate-50 space-y-6">
-                       <div className="flex items-center justify-between">
-                         <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Attribute Mapping & Filters</h3>
-                         <Checkbox 
-                           label="Sync Blocked AD Users" 
-                           name="syncBlockedUsers" 
-                           checked={config.syncBlockedUsers || false} 
-                           onChange={(e) => handleLdapChange(index, e)} 
-                           disabled={!ldapEditModes[index]}
-                         />
-                       </div>
-                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                          <Field label="User Filter" name="ldapUserFilter" value={config.ldapUserFilter || ''} onChange={(e) => handleLdapChange(index, e)} disabled={!ldapEditModes[index]} />
-                          <Field label="Email Field" name="ldapEmailField" value={config.ldapEmailField || ''} onChange={(e) => handleLdapChange(index, e)} disabled={!ldapEditModes[index]} />
-                          <Field label="Full Name Field" name="ldapNameField" value={config.ldapNameField || ''} onChange={(e) => handleLdapChange(index, e)} disabled={!ldapEditModes[index]} />
-                       </div>
-                    </div>
-                 </div>
+                     </div>
+                  </div>
+                </div>
               </div>
-            ))}
-            <button 
-              onClick={addLdapConfig}
-              className="w-full py-4 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition-all"
-            >
-              + Add Another LDAP Configuration
-            </button>
+            )}
           </div>
         );
       case 'security':
@@ -514,7 +807,7 @@ const SystemSettings = () => {
           <button 
             onClick={handleSubmit}
             disabled={saving}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#b59662] text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#b59662]/30 hover:shadow-2xl transition-all active:scale-95 disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#2dd4bf] text-slate-950 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#2dd4bf]/30 hover:shadow-2xl transition-all active:scale-95 disabled:opacity-50"
           >
             {saving ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             <span>{saving ? 'Synchronizing...' : 'Save All Changes'}</span>
@@ -537,7 +830,7 @@ const SystemSettings = () => {
              <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-2xl text-white relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-32 h-32 -mr-16 -mt-16 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
                 <div className="relative z-10">
-                   <Lock className="w-6 h-6 text-[#b59662] mb-3" />
+                   <Lock className="w-6 h-6 text-[#2dd4bf] mb-3" />
                    <h3 className="text-[11px] font-black uppercase tracking-widest mb-2">Admin Security</h3>
                    <p className="text-[10px] text-slate-400 font-bold leading-relaxed opacity-80">
                      Changes to these parameters affect all users globally. Proceed with caution when modifying authentication or security policies.
@@ -564,7 +857,7 @@ const SettingsTab = ({ icon: Icon, label, active, onClick, disabled }) => (
     ? 'bg-slate-900 text-white shadow-lg shadow-black/10' 
     : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
   } ${disabled ? 'opacity-30 cursor-not-allowed' : ''}`}>
-    <Icon className={`w-4 h-4 ${active ? 'text-[#b59662]' : 'text-slate-400'}`} />
+    <Icon className={`w-4 h-4 ${active ? 'text-[#2dd4bf]' : 'text-slate-400'}`} />
     <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
   </button>
 );
@@ -579,7 +872,7 @@ const Field = ({ label, name, value, onChange, type = 'text', placeholder, disab
       onChange={onChange}
       placeholder={placeholder} 
       disabled={disabled}
-      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-bold text-slate-800 shadow-inner-sm disabled:cursor-not-allowed" 
+      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] transition-all text-sm font-bold text-slate-800 shadow-inner-sm disabled:cursor-not-allowed" 
     />
   </div>
 );
@@ -595,7 +888,7 @@ const Checkbox = ({ label, name, checked, onChange, disabled }) => (
         disabled={disabled}
         className="sr-only peer" 
       />
-      <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#b59662]"></div>
+      <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#2dd4bf]"></div>
     </label>
     <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{label}</span>
   </div>

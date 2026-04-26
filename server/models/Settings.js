@@ -40,6 +40,32 @@ const settingsSchema = new mongoose.Schema({
     syncBlockedUsers: {
       type: Boolean,
       default: false
+    },
+    // New fields for enterprise management
+    scheduleFrequency: {
+      type: String,
+      enum: ['Daily', 'Weekly', 'Hourly', 'Manual'],
+      default: 'Daily'
+    },
+    nextExecutionTime: {
+      type: Date
+    },
+    lastExecutionDate: {
+      type: Date
+    },
+    executionStatus: {
+      type: String,
+      enum: ['Idle', 'Running', 'Success', 'Failed'],
+      default: 'Idle'
+    },
+    scheduleEnabled: {
+      type: Boolean,
+      default: true
+    },
+    serverType: {
+      type: String,
+      enum: ['Microsoft AD', 'OpenLDAP', 'Generic'],
+      default: 'Microsoft AD'
     }
   }],
   // Security Policies

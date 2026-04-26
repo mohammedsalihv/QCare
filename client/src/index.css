@@ -3,6 +3,11 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   
+  /* 3-Color Medical Palette */
+  --color-primary: #2dd4bf;       /* Medical Teal (Primary) */
+  --color-secondary: #3b82f6;     /* Bright Blue (Secondary) */
+  --color-accent: #0f172a;        /* Deep Navy (Background) */
+  
   /* Reduced heading sizes */
   --font-size-xl: 1.125rem;    /* Default 1.25rem */
   --font-size-2xl: 1.25rem;    /* Default 1.5rem */

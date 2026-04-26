@@ -104,44 +104,44 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
 
   return (
     <>
-      <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-40">
-        <div className="flex items-center gap-4">
+      <header className="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-40 shadow-sm">
+        <div className="flex items-center gap-6">
           <button 
             onClick={toggleSidebar}
-            className="p-2.5 rounded-xl bg-slate-50 text-slate-500 hover:text-[#b59662] hover:bg-slate-100 transition-all active:scale-95 border border-slate-100 shadow-sm group"
+            className="p-3 rounded-2xl bg-slate-50 text-slate-400 hover:text-[#b59662] hover:bg-slate-100 transition-all active:scale-95 border border-slate-100 shadow-sm group"
             title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
           >
             {isSidebarOpen ? (
-              <PanelLeftClose className="w-5 h-5 transition-transform group-hover:-translate-x-0.5" />
+              <PanelLeftClose className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
             ) : (
-              <PanelLeftOpen className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
+              <PanelLeftOpen className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             )}
           </button>
         </div>
 
-        <div className="flex-1 max-w-xl mx-8 hidden lg:block">
+        <div className="flex-1 max-w-2xl mx-12 hidden lg:block">
           <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[#b59662] transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400 group-focus-within:text-[#b59662] transition-colors" />
             <input 
               type="text" 
-              placeholder="Search documents, incidents, or KPIs..." 
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] focus:ring-4 focus:ring-[#b59662]/10 transition-all text-sm"
+              placeholder="Search medical records, audits, or clinical data..." 
+              className="w-full pl-12 pr-6 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] focus:ring-8 focus:ring-[#b59662]/10 transition-all text-sm font-medium text-slate-800 placeholder:text-slate-400"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 pr-2 border-r border-slate-100 hidden md:flex">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 pr-4 border-r border-slate-100 hidden md:flex">
              <button 
                onClick={() => navigate('/dashboard/manuals')}
-               className="p-2.5 text-slate-400 hover:text-[#b59662] hover:bg-[#b59662]/10 rounded-xl transition-all duration-300 active:scale-95"
+               className="p-3 text-slate-400 hover:text-[#b59662] hover:bg-[#b59662]/10 rounded-2xl transition-all duration-500 active:scale-95"
                title="Documentation"
              >
                <BookOpen className="w-5 h-5" />
              </button>
              <button 
                onClick={() => navigate('/dashboard/support')}
-               className="p-2.5 text-slate-400 hover:text-[#b59662] hover:bg-[#b59662]/10 rounded-xl transition-all duration-300 active:scale-95"
+               className="p-3 text-slate-400 hover:text-[#b59662] hover:bg-[#b59662]/10 rounded-2xl transition-all duration-500 active:scale-95"
                title="Help Desk"
              >
                <HelpCircle className="w-5 h-5" />
@@ -151,24 +151,21 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
           <div className="relative">
                <button 
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-2.5 bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-300 group active:scale-95 border border-slate-100 shadow-sm"
+                className="relative p-3 bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-2xl transition-all duration-500 group active:scale-95 border border-slate-100 shadow-sm"
                >
                   <Bell className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                   {notifications.filter(n => !n.isRead).length > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white shadow-lg animate-in zoom-in duration-300">
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white shadow-lg animate-in zoom-in duration-500">
                       {notifications.filter(n => !n.isRead).length}
                     </span>
-                  )}
-                  {notifications.some(n => !n.isRead) && (
-                    <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-slate-50 group-hover:scale-0 transition-transform"></span>
                   )}
                </button>
 
             {/* Notification Panel */}
             {showNotifications && (
-              <div className="absolute right-0 mt-3 w-80 bg-white rounded-[2rem] shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                   <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Recent Activity</h4>
+              <div className="absolute right-0 mt-4 w-96 bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+                <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
+                   <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.25em]">Notifications</h4>
                    {notifications.length > 0 && (
                      <button 
                       onClick={clearAll}
@@ -178,30 +175,30 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
                      </button>
                    )}
                 </div>
-                <div className="max-h-96 overflow-y-auto">
+                <div className="max-h-[500px] overflow-y-auto scrollbar-thin">
                    {notifications.length > 0 ? (
                      notifications.map((n, idx) => (
                        <div 
                         key={idx} 
                         onClick={() => markAsRead(n._id)}
-                        className={`p-4 border-b border-slate-50 hover:bg-slate-50 transition-colors group cursor-pointer ${!n.isRead ? 'bg-slate-50/50' : ''}`}
+                        className={`p-5 border-b border-slate-50 hover:bg-slate-50 transition-all group cursor-pointer ${!n.isRead ? 'bg-slate-50/30' : ''}`}
                        >
-                          <div className="flex gap-3">
-                             <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-                               n.type === 'incident_report' ? 'bg-red-50 text-red-500' :
-                               n.type === 'document_upload' ? 'bg-blue-50 text-blue-500' : 
-                               n.type === 'document_like' ? 'bg-amber-50 text-amber-500' : 'bg-emerald-50 text-emerald-500'
+                          <div className="flex gap-4">
+                             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border border-slate-50 ${
+                                n.type === 'incident_report' ? 'bg-rose-50 text-rose-500' :
+                                n.type === 'document_upload' ? 'bg-teal-50 text-[#2dd4bf]' : 
+                                n.type === 'document_like' ? 'bg-amber-50 text-amber-500' : 'bg-emerald-50 text-emerald-500'
                              }`}>
-                                {n.type === 'incident_report' ? <AlertTriangle className="w-4 h-4" /> : 
-                                 n.type === 'document_upload' ? <Monitor className="w-4 h-4" /> : 
-                                 n.type === 'document_like' ? <ThumbsUp className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
+                                {n.type === 'incident_report' ? <AlertTriangle className="w-5 h-5" /> : 
+                                 n.type === 'document_upload' ? <Monitor className="w-5 h-5" /> : 
+                                 n.type === 'document_like' ? <ThumbsUp className="w-5 h-5" /> : <Shield className="w-5 h-5" />}
                              </div>
-                             <div className="flex flex-col gap-1 relative w-full">
-                                {!n.isRead && <div className="absolute -left-11 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#b59662] rounded-full"></div>}
-                                <p className="text-[11px] font-bold text-slate-900 leading-tight pr-4">{n.message}</p>
-                                <div className="flex items-center gap-2">
+                             <div className="flex flex-col gap-1.5 relative w-full">
+                                {!n.isRead && <div className="absolute -left-14 top-1/2 -translate-y-1/2 w-2 h-2 bg-[#b59662] rounded-full shadow-[0_0_8px_rgba(181,150,98,0.3)]"></div>}
+                                <p className="text-[11px] font-bold text-slate-900 leading-relaxed pr-4">{n.message}</p>
+                                <div className="flex items-center gap-3">
                                    <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest">{n.user}</span>
-                                   <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                   <span className="w-1 h-1 rounded-full bg-slate-200"></span>
                                    <span className="text-[9px] text-[#b59662] font-black uppercase tracking-widest">
                                      {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                    </span>
@@ -211,42 +208,43 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
                        </div>
                      ))
                    ) : (
-                     <div className="p-10 text-center space-y-3 opacity-20">
-                        <Bell className="w-10 h-10 mx-auto" />
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em]">All Caught Up</p>
+                     <div className="p-16 text-center space-y-4 opacity-20">
+                        <Bell className="w-12 h-12 mx-auto text-slate-300" />
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em]">No Pending Notifications</p>
                      </div>
                    )}
                 </div>
                 {notifications.length > 0 && (
                   <button 
                     onClick={() => navigate('/notifications')}
-                    className="w-full py-4 text-[9px] font-black text-slate-400 hover:text-slate-900 bg-slate-50/30 border-t border-slate-100 transition-colors uppercase tracking-widest"
+                    className="w-full py-5 text-[9px] font-black text-slate-400 hover:text-slate-900 bg-slate-50/50 border-t border-slate-100 transition-all uppercase tracking-[0.2em]"
                   >
-                    View Notification Center
+                    View All
                   </button>
                 )}
               </div>
             )}
           </div>
           
-          <div className="h-8 w-[1px] bg-slate-200 mx-2 hidden sm:block"></div>
+          <div className="h-10 w-px bg-slate-100 mx-3 hidden sm:block"></div>
           
           <Dropdown 
             options={profileOptions}
             onSelect={handleProfileSelect}
             trigger={
               <button 
-                className="flex items-center gap-3 p-1 rounded-xl hover:bg-slate-50 transition-all group"
+                className="flex items-center gap-4 p-1.5 rounded-2xl hover:bg-slate-50 transition-all group"
               >
-                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center border border-slate-200 overflow-hidden">
+                <div className="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 overflow-hidden shadow-sm">
                    <img 
                      src={`https://ui-avatars.com/api/?name=${user.name}&background=b59662&color=fff&bold=true`} 
                      alt={user.name} 
+                     className="w-full h-full object-cover"
                    />
                 </div>
                 <div className="hidden sm:flex flex-col items-start">
-                  <span className="text-sm font-bold text-slate-900 leading-tight">{user.name}</span>
-                  <span className="text-[10px] text-[#b59662] font-black uppercase tracking-[0.15em]">{user.designation || user.role}</span>
+                  <span className="text-sm font-black text-slate-900 leading-tight tracking-tight">{user.name}</span>
+                  <span className="text-[10px] text-[#b59662] font-black uppercase tracking-[0.15em] opacity-80">{user.designation || user.role}</span>
                 </div>
                 <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors" />
               </button>

@@ -63,9 +63,29 @@ const triggerLdapSync = async (req, res) => {
   }
 };
 
+// @desc    Test LDAP Connection
+// @route   POST /api/settings/ldap-test
+// @access  Private/Admin
+const testLdapConnection = async (req, res) => {
+  const { ldapUrl, ldapBindDN, ldapBindPassword } = req.body;
+  
+  const ldap = require('ldapjs');
+  const client = ldap.createClient({ url: ldapUrl, connectTimeout: 5000, timeout: 5000 });
+
+  client.bind(ldapBindDN, ldapBindPassword, (err) => {
+    if (err) {
+      client.unbind();
+      return res.status(400).json({ message: `Connection failed: ${err.message}` });
+    }
+    client.unbind();
+    res.json({ message: 'LDAP Connection Successful!' });
+  });
+};
+
 module.exports = {
   getSettings,
   updateSettings,
   getLdapLogs,
-  triggerLdapSync
+  triggerLdapSync,
+  testLdapConnection
 };

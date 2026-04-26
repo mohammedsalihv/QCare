@@ -126,13 +126,13 @@ const Dashboard = () => {
       <div className="flex flex-col gap-8">
         {/* Welcome Banner */}
         <div className="relative p-8 md:p-12 rounded-[2.5rem] bg-slate-900 overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#b59662]/20 to-transparent"></div>
-          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#b59662]/10 rounded-full blur-[100px]"></div>
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#2dd4bf]/20 to-transparent"></div>
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#2dd4bf]/10 rounded-full blur-[100px]"></div>
           
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                 <span className="px-3 py-1 bg-[#b59662]/20 text-[#b59662] rounded-full text-[10px] font-black uppercase tracking-widest border border-[#b59662]/30">
+                 <span className="px-3 py-1 bg-[#2dd4bf]/20 text-[#2dd4bf] rounded-full text-[10px] font-black uppercase tracking-widest border border-[#2dd4bf]/30">
                    {userRole} Portal
                  </span>
                  <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
@@ -142,7 +142,7 @@ const Dashboard = () => {
               <div>
                 <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
                   Welcome back,<br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#b59662] to-[#e5c58a]">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6]">
                     {userInfo.employeeName || 'Healthcare Professional'}
                   </span>
                 </h1>
@@ -155,7 +155,7 @@ const Dashboard = () => {
             </div>
 
             <div className="flex flex-col gap-3 min-w-[200px]">
-              <button className="flex items-center justify-between gap-4 px-6 py-4 bg-[#b59662] hover:bg-[#a68959] text-white rounded-2xl font-black transition-all shadow-xl shadow-[#b59662]/30 active:scale-95 group uppercase text-xs tracking-widest">
+              <button className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest">
                  <div className="flex items-center gap-3">
                     <Plus className="w-5 h-5" />
                     <span>Report Incident</span>
@@ -245,8 +245,8 @@ const Dashboard = () => {
                     <AreaChart data={areaData}>
                       <defs>
                         <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#b59662" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#b59662" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#2dd4bf" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#2dd4bf" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -255,7 +255,7 @@ const Dashboard = () => {
                       <Tooltip 
                         contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', padding: '12px' }}
                       />
-                      <Area type="monotone" dataKey="value" stroke="#b59662" strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" />
+                      <Area type="monotone" dataKey="value" stroke="#2dd4bf" strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" />
                     </AreaChart>
                   </ResponsiveContainer>
                </div>
@@ -308,7 +308,7 @@ const Dashboard = () => {
                   <tr key={incident.id} className="hover:bg-slate-50/50 transition-colors group">
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#b59662]/10 group-hover:text-[#b59662] transition-colors">
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#2dd4bf]/10 group-hover:text-[#2dd4bf] transition-colors">
                            <Activity className="w-5 h-5" />
                         </div>
                         <div className="flex flex-col">
@@ -343,7 +343,7 @@ const Dashboard = () => {
                              <Eye className="w-4.5 h-4.5" />
                           </button>
                           {isAdmin && (
-                            <button className="w-10 h-10 rounded-2xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-[#b59662] hover:text-white transition-all duration-300 active:scale-95 shadow-sm">
+                            <button className="w-10 h-10 rounded-2xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-[#2dd4bf] hover:text-slate-950 transition-all duration-300 active:scale-95 shadow-sm">
                                <FileEdit className="w-4.5 h-4.5" />
                             </button>
                           )}
@@ -385,7 +385,7 @@ const Dashboard = () => {
                  <h5 className="font-black text-sm uppercase tracking-widest mb-2">Latest Guidelines</h5>
                  <p className="text-xs text-emerald-50 font-medium opacity-80 leading-relaxed">Version 4.2 of the Clinical Protocol is now live in the document library. Please review.</p>
               </div>
-              <div className="p-6 rounded-[2rem] bg-gradient-to-br from-[#b59662] to-[#9e8254] text-white shadow-xl shadow-[#b59662]/20">
+              <div className="p-6 rounded-[2rem] bg-gradient-to-br from-[#2dd4bf] to-[#3b82f6] text-slate-950 shadow-xl shadow-[#2dd4bf]/20">
                  <Activity className="w-10 h-10 mb-4 opacity-50" />
                  <h5 className="font-black text-sm uppercase tracking-widest mb-2">Need Support?</h5>
                  <p className="text-xs text-slate-50 font-medium opacity-80 leading-relaxed">The Quality Assurance team is available 24/7 for incident investigation support.</p>

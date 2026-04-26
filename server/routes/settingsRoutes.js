@@ -5,6 +5,7 @@ const { protect, admin } = require('../middleware/authMiddleware');
 
 router.route('/ldap-logs').get(protect, admin, getLdapLogs);
 router.route('/ldap-sync').post(protect, admin, triggerLdapSync);
+router.route('/ldap-test').post(protect, admin, require('../controllers/settingsController').testLdapConnection);
 
 router.route('/')
   .get(protect, admin, getSettings)

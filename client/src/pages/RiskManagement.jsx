@@ -195,16 +195,16 @@ const RiskManagement = () => {
             <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#b59662]">Quality Assurance</span>
+              <span className="text-[#2dd4bf]">Quality Assurance</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#b59662]">Risk Management</span>
+              <span className="text-[#2dd4bf]">Risk Management</span>
             </div>
             <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Enterprise Risk Register</h1>
           </div>
           
           <button 
             onClick={handleAddClick}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#b59662] hover:bg-[#a68959] text-white rounded-xl text-xs font-black transition-all shadow-lg shadow-[#b59662]/30 active:scale-95 uppercase tracking-wide"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#2dd4bf] hover:brightness-110 text-slate-950 rounded-xl text-xs font-black transition-all shadow-lg shadow-[#2dd4bf]/30 active:scale-95 uppercase tracking-wide"
           >
              <Plus className="w-4 h-4" />
              <span>Log New Risk</span>
@@ -238,7 +238,7 @@ const RiskManagement = () => {
                <input 
                  type="text" 
                  placeholder="Search by risk title, description or owner..."
-                 className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#b59662] focus:ring-4 focus:ring-[#b59662]/5 transition-all text-xs font-semibold shadow-inner-sm"
+                 className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-semibold shadow-inner-sm"
                />
             </div>
             <div className="flex items-center gap-3">
@@ -307,7 +307,7 @@ const RiskManagement = () => {
                       </td>
                       <td className="px-6 py-6">
                          <div className="flex items-center gap-2 text-slate-600">
-                            <Calendar className="w-3.5 h-3.5 text-[#b59662]" />
+                            <Calendar className="w-3.5 h-3.5 text-[#2dd4bf]" />
                             <span className="text-xs font-bold">{risk.reviewDate ? new Date(risk.reviewDate).toLocaleDateString() : 'N/A'}</span>
                          </div>
                       </td>
@@ -356,8 +356,8 @@ const RiskManagement = () => {
               <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white relative shrink-0">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#b59662] to-transparent opacity-20"></div>
                 <div className="flex items-center gap-4">
-                   <div className="w-14 h-14 rounded-2xl bg-[#b59662]/5 flex items-center justify-center border border-[#b59662]/10 shadow-inner">
-                      <ShieldAlert className="w-7 h-7 text-[#b59662]" />
+                   <div className="w-14 h-14 rounded-2xl bg-[#2dd4bf]/5 flex items-center justify-center border border-[#2dd4bf]/10 shadow-inner">
+                      <ShieldAlert className="w-7 h-7 text-[#2dd4bf]" />
                    </div>
                    <div>
                       <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">
@@ -375,7 +375,7 @@ const RiskManagement = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6">
                   <div className="md:col-span-3 space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] ml-1">Risk Title / Identification</label>
-                    <input name="title" value={formData.title} onChange={handleInputChange} required placeholder="e.g. Failure of redundant backup power in OT" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-bold text-slate-800 shadow-inner-sm" />
+                    <input name="title" value={formData.title} onChange={handleInputChange} required placeholder="e.g. Failure of redundant backup power in OT" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#2dd4bf] transition-all text-sm font-bold text-slate-800 shadow-inner-sm" />
                   </div>
                   
                   <div className="space-y-2">
@@ -437,7 +437,7 @@ const RiskManagement = () => {
                        <input 
                          type="range" min="1" max="5" step="1"
                          name="probability" value={formData.probability} onChange={handleInputChange}
-                         className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#b59662]"
+                         className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#2dd4bf]"
                        />
                        <div className="flex justify-between text-[8px] font-black text-slate-400 uppercase tracking-tighter">
                           <span>Rare</span>
@@ -475,7 +475,7 @@ const RiskManagement = () => {
 
                   <div className="md:col-span-3 space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] ml-1">Mitigation Strategy & Action Plan</label>
-                    <textarea name="mitigationStrategy" value={formData.mitigationStrategy} onChange={handleInputChange} rows="3" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-bold text-slate-800 resize-none shadow-inner-sm" placeholder="Detailed steps to reduce probability or impact..."></textarea>
+                    <textarea name="mitigationStrategy" value={formData.mitigationStrategy} onChange={handleInputChange} rows="3" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#2dd4bf] transition-all text-sm font-bold text-slate-800 resize-none shadow-inner-sm" placeholder="Detailed steps to reduce probability or impact..."></textarea>
                   </div>
                 </div>
 

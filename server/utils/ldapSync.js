@@ -25,6 +25,12 @@ const syncLDAPUsers = async () => {
     let hasErrors = false;
 
     for (const config of enabledConfigs) {
+      const configIndex = settings.ldapConfigs.findIndex(c => c._id.toString() === config._id.toString());
+      if (configIndex !== -1) {
+        settings.ldapConfigs[configIndex].executionStatus = 'Running';
+        await settings.save();
+      }
+
       const client = ldap.createClient({ url: config.ldapUrl });
 
       try {
@@ -32,6 +38,11 @@ const syncLDAPUsers = async () => {
           client.bind(config.ldapBindDN, config.ldapBindPassword, async (err) => {
             if (err) {
               client.unbind();
+              if (configIndex !== -1) {
+                settings.ldapConfigs[configIndex].executionStatus = 'Failed';
+                settings.ldapConfigs[configIndex].lastExecutionDate = new Date();
+                await settings.save();
+              }
               return reject(new Error(`[${config.configName}] Failed to bind: ` + err.message));
             }
 
@@ -63,6 +74,10 @@ const syncLDAPUsers = async () => {
             client.search(config.ldapBaseDN, searchOptions, (err, res) => {
               if (err) {
                 client.unbind();
+                if (configIndex !== -1) {
+                  settings.ldapConfigs[configIndex].executionStatus = 'Failed';
+                  settings.ldapConfigs[configIndex].lastExecutionDate = new Date();
+                }
                 return reject(new Error(`[${config.configName}] Search failed: ` + err.message));
               }
 
@@ -120,8 +135,13 @@ const syncLDAPUsers = async () => {
                 console.error(`[${config.configName}] search error: ` + err.message);
               });
 
-              res.on('end', () => {
+              res.on('end', async () => {
                 client.unbind();
+                if (configIndex !== -1) {
+                  settings.ldapConfigs[configIndex].executionStatus = 'Success';
+                  settings.ldapConfigs[configIndex].lastExecutionDate = new Date();
+                  await settings.save();
+                }
                 resolve();
               });
             });
@@ -131,6 +151,11 @@ const syncLDAPUsers = async () => {
         hasErrors = true;
         totalFailedCount++;
         logEntry.errorMessage = (logEntry.errorMessage || '') + err.message + '\n';
+        if (configIndex !== -1) {
+          settings.ldapConfigs[configIndex].executionStatus = 'Failed';
+          settings.ldapConfigs[configIndex].lastExecutionDate = new Date();
+          await settings.save();
+        }
       }
     }
 

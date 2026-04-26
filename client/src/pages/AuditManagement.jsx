@@ -200,16 +200,16 @@ const AuditManagement = () => {
             <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#b59662]">Administration</span>
+              <span className="text-[#2dd4bf]">Administration</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#b59662]">Audit Management</span>
+              <span className="text-[#2dd4bf]">Audit Management</span>
             </div>
             <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Compliance & Quality Audits</h1>
           </div>
           
           <button 
             onClick={handleAddClick}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#b59662] hover:bg-[#a68959] text-white rounded-xl text-xs font-black transition-all shadow-lg shadow-[#b59662]/30 active:scale-95 uppercase tracking-wide"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#2dd4bf] hover:brightness-110 text-slate-950 rounded-xl text-xs font-black transition-all shadow-lg shadow-[#2dd4bf]/30 active:scale-95 uppercase tracking-wide"
           >
              <Plus className="w-4 h-4" />
              <span>Schedule New Audit</span>
@@ -274,7 +274,7 @@ const AuditManagement = () => {
                <input 
                  type="text" 
                  placeholder="Search audits by title or auditor..."
-                 className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#b59662] transition-all text-xs font-semibold"
+                 className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#2dd4bf] transition-all text-xs font-semibold"
                />
             </div>
           </div>
@@ -296,7 +296,7 @@ const AuditManagement = () => {
                   <tr key={audit._id} className="hover:bg-slate-50/20 transition-colors group">
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#b59662]/10 group-hover:text-[#b59662] transition-colors border border-slate-200/60 shadow-sm">
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#2dd4bf]/10 group-hover:text-[#2dd4bf] transition-colors border border-slate-200/60 shadow-sm">
                            <FileText className="w-5 h-5" />
                         </div>
                         <span className="text-sm font-bold text-slate-900 tracking-tight leading-tight">{audit.title}</span>
@@ -318,7 +318,7 @@ const AuditManagement = () => {
                     </td>
                     <td className="px-6 py-6">
                        <div className="flex items-center gap-2 text-slate-500">
-                          <Calendar className="w-3.5 h-3.5 text-[#b59662]/60" />
+                          <Calendar className="w-3.5 h-3.5 text-[#2dd4bf]/60" />
                           <span className="text-xs font-bold">{new Date(audit.auditDate).toLocaleDateString()}</span>
                        </div>
                     </td>
@@ -331,7 +331,7 @@ const AuditManagement = () => {
                        <div className="flex items-center justify-end gap-2.5">
                           <button 
                             onClick={() => handleEditClick(audit)}
-                            className="w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-[#b59662] hover:border-[#b59662] hover:text-white transition-all duration-300 shadow-sm active:scale-95"
+                            className="w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-[#2dd4bf] hover:border-[#2dd4bf] hover:text-slate-950 transition-all duration-300 shadow-sm active:scale-95"
                           >
                              <FileEdit className="w-4 h-4" />
                           </button>
@@ -365,8 +365,8 @@ const AuditManagement = () => {
               <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white relative shrink-0">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#b59662] to-transparent opacity-20"></div>
                 <div className="flex items-center gap-4">
-                   <div className="w-14 h-14 rounded-2xl bg-[#b59662]/5 flex items-center justify-center border border-[#b59662]/10 shadow-inner">
-                      <FileCheck className="w-7 h-7 text-[#b59662]" />
+                   <div className="w-14 h-14 rounded-2xl bg-[#2dd4bf]/5 flex items-center justify-center border border-[#2dd4bf]/10 shadow-inner">
+                      <FileCheck className="w-7 h-7 text-[#2dd4bf]" />
                    </div>
                    <div>
                       <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">
@@ -384,7 +384,7 @@ const AuditManagement = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6">
                   <div className="md:col-span-3 space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] ml-1">Audit Title / Objective</label>
-                    <input name="title" value={formData.title} onChange={handleInputChange} required placeholder="e.g. Q4 Internal Quality Audit - Nursing Department" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-bold text-slate-800 shadow-inner-sm" />
+                    <input name="title" value={formData.title} onChange={handleInputChange} required placeholder="e.g. Q4 Internal Quality Audit - Nursing Department" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#2dd4bf] transition-all text-sm font-bold text-slate-800 shadow-inner-sm" />
                   </div>
                   
                   <div className="space-y-2">
@@ -429,7 +429,7 @@ const AuditManagement = () => {
 
                   <div className="md:col-span-3 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 space-y-6">
                     <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.2em] flex items-center gap-2">
-                       <FileCheck className="w-4 h-4 text-[#b59662]" />
+                       <FileCheck className="w-4 h-4 text-[#2dd4bf]" />
                        Audit Checklist & Compliance Verification
                     </h4>
                     
@@ -482,7 +482,7 @@ const AuditManagement = () => {
                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-slate-400 hover:bg-slate-50 hover:text-slate-600 rounded-2xl transition-all border border-slate-200 uppercase tracking-[0.2em] active:scale-95">
                      Discard
                    </button>
-                   <button type="submit" className="flex-[2] py-3 bg-gradient-to-r from-[#b59662] to-[#9e8254] text-white text-[10px] font-black rounded-2xl shadow-2xl shadow-[#b59662]/30 hover:shadow-3xl hover:from-[#a68959] hover:to-[#8f754b] transition-all active:scale-[0.98] uppercase tracking-[0.2em]">
+                   <button type="submit" className="flex-[2] py-3 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] text-slate-950 text-[10px] font-black rounded-2xl shadow-2xl shadow-[#2dd4bf]/30 hover:brightness-110 transition-all active:scale-[0.98] uppercase tracking-[0.2em]">
                      {isEditing ? 'Confirm Audit Results' : 'Initialize Audit Schedule'}
                    </button>
                 </div>
@@ -493,8 +493,8 @@ const AuditManagement = () => {
 
         <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 py-8 border-t border-slate-200 text-slate-400 relative overflow-hidden">
            <div className="flex items-center gap-3 relative z-10">
-              <div className="p-2 bg-[#b59662]/5 rounded-lg border border-[#b59662]/10">
-                <CheckCircle2 className="w-4 h-4 text-[#b59662]" />
+              <div className="p-2 bg-[#2dd4bf]/5 rounded-lg border border-[#2dd4bf]/10">
+                <CheckCircle2 className="w-4 h-4 text-[#2dd4bf]" />
               </div>
               <span className="text-[10px] font-black tracking-[0.1em] text-slate-500 uppercase">QCare Regulatory Compliance Engine</span>
            </div>
