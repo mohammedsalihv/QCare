@@ -25,7 +25,8 @@ import {
   Briefcase,
   Wrench,
   HelpCircle,
-  Flag
+  Flag,
+  ArrowUpRight
 } from 'lucide-react';
 
 const IncidentManagement = () => {
@@ -188,10 +189,13 @@ const IncidentManagement = () => {
           
           <button 
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#2dd4bf] hover:brightness-110 text-slate-950 rounded-xl text-xs font-black transition-all shadow-lg shadow-[#2dd4bf]/30 active:scale-95 uppercase tracking-wide"
+            className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest"
           >
-             <Plus className="w-4 h-4" />
-             <span>Report New Incident</span>
+             <div className="flex items-center gap-3">
+                <Plus className="w-5 h-5" />
+                <span>Report New Incident</span>
+             </div>
+             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </button>
         </div>
 
@@ -245,15 +249,15 @@ const IncidentManagement = () => {
             <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
                 <tr className="bg-slate-50/50">
-                  <th className="px-7 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 w-[11%]">ID</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 w-[18%]">Incident Title</th>
-                  {isAdmin && <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 w-[14%]">Reported By</th>}
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 w-[10%]">Reported Date</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 w-[10%]">Location</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 w-[10%]">Category</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 w-[9%]">Severity</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 w-[9%]">Status</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 w-[9%] text-right pr-10">Actions</th>
+                  <th className="px-7 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[11%]">ID</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[18%]">Incident Title</th>
+                  {isAdmin && <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[14%]">Reported By</th>}
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[10%]">Reported Date</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[10%]">Location</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[10%]">Category</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[9%]">Severity</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[9%]">Status</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[9%] text-right pr-10">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">

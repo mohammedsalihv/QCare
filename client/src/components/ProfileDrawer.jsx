@@ -5,13 +5,60 @@ import {
   Mail, 
   Shield, 
   Building2,
-  CalendarDays
+  CalendarDays,
+  Camera,
+  RefreshCcw,
+  Plus
 } from 'lucide-react';
+import axios from 'axios';
+import { useNotification } from './NotificationContext';
 
-const ProfileDrawer = ({ isOpen, onClose, user = { name: 'User', id: 'N/A', dept: 'N/A', role: 'N/A', email: 'N/A' } }) => {
+const ProfileDrawer = ({ isOpen, onClose, user = { name: 'User', id: 'N/A', dept: 'N/A', role: 'N/A', email: 'N/A', photo: null } }) => {
+  const { showNotification } = useNotification();
+  const [uploading, setUploading] = React.useState(false);
+  const fileInputRef = React.useRef(null);
 
   const handleClose = () => {
     onClose();
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      showNotification('Image size should be less than 2MB', 'error');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('photo', file);
+
+    setUploading(true);
+    try {
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const { data } = await axios.put('http://localhost:5000/api/users/profile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${userInfo.token}`
+        }
+      });
+      
+      // Update local storage
+      const newUserInfo = { ...userInfo, photo: data.photo };
+      localStorage.setItem('userInfo', JSON.stringify(newUserInfo));
+      
+      showNotification('Profile photo updated successfully', 'success');
+      
+      // Delay reload so notification can be seen
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } catch (error) {
+      showNotification(error.response?.data?.message || 'Failed to upload photo', 'error');
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -44,23 +91,50 @@ const ProfileDrawer = ({ isOpen, onClose, user = { name: 'User', id: 'N/A', dept
 
           {/* Profile Section */}
           <div className="p-8 flex flex-col items-center text-center">
-            <div className="relative mb-6">
-              <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-[#b59662] to-[#8a7249] p-1 shadow-xl shadow-[#b59662]/20">
-                <div className="w-full h-full rounded-[20px] bg-white p-1 overflow-hidden">
-                   <img 
-                     src={`https://ui-avatars.com/api/?name=${user.name}&background=b59662&color=fff&size=200&bold=true`} 
-                     alt={user.name}
-                     className="w-full h-full object-cover rounded-[18px]"
-                   />
+            <div className="relative mb-6 group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                className="hidden" 
+                accept="image/*"
+              />
+              <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-[#2dd4bf] to-[#3b82f6] p-1 shadow-xl shadow-[#2dd4bf]/20 relative">
+                <div className="w-full h-full rounded-[20px] bg-white p-1 overflow-hidden relative">
+                   {user.photo ? (
+                     <img 
+                       src={`http://localhost:5000${user.photo}`} 
+                       alt={user.name}
+                       className="w-full h-full object-cover rounded-[18px]"
+                     />
+                   ) : (
+                     <div className="w-full h-full rounded-[18px] bg-slate-50 flex items-center justify-center text-slate-300">
+                        <User className="w-12 h-12" />
+                     </div>
+                   )}
+                   
+                   {/* Overlay */}
+                   <div className={`absolute inset-0 bg-slate-900/40 transition-opacity flex items-center justify-center rounded-[18px] ${
+                     uploading ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                   }`}>
+                      {uploading ? (
+                        <div className="flex flex-col items-center gap-2">
+                           <RefreshCcw className="w-6 h-6 text-white animate-spin" />
+                           <span className="text-[8px] font-black text-white uppercase tracking-widest">Uploading...</span>
+                        </div>
+                      ) : (
+                        <Camera className="w-6 h-6 text-white" />
+                      )}
+                   </div>
                 </div>
               </div>
-              <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-xl bg-emerald-500 border-4 border-white flex items-center justify-center shadow-lg">
-                 <Shield className="w-3.5 h-3.5 text-white" />
+              <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-xl bg-[#2dd4bf] border-4 border-white flex items-center justify-center shadow-lg text-slate-950">
+                 <Plus className="w-3.5 h-3.5 font-black" />
               </div>
             </div>
             
             <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{user.name}</h3>
-            <p className="text-sm font-semibold text-[#b59662] uppercase tracking-[0.2em] mt-1 opacity-90">{user.role}</p>
+            <p className="text-sm font-semibold text-[#2dd4bf] uppercase tracking-[0.2em] mt-1 opacity-90">{user.role}</p>
             
             <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200">
                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>

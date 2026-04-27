@@ -157,11 +157,11 @@ const Notifications = () => {
                  </div>
               </div>
 
-              <div className="bg-[#b59662] p-6 rounded-[2rem] shadow-xl shadow-[#b59662]/20 text-white relative overflow-hidden group">
-                 <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+              <div className="bg-gradient-to-br from-[#3b82f6] to-[#2dd4bf] p-6 rounded-[2rem] shadow-xl shadow-blue-500/20 text-slate-950 relative overflow-hidden group">
+                 <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
                  <Shield className="w-8 h-8 mb-4 opacity-50" />
                  <h5 className="font-black text-sm uppercase tracking-widest mb-2">Notification Guard</h5>
-                 <p className="text-[10px] text-white/80 font-medium leading-relaxed">Notifications are retained for 30 days. Please ensure critical alerts are reviewed regularly.</p>
+                 <p className="text-[10px] text-slate-950/80 font-medium leading-relaxed">Notifications are retained for 30 days. Please ensure critical alerts are reviewed regularly.</p>
               </div>
            </div>
 
@@ -176,7 +176,7 @@ const Notifications = () => {
                          value={searchTerm}
                          onChange={(e) => setSearchTerm(e.target.value)}
                          placeholder="Search by activity or user..." 
-                         className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#b59662] transition-all text-sm"
+                         className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-sm"
                        />
                     </div>
                     <div className="flex items-center gap-2">
@@ -203,7 +203,7 @@ const Notifications = () => {
                           key={n._id} 
                           className={`p-6 md:p-8 flex items-start gap-6 hover:bg-slate-50 transition-all group relative ${!n.isRead ? 'bg-slate-50/30' : ''}`}
                         >
-                           {!n.isRead && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#b59662]"></div>}
+                           {!n.isRead && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#2dd4bf]"></div>}
                            
                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border border-slate-100 bg-white shadow-sm group-hover:scale-110 transition-transform`}>
                               {getTypeIcon(n.type)}
@@ -211,7 +211,7 @@ const Notifications = () => {
 
                            <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between gap-4 mb-2">
-                                 <span className="text-[10px] font-black text-[#b59662] uppercase tracking-[0.2em]">{n.type.replace('_', ' ')}</span>
+                                 <span className="text-[10px] font-black text-[#3b82f6] uppercase tracking-[0.2em]">{n.type.replace('_', ' ')}</span>
                                  <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
                                     <Clock className="w-3 h-3" />
                                     {new Date(n.createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}

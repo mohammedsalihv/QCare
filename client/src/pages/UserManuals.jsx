@@ -219,9 +219,9 @@ const UserManuals = () => {
             <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#b59662]">Help</span>
+              <span className="text-[#2dd4bf]">Help</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#b59662]">User Manuals</span>
+              <span className="text-[#2dd4bf]">User Manuals</span>
             </div>
             <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">System Documentation</h1>
             <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1 opacity-80">
@@ -250,7 +250,7 @@ const UserManuals = () => {
                  
                  <button 
                    onClick={() => setSelectedGuide(guide)}
-                   className="flex items-center gap-2 text-[10px] font-black text-[#b59662] uppercase tracking-widest group/btn mt-auto self-start"
+                   className="flex items-center gap-2 text-[10px] font-black text-indigo-500 hover:text-teal-500 uppercase tracking-widest group/btn mt-auto self-start transition-colors"
                  >
                    <span>Read Documentation</span>
                    <ChevronRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />

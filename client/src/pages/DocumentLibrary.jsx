@@ -20,7 +20,8 @@ import {
   Upload,
   Download,
   X,
-  Maximize
+  Maximize,
+  ArrowUpRight
 } from 'lucide-react';
 import { getAuthConfig } from '../utils/authConfig';
 
@@ -67,10 +68,25 @@ const DocumentLibrary = () => {
       case 'Secret':
         return 'bg-rose-50 text-rose-600 border-rose-200';
       case 'Confidential':
-        return 'bg-amber-50 text-amber-600 border-amber-200';
+        return 'bg-orange-50 text-orange-600 border-orange-200';
       case 'Restricted':
       default:
-        return 'bg-slate-100 text-slate-600 border-slate-200';
+        return 'bg-blue-50 text-blue-600 border-blue-200';
+    }
+  };
+  
+  const getTypeColor = (type) => {
+    switch(type) {
+      case 'Policy':
+        return 'bg-indigo-50 text-indigo-600 border-indigo-200';
+      case 'Procedure':
+        return 'bg-emerald-50 text-emerald-600 border-emerald-200';
+      case 'Manual':
+        return 'bg-amber-50 text-amber-600 border-amber-200';
+      case 'Form':
+        return 'bg-cyan-50 text-cyan-600 border-cyan-200';
+      default:
+        return 'bg-slate-50 text-slate-600 border-slate-200';
     }
   };
 
@@ -184,7 +200,7 @@ const DocumentLibrary = () => {
             <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">
               <span>Home</span>
               <ChevronRight className="w-3 h-3" />
-              <span className="text-[#b59662]">Document Library</span>
+              <span className="text-[#2dd4bf]">Document Library</span>
             </div>
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Document Library</h1>
           </div>
@@ -200,10 +216,13 @@ const DocumentLibrary = () => {
                     setFormData({ name: '', type: 'Policy', department: '', ref: '', revisedDate: '', classification: 'Restricted' });
                     setShowAddModal(true);
                   }}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold transition-all shadow-lg shadow-slate-900/30 active:scale-95"
+                  className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest"
                 >
-                  <Plus className="w-4 h-4" />
-                  <span className="text-xs uppercase tracking-wider">Add Document</span>
+                  <div className="flex items-center gap-3">
+                    <Plus className="w-5 h-5" />
+                    <span>Add Document</span>
+                  </div>
+                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </button>
              )}
           </div>
@@ -222,13 +241,13 @@ const DocumentLibrary = () => {
                 }}
                 className={`px-12 py-5 text-sm font-bold transition-all relative ${
                   activeTab === tab 
-                  ? 'text-[#b59662]' 
+                  ? 'text-slate-900' 
                   : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 {tab}
                 {activeTab === tab && (
-                  <div className="absolute bottom-0 left-0 w-full h-1 bg-[#b59662] rounded-t-full"></div>
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-[#2dd4bf] rounded-t-full"></div>
                 )}
               </button>
             ))}
@@ -240,7 +259,7 @@ const DocumentLibrary = () => {
                <input 
                  type="text" 
                  placeholder="Search by document name or reference..."
-                 className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm"
+                 className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] transition-all text-sm"
                />
             </div>
           </div>
@@ -249,56 +268,45 @@ const DocumentLibrary = () => {
             <table className="w-full text-left border-collapse whitespace-nowrap min-w-[1300px]">
               <thead>
                 <tr className="bg-slate-50">
-                  <th className="w-16 px-4 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">S.No</th>
-                  <th className="px-4 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Doc ID</th>
-                  <th className="w-1/4 px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Document Name</th>
-                  <th className="px-4 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Type</th>
-                  <th className="px-4 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Classification</th>
-                  <th className="px-4 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Department</th>
-                  <th className="px-4 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Ref. No.</th>
-                  <th className="px-4 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Upload Date</th>
-                  <th className="w-16 px-4 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 text-center">Ver.</th>
-                  <th className="px-4 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Revised</th>
-                  <th className="px-4 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Next Rev.</th>
-                  <th className="w-40 px-4 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 text-right pr-12">Actions</th>
+                  <th className="w-16 px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">S.No</th>
+                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Doc ID</th>
+                  <th className="w-1/4 px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Document Name</th>
+                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Type</th>
+                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Classification</th>
+                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Department</th>
+                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Ref. No.</th>
+                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Upload Date</th>
+                  <th className="w-16 px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 text-center">Ver.</th>
+                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Revised</th>
+                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Next Rev.</th>
+                  <th className="w-40 px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 text-right pr-12">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {currentRecords.map((doc, idx) => (
                   <tr key={doc._id} className="hover:bg-slate-50/50 transition-colors group">
-                    <td className="px-4 py-4 text-sm text-slate-500 font-medium text-center">{(currentPage - 1) * recordsPerPage + idx + 1}</td>
-                    <td className="px-4 py-4 text-xs font-bold font-mono text-[#b59662]">{doc.documentId}</td>
-                    <td className="px-6 py-6">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-sm font-bold text-slate-900 group-hover:text-[#b59662] transition-colors leading-snug">{doc.name}</span>
-                      </div>
+                    <td className="px-4 py-4 text-xs text-slate-600 font-medium text-center">{(currentPage - 1) * recordsPerPage + idx + 1}</td>
+                    <td className="px-4 py-4 text-xs text-slate-600 font-medium">{doc.documentId}</td>
+                    <td className="px-6 py-4">
+                      <span className="text-xs font-medium text-slate-600 group-hover:text-[#2dd4bf] transition-colors">{doc.name}</span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="inline-flex px-3 py-1 rounded-lg bg-blue-50 text-blue-600 text-[11px] font-bold uppercase">
+                      <span className={`inline-flex px-3 py-1 rounded-lg text-[11px] font-bold uppercase border ${getTypeColor(doc.type)}`}>
                         {doc.type}
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className={`text-[10px] px-2 py-1 border rounded-md font-bold uppercase tracking-wider ${getClassificationColor(doc.classification)}`}>
+                      <span className={`inline-flex px-2 py-1 border rounded-md text-[11px] font-bold uppercase tracking-wider ${getClassificationColor(doc.classification)}`}>
                         {doc.classification}
                       </span>
                     </td>
+                    <td className="px-4 py-4 text-xs font-medium text-slate-600">{doc.department}</td>
+                    <td className="px-4 py-4 text-xs font-medium text-slate-600">{doc.ref}</td>
+                    <td className="px-4 py-4 text-xs font-medium text-slate-600">{new Date(doc.uploadDate).toLocaleDateString()}</td>
+                    <td className="px-4 py-4 text-xs font-medium text-slate-600 text-center">{doc.version}</td>
+                    <td className="px-4 py-4 text-xs font-medium text-slate-600">{new Date(doc.revisedDate).toLocaleDateString()}</td>
                     <td className="px-4 py-4">
-                      <span className="text-xs text-slate-500 font-bold uppercase tracking-tighter">{doc.department}</span>
-                    </td>
-                    <td className="px-4 py-4 text-sm text-slate-600 font-medium font-mono">{doc.ref}</td>
-                    <td className="px-4 py-4">
-                      <span className="text-xs font-medium text-slate-600">{new Date(doc.uploadDate).toLocaleDateString()}</span>
-                    </td>
-                    <td className="px-4 py-4 text-sm text-slate-900 font-bold text-center">{doc.version}</td>
-                    <td className="px-4 py-4">
-                       <div className="flex items-center gap-2 text-slate-600">
-                          <Clock className="w-3 h-3" />
-                          <span className="text-xs font-medium">{new Date(doc.revisedDate).toLocaleDateString()}</span>
-                       </div>
-                    </td>
-                    <td className="px-4 py-4">
-                       <span className={`inline-flex px-2 py-1 rounded text-xs font-bold ${
+                       <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${
                          activeTab === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'
                        }`}>
                          {new Date(doc.nextRevDate).toLocaleDateString()}
@@ -367,7 +375,7 @@ const DocumentLibrary = () => {
         {/* Layout Footer placeholder */}
         <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 py-8 border-t border-slate-200 text-slate-400">
            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-[#b59662]" />
+              <ShieldCheck className="w-5 h-5 text-[#2dd4bf]" />
               <span className="text-sm font-semibold tracking-tight text-slate-500">QCare Secure Repository</span>
            </div>
            <span className="text-xs font-medium uppercase tracking-widest">Compliance Management System</span>
@@ -487,7 +495,7 @@ const DocumentLibrary = () => {
                      </div>
                      <div className="bg-slate-50 border border-slate-100 rounded-xl p-3.5">
                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Document Type</p>
-                       <span className="inline-flex px-2 py-1 bg-blue-50 text-blue-600 rounded text-[10px] font-black uppercase tracking-wider">
+                       <span className={`inline-flex px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider border ${getTypeColor(selectedDoc.type)}`}>
                          {selectedDoc.type}
                        </span>
                      </div>
@@ -556,7 +564,7 @@ const DocumentLibrary = () => {
           <div className="bg-white rounded-[2rem] shadow-2xl relative w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300">
             <div className="p-6 border-b border-slate-100 flex items-center justify-between text-slate-900 relative bg-slate-50">
                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-[#b59662]/10 flex items-center justify-center text-[#b59662]">
+                  <div className="w-12 h-12 rounded-xl bg-[#2dd4bf]/10 flex items-center justify-center text-[#2dd4bf]">
                     <Plus className="w-6 h-6" />
                   </div>
                   <div>
@@ -571,7 +579,7 @@ const DocumentLibrary = () => {
             <form onSubmit={handleAddSubmit} className="p-6 space-y-5">
                <div className="space-y-1.5">
                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Document Name</label>
-                 <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="Enter title" className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-slate-800" />
+                 <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="Enter title" className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] transition-all text-xs font-bold text-slate-800" />
                </div>
                <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-1.5 z-40">
@@ -585,11 +593,11 @@ const DocumentLibrary = () => {
                  </div>
                  <div className="space-y-1.5">
                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Department</label>
-                   <input type="text" name="department" value={formData.department} onChange={handleInputChange} required placeholder="e.g. IT" className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-slate-800" />
+                   <input type="text" name="department" value={formData.department} onChange={handleInputChange} required placeholder="e.g. IT" className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] transition-all text-xs font-bold text-slate-800" />
                  </div>
                  <div className="space-y-1.5">
                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Ref No</label>
-                   <input type="text" name="ref" value={formData.ref} onChange={handleInputChange} required placeholder="e.g. CMC-001" className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-slate-800" />
+                   <input type="text" name="ref" value={formData.ref} onChange={handleInputChange} required placeholder="e.g. CMC-001" className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] transition-all text-xs font-bold text-slate-800" />
                  </div>
                  <div className="space-y-1.5 z-30">
                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Classification</label>
@@ -602,12 +610,12 @@ const DocumentLibrary = () => {
                  </div>
                  <div className="space-y-1.5">
                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Revised Date</label>
-                   <input type="date" name="revisedDate" value={formData.revisedDate} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-slate-800" />
+                   <input type="date" name="revisedDate" value={formData.revisedDate} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] transition-all text-xs font-bold text-slate-800" />
                  </div>
                </div>
                <div className="space-y-1.5">
                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Upload File (PDF, CSV, Excel)</label>
-                 <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-slate-200 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 hover:border-[#b59662] transition-colors overflow-hidden relative">
+                 <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-slate-200 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 hover:border-[#2dd4bf] transition-colors overflow-hidden relative">
                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
                      <p className="text-xs font-bold text-slate-600">
                        {selectedFile ? selectedFile.name : (isEditing && currentDoc?.fileUrl ? 'Replace current file' : 'Click to upload PDF, CSV or Excel')}
@@ -617,7 +625,7 @@ const DocumentLibrary = () => {
                    <input type="file" onChange={handleFileChange} accept=".pdf,.csv,.xlsx" className="hidden" />
                  </label>
                </div>
-               <button type="submit" className="w-full py-3.5 bg-gradient-to-r from-[#b59662] to-[#9e8254] text-white text-[10px] font-black rounded-xl shadow-xl shadow-[#b59662]/30 hover:shadow-2xl transition-all active:scale-[0.98] uppercase tracking-[0.15em] mt-2">
+               <button type="submit" className="w-full py-3.5 bg-gradient-to-r from-slate-900 to-slate-800 text-[#2dd4bf] text-[10px] font-black rounded-xl shadow-xl shadow-slate-200 hover:shadow-2xl transition-all active:scale-[0.98] uppercase tracking-[0.15em] mt-2">
                  {isEditing ? 'Save Changes' : 'Submit Document'}
                </button>
             </form>

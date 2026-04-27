@@ -79,11 +79,11 @@ function Login() {
       
       {/* High-Fidelity Medical Background */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(45,212,191,0.06)_0%,_transparent_75%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(59,130,246,0.06)_0%,_transparent_75%)]"></div>
         
         {/* DNA Strands Background (Core biological theme) */}
         <div className="absolute -left-20 top-0 opacity-20 animate-dna">
-          <Dna size={400} strokeWidth={0.5} className="text-teal-900" />
+          <Dna size={400} strokeWidth={0.5} className="text-blue-900/40" />
         </div>
         <div className="absolute -right-20 bottom-0 opacity-20 animate-dna" style={{ animationDirection: 'reverse' }}>
           <Dna size={500} strokeWidth={0.5} className="text-blue-900" />
@@ -91,20 +91,20 @@ function Login() {
 
         {/* QMS Floating Icons (Shields and Checkmarks representing Quality) */}
         <div className="absolute top-[20%] left-[15%] opacity-10 animate-float-qms">
-          <ShieldCheck size={120} strokeWidth={0.5} className="text-teal-400" />
+          <ShieldCheck size={120} strokeWidth={0.5} className="text-blue-400" />
         </div>
         <div className="absolute top-[60%] right-[15%] opacity-10 animate-float-qms" style={{ animationDelay: '2s' }}>
           <FileCheck size={140} strokeWidth={0.5} className="text-blue-400" />
         </div>
         <div className="absolute bottom-[20%] left-[25%] opacity-10 animate-float-qms" style={{ animationDelay: '4s' }}>
-          <BarChart3 size={100} strokeWidth={0.5} className="text-teal-500" />
+          <BarChart3 size={100} strokeWidth={0.5} className="text-blue-500" />
         </div>
 
         {/* Floating Cellular Particles */}
         {[...Array(6)].map((_, i) => (
           <div 
             key={i}
-            className="absolute rounded-full border border-teal-500/20 bg-teal-500/5 blur-[2px] animate-pulse"
+            className="absolute rounded-full border border-blue-500/20 bg-blue-500/5 blur-[2px] animate-pulse"
             style={{
               width: Math.random() * 40 + 20 + 'px',
               height: Math.random() * 40 + 20 + 'px',
@@ -118,7 +118,7 @@ function Login() {
       </div>
 
       {/* Main Login Portal Container */}
-      <div className={`relative z-10 w-full max-w-[800px] mx-auto px-6 py-8 transition-all duration-[1500ms] ease-out transform ${mounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-20 scale-95'}`}>
+      <div className={`relative z-10 w-full max-w-[900px] mx-auto px-4 sm:px-6 py-6 sm:py-12 transition-all duration-[1500ms] ease-out transform ${mounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-20 scale-95'}`}>
         
         <div className="grid lg:grid-cols-2 glass-panel rounded-[3rem] overflow-hidden relative border-white/10">
           
@@ -126,20 +126,20 @@ function Login() {
 
 
           {/* Left Side: Medical Hero Section */}
-          <div className="p-7 lg:p-10 flex flex-col justify-between relative overflow-hidden bg-gradient-to-br from-slate-900/60 to-transparent">
+          <div className="hidden md:flex p-10 flex-col justify-between relative overflow-hidden bg-gradient-to-br from-slate-900/60 to-transparent">
             
             {/* Top Branding */}
             <div className="relative z-10">
                <div className="flex items-center gap-5 mb-8 group">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-teal-400 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                    <div className="absolute inset-0 bg-blue-400 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
                     <div className="w-24 h-24 bg-white/5 backdrop-blur-3xl rounded-3xl p-2 border border-white/10 shadow-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-105 overflow-hidden">
                       <img src="/logo.svg" alt="QCare" className="w-full h-full object-contain scale-125" />
                     </div>
                   </div>
                   <div>
-                    <h1 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">QCare<span className="text-teal-400">.</span></h1>
-                    <p className="text-[9px] text-teal-400 font-black tracking-[0.4em] uppercase mt-2">QMS Enterprise Portal</p>
+                    <h1 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">QCare<span className="text-blue-400">.</span></h1>
+                    <p className="text-[9px] text-blue-400 font-black tracking-[0.4em] uppercase mt-2">QMS Enterprise Portal</p>
                   </div>
                </div>
 
@@ -175,7 +175,7 @@ function Login() {
             <div className="w-full max-w-sm">
               <div className="mb-8 text-center lg:text-left">
                  <div className="inline-block lg:hidden mb-6">
-                   <ShieldCheck size={40} className="text-teal-400 mx-auto" />
+                   <ShieldCheck size={40} className="text-blue-400 mx-auto" />
                  </div>
                  <h3 className="text-3xl font-black text-white tracking-tight mb-3">Gateway Access</h3>
                  <p className="text-slate-400 text-sm font-medium">Authentication required for Quality Control modules.</p>
@@ -289,14 +289,14 @@ function Login() {
              </span>
           </div>
 
-          <div className="flex items-center gap-8">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 px-6 text-center">
              <span className="hover:text-teal-400 cursor-pointer transition-colors">Privacy & Data Governance</span>
-             <span className="w-1 h-1 rounded-full bg-slate-800"></span>
+             <span className="w-1 h-1 rounded-full bg-slate-800 hidden md:block"></span>
              <span className="hover:text-teal-400 cursor-pointer transition-colors">Compliance IT</span>
-             <span className="w-1 h-1 rounded-full bg-slate-800"></span>
+             <span className="w-1 h-1 rounded-full bg-slate-800 hidden md:block"></span>
              <span className="hover:text-teal-400 cursor-pointer transition-colors">Audit Status</span>
           </div>
-          <p className="opacity-40">&copy; {new Date().getFullYear()} CMC Holding • Quality Management & Compliance System</p>
+          <p className="opacity-40 text-center px-4 leading-relaxed">&copy; {new Date().getFullYear()} CMC Holding • Quality Management & Compliance System</p>
         </div>
       </div>
     </div>

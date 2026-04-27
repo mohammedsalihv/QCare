@@ -36,7 +36,7 @@ const Dropdown = ({ trigger, options, onSelect, value, className = "", fullWidth
     <div className={`relative ${fullWidth ? 'w-full' : 'inline-block'} ${className}`} ref={dropdownRef}>
       <div onClick={() => setIsOpen(!isOpen)} className="cursor-pointer h-full">
         {trigger ? trigger : (
-          <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 hover:bg-white hover:border-[#b59662] transition-all">
+          <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 hover:bg-white hover:border-[#2dd4bf] transition-all">
             <span className={!selectedOption ? 'text-slate-400' : ''}>
               {selectedOption ? selectedOption.label : 'Select Option'}
             </span>
@@ -60,8 +60,8 @@ const Dropdown = ({ trigger, options, onSelect, value, className = "", fullWidth
                 }}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold transition-colors truncate ${
                   (option.value || option.label) === value 
-                  ? 'bg-[#b59662] text-white' 
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-[#b59662]'
+                  ? 'bg-[#2dd4bf] text-slate-950' 
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-[#2dd4bf]'
                 }`}
               >
                 {option.icon && <option.icon className="w-3.5 h-3.5" />}

@@ -21,7 +21,8 @@ import {
   FileText,
   FileCheck,
   AlertCircle,
-  MoreVertical
+  MoreVertical,
+  ArrowUpRight
 } from 'lucide-react';
 
 const AuditManagement = () => {
@@ -209,10 +210,13 @@ const AuditManagement = () => {
           
           <button 
             onClick={handleAddClick}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#2dd4bf] hover:brightness-110 text-slate-950 rounded-xl text-xs font-black transition-all shadow-lg shadow-[#2dd4bf]/30 active:scale-95 uppercase tracking-wide"
+            className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest"
           >
-             <Plus className="w-4 h-4" />
-             <span>Schedule New Audit</span>
+             <div className="flex items-center gap-3">
+                <Plus className="w-5 h-5" />
+                <span>Schedule New Audit</span>
+             </div>
+             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </button>
         </div>
 
@@ -283,12 +287,12 @@ const AuditManagement = () => {
             <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
                 <tr className="bg-slate-50/50">
-                  <th className="w-1/4 px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100">Audit Scope & Title</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100">Unit / Dept</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100">Assigned Auditor</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100">Scheduled Date</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100">Status</th>
-                  <th className="w-36 px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 text-right pr-12">Actions</th>
+                  <th className="w-1/4 px-8 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Audit Scope & Title</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Unit / Dept</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Assigned Auditor</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Scheduled Date</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Status</th>
+                  <th className="w-36 px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 text-right pr-12">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">

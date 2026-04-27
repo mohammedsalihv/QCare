@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { getAuthConfig } from '../utils/authConfig';
 import { useNotification } from './NotificationContext';
+import SystemManagementDrawer from './SystemManagementDrawer';
 
 const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
   } = useNotification();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isManagementDrawerOpen, setIsManagementDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -79,7 +81,6 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
 
   const profileOptions = [
     { label: 'My Profile', icon: User, value: 'profile' },
-    ...(user.role === 'superadmin' || user.role === 'admin' ? [{ label: 'System Settings', icon: Settings, value: 'settings' }] : []),
     { label: 'Notifications', icon: Bell, value: 'notifications' },
     { label: 'Logout', icon: LogOut, value: 'logout', variant: 'danger' }
   ];
@@ -91,10 +92,10 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
       navigate('/notifications');
     } else if (val === 'profile') {
       openProfileDrawer();
-    } else if (val === 'settings') {
-      navigate('/dashboard/settings');
     }
   };
+
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   const confirmLogout = () => {
     localStorage.removeItem('userInfo');
@@ -104,11 +105,11 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
 
   return (
     <>
-      <header className="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-40 shadow-sm">
+      <header className="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-40 shadow-sm">
         <div className="flex items-center gap-6">
           <button 
             onClick={toggleSidebar}
-            className="p-3 rounded-2xl bg-slate-50 text-slate-400 hover:text-[#b59662] hover:bg-slate-100 transition-all active:scale-95 border border-slate-100 shadow-sm group"
+            className="p-3 rounded-2xl bg-slate-50 text-slate-400 hover:text-[#2dd4bf] hover:bg-slate-100 transition-all active:scale-95 border border-slate-100 shadow-sm group"
             title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
           >
             {isSidebarOpen ? (
@@ -119,33 +120,53 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
           </button>
         </div>
 
-        <div className="flex-1 max-w-2xl mx-12 hidden lg:block">
+        <div className="flex-1 max-w-2xl mx-4 lg:mx-12 hidden lg:block">
           <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400 group-focus-within:text-[#b59662] transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400 group-focus-within:text-[#2dd4bf] transition-colors" />
             <input 
               type="text" 
               placeholder="Search medical records, audits, or clinical data..." 
-              className="w-full pl-12 pr-6 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] focus:ring-8 focus:ring-[#b59662]/10 transition-all text-sm font-medium text-slate-800 placeholder:text-slate-400"
+              className="w-full pl-12 pr-6 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#2dd4bf] focus:ring-8 focus:ring-[#2dd4bf]/10 transition-all text-sm font-medium text-slate-800 placeholder:text-slate-400"
             />
           </div>
         </div>
 
+        {/* Mobile Search Toggle */}
+        <div className="lg:hidden flex-1 flex justify-center">
+           <button 
+             onClick={() => setShowMobileSearch(!showMobileSearch)}
+             className="p-3 text-slate-400 hover:text-[#2dd4bf] transition-all"
+           >
+             <Search className="w-5 h-5" />
+           </button>
+        </div>
+
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 pr-4 border-r border-slate-100 hidden md:flex">
+          <div className="flex items-center gap-2 pr-2 sm:pr-4 border-r border-slate-100">
              <button 
                onClick={() => navigate('/dashboard/manuals')}
-               className="p-3 text-slate-400 hover:text-[#b59662] hover:bg-[#b59662]/10 rounded-2xl transition-all duration-500 active:scale-95"
+               className="p-3 text-slate-400 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/10 rounded-2xl transition-all duration-500 active:scale-95 hidden sm:block"
                title="Documentation"
              >
                <BookOpen className="w-5 h-5" />
              </button>
              <button 
                onClick={() => navigate('/dashboard/support')}
-               className="p-3 text-slate-400 hover:text-[#b59662] hover:bg-[#b59662]/10 rounded-2xl transition-all duration-500 active:scale-95"
+               className="p-3 text-slate-400 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/10 rounded-2xl transition-all duration-500 active:scale-95 hidden sm:block"
                title="Help Desk"
              >
                <HelpCircle className="w-5 h-5" />
              </button>
+              {(user.role === 'superadmin' || user.role === 'admin') && (
+                <button 
+                  onClick={() => setIsManagementDrawerOpen(true)}
+                  className="px-3 sm:px-4 py-2 bg-slate-900 text-[#2dd4bf] hover:bg-slate-800 rounded-2xl transition-all duration-300 active:scale-95 flex items-center gap-2 shadow-lg shadow-slate-200 border border-slate-800 group"
+                  title="System Management"
+                >
+                  <Shield className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  <span className="text-[10px] font-black uppercase tracking-widest hidden sm:block">Admin Control</span>
+                </button>
+              )}
           </div>
 
           <div className="relative">
@@ -163,13 +184,13 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
 
             {/* Notification Panel */}
             {showNotifications && (
-              <div className="absolute right-0 mt-4 w-96 bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+              <div className="absolute right-[-60px] sm:right-0 mt-4 w-[320px] sm:w-96 bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-300">
                 <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
                    <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.25em]">Notifications</h4>
                    {notifications.length > 0 && (
                      <button 
                       onClick={clearAll}
-                      className="text-[9px] font-black text-[#b59662] uppercase tracking-widest hover:underline"
+                      className="text-[9px] font-black text-[#2dd4bf] uppercase tracking-widest hover:underline"
                      >
                        Clear All
                      </button>
@@ -194,12 +215,12 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
                                  n.type === 'document_like' ? <ThumbsUp className="w-5 h-5" /> : <Shield className="w-5 h-5" />}
                              </div>
                              <div className="flex flex-col gap-1.5 relative w-full">
-                                {!n.isRead && <div className="absolute -left-14 top-1/2 -translate-y-1/2 w-2 h-2 bg-[#b59662] rounded-full shadow-[0_0_8px_rgba(181,150,98,0.3)]"></div>}
+                                {!n.isRead && <div className="absolute -left-14 top-1/2 -translate-y-1/2 w-2 h-2 bg-[#2dd4bf] rounded-full shadow-[0_0_8px_rgba(45,212,191,0.3)]"></div>}
                                 <p className="text-[11px] font-bold text-slate-900 leading-relaxed pr-4">{n.message}</p>
                                 <div className="flex items-center gap-3">
                                    <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest">{n.user}</span>
                                    <span className="w-1 h-1 rounded-full bg-slate-200"></span>
-                                   <span className="text-[9px] text-[#b59662] font-black uppercase tracking-widest">
+                                   <span className="text-[9px] text-[#3b82f6] font-black uppercase tracking-widest">
                                      {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                    </span>
                                 </div>
@@ -235,16 +256,20 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
               <button 
                 className="flex items-center gap-4 p-1.5 rounded-2xl hover:bg-slate-50 transition-all group"
               >
-                <div className="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 overflow-hidden shadow-sm">
-                   <img 
-                     src={`https://ui-avatars.com/api/?name=${user.name}&background=b59662&color=fff&bold=true`} 
-                     alt={user.name} 
-                     className="w-full h-full object-cover"
-                   />
+                <div className="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 overflow-hidden shadow-sm relative">
+                   {user.photo ? (
+                     <img 
+                       src={`http://localhost:5000${user.photo}`} 
+                       alt={user.name} 
+                       className="w-full h-full object-cover"
+                     />
+                   ) : (
+                     <User className="w-5 h-5 text-slate-400" />
+                   )}
                 </div>
                 <div className="hidden sm:flex flex-col items-start">
                   <span className="text-sm font-black text-slate-900 leading-tight tracking-tight">{user.name}</span>
-                  <span className="text-[10px] text-[#b59662] font-black uppercase tracking-[0.15em] opacity-80">{user.designation || user.role}</span>
+                  <span className="text-[10px] text-[#2dd4bf] font-black uppercase tracking-[0.15em] opacity-80">{user.designation || user.role}</span>
                 </div>
                 <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors" />
               </button>
@@ -252,6 +277,21 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
           />
         </div>
       </header>
+
+      {/* Mobile Search Overlay */}
+      {showMobileSearch && (
+        <div className="lg:hidden fixed inset-x-0 top-20 p-4 bg-white border-b border-slate-100 z-50 animate-in slide-in-from-top duration-300">
+           <div className="relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
+            <input 
+              type="text" 
+              autoFocus
+              placeholder="Search..." 
+              className="w-full pl-12 pr-6 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#2dd4bf] transition-all text-sm font-medium"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Logout Confirmation Modal */}
       {showLogoutConfirm && (
@@ -291,6 +331,12 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
           </div>
         </div>
       )}
+
+      {/* System Management Drawer */}
+      <SystemManagementDrawer 
+        isOpen={isManagementDrawerOpen} 
+        onClose={() => setIsManagementDrawerOpen(false)} 
+      />
     </>
   );
 };

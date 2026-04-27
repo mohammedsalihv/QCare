@@ -27,7 +27,8 @@ import {
   ChevronsUpDown,
   CheckCircle2,
   Ban,
-  UserX
+  UserX,
+  ArrowUpRight
 } from 'lucide-react';
 
 const UserManagement = () => {
@@ -278,8 +279,8 @@ const UserManagement = () => {
   const SortIcon = ({ field }) => {
     if (sortField !== field) return <ChevronsUpDown className="w-3 h-3 opacity-30 inline ml-1" />;
     return sortDir === 'asc'
-      ? <ChevronUp className="w-3 h-3 inline ml-1 text-[#b59662]" />
-      : <ChevronDown className="w-3 h-3 inline ml-1 text-[#b59662]" />;
+      ? <ChevronUp className="w-3 h-3 inline ml-1 text-[#2dd4bf]" />
+      : <ChevronDown className="w-3 h-3 inline ml-1 text-[#2dd4bf]" />;
   };
 
   const indexOfLastRecord = currentPage * recordsPerPage;
@@ -305,19 +306,22 @@ const UserManagement = () => {
             <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#b59662]">Administration</span>
+              <span className="text-[#2dd4bf]">Administration</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#b59662]">User Management</span>
+              <span className="text-[#2dd4bf]">User Management</span>
             </div>
             <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">User Management</h1>
           </div>
           
           <button 
             onClick={handleAddClick}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#b59662] hover:bg-[#a68959] text-white rounded-xl text-xs font-black transition-all shadow-lg shadow-[#b59662]/30 active:scale-95 uppercase tracking-wide"
+            className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest"
           >
-             <UserPlus className="w-4 h-4" />
-             <span>Add New Professional</span>
+             <div className="flex items-center gap-3">
+                <UserPlus className="w-5 h-5" />
+                <span>Add New Professional</span>
+             </div>
+             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </button>
         </div>
 
@@ -333,7 +337,7 @@ const UserManagement = () => {
                   value={searchQuery}
                   onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                   placeholder="Search name, ID, email..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#b59662] focus:ring-4 focus:ring-[#b59662]/5 transition-all text-xs font-semibold"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-semibold"
                 />
               </div>
               {/* Dept filter */}
@@ -374,25 +378,25 @@ const UserManagement = () => {
               <thead>
                 <tr className="bg-slate-50/50">
                   <th
-                    className="w-1/4 px-7 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 cursor-pointer select-none hover:text-[#b59662] transition-colors"
+                    className="w-1/4 px-7 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 cursor-pointer select-none hover:text-[#2dd4bf] transition-colors"
                     onClick={() => handleSort('employeeName')}
                   >
                     Full Name <SortIcon field="employeeName" />
                   </th>
                   <th
-                    className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 cursor-pointer select-none hover:text-[#b59662] transition-colors"
+                    className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 cursor-pointer select-none hover:text-[#2dd4bf] transition-colors"
                     onClick={() => handleSort('employeeId')}
                   >
                     Employee ID <SortIcon field="employeeId" />
                   </th>
                   <th
-                    className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 cursor-pointer select-none hover:text-[#b59662] transition-colors"
+                    className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 cursor-pointer select-none hover:text-[#2dd4bf] transition-colors"
                     onClick={() => handleSort('role')}
                   >
                     Role <SortIcon field="role" />
                   </th>
                   <th
-                    className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 cursor-pointer select-none hover:text-[#b59662] transition-colors"
+                    className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 cursor-pointer select-none hover:text-[#2dd4bf] transition-colors"
                     onClick={() => handleSort('department')}
                   >
                     Department <SortIcon field="department" />
@@ -413,14 +417,18 @@ const UserManagement = () => {
                   <tr key={user._id} className={`hover:bg-slate-50/20 transition-colors group ${sm.value !== 'active' ? 'opacity-70' : ''}`}>
                     <td className="px-7 py-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-black text-[10px] ${sm.value === 'active' ? 'bg-slate-100 text-slate-400' : `${sm.bg} ${sm.color}`}`}>
-                          {user.employeeName.charAt(0)}
-                        </div>
+                         <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-black text-[10px] overflow-hidden ${sm.value === 'active' ? 'bg-slate-100 text-slate-400' : `${sm.bg} ${sm.color}`}`}>
+                           {user.photo ? (
+                             <img src={`http://localhost:5000${user.photo}`} alt="" className="w-full h-full object-cover" />
+                           ) : (
+                             <User className="w-4 h-4" />
+                           )}
+                         </div>
                         <div className="flex flex-col">
                           <div className="flex items-center gap-1.5">
                             <span className="text-xs font-bold text-slate-900 leading-snug">{user.employeeName}</span>
                             {isOwnRow && (
-                              <span className="inline-flex px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest bg-[#b59662]/10 text-[#b59662] border border-[#b59662]/20">You</span>
+                              <span className="inline-flex px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest bg-[#2dd4bf]/10 text-[#2dd4bf] border border-[#2dd4bf]/20">You</span>
                             )}
                             {user.authSource && user.authSource !== 'local' && (
                               <span className="inline-flex px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-600 border border-indigo-100" title="Synchronized from Active Directory">
@@ -541,10 +549,10 @@ const UserManagement = () => {
             <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
             <div className="bg-white rounded-[2.5rem] shadow-2xl relative w-full max-w-4xl overflow-hidden animate-in zoom-in-95 duration-300">
               <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white relative">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#b59662] to-transparent opacity-20"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2dd4bf] to-transparent opacity-20"></div>
                 <div className="flex items-center gap-4">
-                   <div className="w-14 h-14 rounded-2xl bg-[#b59662]/5 flex items-center justify-center border border-[#b59662]/10 shadow-inner">
-                      <UserPlus className="w-7 h-7 text-[#b59662]" />
+                   <div className="w-14 h-14 rounded-2xl bg-[#2dd4bf]/5 flex items-center justify-center border border-[#2dd4bf]/10 shadow-inner">
+                      <UserPlus className="w-7 h-7 text-[#2dd4bf]" />
                    </div>
                    <div>
                       <h3 className="text-xl font-black text-slate-900 tracking-tight">
@@ -567,25 +575,25 @@ const UserManagement = () => {
                         Identity Credentials
                      </h4>
                      <div className="grid grid-cols-3 gap-6">
-                        <div className="space-y-1.5 focus-within:text-[#b59662] transition-colors">
+                        <div className="space-y-1.5 focus-within:text-[#2dd4bf] transition-colors">
                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Full Name <span className="text-rose-500">*</span></label>
                            <div className="relative group">
-                              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#b59662] transition-colors" />
-                              <input name="employeeName" value={formData.employeeName} onChange={handleInputChange} required placeholder="Dr. Jameel Ahmed" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] focus:ring-4 focus:ring-[#b59662]/5 transition-all text-xs font-bold text-slate-800 shadow-inner-sm" />
+                              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#2dd4bf] transition-colors" />
+                              <input name="employeeName" value={formData.employeeName} onChange={handleInputChange} required placeholder="Dr. Jameel Ahmed" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-bold text-slate-800 shadow-inner-sm" />
                            </div>
                         </div>
-                        <div className="space-y-1.5 focus-within:text-[#b59662] transition-colors">
+                        <div className="space-y-1.5 focus-within:text-[#2dd4bf] transition-colors">
                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Employee ID <span className="text-rose-500">*</span></label>
                            <div className="relative group">
-                              <IdCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#b59662] transition-colors" />
-                              <input name="employeeId" value={formData.employeeId} onChange={handleInputChange} required placeholder="EMP2024XX" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] focus:ring-4 focus:ring-[#b59662]/5 transition-all text-xs font-black font-mono text-slate-800 shadow-inner-sm disabled:opacity-50" disabled={isEditing} />
+                              <IdCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#2dd4bf] transition-colors" />
+                              <input name="employeeId" value={formData.employeeId} onChange={handleInputChange} required placeholder="EMP2024XX" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-black font-mono text-slate-800 shadow-inner-sm disabled:opacity-50" disabled={isEditing} />
                            </div>
                         </div>
-                        <div className="space-y-1.5 focus-within:text-[#b59662] transition-colors">
+                        <div className="space-y-1.5 focus-within:text-[#2dd4bf] transition-colors">
                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Designation <span className="text-rose-500">*</span></label>
                            <div className="relative group">
-                              <BadgeCheck className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#b59662] transition-colors" />
-                              <input name="designation" value={formData.designation} onChange={handleInputChange} required placeholder="Chief Physician" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] focus:ring-4 focus:ring-[#b59662]/5 transition-all text-xs font-bold text-slate-800 shadow-inner-sm" />
+                              <BadgeCheck className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#2dd4bf] transition-colors" />
+                              <input name="designation" value={formData.designation} onChange={handleInputChange} required placeholder="Chief Physician" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-bold text-slate-800 shadow-inner-sm" />
                            </div>
                         </div>
                      </div>
@@ -599,18 +607,18 @@ const UserManagement = () => {
                            Security
                         </h4>
                         <div className="space-y-4">
-                           <div className="space-y-1.5 focus-within:text-[#b59662] transition-colors">
+                           <div className="space-y-1.5 focus-within:text-[#2dd4bf] transition-colors">
                               <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Email <span className="text-rose-500">*</span></label>
                               <div className="relative group">
-                                 <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#b59662] transition-colors" />
-                                 <input name="email" value={formData.email} onChange={handleInputChange} required type="email" placeholder="email@cmcholding.local" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] focus:ring-4 focus:ring-[#b59662]/5 transition-all text-xs font-bold text-slate-800 shadow-inner-sm" />
+                                 <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#2dd4bf] transition-colors" />
+                                 <input name="email" value={formData.email} onChange={handleInputChange} required type="email" placeholder="email@cmcholding.local" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-bold text-slate-800 shadow-inner-sm" />
                               </div>
                            </div>
-                           <div className="space-y-1.5 focus-within:text-[#b59662] transition-colors">
+                           <div className="space-y-1.5 focus-within:text-[#2dd4bf] transition-colors">
                               <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Password {!isEditing && <span className="text-rose-500">*</span>}</label>
                               <div className="relative group">
-                                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#b59662] transition-colors" />
-                                 <input name="password" value={formData.password} onChange={handleInputChange} required={!isEditing} type="password" placeholder={isEditing ? '••••••••' : '••••••••'} className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] focus:ring-4 focus:ring-[#b59662]/5 transition-all text-xs font-bold text-slate-800 shadow-inner-sm" />
+                                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#2dd4bf] transition-colors" />
+                                 <input name="password" value={formData.password} onChange={handleInputChange} required={!isEditing} type="password" placeholder={isEditing ? '••••••••' : '••••••••'} className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-bold text-slate-800 shadow-inner-sm" />
                               </div>
                            </div>
                         </div>
@@ -650,7 +658,7 @@ const UserManagement = () => {
                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-slate-400 hover:bg-slate-50 hover:text-slate-600 rounded-xl transition-all border border-slate-200 uppercase tracking-[0.15em] active:scale-95">
                      Cancel
                    </button>
-                   <button type="submit" className="flex-[2] py-3 bg-gradient-to-r from-[#b59662] to-[#9e8254] text-white text-[10px] font-black rounded-xl shadow-xl shadow-[#b59662]/30 hover:shadow-2xl hover:from-[#a68959] hover:to-[#8f754b] transition-all active:scale-[0.98] uppercase tracking-[0.15em]">
+                   <button type="submit" className="flex-[2] py-3 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] text-slate-950 text-[10px] font-black rounded-xl shadow-xl shadow-[#2dd4bf]/30 hover:brightness-110 transition-all active:scale-[0.98] uppercase tracking-[0.15em]">
                      {isEditing ? 'Confirm Changes' : 'Initialize User'}
                    </button>
                 </div>
@@ -660,7 +668,7 @@ const UserManagement = () => {
         )}
 
         <div className="mt-8 flex flex-col md:flex-row items-center justify-center py-6 border-t border-slate-200 text-slate-400">
-           <ShieldCheck className="w-4 h-4 text-[#b59662]/50" />
+           <ShieldCheck className="w-4 h-4 text-[#2dd4bf]/50" />
         </div>
       </div>
     </DashboardLayout>

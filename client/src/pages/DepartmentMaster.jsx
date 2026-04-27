@@ -17,7 +17,8 @@ import {
   MapPin,
   X,
   Code2,
-  User as UserIcon
+  User as UserIcon,
+  ArrowUpRight
 } from 'lucide-react';
 
 const DepartmentMaster = () => {
@@ -177,10 +178,13 @@ const DepartmentMaster = () => {
           
           <button 
             onClick={handleAddClick}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#b59662] hover:bg-[#a68959] text-white rounded-xl text-xs font-black transition-all shadow-lg shadow-[#b59662]/30 active:scale-95 uppercase tracking-wide"
+            className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest"
           >
-             <Plus className="w-4 h-4" />
-             <span>Add New Department</span>
+             <div className="flex items-center gap-3">
+                <Plus className="w-5 h-5" />
+                <span>Add New Department</span>
+             </div>
+             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </button>
         </div>
 
@@ -200,12 +204,12 @@ const DepartmentMaster = () => {
             <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
                 <tr className="bg-slate-50/50">
-                  <th className="w-1/4 px-7 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100">Department Name</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100">Dept Code</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100">Head of Department</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100">Staff Count</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100">Location</th>
-                  <th className="w-36 px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 text-right pr-10">Actions</th>
+                  <th className="w-1/4 px-7 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Department Name</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Dept Code</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Head of Department</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Staff Count</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Location</th>
+                  <th className="w-36 px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 text-right pr-10">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">

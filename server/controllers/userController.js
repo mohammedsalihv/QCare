@@ -281,6 +281,50 @@ const toggleUserStatus = async (req, res) => {
   }
 };
 
+// @desc    Update own profile
+// @route   PUT /api/users/profile
+// @access  Private
+const updateUserProfile = async (req, res) => {
+  console.log("Update Profile Request received for user:", req.user?._id);
+  console.log("File info:", req.file);
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      user.employeeName = req.body.employeeName || user.employeeName;
+      user.email = req.body.email || user.email;
+      
+      if (req.file) {
+        user.photo = `/uploads/profiles/${req.file.filename}`;
+      }
+
+      if (req.body.password) {
+        user.password = req.body.password;
+      }
+
+      const updatedUser = await user.save();
+
+      res.json({
+        _id: updatedUser._id,
+        employeeId: updatedUser.employeeId,
+        employeeName: updatedUser.employeeName,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        department: updatedUser.department,
+        designation: updatedUser.designation,
+        photo: updatedUser.photo,
+        status: updatedUser.status,
+        lastLogin: updatedUser.lastLogin,
+        token: req.headers.authorization.split(' ')[1] // Send back the same token
+      });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Delete user
 // @route   DELETE /api/users/:id
 // @access  Private/SuperAdmin
@@ -305,5 +349,6 @@ module.exports = {
   createUser,
   updateUser,
   toggleUserStatus,
+  updateUserProfile,
   deleteUser,
 };

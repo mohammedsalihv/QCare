@@ -6,18 +6,16 @@ import {
   BookOpen, 
   ChevronRight,
   LayoutDashboard,
-  Users,
-  Building2,
   ShieldCheck,
-  Settings,
   HelpCircle,
   Bell,
   FileCheck,
-  MessageSquare
+  MessageSquare,
+  X
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
+const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [userRole, setUserRole] = useState(null);
@@ -48,21 +46,25 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         { id: 'feedback', label: 'Patient Feedback', icon: MessageSquare, path: '/dashboard/feedback' },
         { id: 'kpi', label: 'KPI Analytics', icon: BarChart3, path: '/dashboard/kpi' },
       ]
-    },
-    {
-      title: 'System Management',
-      roles: ['superadmin', 'admin'],
-      items: [
-        { id: 'users', label: 'User Directory', icon: Users, path: '/dashboard/users' },
-        { id: 'departments', label: 'Departments', icon: Building2, path: '/dashboard/departments' },
-        { id: 'settings', label: 'System Settings', icon: Settings, path: '/dashboard/settings' },
-      ]
     }
   ];
 
   return (
-    <aside className={`fixed top-0 left-0 h-full bg-gradient-to-b from-[#020617] via-[#020617] to-[#0f172a] text-white transition-all duration-300 z-50 ${isOpen ? 'w-72' : 'w-20'} border-r border-white/5`}>
-      <div className="flex flex-col h-full">
+    <aside className={`fixed top-0 left-0 h-full bg-gradient-to-b from-[#020617] via-[#020617] to-[#0f172a] text-white transition-all duration-300 z-50 border-r border-white/5 ${
+      isMobile 
+        ? (isOpen ? 'w-72 translate-x-0' : 'w-72 -translate-x-full') 
+        : (isOpen ? 'w-72' : 'w-20')
+    }`}>
+      <div className="flex flex-col h-full relative">
+        {/* Mobile Close Button */}
+        {isMobile && isOpen && (
+          <button 
+            onClick={toggleSidebar}
+            className="absolute top-6 right-[-50px] w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center border border-white/10 shadow-xl"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
         {/* Logo Section */}
         <div className={`py-8 flex items-center transition-all duration-300 ${isOpen ? 'px-6 gap-4' : 'justify-center'}`}>
           <div className={`shrink-0 overflow-hidden transition-all duration-300 ${isOpen ? 'w-[56px] h-[56px]' : 'w-11 h-11'}`}>
@@ -95,21 +97,24 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                      const Icon = item.icon;
 
                      return (
-                       <button
-                         key={item.id}
-                         onClick={() => navigate(item.path)}
-                         className={`w-full flex items-center justify-between p-3.5 rounded-2xl transition-all duration-300 group relative overflow-hidden ${
-                           isActive 
-                           ? 'bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] text-slate-950 shadow-lg shadow-[#2dd4bf]/20 font-black' 
-                           : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                         }`}
-                       >
-                         <div className="flex items-center gap-4 relative z-10">
-                           <Icon className={`w-5 h-5 ${isActive ? 'text-slate-950' : 'group-hover:text-[#2dd4bf]'} transition-colors`} />
-                           {isOpen && <span className="text-[11px] whitespace-nowrap uppercase tracking-wider">{item.label}</span>}
-                         </div>
-                         {isOpen && isActive && <ChevronRight className="w-4 h-4 relative z-10" />}
-                       </button>
+                        <button
+                          key={item.id}
+                          onClick={() => {
+                            navigate(item.path);
+                            if (isMobile) toggleSidebar();
+                          }}
+                          className={`w-full flex items-center justify-between p-3.5 rounded-2xl transition-all duration-300 group relative overflow-hidden ${
+                            isActive 
+                            ? 'bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] text-slate-950 shadow-lg shadow-[#2dd4bf]/20 font-black' 
+                            : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                          }`}
+                        >
+                          <div className="flex items-center gap-4 relative z-10">
+                            <Icon className={`w-5 h-5 ${isActive ? 'text-slate-950' : 'group-hover:text-[#2dd4bf]'} transition-colors`} />
+                            {(isOpen || isMobile) && <span className="text-[11px] whitespace-nowrap uppercase tracking-wider">{item.label}</span>}
+                          </div>
+                          {(isOpen || isMobile) && isActive && <ChevronRight className="w-4 h-4 relative z-10" />}
+                        </button>
                      );
                    })}
                  </div>

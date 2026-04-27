@@ -6,9 +6,22 @@ import { io } from 'socket.io-client';
 import { useNotification } from './NotificationContext';
 
 const DashboardLayout = ({ children }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState(false);
   const { showNotification, setFeedNotifications: setNotifications } = useNotification();
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (mobile) setIsSidebarOpen(false);
+      else setIsSidebarOpen(true);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -126,11 +139,23 @@ const DashboardLayout = ({ children }) => {
         <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:40px_40px] opacity-[0.2]"></div>
       </div>
 
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        toggleSidebar={toggleSidebar} 
+        isMobile={isMobile}
+      />
+      
+      {/* Mobile Sidebar Overlay */}
+      {isMobile && isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[45] animate-in fade-in duration-300"
+          onClick={toggleSidebar}
+        ></div>
+      )}
       
       <div 
         className={`relative z-10 transition-all duration-300 ${
-          isSidebarOpen ? 'ml-72' : 'ml-20'
+          isMobile ? 'ml-0' : (isSidebarOpen ? 'ml-72' : 'ml-20')
         }`}
       >
         <Navbar 
@@ -144,8 +169,8 @@ const DashboardLayout = ({ children }) => {
           {children}
         </main>
 
-        <footer className={`fixed bottom-0 right-0 h-12 bg-white/80 backdrop-blur-md border-t border-slate-100 flex items-center justify-between px-10 z-40 transition-all duration-300 ${
-          isSidebarOpen ? 'left-72' : 'left-20'
+        <footer className={`fixed bottom-0 right-0 h-12 bg-white/80 backdrop-blur-md border-t border-slate-100 flex items-center justify-between px-6 sm:px-10 z-40 transition-all duration-300 ${
+          isMobile ? 'left-0' : (isSidebarOpen ? 'left-72' : 'left-20')
         }`}>
           <div className="flex-1 hidden md:block">
             <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">© {new Date().getFullYear()} CMC Holding</span>

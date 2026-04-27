@@ -26,7 +26,8 @@ import {
   Layers,
   X,
   Eye,
-  Activity
+  Activity,
+  ArrowUpRight
 } from 'lucide-react';
 
 const SystemSettings = () => {
@@ -251,22 +252,26 @@ const SystemSettings = () => {
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Manage multiple authentication sources & synchronization schedules</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <button className="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95">
-                      Self Service Settings
-                    </button>
                     <button 
                       onClick={() => openLdapModal()}
-                      className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 active:scale-95"
+                      className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest"
                     >
-                      Create LDAP Configurations
+                       <div className="flex items-center gap-3">
+                          <Plus className="w-5 h-5" />
+                          <span>Create LDAP Configuration</span>
+                       </div>
+                       <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </button>
                     <button 
                       onClick={handleTriggerSync}
                       disabled={syncing}
-                      className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 active:scale-95 flex items-center gap-2"
+                      className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black transition-all shadow-xl shadow-slate-900/30 active:scale-95 group uppercase text-xs tracking-widest"
                     >
-                      <UserPlus className="w-3.5 h-3.5 text-[#2dd4bf]" />
-                      Import Users
+                       <div className="flex items-center gap-3">
+                          <UserPlus className="w-5 h-5 text-[#2dd4bf]" />
+                          <span>Import Users</span>
+                       </div>
+                       <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-[#2dd4bf]" />
                     </button>
                   </div>
                </div>

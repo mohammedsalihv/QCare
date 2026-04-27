@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import Pagination from '../components/Pagination';
 import Dropdown from '../components/Dropdown';
+import { useNavigate } from 'react-router-dom';
 import { 
   Plus, 
   Search, 
@@ -61,6 +62,7 @@ const StatCard = ({ title, count, icon: Icon, color, trend, trendUp }) => (
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('Pending');
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
   const recordsPerPage = 10;
   
   // Get user info
@@ -296,11 +298,11 @@ const Dashboard = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-white">
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100">Reference</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100">Classification</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100">Unit / Department</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100">Status</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 text-right pr-12">Operations</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-b border-slate-100">Reference</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-b border-slate-100">Classification</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-b border-slate-100">Unit / Department</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-b border-slate-100">Status</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-b border-slate-100 text-right pr-12">Operations</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
