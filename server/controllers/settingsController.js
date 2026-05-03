@@ -67,19 +67,43 @@ const triggerLdapSync = async (req, res) => {
 // @route   POST /api/settings/ldap-test
 // @access  Private/Admin
 const testLdapConnection = async (req, res) => {
-  const { ldapUrl, ldapBindDN, ldapBindPassword } = req.body;
+  let { ldapUrl, ldapPort, ldapBindDN, ldapBindPassword } = req.body;
   
   const ldap = require('ldapjs');
-  const client = ldap.createClient({ url: ldapUrl, connectTimeout: 5000, timeout: 5000 });
-
-  client.bind(ldapBindDN, ldapBindPassword, (err) => {
-    if (err) {
-      client.unbind();
-      return res.status(400).json({ message: `Connection failed: ${err.message}` });
+  
+  // Ensure the URL has the correct protocol and port
+  if (ldapUrl) {
+    // Remove protocol if present to normalize
+    let host = ldapUrl.replace(/^ldaps?:\/\//, '');
+    
+    // If port is specified separately, append it if not already in host
+    if (ldapPort && !host.includes(':')) {
+      host = `${host}:${ldapPort}`;
     }
-    client.unbind();
-    res.json({ message: 'LDAP Connection Successful!' });
-  });
+    
+    const protocol = ldapUrl.startsWith('ldaps://') ? 'ldaps://' : 'ldap://';
+    ldapUrl = `${protocol}${host}`;
+  }
+  
+  try {
+    const client = ldap.createClient({ url: ldapUrl, connectTimeout: 5000, timeout: 5000 });
+
+    // Catch error events to prevent node from crashing on unhandled 'error' events
+    client.on('error', (err) => {
+      console.error('LDAP Test Client Error:', err);
+    });
+
+    client.bind(ldapBindDN, ldapBindPassword, (err) => {
+      if (err) {
+        client.unbind((unbindErr) => {});
+        return res.status(400).json({ message: `Connection failed: ${err.message}` });
+      }
+      client.unbind((unbindErr) => {});
+      res.json({ message: 'LDAP Connection Successful!' });
+    });
+  } catch (err) {
+    return res.status(400).json({ message: `Invalid LDAP URL or setup: ${err.message}` });
+  }
 };
 
 module.exports = {

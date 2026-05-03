@@ -157,19 +157,19 @@ const Dashboard = () => {
             </div>
 
             <div className="flex flex-col gap-3 min-w-[200px]">
-              <button className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest">
+              <button className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm">
                  <div className="flex items-center gap-3">
                     <Plus className="w-5 h-5" />
                     <span>Report Incident</span>
                  </div>
                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
-              <button className="flex items-center justify-between gap-4 px-6 py-4 bg-white/5 hover:bg-white/10 text-white rounded-2xl font-black transition-all border border-white/10 active:scale-95 uppercase text-xs tracking-widest group">
+              <button className="flex items-center justify-between gap-4 px-6 py-4 bg-white/10 hover:bg-white/20 text-white rounded-md font-bold transition-all border border-white/20 active:scale-95 text-sm group">
                  <div className="flex items-center gap-3">
-                    <Layers className="w-5 h-5 text-slate-400" />
+                    <Layers className="w-5 h-5 text-slate-300" />
                     <span>Resource Library</span>
                  </div>
-                 <ExternalLink className="w-4 h-4 text-slate-500 group-hover:scale-110 transition-transform" />
+                 <ExternalLink className="w-4 h-4 text-slate-300 group-hover:scale-110 transition-transform" />
               </button>
             </div>
           </div>
@@ -196,8 +196,8 @@ const Dashboard = () => {
                   </div>
                </div>
                <div className="h-64 relative">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
+                   <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                     <PieChart>
                       <Pie
                         data={pieData}
                         innerRadius={60}
@@ -243,8 +243,8 @@ const Dashboard = () => {
                   </div>
                </div>
                <div className="h-72">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={areaData}>
+                   <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                     <AreaChart data={areaData}>
                       <defs>
                         <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#2dd4bf" stopOpacity={0.3}/>
@@ -297,12 +297,12 @@ const Dashboard = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-white">
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-b border-slate-100">Reference</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-b border-slate-100">Classification</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-b border-slate-100">Unit / Department</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-b border-slate-100">Status</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-b border-slate-100 text-right pr-12">Operations</th>
+                <tr className="bg-slate-100/50">
+                  <th className="px-8 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Reference</th>
+                  <th className="px-8 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Classification</th>
+                  <th className="px-8 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Unit / Department</th>
+                  <th className="px-8 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Status</th>
+                  <th className="px-8 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-right pr-8">Operations</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -314,19 +314,19 @@ const Dashboard = () => {
                            <Activity className="w-5 h-5" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-sm font-black text-slate-900 tracking-tight">{incident.number}</span>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{incident.date}</span>
+                          <span className="text-sm font-medium text-slate-900 tracking-tight">{incident.number}</span>
+                          <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{incident.date}</span>
                         </div>
                       </div>
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex flex-col">
-                        <span className="text-sm text-slate-600 font-bold leading-snug">{incident.details}</span>
-                        <span className="text-[10px] text-slate-400 font-black uppercase tracking-wider mt-1">{incident.type}</span>
+                        <span className="text-sm text-slate-600 font-medium leading-snug">{incident.details}</span>
+                        <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-1">{incident.type}</span>
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                      <span className="inline-flex px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
+                      <span className="inline-flex px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-100 text-slate-600 text-[10px] font-medium uppercase tracking-widest">
                         {incident.dept}
                       </span>
                     </td>
@@ -336,17 +336,17 @@ const Dashboard = () => {
                              incident.status === 'Completed' ? 'bg-emerald-500 ring-emerald-50' : 
                              incident.status === 'Pending' ? 'bg-rose-500 ring-rose-50' : 'bg-violet-500 ring-violet-50'
                           }`}></div>
-                          <span className="text-[11px] font-black text-slate-900 uppercase tracking-widest">{incident.status}</span>
+                          <span className="text-[11px] font-medium text-slate-900 uppercase tracking-widest">{incident.status}</span>
                        </div>
                     </td>
-                    <td className="px-8 py-6 text-right pr-12">
+                    <td className="px-8 py-6 text-right pr-8">
                        <div className="flex items-center justify-end gap-3">
-                          <button className="w-10 h-10 rounded-2xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all duration-300 active:scale-95 shadow-sm">
-                             <Eye className="w-4.5 h-4.5" />
+                          <button className="w-9 h-9 rounded-md bg-white border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all duration-300 active:scale-95 shadow-sm">
+                             <Eye className="w-4 h-4" />
                           </button>
                           {isAdmin && (
-                            <button className="w-10 h-10 rounded-2xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-[#2dd4bf] hover:text-slate-950 transition-all duration-300 active:scale-95 shadow-sm">
-                               <FileEdit className="w-4.5 h-4.5" />
+                            <button className="w-9 h-9 rounded-md bg-white border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all duration-300 active:scale-95 shadow-sm">
+                               <FileEdit className="w-4 h-4" />
                             </button>
                           )}
                        </div>

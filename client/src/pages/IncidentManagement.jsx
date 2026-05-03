@@ -189,7 +189,7 @@ const IncidentManagement = () => {
           
           <button 
             onClick={() => setShowModal(true)}
-            className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest"
+            className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
           >
              <div className="flex items-center gap-3">
                 <Plus className="w-5 h-5" />
@@ -248,16 +248,16 @@ const IncidentManagement = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
-                <tr className="bg-slate-50/50">
-                  <th className="px-7 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[11%]">ID</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[18%]">Incident Title</th>
-                  {isAdmin && <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[14%]">Reported By</th>}
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[10%]">Reported Date</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[10%]">Location</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[10%]">Category</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[9%]">Severity</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[9%]">Status</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 w-[9%] text-right pr-10">Actions</th>
+                <tr className="bg-slate-100/50">
+                  <th className="px-7 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 w-[11%]">ID</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 w-[18%]">Incident Title</th>
+                  {isAdmin && <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 w-[14%]">Reported By</th>}
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 w-[10%]">Reported Date</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 w-[10%]">Location</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 w-[10%]">Category</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 w-[9%]">Severity</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 w-[9%]">Status</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 w-[9%] text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -269,30 +269,30 @@ const IncidentManagement = () => {
                   incidents.map((incident) => (
                     <tr key={incident._id} className="hover:bg-slate-50/20 transition-colors group">
                       <td className="px-7 py-4">
-                        <span className="text-xs font-bold font-mono text-slate-600">{incident.incidentId}</span>
+                        <span className="text-xs font-medium font-mono text-slate-600">{incident.incidentId}</span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <span className="text-xs font-bold text-slate-900 leading-snug truncate">{incident.title}</span>
+                          <span className="text-xs font-medium text-slate-900 leading-snug truncate">{incident.title}</span>
                         </div>
                       </td>
                       {isAdmin && (
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-500 border border-slate-200">
+                            <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-sm font-medium text-slate-500 border border-slate-200">
                               {incident.reportedBy?.employeeName?.charAt(0)}
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-[11px] font-bold text-slate-700 leading-none">{incident.reportedBy?.employeeName}</span>
-                              <span className="text-[9px] text-slate-400 font-bold mt-1 uppercase tracking-tighter">{incident.reportedBy?.department}</span>
+                              <span className="text-[11px] font-medium text-slate-700 leading-none">{incident.reportedBy?.employeeName}</span>
+                              <span className="text-[9px] text-slate-400 font-medium mt-1 uppercase tracking-tighter">{incident.reportedBy?.department}</span>
                             </div>
                           </div>
                         </td>
                       )}
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <span className="text-xs font-bold text-slate-700">{new Date(incident.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
-                          <span className="text-[10px] text-slate-400 font-bold mt-1 flex items-center gap-1">
+                          <span className="text-xs font-medium text-slate-700">{new Date(incident.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                          <span className="text-[10px] text-slate-400 font-medium mt-1 flex items-center gap-1">
                             <Clock className="w-2.5 h-2.5" />
                             {new Date(incident.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
                           </span>
@@ -301,24 +301,24 @@ const IncidentManagement = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                          <span className="text-xs font-bold text-slate-600">{incident.location}</span>
+                          <span className="text-xs font-medium text-slate-600">{incident.location}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest bg-slate-100 text-slate-600 border border-slate-200">
+                        <span className="inline-flex px-2 py-0.5 rounded-md text-xs font-medium tracking-wide bg-slate-100 text-slate-600 border border-slate-200">
                           {incident.category}
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-1.5">
                           <div className={`w-1.5 h-1.5 rounded-full ${incident.severity === 'Critical' ? 'bg-red-500' : incident.severity === 'High' ? 'bg-rose-500' : incident.severity === 'Medium' ? 'bg-amber-500' : 'bg-blue-500'}`}></div>
-                          <span className={`text-[10px] font-black uppercase tracking-tight ${getSeverityColor(incident.severity)}`}>
+                          <span className={`text-[11px] font-medium tracking-tight ${getSeverityColor(incident.severity)}`}>
                             {incident.severity}
                           </span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusColor(incident.status)}`}>
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium tracking-wider border ${getStatusColor(incident.status)}`}>
                           {incident.status}
                         </span>
                       </td>
@@ -422,7 +422,7 @@ const IncidentManagement = () => {
               </div>
 
               <div className="md:col-span-3 pt-6 border-t border-slate-100">
-                <button type="submit" className="w-full py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] text-slate-950 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl shadow-[#2dd4bf]/30 hover:brightness-110 active:scale-[0.98]">
+                <button type="submit" className="w-full py-4 bg-slate-900 text-white rounded-md text-sm font-bold transition-all shadow-lg shadow-slate-900/20 hover:bg-slate-800 active:scale-[0.98]">
                   Submit Official Incident Report
                 </button>
               </div>

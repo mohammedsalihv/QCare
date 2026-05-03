@@ -27,6 +27,7 @@ import {
   X,
   Eye,
   Activity,
+  Plus,
   ArrowUpRight
 } from 'lucide-react';
 
@@ -91,8 +92,12 @@ const SystemSettings = () => {
   const handleTriggerSync = async () => {
     setSyncing(true);
     try {
-      await axios.post('http://localhost:5000/api/settings/ldap-sync', {}, getAuthConfig());
-      showNotification('LDAP Sync completed successfully', 'success');
+      const { data } = await axios.post('http://localhost:5000/api/settings/ldap-sync', {}, getAuthConfig());
+      if (data.data && data.data.successCount > 0) {
+        showNotification(`LDAP Sync completed: ${data.data.successCount} users imported/updated`, 'success');
+      } else {
+        showNotification('LDAP Sync finished, but no users were found. Please check your configuration.', 'warning');
+      }
       fetchLdapLogs();
     } catch (err) {
       showNotification(err.response?.data?.message || 'LDAP Sync failed', 'error');
@@ -130,6 +135,7 @@ const SystemSettings = () => {
       configName: `AD Config ${newConfigs.length + 1}`,
       ldapEnabled: false,
       ldapUrl: '',
+      ldapPort: 389,
       ldapBaseDN: '',
       ldapBindDN: '',
       ldapBindPassword: '',
@@ -196,6 +202,7 @@ const SystemSettings = () => {
         configName: '',
         ldapEnabled: true,
         ldapUrl: 'ldap://',
+        ldapPort: 389,
         ldapBaseDN: '',
         ldapBindDN: '',
         ldapBindPassword: '',
@@ -230,6 +237,7 @@ const SystemSettings = () => {
     try {
       const { data } = await axios.post('http://localhost:5000/api/settings/ldap-test', {
         ldapUrl: config.ldapUrl,
+        ldapPort: config.ldapPort,
         ldapBindDN: config.ldapBindDN,
         ldapBindPassword: config.ldapBindPassword
       }, getAuthConfig());
@@ -254,7 +262,7 @@ const SystemSettings = () => {
                   <div className="flex items-center gap-3">
                     <button 
                       onClick={() => openLdapModal()}
-                      className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest"
+                      className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
                     >
                        <div className="flex items-center gap-3">
                           <Plus className="w-5 h-5" />
@@ -265,13 +273,13 @@ const SystemSettings = () => {
                     <button 
                       onClick={handleTriggerSync}
                       disabled={syncing}
-                      className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black transition-all shadow-xl shadow-slate-900/30 active:scale-95 group uppercase text-xs tracking-widest"
+                      className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-100 hover:bg-slate-200 text-slate-900 rounded-md font-bold transition-all shadow-md active:scale-95 group text-sm border border-slate-200"
                     >
                        <div className="flex items-center gap-3">
-                          <UserPlus className="w-5 h-5 text-[#2dd4bf]" />
+                          <UserPlus className="w-5 h-5 text-slate-900" />
                           <span>Import Users</span>
                        </div>
-                       <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-[#2dd4bf]" />
+                       <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-slate-900" />
                     </button>
                   </div>
                </div>
@@ -279,14 +287,14 @@ const SystemSettings = () => {
                <div className="overflow-x-auto">
                  <table className="w-full text-left border-collapse">
                    <thead>
-                     <tr className="bg-white border-b border-slate-50">
-                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Name</th>
-                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">URL</th>
-                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Schedule Frequency</th>
-                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Next Execution</th>
-                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center">Status</th>
-                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center">Schedule</th>
-                       <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right">Actions</th>
+                     <tr className="bg-slate-100/50">
+                        <th className="py-5 px-8 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Name</th>
+                        <th className="py-5 px-8 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">URL</th>
+                        <th className="py-5 px-8 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Schedule Frequency</th>
+                        <th className="py-5 px-8 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Next Execution</th>
+                        <th className="py-5 px-8 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-center">Status</th>
+                        <th className="py-5 px-8 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-center">Schedule</th>
+                        <th className="py-5 px-8 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
                      </tr>
                    </thead>
                    <tbody className="divide-y divide-slate-50">
@@ -351,13 +359,13 @@ const SystemSettings = () => {
                            </td>
                            <td className="py-6 px-8 text-right">
                               <div className="flex items-center justify-end gap-2">
-                                 <button onClick={() => setActiveTab('logs')} className="w-9 h-9 rounded-xl bg-white border border-slate-100 text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all shadow-sm">
+                                 <button onClick={() => setActiveTab('logs')} className="w-9 h-9 rounded-md bg-white border border-slate-100 text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all shadow-sm">
                                     <History size={14} />
                                  </button>
-                                 <button onClick={() => openLdapModal(index)} className="w-9 h-9 rounded-xl bg-white border border-slate-100 text-slate-400 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                                 <button onClick={() => openLdapModal(index)} className="w-9 h-9 rounded-md bg-white border border-slate-100 text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all shadow-sm">
                                     <Edit size={14} />
                                  </button>
-                                 <button onClick={() => removeLdapConfig(index)} className="w-9 h-9 rounded-xl bg-white border border-slate-100 text-slate-400 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all shadow-sm">
+                                 <button onClick={() => removeLdapConfig(index)} className="w-9 h-9 rounded-md bg-white border border-slate-100 text-slate-400 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all shadow-sm">
                                     <Trash2 size={14} />
                                  </button>
                               </div>
@@ -425,13 +433,27 @@ const SystemSettings = () => {
                               onChange={(e) => handleLdapChange(editingLdapIndex, e)} 
                               placeholder="e.g. Corporate AD"
                            />
-                           <Field 
-                              label="URL *" 
-                              name="ldapUrl" 
-                              value={settings.ldapConfigs[editingLdapIndex]?.ldapUrl || ''} 
-                              onChange={(e) => handleLdapChange(editingLdapIndex, e)} 
-                              placeholder="ldap://192.168.1.10"
-                           />
+                           <div className="flex gap-4">
+                              <div className="flex-[3]">
+                                 <Field 
+                                    label="Server Host/URL *" 
+                                    name="ldapUrl" 
+                                    value={settings.ldapConfigs[editingLdapIndex]?.ldapUrl || ''} 
+                                    onChange={(e) => handleLdapChange(editingLdapIndex, e)} 
+                                    placeholder="ldap://192.168.1.10"
+                                 />
+                              </div>
+                              <div className="flex-1">
+                                 <Field 
+                                    label="Port *" 
+                                    name="ldapPort" 
+                                    type="number"
+                                    value={settings.ldapConfigs[editingLdapIndex]?.ldapPort || 389} 
+                                    onChange={(e) => handleLdapChange(editingLdapIndex, e)} 
+                                    placeholder="389"
+                                 />
+                              </div>
+                           </div>
                            <div className="md:col-span-2 py-4 border-y border-slate-50 bg-slate-50/50 -mx-8 px-8 my-2">
                               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <Info size={12} className="text-blue-500" />
@@ -659,14 +681,14 @@ const SystemSettings = () => {
                <div className="p-0 overflow-hidden">
                   <div className="overflow-x-auto max-h-[60vh] custom-scrollbar">
                     <table className="w-full text-left border-collapse">
-                      <thead className="bg-slate-50 border-b border-slate-100 sticky top-0 z-10">
+                      <thead className="bg-slate-100/50 sticky top-0 z-10">
                         <tr>
-                          <th className="py-3 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">Timestamp</th>
-                          <th className="py-3 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">Status</th>
-                          <th className="py-3 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">Total Fetched</th>
-                          <th className="py-3 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">Success</th>
-                          <th className="py-3 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">Failed</th>
-                          <th className="py-3 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500 text-right">Details</th>
+                          <th className="py-4 px-6 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Timestamp</th>
+                          <th className="py-4 px-6 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Status</th>
+                          <th className="py-4 px-6 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Total Fetched</th>
+                          <th className="py-4 px-6 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Success</th>
+                          <th className="py-4 px-6 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Failed</th>
+                          <th className="py-4 px-6 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-right pr-6">Details</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
@@ -812,10 +834,10 @@ const SystemSettings = () => {
           <button 
             onClick={handleSubmit}
             disabled={saving}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#2dd4bf] text-slate-950 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#2dd4bf]/30 hover:shadow-2xl transition-all active:scale-95 disabled:opacity-50"
+            className="flex items-center gap-3 px-6 py-3 bg-slate-900 text-white rounded-md text-sm font-bold transition-all shadow-lg shadow-slate-900/20 hover:bg-slate-800 active:scale-95 disabled:opacity-50"
           >
             {saving ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            <span>{saving ? 'Synchronizing...' : 'Save All Changes'}</span>
+            <span>{saving ? 'Saving...' : 'Save All Changes'}</span>
           </button>
         </div>
 

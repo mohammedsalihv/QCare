@@ -14,6 +14,10 @@ const settingsSchema = new mongoose.Schema({
       type: String,
       trim: true
     },
+    ldapPort: {
+      type: Number,
+      default: 389
+    },
     ldapBaseDN: {
       type: String,
       trim: true

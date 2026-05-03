@@ -31,7 +31,23 @@ const syncLDAPUsers = async () => {
         await settings.save();
       }
 
-      const client = ldap.createClient({ url: config.ldapUrl });
+      let ldapUrl = config.ldapUrl;
+      let host = ldapUrl.replace(/^ldaps?:\/\//, '');
+      if (config.ldapPort && !host.includes(':')) {
+        host = `${host}:${config.ldapPort}`;
+      }
+      const protocol = ldapUrl.startsWith('ldaps://') ? 'ldaps://' : 'ldap://';
+      ldapUrl = `${protocol}${host}`;
+      
+      const client = ldap.createClient({ 
+        url: ldapUrl,
+        connectTimeout: 10000,
+        timeout: 15000
+      });
+
+      client.on('error', (err) => {
+        console.error(`[${config.configName}] LDAP client error:`, err.message);
+      });
 
       try {
         await new Promise((resolve, reject) => {
@@ -41,19 +57,13 @@ const syncLDAPUsers = async () => {
               if (configIndex !== -1) {
                 settings.ldapConfigs[configIndex].executionStatus = 'Failed';
                 settings.ldapConfigs[configIndex].lastExecutionDate = new Date();
-                await settings.save();
+                await settings.save().catch(e => console.error("Error saving settings status:", e));
               }
-              return reject(new Error(`[${config.configName}] Failed to bind: ` + err.message));
-            }
-
-            // Filter for enabled vs disabled
-            let filterString = '(&(objectCategory=person)(objectClass=user))';
-            if (!config.syncBlockedUsers) {
-              filterString = '(&(objectCategory=person)(objectClass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))';
+              return reject(new Error(`[${config.configName}] Bind failed: ` + err.message));
             }
 
             const searchOptions = {
-              filter: filterString,
+              filter: config.syncBlockedUsers ? '(&(objectCategory=person)(objectClass=user))' : '(&(objectCategory=person)(objectClass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))',
               scope: 'sub',
               paged: true,
               sizeLimit: 1000,
@@ -71,78 +81,107 @@ const syncLDAPUsers = async () => {
               ]
             };
 
-            client.search(config.ldapBaseDN, searchOptions, (err, res) => {
-              if (err) {
-                client.unbind();
-                if (configIndex !== -1) {
-                  settings.ldapConfigs[configIndex].executionStatus = 'Failed';
-                  settings.ldapConfigs[configIndex].lastExecutionDate = new Date();
+            const userPromises = [];
+
+              client.search(config.ldapBaseDN, searchOptions, (err, res) => {
+                if (err) {
+                  client.unbind();
+                  console.error(`[${config.configName}] Search initiation failed:`, err.message);
+                  return reject(new Error(`[${config.configName}] Search failed: ` + err.message));
                 }
-                return reject(new Error(`[${config.configName}] Search failed: ` + err.message));
-              }
 
-              res.on('searchEntry', async (entry) => {
-                const adUser = entry.object;
-                const employeeId = adUser.sAMAccountName || adUser.userPrincipalName;
-                
-                if (!employeeId) return;
+                console.log(`[${config.configName}] Search initiated with filter: ${searchOptions.filter} and BaseDN: ${config.ldapBaseDN}`);
 
-                try {
-                  let user = await User.findOne({ employeeId });
-
-                  const fullName = adUser[config.ldapNameField] || adUser.displayName || 
-                                   (adUser.givenName && adUser.sn ? `${adUser.givenName} ${adUser.sn}` : null) || 
-                                   employeeId;
+              res.on('searchEntry', (entry) => {
+                console.log(`[${config.configName}] Found entry: ${entry.dn.toString()}`);
+                const processUser = async () => {
+                  if (!entry || !entry.pojo) return;
                   
-                  const email = adUser[config.ldapEmailField] || adUser.mail || `${employeeId}@internal.com`;
-                  if (!user) {
-                    const department = adUser.department || adUser.physicalDeliveryOfficeName || 'Unassigned';
-                    const designation = adUser.title || adUser.description || 'LDAP User';
-                    user = await User.create({
-                      employeeId,
-                      employeeName: fullName,
-                      email: email,
-                      password: Math.random().toString(36).slice(-8),
-                      role: 'user', 
-                      department: department,
-                      designation: designation,
-                      status: 'active',
-                      authSource: config.configName
+                  // Map ldapjs 3.x attributes to a flat object
+                  const adUser = {};
+                  if (entry.pojo.attributes) {
+                    entry.pojo.attributes.forEach(attr => {
+                      adUser[attr.type] = attr.values.length === 1 ? attr.values[0] : attr.values;
                     });
-                    allImportedUsers.push({ employeeId, employeeName: fullName, email, status: 'Created', source: config.configName });
-                  } else {
-                    user.employeeName = fullName;
-                    user.email = email;
-                    if (adUser.department || adUser.physicalDeliveryOfficeName) {
-                       user.department = adUser.department || adUser.physicalDeliveryOfficeName;
-                    }
-                    if (adUser.title || adUser.description) {
-                       user.designation = adUser.title || adUser.description;
-                    }
-                    user.authSource = config.configName;
-                    
-                    await user.save();
-                    allImportedUsers.push({ employeeId, employeeName: fullName, email, status: 'Updated', source: config.configName });
                   }
-                  totalSuccessCount++;
-                } catch (userErr) {
-                  totalFailedCount++;
-                  allFailedUsers.push({ employeeId, reason: userErr.message, source: config.configName });
-                }
+                  
+                  const employeeId = adUser.sAMAccountName || adUser.userPrincipalName;
+                  
+                  if (!employeeId) {
+                    // Only log if it's not a computer account (ends with $)
+                    if (adUser.cn && !adUser.cn.toString().endsWith('$')) {
+                       console.warn(`[${config.configName}] Entry found but missing sAMAccountName/userPrincipalName. Available attributes:`, Object.keys(adUser));
+                    }
+                    return;
+                  }
+
+                  try {
+                    let user = await User.findOne({ employeeId });
+                    const fullName = adUser[config.ldapNameField] || adUser.displayName || 
+                                     (adUser.givenName && adUser.sn ? `${adUser.givenName} ${adUser.sn}` : null) || 
+                                     employeeId;
+                    
+                    const email = adUser[config.ldapEmailField] || adUser.mail || `${employeeId}@internal.com`;
+                    
+                    if (!user) {
+                      const department = adUser.department || adUser.physicalDeliveryOfficeName || 'Unassigned';
+                      const designation = adUser.title || adUser.description || 'LDAP User';
+                      await User.create({
+                        employeeId,
+                        employeeName: fullName,
+                        email: email,
+                        password: Math.random().toString(36).slice(-8),
+                        role: 'user', 
+                        department: department,
+                        designation: designation,
+                        status: 'active',
+                        authSource: config.configName
+                      });
+                      allImportedUsers.push({ employeeId, employeeName: fullName, email, status: 'Created', source: config.configName });
+                    } else {
+                      user.employeeName = fullName;
+                      user.email = email;
+                      if (adUser.department || adUser.physicalDeliveryOfficeName) {
+                         user.department = adUser.department || adUser.physicalDeliveryOfficeName;
+                      }
+                      if (adUser.title || adUser.description) {
+                         user.designation = adUser.title || adUser.description;
+                      }
+                      user.authSource = config.configName;
+                      await user.save();
+                      allImportedUsers.push({ employeeId, employeeName: fullName, email, status: 'Updated', source: config.configName });
+                    }
+                    totalSuccessCount++;
+                  } catch (userErr) {
+                    totalFailedCount++;
+                    allFailedUsers.push({ employeeId, reason: userErr.message, source: config.configName });
+                  }
+                };
+                userPromises.push(processUser());
               });
 
               res.on('error', (err) => {
-                console.error(`[${config.configName}] search error: ` + err.message);
+                console.error(`[${config.configName}] Search error:`, err.message);
+                // Don't reject yet, try to wait for existing promises
               });
 
               res.on('end', async () => {
-                client.unbind();
-                if (configIndex !== -1) {
-                  settings.ldapConfigs[configIndex].executionStatus = 'Success';
-                  settings.ldapConfigs[configIndex].lastExecutionDate = new Date();
-                  await settings.save();
+                try {
+                  console.log(`[${config.configName}] Search ended. Waiting for ${userPromises.length} users to be processed...`);
+                  await Promise.all(userPromises);
+                  client.unbind();
+                  console.log(`[${config.configName}] Sync finished. Processed ${totalSuccessCount} successfully, ${totalFailedCount} failed.`);
+                  if (configIndex !== -1) {
+                    settings.ldapConfigs[configIndex].executionStatus = 'Success';
+                    settings.ldapConfigs[configIndex].lastExecutionDate = new Date();
+                    await settings.save().catch(e => console.error("Error saving success status:", e));
+                  }
+                  resolve();
+                } catch (e) {
+                  client.unbind();
+                  console.error(`[${config.configName}] Final processing error:`, e.message);
+                  reject(e);
                 }
-                resolve();
               });
             });
           });
@@ -154,7 +193,7 @@ const syncLDAPUsers = async () => {
         if (configIndex !== -1) {
           settings.ldapConfigs[configIndex].executionStatus = 'Failed';
           settings.ldapConfigs[configIndex].lastExecutionDate = new Date();
-          await settings.save();
+          await settings.save().catch(e => console.error("Error saving failure status:", e));
         }
       }
     }

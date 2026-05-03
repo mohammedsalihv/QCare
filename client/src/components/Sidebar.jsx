@@ -11,7 +11,9 @@ import {
   Bell,
   FileCheck,
   MessageSquare,
-  X
+  X,
+  Heart,
+  Puzzle
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -45,6 +47,13 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
         { id: 'audit', label: 'Audit Control', icon: FileCheck, path: '/dashboard/audit' },
         { id: 'feedback', label: 'Patient Feedback', icon: MessageSquare, path: '/dashboard/feedback' },
         { id: 'kpi', label: 'KPI Analytics', icon: BarChart3, path: '/dashboard/kpi' },
+      ]
+    },
+    {
+      title: 'Regulatory Compliance',
+      items: [
+        { id: 'aot', label: 'Organ Transplant (AOT)', icon: Heart, path: '/dashboard/jawda/aot' },
+        { id: 'asd', label: 'Autism Services (ASD)', icon: Puzzle, path: '/dashboard/jawda/asd' },
       ]
     }
   ];

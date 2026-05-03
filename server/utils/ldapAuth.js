@@ -19,7 +19,11 @@ const authenticateLDAP = (username, password) => {
       for (const config of enabledConfigs) {
         try {
           const userObj = await new Promise((res, rej) => {
-            const client = ldap.createClient({ url: config.ldapUrl });
+            let ldapUrl = config.ldapUrl;
+            if (ldapUrl && !ldapUrl.startsWith('ldap://') && !ldapUrl.startsWith('ldaps://')) {
+              ldapUrl = `ldap://${ldapUrl}`;
+            }
+            const client = ldap.createClient({ url: ldapUrl });
 
             client.bind(config.ldapBindDN, config.ldapBindPassword, (err) => {
               if (err) {
@@ -80,7 +84,11 @@ const authenticateLDAP = (username, password) => {
                   }
 
                   // Authenticate user with their own DN and password
-                  const userClient = ldap.createClient({ url: config.ldapUrl });
+                  let userLdapUrl = config.ldapUrl;
+                  if (userLdapUrl && !userLdapUrl.startsWith('ldap://') && !userLdapUrl.startsWith('ldaps://')) {
+                    userLdapUrl = `ldap://${userLdapUrl}`;
+                  }
+                  const userClient = ldap.createClient({ url: userLdapUrl });
                   userClient.bind(userFound.dn, password, (err) => {
                     userClient.unbind();
                     client.unbind();

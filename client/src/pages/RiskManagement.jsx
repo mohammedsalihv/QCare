@@ -205,7 +205,7 @@ const RiskManagement = () => {
           
           <button 
             onClick={handleAddClick}
-            className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest"
+            className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
           >
              <div className="flex items-center gap-3">
                 <Plus className="w-5 h-5" />
@@ -260,13 +260,13 @@ const RiskManagement = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse table-fixed min-w-[1200px]">
               <thead>
-                <tr className="bg-slate-50/50">
-                  <th className="w-1/4 px-8 py-5 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Risk Identification</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Assessment</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Owner & Dept</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Next Review</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Status</th>
-                  <th className="w-36 px-6 py-5 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 text-right pr-12">Actions</th>
+                <tr className="bg-slate-100/50">
+                  <th className="w-1/4 px-8 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Risk Identification</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Assessment</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Owner & Dept</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Next Review</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Status</th>
+                  <th className="w-36 px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -276,22 +276,22 @@ const RiskManagement = () => {
                     <tr key={risk._id} className="hover:bg-slate-50/20 transition-colors group">
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl ${level.bg} flex items-center justify-center font-black ${level.text} border border-current/10 shadow-sm`}>
+                          <div className={`w-10 h-10 rounded-xl ${level.bg} flex items-center justify-center font-medium ${level.text} border border-current/10 shadow-sm`}>
                             <ShieldAlert className="w-5 h-5" />
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-sm font-bold text-slate-900 tracking-tight leading-tight">{risk.title}</span>
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{risk.category}</span>
+                            <span className="text-sm font-medium text-slate-900 tracking-tight leading-tight">{risk.title}</span>
+                            <span className="text-[11px] font-medium text-slate-400 tracking-widest mt-1">{risk.category}</span>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-6">
                          <div className="flex flex-col gap-2">
                             <div className="flex items-center gap-2">
-                               <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${level.color} text-white`}>{level.label}</span>
-                               <span className="text-xs font-black text-slate-900">{risk.score} <span className="text-slate-400 font-bold text-[10px]">Matrix Score</span></span>
+                               <span className={`px-2 py-0.5 rounded text-[10px] font-medium tracking-wide ${level.color} text-white`}>{level.label}</span>
+                               <span className="text-xs font-medium text-slate-900">{risk.score} <span className="text-slate-400 font-medium text-[10px]">Matrix Score</span></span>
                             </div>
-                            <div className="flex items-center gap-3 text-[9px] font-bold text-slate-400">
+                            <div className="flex items-center gap-3 text-[9px] font-medium text-slate-400">
                                <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> P: {risk.probability}</span>
                                <span className="flex items-center gap-1"><Activity className="w-3 h-3" /> I: {risk.impact}</span>
                             </div>
@@ -305,7 +305,7 @@ const RiskManagement = () => {
                             </div>
                             <div className="flex items-center gap-2">
                                <Building2 className="w-3 h-3 text-slate-300" />
-                               <span className="text-[10px] font-black text-slate-400 uppercase tracking-tight">{risk.department}</span>
+                               <span className="text-sm font-black text-slate-400 tracking-tight">{risk.department}</span>
                             </div>
                          </div>
                       </td>
@@ -316,22 +316,22 @@ const RiskManagement = () => {
                          </div>
                       </td>
                       <td className="px-6 py-6">
-                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-slate-100 bg-slate-50 text-slate-600`}>
+                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs text-slate-600 border border-slate-100 bg-slate-50`}>
                             <div className={`w-1.5 h-1.5 rounded-full ${risk.status === 'Closed' ? 'bg-slate-400' : 'bg-emerald-500'}`}></div>
                             {risk.status}
                          </span>
                       </td>
-                      <td className="px-6 py-6 text-right pr-10">
+                      <td className="px-6 py-6 text-right pr-8">
                          <div className="flex items-center justify-end gap-2.5">
                             <button 
                               onClick={() => handleEditClick(risk)}
-                              className="w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-[#b59662] hover:border-[#b59662] hover:text-white transition-all duration-300 active:scale-95 shadow-sm"
+                              className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:border-slate-900 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
                             >
                                <FileEdit className="w-4 h-4" />
                             </button>
                             <button 
                               onClick={() => handleDeleteClick(risk)}
-                              className="w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-rose-500 hover:border-rose-500 hover:text-white transition-all duration-300 active:scale-95 shadow-sm"
+                              className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
                             >
                                <Trash2 className="w-4 h-4" />
                             </button>
@@ -487,7 +487,7 @@ const RiskManagement = () => {
                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-slate-400 hover:bg-slate-50 hover:text-slate-600 rounded-2xl transition-all border border-slate-200 uppercase tracking-[0.2em] active:scale-95">
                      Cancel Entry
                    </button>
-                   <button type="submit" className="flex-[2] py-3 bg-gradient-to-r from-[#b59662] to-[#9e8254] text-white text-[10px] font-black rounded-2xl shadow-2xl shadow-[#b59662]/30 hover:shadow-3xl hover:from-[#a68959] hover:to-[#8f754b] transition-all active:scale-[0.98] uppercase tracking-[0.2em]">
+                   <button type="submit" className="flex-[2] py-3 bg-slate-900 text-white text-sm font-bold rounded-md shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-[0.98]">
                      {isEditing ? 'Authorize Changes' : 'Initialize Risk Profile'}
                    </button>
                 </div>

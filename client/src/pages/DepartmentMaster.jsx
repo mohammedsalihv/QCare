@@ -178,7 +178,7 @@ const DepartmentMaster = () => {
           
           <button 
             onClick={handleAddClick}
-            className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest"
+            className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
           >
              <div className="flex items-center gap-3">
                 <Plus className="w-5 h-5" />
@@ -203,13 +203,13 @@ const DepartmentMaster = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
-                <tr className="bg-slate-50/50">
-                  <th className="w-1/4 px-7 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Department Name</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Dept Code</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Head of Department</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Staff Count</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Location</th>
-                  <th className="w-36 px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 text-right pr-10">Actions</th>
+                <tr className="bg-slate-100/50">
+                  <th className="w-1/4 px-7 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Department Name</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Dept Code</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Head of Department</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Staff Count</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Location</th>
+                  <th className="w-36 px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -217,41 +217,41 @@ const DepartmentMaster = () => {
                   <tr key={dept._id} className="hover:bg-slate-50/20 transition-colors group">
                     <td className="px-7 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center font-black text-slate-400 text-[10px]">
+                        <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center font-medium text-slate-400 text-[10px]">
                           <Building2 className="w-4 h-4" />
                         </div>
-                        <span className="text-xs font-bold text-slate-900 leading-snug">{dept.name}</span>
+                        <span className="text-xs font-medium text-slate-900 leading-snug">{dept.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-xs font-bold font-mono text-slate-600">{dept.code}</td>
+                    <td className="px-6 py-4 text-xs font-medium font-mono text-slate-600">{dept.code}</td>
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-slate-600">{dept.head}</span>
+                          <span className="text-xs font-medium text-slate-600">{dept.head}</span>
                        </div>
                     </td>
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
                           <Users className="w-3.5 h-3.5 text-slate-300" />
-                          <span className="text-xs font-bold text-slate-500">{dept.employeesCount} Members</span>
+                          <span className="text-xs font-medium text-slate-500">{dept.employeesCount} Members</span>
                        </div>
                     </td>
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
                           <MapPin className="w-3.5 h-3.5 text-slate-300" />
-                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">{dept.location}</span>
+                          <span className="text-sm font-medium text-slate-500 tracking-tight">{dept.location}</span>
                        </div>
                     </td>
                     <td className="px-6 py-4 text-right pr-8">
                        <div className="flex items-center justify-end gap-2.5">
                           <button 
                             onClick={() => handleEditClick(dept)}
-                            className="w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all duration-300 active:scale-95"
+                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:border-slate-900 hover:text-white transition-all duration-300 active:scale-95 shadow-sm"
                           >
                              <FileEdit className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => handleDeleteClick(dept._id)}
-                            className="w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-rose-500 hover:border-rose-500 hover:text-white transition-all duration-300 active:scale-95"
+                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 active:scale-95 shadow-sm"
                           >
                              <Trash2 className="w-4 h-4" />
                           </button>
@@ -343,7 +343,7 @@ const DepartmentMaster = () => {
                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-slate-400 hover:bg-slate-50 hover:text-slate-600 rounded-xl transition-all border border-slate-200 uppercase tracking-[0.15em] active:scale-95">
                      Discard
                    </button>
-                   <button type="submit" className="flex-[2] py-3 bg-gradient-to-r from-[#b59662] to-[#9e8254] text-white text-[10px] font-black rounded-xl shadow-xl shadow-[#b59662]/30 hover:shadow-2xl hover:from-[#a68959] hover:to-[#8f754b] transition-all active:scale-[0.98] uppercase tracking-[0.15em]">
+                   <button type="submit" className="flex-[2] py-3 bg-slate-900 text-white text-sm font-bold rounded-md shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-[0.98]">
                      {isEditing ? 'Update Structural Unit' : 'Establish Department'}
                    </button>
                 </div>

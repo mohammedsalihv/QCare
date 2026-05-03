@@ -216,7 +216,7 @@ const DocumentLibrary = () => {
                     setFormData({ name: '', type: 'Policy', department: '', ref: '', revisedDate: '', classification: 'Restricted' });
                     setShowAddModal(true);
                   }}
-                  className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest"
+                  className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
                 >
                   <div className="flex items-center gap-3">
                     <Plus className="w-5 h-5" />
@@ -267,46 +267,46 @@ const DocumentLibrary = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse whitespace-nowrap min-w-[1300px]">
               <thead>
-                <tr className="bg-slate-50">
-                  <th className="w-16 px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">S.No</th>
-                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Doc ID</th>
-                  <th className="w-1/4 px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Document Name</th>
-                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Type</th>
-                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Classification</th>
-                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Department</th>
-                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Ref. No.</th>
-                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Upload Date</th>
-                  <th className="w-16 px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 text-center">Ver.</th>
-                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Revised</th>
-                  <th className="px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Next Rev.</th>
-                  <th className="w-40 px-4 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 text-right pr-12">Actions</th>
+                <tr className="bg-slate-100/50">
+                  <th className="w-16 px-4 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-center">S.No</th>
+                  <th className="px-4 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Doc ID</th>
+                  <th className="w-1/4 px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Document Name</th>
+                  <th className="px-4 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Type</th>
+                  <th className="px-4 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Classification</th>
+                  <th className="px-4 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Department</th>
+                  <th className="px-4 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Ref. No.</th>
+                  <th className="px-4 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Upload Date</th>
+                  <th className="w-16 px-4 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-center">Ver.</th>
+                  <th className="px-4 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Revised</th>
+                  <th className="px-4 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Next Rev.</th>
+                  <th className="w-40 px-4 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {currentRecords.map((doc, idx) => (
                   <tr key={doc._id} className="hover:bg-slate-50/50 transition-colors group">
-                    <td className="px-4 py-4 text-xs text-slate-600 font-medium text-center">{(currentPage - 1) * recordsPerPage + idx + 1}</td>
-                    <td className="px-4 py-4 text-xs text-slate-600 font-medium">{doc.documentId}</td>
+                    <td className="px-4 py-4 text-xs text-slate-600 text-center">{(currentPage - 1) * recordsPerPage + idx + 1}</td>
+                    <td className="px-4 py-4 text-xs text-slate-600">{doc.documentId}</td>
                     <td className="px-6 py-4">
-                      <span className="text-xs font-medium text-slate-600 group-hover:text-[#2dd4bf] transition-colors">{doc.name}</span>
+                      <span className="text-xs text-slate-600 group-hover:text-[#2dd4bf] transition-colors">{doc.name}</span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className={`inline-flex px-3 py-1 rounded-lg text-[11px] font-bold uppercase border ${getTypeColor(doc.type)}`}>
+                      <span className={`inline-flex px-3 py-1 rounded-lg text-xs border ${getTypeColor(doc.type)}`}>
                         {doc.type}
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className={`inline-flex px-2 py-1 border rounded-md text-[11px] font-bold uppercase tracking-wider ${getClassificationColor(doc.classification)}`}>
+                      <span className={`inline-flex px-2 py-1 border rounded-md text-[10px] tracking-wide ${getClassificationColor(doc.classification)}`}>
                         {doc.classification}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-xs font-medium text-slate-600">{doc.department}</td>
-                    <td className="px-4 py-4 text-xs font-medium text-slate-600">{doc.ref}</td>
-                    <td className="px-4 py-4 text-xs font-medium text-slate-600">{new Date(doc.uploadDate).toLocaleDateString()}</td>
-                    <td className="px-4 py-4 text-xs font-medium text-slate-600 text-center">{doc.version}</td>
-                    <td className="px-4 py-4 text-xs font-medium text-slate-600">{new Date(doc.revisedDate).toLocaleDateString()}</td>
+                    <td className="px-4 py-4 text-xs text-slate-600">{doc.department}</td>
+                    <td className="px-4 py-4 text-xs text-slate-600">{doc.ref}</td>
+                    <td className="px-4 py-4 text-xs text-slate-600">{new Date(doc.uploadDate).toLocaleDateString()}</td>
+                    <td className="px-4 py-4 text-xs text-slate-600 text-center">{doc.version}</td>
+                    <td className="px-4 py-4 text-xs text-slate-600">{new Date(doc.revisedDate).toLocaleDateString()}</td>
                     <td className="px-4 py-4">
-                       <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${
+                       <span className={`inline-flex px-2 py-1 rounded text-xs ${
                          activeTab === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'
                        }`}>
                          {new Date(doc.nextRevDate).toLocaleDateString()}
@@ -317,17 +317,17 @@ const DocumentLibrary = () => {
                           <button 
                             title="View" 
                             onClick={() => setSelectedDoc(doc)}
-                            className="w-9 h-9 rounded-full border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-blue-600 hover:border-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-200 transition-all duration-300 active:scale-95"
+                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:border-slate-900 hover:text-white transition-all duration-300 active:scale-95 shadow-sm"
                           >
                              <Eye className="w-4.5 h-4.5" />
                           </button>
                           <button 
                             title="Endorse" 
                             onClick={() => handleEndorse(doc)}
-                            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 active:scale-95 ${
+                            className={`w-9 h-9 rounded-md flex items-center justify-center transition-all duration-300 active:scale-95 ${
                               doc.endorsedBy?.includes(userId) 
-                              ? 'bg-amber-500 border border-amber-500 text-white shadow-lg shadow-amber-200 hover:bg-amber-600 hover:border-amber-600' 
-                              : 'bg-white border border-slate-200 text-slate-400 hover:bg-amber-500 hover:border-amber-500 hover:text-white hover:shadow-lg hover:shadow-amber-200'
+                              ? 'bg-amber-600 border border-amber-600 text-white shadow-lg' 
+                              : 'bg-white border border-slate-200 text-slate-400 hover:bg-amber-600 hover:border-amber-600 hover:text-white shadow-sm'
                             }`}
                           >
                              <ThumbsUp className="w-4.5 h-4.5" />
@@ -335,14 +335,14 @@ const DocumentLibrary = () => {
                           <button 
                             title="Edit"
                             onClick={() => handleEditClick(doc)} 
-                            className="w-9 h-9 rounded-full border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-emerald-500 hover:border-emerald-500 hover:text-white hover:shadow-lg hover:shadow-emerald-200 transition-all duration-300 active:scale-95"
+                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:border-slate-900 hover:text-white transition-all duration-300 active:scale-95 shadow-sm"
                           >
                              <FileEdit className="w-4.5 h-4.5" />
                           </button>
                           <button 
                             title="Delete" 
                             onClick={() => handleDeleteClick(doc._id)}
-                            className="w-9 h-9 rounded-full border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-rose-500 hover:border-rose-500 hover:text-white hover:shadow-lg hover:shadow-rose-200 transition-all duration-300 active:scale-95"
+                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 active:scale-95 shadow-sm"
                           >
                              <Trash2 className="w-4.5 h-4.5" />
                           </button>
@@ -625,7 +625,7 @@ const DocumentLibrary = () => {
                    <input type="file" onChange={handleFileChange} accept=".pdf,.csv,.xlsx" className="hidden" />
                  </label>
                </div>
-               <button type="submit" className="w-full py-3.5 bg-gradient-to-r from-slate-900 to-slate-800 text-[#2dd4bf] text-[10px] font-black rounded-xl shadow-xl shadow-slate-200 hover:shadow-2xl transition-all active:scale-[0.98] uppercase tracking-[0.15em] mt-2">
+               <button type="submit" className="w-full py-3.5 bg-slate-900 text-white text-sm font-bold rounded-md shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-[0.98] mt-2">
                  {isEditing ? 'Save Changes' : 'Submit Document'}
                </button>
             </form>

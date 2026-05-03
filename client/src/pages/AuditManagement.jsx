@@ -210,7 +210,7 @@ const AuditManagement = () => {
           
           <button 
             onClick={handleAddClick}
-            className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest"
+            className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
           >
              <div className="flex items-center gap-3">
                 <Plus className="w-5 h-5" />
@@ -286,13 +286,13 @@ const AuditManagement = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
-                <tr className="bg-slate-50/50">
-                  <th className="w-1/4 px-8 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Audit Scope & Title</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Unit / Dept</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Assigned Auditor</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Scheduled Date</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Status</th>
-                  <th className="w-36 px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 text-right pr-12">Actions</th>
+                <tr className="bg-slate-100/50">
+                  <th className="w-1/4 px-8 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Audit Scope & Title</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Unit / Dept</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Assigned Auditor</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Scheduled Date</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Status</th>
+                  <th className="w-36 px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -303,45 +303,45 @@ const AuditManagement = () => {
                         <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#2dd4bf]/10 group-hover:text-[#2dd4bf] transition-colors border border-slate-200/60 shadow-sm">
                            <FileText className="w-5 h-5" />
                         </div>
-                        <span className="text-sm font-bold text-slate-900 tracking-tight leading-tight">{audit.title}</span>
+                        <span className="text-sm font-medium text-slate-900 tracking-tight leading-tight">{audit.title}</span>
                       </div>
                     </td>
                     <td className="px-6 py-6">
                        <div className="flex items-center gap-2">
                           <Building2 className="w-3.5 h-3.5 text-slate-300" />
-                          <span className="text-xs font-bold text-slate-600">{audit.department}</span>
+                          <span className="text-xs font-medium text-slate-600">{audit.department}</span>
                        </div>
                     </td>
                     <td className="px-6 py-6">
                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-black text-slate-500 uppercase">
+                          <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-sm font-medium text-slate-500">
                              {audit.auditor?.employeeName?.charAt(0)}
                           </div>
-                          <span className="text-xs font-bold text-slate-700">{audit.auditor?.employeeName}</span>
+                          <span className="text-xs font-medium text-slate-700">{audit.auditor?.employeeName}</span>
                        </div>
                     </td>
                     <td className="px-6 py-6">
                        <div className="flex items-center gap-2 text-slate-500">
                           <Calendar className="w-3.5 h-3.5 text-[#2dd4bf]/60" />
-                          <span className="text-xs font-bold">{new Date(audit.auditDate).toLocaleDateString()}</span>
+                          <span className="text-xs font-medium">{new Date(audit.auditDate).toLocaleDateString()}</span>
                        </div>
                     </td>
                     <td className="px-6 py-6">
-                       <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusStyle(audit.status)}`}>
+                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-medium tracking-wider border ${getStatusStyle(audit.status)}`}>
                           {audit.status}
                        </span>
                     </td>
-                    <td className="px-6 py-6 text-right pr-10">
+                    <td className="px-6 py-6 text-right pr-8">
                        <div className="flex items-center justify-end gap-2.5">
                           <button 
                             onClick={() => handleEditClick(audit)}
-                            className="w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-[#2dd4bf] hover:border-[#2dd4bf] hover:text-slate-950 transition-all duration-300 shadow-sm active:scale-95"
+                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:border-slate-900 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
                           >
                              <FileEdit className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => handleDeleteClick(audit)}
-                            className="w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-rose-500 hover:border-rose-500 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
+                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
                           >
                              <Trash2 className="w-4 h-4" />
                           </button>
@@ -486,7 +486,7 @@ const AuditManagement = () => {
                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-slate-400 hover:bg-slate-50 hover:text-slate-600 rounded-2xl transition-all border border-slate-200 uppercase tracking-[0.2em] active:scale-95">
                      Discard
                    </button>
-                   <button type="submit" className="flex-[2] py-3 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] text-slate-950 text-[10px] font-black rounded-2xl shadow-2xl shadow-[#2dd4bf]/30 hover:brightness-110 transition-all active:scale-[0.98] uppercase tracking-[0.2em]">
+                   <button type="submit" className="flex-[2] py-3 bg-slate-900 text-white text-sm font-bold rounded-md shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-[0.98]">
                      {isEditing ? 'Confirm Audit Results' : 'Initialize Audit Schedule'}
                    </button>
                 </div>

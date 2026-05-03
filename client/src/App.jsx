@@ -14,6 +14,8 @@ import PatientFeedback from "./pages/PatientFeedback";
 import SystemSettings from "./pages/SystemSettings";
 import HelpDesk from "./pages/HelpDesk";
 import UserManuals from "./pages/UserManuals";
+import JawdaAOT from "./pages/JawdaAOT";
+import JawdaASD from "./pages/JawdaASD";
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
           <Route path="/dashboard/settings" element={<SystemSettings/>} />
           <Route path="/dashboard/support" element={<HelpDesk/>} />
           <Route path="/dashboard/manuals" element={<UserManuals/>} />
+          <Route path="/dashboard/jawda/aot" element={<JawdaAOT/>} />
+          <Route path="/dashboard/jawda/asd" element={<JawdaASD/>} />
         </Routes>
       </BrowserRouter>
     </NotificationProvider>

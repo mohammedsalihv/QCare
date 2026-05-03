@@ -11,10 +11,11 @@ const loginUser = async (req, res) => {
     const { employeeId, password } = req.body;
     const loginIdentifier = employeeId; // Contains either EMP ID, Username, or Email
 
-    // Find user by employeeId, username (stored in employeeId for AD), or email
+    // Find user by employeeId, username, or email
     const user = await User.findOne({
       $or: [
         { employeeId: loginIdentifier },
+        { username: loginIdentifier },
         { email: loginIdentifier.toLowerCase() }
       ]
     });
@@ -128,7 +129,7 @@ const loginUser = async (req, res) => {
           console.error("LDAP Auth Failed:", ldapError.message);
         }
       }
-      res.status(401).json({ message: "Invalid Employee ID or Password" });
+      res.status(401).json({ message: "Invalid Username/Email or Password" });
     }
   } catch (error) {
     console.error("Login Error:", error);
@@ -174,6 +175,7 @@ const createUser = async (req, res) => {
 
     const user = await User.create({
       employeeId,
+      username: req.body.username || employeeId, // Fallback to employeeId if no username provided
       employeeName,
       email,
       password,

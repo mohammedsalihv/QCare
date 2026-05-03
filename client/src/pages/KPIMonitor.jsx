@@ -191,7 +191,7 @@ const KPIMonitor = () => {
           
           <button 
             onClick={handleAddClick}
-            className="flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6] hover:brightness-110 text-slate-950 rounded-2xl font-black transition-all shadow-xl shadow-[#2dd4bf]/30 active:scale-95 group uppercase text-xs tracking-widest"
+            className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
           >
              <div className="flex items-center gap-3">
                 <Plus className="w-5 h-5" />
@@ -242,13 +242,13 @@ const KPIMonitor = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse table-fixed min-w-[1100px]">
               <thead>
-                <tr className="bg-slate-50/50">
-                  <th className="w-1/4 px-7 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">KPI Metric</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Department</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Target vs Actual</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Period</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100">Status</th>
-                  <th className="w-36 px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-wider border-b border-slate-100 text-right pr-10">Actions</th>
+                <tr className="bg-slate-100/50">
+                  <th className="w-1/4 px-7 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">KPI Metric</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Department</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Target vs Actual</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Period</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Status</th>
+                  <th className="w-36 px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -258,24 +258,24 @@ const KPIMonitor = () => {
                     <tr key={kpi._id} className="hover:bg-slate-50/20 transition-colors group">
                       <td className="px-7 py-4">
                         <div className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center font-black text-slate-400 text-[10px]`}>
+                          <div className={`w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center font-medium text-slate-400 text-[10px]`}>
                             <Layers className="w-4 h-4" />
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-xs font-bold text-slate-900 leading-snug">{kpi.name}</span>
-                            <span className="text-[9px] font-medium text-slate-400 uppercase tracking-tighter">{kpi.category}</span>
+                            <span className="text-sm font-medium text-slate-900 leading-snug">{kpi.name}</span>
+                            <span className="text-[11px] font-medium text-slate-400 tracking-tighter">{kpi.category}</span>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                            <Building2 className="w-3.5 h-3.5 text-slate-300" />
-                           <span className="text-xs font-semibold text-slate-600">{kpi.department?.name || 'N/A'}</span>
+                           <span className="text-xs text-slate-600">{kpi.department?.name || 'N/A'}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                          <div className="flex flex-col gap-1.5 min-w-[120px]">
-                            <div className="flex items-center justify-between text-[10px] font-bold">
+                            <div className="flex items-center justify-between text-[10px] font-medium">
                                <span className="text-slate-400">Target: {kpi.targetValue}{kpi.unit}</span>
                                <span className="text-slate-900">{kpi.actualValue}{kpi.unit}</span>
                             </div>
@@ -288,27 +288,27 @@ const KPIMonitor = () => {
                          </div>
                       </td>
                       <td className="px-6 py-4">
-                         <div className="flex items-center gap-2">
-                            <Calendar className="w-3.5 h-3.5 text-slate-300" />
-                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">{kpi.period}</span>
-                         </div>
+                          <div className="flex items-center gap-2">
+                             <Calendar className="w-3.5 h-3.5 text-slate-300" />
+                             <span className="text-sm text-slate-500">{kpi.period}</span>
+                          </div>
                       </td>
                       <td className="px-6 py-4">
-                         <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border ${getStatusBg(kpi.status)}`}>
-                            {kpi.status}
-                         </span>
+                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-medium tracking-wider border ${getStatusBg(kpi.status)}`}>
+                             {kpi.status}
+                          </span>
                       </td>
                       <td className="px-6 py-4 text-right pr-8">
                          <div className="flex items-center justify-end gap-2.5">
                             <button 
                               onClick={() => handleEditClick(kpi)}
-                              className="w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all duration-300 active:scale-95"
+                              className="w-8 h-8 rounded-md border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:border-slate-900 hover:text-white transition-all duration-300 active:scale-95"
                             >
                                <FileEdit className="w-4 h-4" />
                             </button>
                             <button 
                               onClick={() => handleDeleteClick(kpi._id)}
-                              className="w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-rose-500 hover:border-rose-500 hover:text-white transition-all duration-300 active:scale-95"
+                              className="w-8 h-8 rounded-md border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 active:scale-95"
                             >
                                <Trash2 className="w-4 h-4" />
                             </button>
@@ -436,7 +436,7 @@ const KPIMonitor = () => {
                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-slate-400 hover:bg-slate-50 hover:text-slate-600 rounded-xl transition-all border border-slate-200 uppercase tracking-[0.15em] active:scale-95">
                      Discard
                    </button>
-                   <button type="submit" className="flex-[2] py-3 bg-gradient-to-r from-[#b59662] to-[#9e8254] text-white text-[10px] font-black rounded-xl shadow-xl shadow-[#b59662]/30 hover:shadow-2xl hover:from-[#a68959] hover:to-[#8f754b] transition-all active:scale-[0.98] uppercase tracking-[0.15em]">
+                   <button type="submit" className="flex-[2] py-3 bg-slate-900 text-white text-sm font-bold rounded-md shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-[0.98]">
                      {isEditing ? 'Apply Changes' : 'Initialize Performance Metric'}
                    </button>
                 </div>
