@@ -1,14 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const { getRisks, createRisk, updateRisk, deleteRisk } = require('../controllers/riskController');
-const { protect, admin } = require('../middleware/authMiddleware');
+const {
+  createRisk,
+  getRisks,
+  getRiskById,
+  updateRisk,
+  logReview,
+  closeRisk,
+  getDashboardStats,
+  getRiskMatrix,
+  exportRiskRegister
+} = require('../controllers/riskController');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.route('/')
-  .get(protect, getRisks)
-  .post(protect, admin, createRisk);
+  .post(protect, authorize('QualityManager', 'DepartmentHead', 'SuperAdmin'), createRisk)
+  .get(protect, getRisks);
+
+router.get('/dashboard', protect, getDashboardStats);
+router.get('/matrix', protect, getRiskMatrix);
+router.get('/export/excel', protect, exportRiskRegister);
 
 router.route('/:id')
-  .put(protect, admin, updateRisk)
-  .delete(protect, admin, deleteRisk);
+  .get(protect, getRiskById)
+  .put(protect, updateRisk);
+
+router.put('/:id/review', protect, logReview);
+router.put('/:id/close', protect, closeRisk);
 
 module.exports = router;

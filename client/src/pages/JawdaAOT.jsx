@@ -18,12 +18,21 @@ import {
   ShieldCheck
 } from 'lucide-react';
 import { useNotification } from '../components/NotificationContext';
+import JawdaAdvisor from '../components/JawdaAdvisor';
 
 const JawdaAOT = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { showNotification } = useNotification();
   const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    patientId: '',
+    patientName: '',
+    organType: 'Kidney',
+    donorType: 'Living',
+    transplantDate: new Date().toISOString().split('T')[0],
+    status: 'Active'
+  });
 
   useEffect(() => {
     fetchData();
@@ -37,6 +46,26 @@ const JawdaAOT = () => {
       showNotification('Failed to load AOT data', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:5000/api/jawda/aot', formData);
+      showNotification('Recipient registered successfully', 'success');
+      setShowModal(false);
+      fetchData();
+      setFormData({
+        patientId: '',
+        patientName: '',
+        organType: 'Kidney',
+        donorType: 'Living',
+        transplantDate: new Date().toISOString().split('T')[0],
+        status: 'Active'
+      });
+    } catch (err) {
+      showNotification('Failed to register recipient', 'error');
     }
   };
 
@@ -200,7 +229,99 @@ const JawdaAOT = () => {
               </button>
            </div>
         </div>
+        <JawdaAdvisor />
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className="bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+              <div className="p-8 bg-slate-900 text-white flex items-center justify-between">
+                 <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center">
+                       <Heart className="w-6 h-6 text-rose-500" />
+                    </div>
+                    <div>
+                       <h3 className="text-lg font-black uppercase tracking-tight">Register Recipient</h3>
+                       <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">JAWDA AOT V1.3</p>
+                    </div>
+                 </div>
+                 <button onClick={() => setShowModal(false)} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
+                    <Plus className="w-6 h-6 rotate-45" />
+                 </button>
+              </div>
+              
+              <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Patient ID</label>
+                       <input 
+                        required
+                        type="text" 
+                        value={formData.patientId}
+                        onChange={(e) => setFormData({...formData, patientId: e.target.value})}
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-[#2dd4bf] text-sm font-bold" 
+                       />
+                    </div>
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Full Name</label>
+                       <input 
+                        required
+                        type="text" 
+                        value={formData.patientName}
+                        onChange={(e) => setFormData({...formData, patientName: e.target.value})}
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-[#2dd4bf] text-sm font-bold" 
+                       />
+                    </div>
+                 </div>
+
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Organ Type</label>
+                       <select 
+                        value={formData.organType}
+                        onChange={(e) => setFormData({...formData, organType: e.target.value})}
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-[#2dd4bf] text-sm font-bold appearance-none cursor-pointer"
+                       >
+                          <option>Kidney</option>
+                          <option>Liver</option>
+                          <option>Heart</option>
+                          <option>Lung</option>
+                          <option>Pancreas-Kidney</option>
+                       </select>
+                    </div>
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Donor Type</label>
+                       <select 
+                        value={formData.donorType}
+                        onChange={(e) => setFormData({...formData, donorType: e.target.value})}
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-[#2dd4bf] text-sm font-bold appearance-none cursor-pointer"
+                       >
+                          <option>Living</option>
+                          <option>Deceased</option>
+                       </select>
+                    </div>
+                 </div>
+
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Transplant Date</label>
+                    <input 
+                      required
+                      type="date" 
+                      value={formData.transplantDate}
+                      onChange={(e) => setFormData({...formData, transplantDate: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-[#2dd4bf] text-sm font-bold" 
+                    />
+                 </div>
+
+                 <div className="pt-4 flex gap-3">
+                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-4 bg-slate-50 text-slate-600 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-all">Cancel</button>
+                    <button type="submit" className="flex-1 py-4 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all">Register Recipient</button>
+                 </div>
+              </form>
+           </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

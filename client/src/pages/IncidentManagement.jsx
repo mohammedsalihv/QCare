@@ -110,6 +110,12 @@ const IncidentManagement = () => {
       });
       showNotification('Incident reported successfully', 'success');
       setShowModal(false);
+      
+      const reportedSeverity = formData.severity;
+      const reportedTitle = formData.title;
+      const reportedDesc = formData.description;
+      const reportedDept = loggedInUser.department || 'Clinical';
+
       setFormData({
         title: '',
         description: '',
@@ -119,6 +125,16 @@ const IncidentManagement = () => {
         severity: 'Low'
       });
       fetchIncidents();
+
+      // Auto-trigger Risk identification prompt for serious incidents
+      if (reportedSeverity === 'High' || reportedSeverity === 'Critical') {
+        setTimeout(() => {
+          if (window.confirm(`This incident has ${reportedSeverity} severity. Would you like to identify this as a new Risk in the Risk Register?`)) {
+            // Pre-fill risk data and navigate to risk creation (simulated for now by navigating)
+            window.location.href = `/dashboard/risks?action=new&title=${encodeURIComponent(reportedTitle)}&desc=${encodeURIComponent(reportedDesc)}&dept=${encodeURIComponent(reportedDept)}&impact=4`;
+          }
+        }, 1000);
+      }
     } catch (error) {
       showNotification(error.response?.data?.message || 'Failed to report incident', 'error');
     }

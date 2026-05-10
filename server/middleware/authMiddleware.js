@@ -25,20 +25,18 @@ const protect = async (req, res, next) => {
   }
 };
 
-const admin = (req, res, next) => {
-  if (req.user && (req.user.role === "admin" || req.user.role === "superadmin")) {
+const authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({
+        message: `User role ${req.user.role} is not authorized to access this route`
+      });
+    }
     next();
-  } else {
-    res.status(401).json({ message: "Not authorized as an admin" });
-  }
+  };
 };
 
-const superAdmin = (req, res, next) => {
-  if (req.user && req.user.role === "superadmin") {
-    next();
-  } else {
-    res.status(401).json({ message: "Not authorized as a super admin" });
-  }
-};
+const admin = authorize('admin', 'superadmin', 'SuperAdmin');
+const superAdmin = authorize('superadmin', 'SuperAdmin');
 
-module.exports = { protect, admin, superAdmin };
+module.exports = { protect, admin, superAdmin, authorize };

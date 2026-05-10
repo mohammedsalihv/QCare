@@ -20,12 +20,21 @@ import {
   LayoutGrid
 } from 'lucide-react';
 import { useNotification } from '../components/NotificationContext';
+import JawdaAdvisor from '../components/JawdaAdvisor';
 
 const JawdaASD = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { showNotification } = useNotification();
   const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    patientId: '',
+    referralDate: new Date().toISOString().split('T')[0],
+    initialAssessmentDate: '',
+    status: 'InAssessment',
+    isReportInEMR: false,
+    isReportProvidedToParents: false
+  });
 
   useEffect(() => {
     fetchData();
@@ -42,11 +51,31 @@ const JawdaASD = () => {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:5000/api/jawda/asd', formData);
+      showNotification('Referral registered successfully', 'success');
+      setShowModal(false);
+      fetchData();
+      setFormData({
+        patientId: '',
+        referralDate: new Date().toISOString().split('T')[0],
+        initialAssessmentDate: '',
+        status: 'InAssessment',
+        isReportInEMR: false,
+        isReportProvidedToParents: false
+      });
+    } catch (err) {
+      showNotification('Failed to register referral', 'error');
+    }
+  };
+
   const stats = [
     { label: 'Timely Access (14d)', value: '94.2%', icon: Timer, color: 'text-indigo-600', bg: 'bg-indigo-50' },
     { label: 'Report Compliance', value: '88.5%', icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     { label: 'Avg Dx Time', value: '32d', icon: Clock, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Active Referrals', value: data.filter(d => d.status === 'Referred').length, icon: Users, color: 'text-slate-600', bg: 'bg-slate-50' },
+    { label: 'Active Referrals', value: data.filter(d => d.status === 'InAssessment').length, icon: Users, color: 'text-slate-600', bg: 'bg-slate-50' },
   ];
 
   return (
@@ -158,7 +187,7 @@ const JawdaASD = () => {
                     <td className="px-8 py-6">
                        <div className="flex items-center gap-2">
                           <div className={`w-2 h-2 rounded-full ${item.coexistingConditionAssessmentDate ? 'bg-emerald-500' : 'bg-slate-200 animate-pulse'}`}></div>
-                          <span className="text-[10px] font-bold text-slate-500 uppercase">{item.coexistingConditionAssessmentDate ? 'Completed' : 'Pending'}</span>
+                           <span className="text-[10px] font-bold text-slate-500 uppercase">{item.coexistingConditionAssessmentDate ? 'Completed' : 'Pending'}</span>
                        </div>
                     </td>
                     <td className="px-8 py-6">
@@ -210,7 +239,97 @@ const JawdaASD = () => {
               </button>
            </div>
         </div>
+        <JawdaAdvisor />
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className="bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+              <div className="p-8 bg-slate-900 text-white flex items-center justify-between">
+                 <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
+                       <Puzzle className="w-6 h-6 text-indigo-500" />
+                    </div>
+                    <div>
+                       <h3 className="text-lg font-black uppercase tracking-tight">New ASD Referral</h3>
+                       <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">JAWDA ASD V1.0</p>
+                    </div>
+                 </div>
+                 <button onClick={() => setShowModal(false)} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
+                    <Plus className="w-6 h-6 rotate-45" />
+                 </button>
+              </div>
+              
+              <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Patient ID</label>
+                    <input 
+                      required
+                      type="text" 
+                      value={formData.patientId}
+                      onChange={(e) => setFormData({...formData, patientId: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-indigo-500 text-sm font-bold" 
+                    />
+                 </div>
+
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Referral Date</label>
+                       <input 
+                        required
+                        type="date" 
+                        value={formData.referralDate}
+                        onChange={(e) => setFormData({...formData, referralDate: e.target.value})}
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-indigo-500 text-sm font-bold" 
+                       />
+                    </div>
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Assessment Status</label>
+                       <select 
+                        value={formData.status}
+                        onChange={(e) => setFormData({...formData, status: e.target.value})}
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-indigo-500 text-sm font-bold appearance-none cursor-pointer"
+                       >
+                          <option value="InAssessment">In Assessment</option>
+                          <option value="Diagnosed">Diagnosed</option>
+                          <option value="Referred">Referred Out</option>
+                       </select>
+                    </div>
+                 </div>
+
+                 <div className="space-y-4 pt-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Compliance Gates</label>
+                    <div className="flex items-center gap-6">
+                       <label className="flex items-center gap-3 cursor-pointer group">
+                          <input 
+                            type="checkbox" 
+                            checked={formData.isReportInEMR}
+                            onChange={(e) => setFormData({...formData, isReportInEMR: e.target.checked})}
+                            className="w-5 h-5 rounded-lg border-slate-200 text-indigo-500 focus:ring-indigo-500/20" 
+                          />
+                          <span className="text-xs font-bold text-slate-600 group-hover:text-slate-900 transition-colors">EMR Documented</span>
+                       </label>
+                       <label className="flex items-center gap-3 cursor-pointer group">
+                          <input 
+                            type="checkbox" 
+                            checked={formData.isReportProvidedToParents}
+                            onChange={(e) => setFormData({...formData, isReportProvidedToParents: e.target.checked})}
+                            className="w-5 h-5 rounded-lg border-slate-200 text-indigo-500 focus:ring-indigo-500/20" 
+                          />
+                          <span className="text-xs font-bold text-slate-600 group-hover:text-slate-900 transition-colors">Parent Report Sent</span>
+                       </label>
+                    </div>
+                 </div>
+
+                 <div className="pt-4 flex gap-3">
+                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-4 bg-slate-50 text-slate-600 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-all">Cancel</button>
+                    <button type="submit" className="flex-1 py-4 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all">Register Referral</button>
+                 </div>
+              </form>
+           </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

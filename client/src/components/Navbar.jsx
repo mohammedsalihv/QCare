@@ -15,7 +15,8 @@ import {
   ThumbsUp,
   PanelLeftOpen,
   PanelLeftClose,
-  BookOpen
+  BookOpen,
+  ShieldAlert
 } from 'lucide-react';
 import Dropdown from './Dropdown';
 import { useNavigate } from 'react-router-dom';
@@ -208,11 +209,13 @@ const Navbar = ({ toggleSidebar, isSidebarOpen, openProfileDrawer, user }) => {
                              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border border-slate-50 ${
                                 n.type === 'incident_report' ? 'bg-rose-50 text-rose-500' :
                                 n.type === 'document_upload' ? 'bg-teal-50 text-[#2dd4bf]' : 
-                                n.type === 'document_like' ? 'bg-amber-50 text-amber-500' : 'bg-emerald-50 text-emerald-500'
+                                n.type === 'document_like' ? 'bg-amber-50 text-amber-500' : 
+                                n.type === 'license-expiry' ? 'bg-rose-100 text-rose-600' : 'bg-emerald-50 text-emerald-500'
                              }`}>
                                 {n.type === 'incident_report' ? <AlertTriangle className="w-5 h-5" /> : 
                                  n.type === 'document_upload' ? <Monitor className="w-5 h-5" /> : 
-                                 n.type === 'document_like' ? <ThumbsUp className="w-5 h-5" /> : <Shield className="w-5 h-5" />}
+                                 n.type === 'document_like' ? <ThumbsUp className="w-5 h-5" /> : 
+                                 n.type === 'license-expiry' ? <ShieldAlert className="w-5 h-5" /> : <Shield className="w-5 h-5" />}
                              </div>
                              <div className="flex flex-col gap-1.5 relative w-full">
                                 {!n.isRead && <div className="absolute -left-14 top-1/2 -translate-y-1/2 w-2 h-2 bg-[#2dd4bf] rounded-full shadow-[0_0_8px_rgba(45,212,191,0.3)]"></div>}

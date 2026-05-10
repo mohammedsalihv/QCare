@@ -10,6 +10,14 @@ router.post('/aot', jawdaController.addAOTEntry);
 router.get('/asd', jawdaController.getASDData);
 router.post('/asd', jawdaController.addASDEntry);
 
+// BN Routes
+router.get('/bn', jawdaController.getBNData);
+router.post('/bn', jawdaController.addBNEntry);
+
+// DF Routes
+router.get('/df', jawdaController.getDFData);
+router.post('/df', jawdaController.addDFEntry);
+
 // KPI Stats
 router.get('/kpis', jawdaController.getJawdaKPIs);
 

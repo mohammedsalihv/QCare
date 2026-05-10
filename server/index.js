@@ -13,6 +13,7 @@ const incidentRoutes = require("./routes/incidentRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const riskRoutes = require("./routes/riskRoutes");
 const auditRoutes = require("./routes/auditRoutes");
+const complianceRoutes = require("./routes/complianceRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
 const path = require("path");
 
@@ -51,6 +52,9 @@ cron.schedule("0 0 * * *", () => {
   syncLDAPUsers();
 });
 
+// Initialize License Reminders
+require("./scheduledJobs/licenseReminder");
+
 // Socket.io connection logic
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
@@ -74,13 +78,21 @@ io.on("connection", (socket) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/departments", departmentRoutes);
-app.use("/api/kpis", kpiRoutes);
+app.use("/api/kpi", kpiRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/incidents", incidentRoutes);
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/jawda', require('./routes/jawdaRoutes'));
 app.use("/api/risks", riskRoutes);
 app.use("/api/audits", auditRoutes);
+app.use("/api/compliance", complianceRoutes);
+app.use("/api/audit", require("./routes/clinicalAuditRoutes"));
+app.use("/api/training", require("./routes/trainingRoutes"));
+app.use("/api/patient-experience", require("./routes/patientExperienceRoutes"));
+app.use("/api/ipc", require("./routes/ipcRoutes"));
+app.use("/api/medication", require("./routes/medicationRoutes"));
+app.use("/api/fms", require("./routes/fmsRoutes"));
+app.use("/api/cp", require("./routes/cpRoutes"));
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/settings", require("./routes/settingsRoutes"));
 
