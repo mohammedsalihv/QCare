@@ -23,7 +23,8 @@ import {
   AlertCircle,
   GraduationCap,
   Pill,
-  Activity
+  Activity,
+  UserCheck
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
