@@ -5,8 +5,8 @@ const StaffLicense = require('../models/StaffLicense');
 const Notification = require('../models/Notification');
 const AuditLog = require('../models/AuditLog');
 const User = require('../models/users');
+const MailLog = require('../models/MailLog');
 
-// Configure Nodemailer (Use environment variables in production)
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || 'smtp.example.com',
   port: process.env.EMAIL_PORT || 587,
@@ -18,8 +18,6 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendLicenseReminders = async () => {
-  console.log('Running License Expiry Reminders Job...');
-  
   const today = new Date();
   const ninetyDaysFromNow = new Date();
   ninetyDaysFromNow.setDate(today.getDate() + 90);
@@ -67,6 +65,17 @@ const sendLicenseReminders = async () => {
         subject: `URGENT: ${license.type} License Expiry Warning`,
         text: `Your ${license.type} License (${license.licenseNumber}) is set to expire on ${new Date(license.expiryDate).toLocaleDateString()}. Days remaining: ${daysRemaining}. Please initiate renewal.`
       });
+
+      // Log to MailLog
+      await MailLog.create({
+        moduleName: 'Compliance',
+        pageName: license.type === 'Facility' ? 'Facility Licenses' : 'Staff Licenses',
+        mailSubject: `URGENT: ${license.type} License Expiry Warning`,
+        fromMail: 'noreply@qcare.com',
+        toMail: recipientEmail,
+        toMailUserName: license.type === 'Staff' ? (license.holder?.employeeName || 'Staff Member') : 'Quality Manager',
+        submittedBy: 'System'
+      });
     } catch (err) {
       console.error('Email sending failed:', err.message);
     }
@@ -90,5 +99,4 @@ const sendLicenseReminders = async () => {
 
 // Scheduled for 7:00 AM UAE Time (UTC+4) -> 3:00 AM UTC
 cron.schedule('0 3 * * *', sendLicenseReminders);
-
 module.exports = { sendLicenseReminders };

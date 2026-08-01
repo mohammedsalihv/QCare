@@ -52,8 +52,8 @@ const StatCard = ({ title, count, icon: Icon, color, trend, trendUp }) => (
         )}
       </div>
       <div>
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">{title}</p>
-        <h3 className="text-3xl font-black text-slate-900 tracking-tight">{count}</h3>
+        <p className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] mb-1">{title}</p>
+        <h3 className="text-3xl font-black text-black font-bold tracking-tight">{count}</h3>
       </div>
     </div>
   </div>
@@ -68,20 +68,20 @@ const Dashboard = () => {
   // Get user info
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
   const userRole = userInfo.role || 'user';
-  const isAdmin = userRole === 'admin' || userRole === 'superadmin';
+  const isAdmin = userRole?.toLowerCase() === 'admin' || userRole?.toLowerCase() === 'superadmin';
 
   const adminStats = [
     { title: 'Open Risks', count: 12, icon: AlertCircle, color: 'text-rose-500', trend: 'High Priority', trendUp: false },
-    { title: 'Scheduled Audits', count: 5, icon: Calendar, color: 'text-blue-500', trend: 'Next: 25 Apr', trendUp: true },
+    { title: 'Scheduled Audits', count: 5, icon: Calendar, color: 'text-[#040404]', trend: 'Next: 25 Apr', trendUp: true },
     { title: 'Patient Feedback', count: 48, icon: MessageSquare, color: 'text-emerald-500', trend: '+15% Satisfaction', trendUp: true },
-    { title: 'Pending Incidents', count: 24, icon: Clock, color: 'text-violet-500', trend: '-5% vs last month', trendUp: true },
+    { title: 'Pending Incidents', count: 24, icon: Clock, color: 'text-[#040404]', trend: '-5% vs last month', trendUp: true },
   ];
 
   const userStats = [
-    { title: 'My Reported Cases', count: 8, icon: History, color: 'text-blue-500', trend: 'Active', trendUp: true },
+    { title: 'My Reported Cases', count: 8, icon: History, color: 'text-[#040404]', trend: 'Active', trendUp: true },
     { title: 'Risk Participations', count: 3, icon: ShieldCheck, color: 'text-rose-500', trend: 'Critical Area', trendUp: false },
     { title: 'Audit Participations', count: 2, icon: FileCheck, color: 'text-emerald-500', trend: 'Upcoming', trendUp: true },
-    { title: 'Recent Feedback', count: 5, icon: MessageSquare, color: 'text-violet-500', trend: 'View all', trendUp: true },
+    { title: 'Recent Feedback', count: 5, icon: MessageSquare, color: 'text-[#040404]', trend: 'View all', trendUp: true },
   ];
 
   const pieData = [
@@ -128,27 +128,27 @@ const Dashboard = () => {
       <div className="flex flex-col gap-8">
         {/* Welcome Banner */}
         <div className="relative p-8 md:p-12 rounded-[2.5rem] bg-slate-900 overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#2dd4bf]/20 to-transparent"></div>
-          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#2dd4bf]/10 rounded-full blur-[100px]"></div>
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[var(--color-primary)]/20 to-transparent"></div>
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[var(--color-primary)]/10 rounded-full blur-[100px]"></div>
           
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                 <span className="px-3 py-1 bg-[#2dd4bf]/20 text-[#2dd4bf] rounded-full text-[10px] font-black uppercase tracking-widest border border-[#2dd4bf]/30">
+                 <span className="px-3 py-1 bg-[var(--color-primary)]/20 text-[var(--color-primary)] rounded-full text-[10px] font-black uppercase tracking-widest border border-[var(--color-primary)]/30">
                    {userRole} Portal
                  </span>
-                 <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
+                 <span className="text-black font-bold text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
                    <Calendar className="w-3 h-3" /> {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
                  </span>
               </div>
               <div>
                 <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
                   Welcome back,<br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2dd4bf] to-[#3b82f6]">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)]">
                     {userInfo.employeeName || 'Healthcare Professional'}
                   </span>
                 </h1>
-                <p className="text-slate-400 mt-4 text-sm font-medium max-w-xl">
+                <p className="text-black font-bold mt-4 text-sm font-medium max-w-xl">
                   {isAdmin 
                     ? "Your administrative command center is ready. Review system-wide performance and incident trends below."
                     : "Review your recent incident reports, department status, and access the document library for latest updates."}
@@ -157,7 +157,7 @@ const Dashboard = () => {
             </div>
 
             <div className="flex flex-col gap-3 min-w-[200px]">
-              <button className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm">
+              <button className="flex items-center justify-between gap-4 px-6 py-4 bg-[var(--color-primary)] hover:bg-[var(--color-primary)] text-white rounded-md font-bold transition-all shadow-lg shadow-[var(--color-primary)]/20 active:scale-95 group text-sm">
                  <div className="flex items-center gap-3">
                     <Plus className="w-5 h-5" />
                     <span>Report Incident</span>
@@ -166,10 +166,10 @@ const Dashboard = () => {
               </button>
               <button className="flex items-center justify-between gap-4 px-6 py-4 bg-white/10 hover:bg-white/20 text-white rounded-md font-bold transition-all border border-white/20 active:scale-95 text-sm group">
                  <div className="flex items-center gap-3">
-                    <Layers className="w-5 h-5 text-slate-300" />
+                    <Layers className="w-5 h-5 text-black font-bold" />
                     <span>Resource Library</span>
                  </div>
-                 <ExternalLink className="w-4 h-4 text-slate-300 group-hover:scale-110 transition-transform" />
+                 <ExternalLink className="w-4 h-4 text-black font-bold group-hover:scale-110 transition-transform" />
               </button>
             </div>
           </div>
@@ -188,10 +188,10 @@ const Dashboard = () => {
             <div className="lg:col-span-1 bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm relative overflow-hidden group">
                <div className="flex items-center justify-between mb-8">
                   <div>
-                     <h4 className="text-sm font-black text-slate-900 uppercase tracking-tight">Status Distribution</h4>
-                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Global metrics</p>
+                     <h4 className="text-sm font-black text-black font-bold uppercase tracking-tight">Status Distribution</h4>
+                     <p className="text-[10px] text-black font-bold font-bold uppercase tracking-widest">Global metrics</p>
                   </div>
-                  <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
+                  <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-black font-bold">
                      <Activity className="w-5 h-5" />
                   </div>
                </div>
@@ -215,16 +215,16 @@ const Dashboard = () => {
                     </PieChart>
                   </ResponsiveContainer>
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-                     <span className="text-2xl font-black text-slate-900">100%</span>
-                     <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Total Active</p>
+                     <span className="text-2xl font-black text-black font-bold">100%</span>
+                     <p className="text-[8px] font-black text-black font-bold uppercase tracking-widest">Total Active</p>
                   </div>
                </div>
                <div className="grid grid-cols-3 gap-2 mt-8">
                   {pieData.map((item, idx) => (
                     <div key={idx} className="flex flex-col items-center gap-1 p-2 rounded-xl bg-slate-50 border border-slate-100 transition-all hover:border-[#b59662]/20">
                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></div>
-                       <span className="text-[8px] font-black text-slate-500 uppercase">{item.name}</span>
-                       <span className="text-xs font-black text-slate-900">{item.value}%</span>
+                       <span className="text-[8px] font-black text-black font-bold uppercase">{item.name}</span>
+                       <span className="text-xs font-black text-black font-bold">{item.value}%</span>
                     </div>
                   ))}
                </div>
@@ -233,8 +233,8 @@ const Dashboard = () => {
             <div className="lg:col-span-2 bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden group">
               <div className="flex items-center justify-between mb-8">
                   <div>
-                     <h4 className="text-sm font-black text-slate-900 uppercase tracking-tight">Incident Reporting Trend</h4>
-                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Past 7 days performance</p>
+                     <h4 className="text-sm font-black text-black font-bold uppercase tracking-tight">Incident Reporting Trend</h4>
+                     <p className="text-[10px] text-black font-bold font-bold uppercase tracking-widest">Past 7 days performance</p>
                   </div>
                   <div className="flex items-center gap-2">
                      <span className="flex items-center gap-1 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black uppercase tracking-wider">
@@ -247,8 +247,8 @@ const Dashboard = () => {
                      <AreaChart data={areaData}>
                       <defs>
                         <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#2dd4bf" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#2dd4bf" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -257,7 +257,7 @@ const Dashboard = () => {
                       <Tooltip 
                         contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', padding: '12px' }}
                       />
-                      <Area type="monotone" dataKey="value" stroke="#2dd4bf" strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" />
+                      <Area type="monotone" dataKey="value" stroke="var(--color-primary)" strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" />
                     </AreaChart>
                   </ResponsiveContainer>
                </div>
@@ -269,10 +269,10 @@ const Dashboard = () => {
         <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm">
           <div className="flex items-center justify-between p-8 border-b border-slate-100 bg-slate-50/20">
              <div>
-                <h3 className="text-lg font-black text-slate-900 tracking-tight">
+                <h3 className="text-lg font-black text-black font-bold tracking-tight">
                   {isAdmin ? 'System-wide Investigations' : 'My Reported Incidents'}
                 </h3>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-1">Live Audit Tracking</p>
+                <p className="text-[10px] text-black font-bold font-bold uppercase tracking-[0.2em] mt-1">Live Audit Tracking</p>
              </div>
              <div className="flex items-center gap-4">
                 <div className="hidden md:flex bg-white p-1 rounded-2xl border border-slate-200">
@@ -281,14 +281,14 @@ const Dashboard = () => {
                       key={tab}
                       onClick={() => { setActiveTab(tab); setCurrentPage(1); }}
                       className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
-                        activeTab === tab ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'
+                        activeTab === tab ? 'bg-[var(--color-primary)] text-white shadow-lg' : 'text-black font-bold hover:text-black font-bold'
                       }`}
                     >
                       {tab}
                     </button>
                   ))}
                 </div>
-                <button className="p-3 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-900 transition-all active:scale-95">
+                <button className="p-3 rounded-2xl bg-white border border-slate-200 text-black font-bold hover:bg-slate-50 hover:text-black font-bold transition-all active:scale-95">
                   <Filter className="w-5 h-5" />
                 </button>
              </div>
@@ -298,11 +298,11 @@ const Dashboard = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-100/50">
-                  <th className="px-8 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Reference</th>
-                  <th className="px-8 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Classification</th>
-                  <th className="px-8 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Unit / Department</th>
-                  <th className="px-8 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Status</th>
-                  <th className="px-8 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-right pr-8">Operations</th>
+                  <th className="px-8 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Reference</th>
+                  <th className="px-8 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Classification</th>
+                  <th className="px-8 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Unit / Department</th>
+                  <th className="px-8 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Status</th>
+                  <th className="px-8 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 text-right pr-8">Operations</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -310,23 +310,23 @@ const Dashboard = () => {
                   <tr key={incident.id} className="hover:bg-slate-50/50 transition-colors group">
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#2dd4bf]/10 group-hover:text-[#2dd4bf] transition-colors">
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-black font-bold group-hover:bg-[var(--color-primary)]/10 group-hover:text-[var(--color-primary)] transition-colors">
                            <Activity className="w-5 h-5" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-sm font-medium text-slate-900 tracking-tight">{incident.number}</span>
-                          <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{incident.date}</span>
+                          <span className="text-sm font-medium text-black font-bold tracking-tight">{incident.number}</span>
+                          <span className="text-[10px] text-black font-bold font-medium uppercase tracking-widest">{incident.date}</span>
                         </div>
                       </div>
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex flex-col">
-                        <span className="text-sm text-slate-600 font-medium leading-snug">{incident.details}</span>
-                        <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-1">{incident.type}</span>
+                        <span className="text-sm text-black font-bold font-medium leading-snug">{incident.details}</span>
+                        <span className="text-[10px] text-black font-bold font-medium uppercase tracking-wider mt-1">{incident.type}</span>
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                      <span className="inline-flex px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-100 text-slate-600 text-[10px] font-medium uppercase tracking-widest">
+                      <span className="inline-flex px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-100 text-black font-bold text-[10px] font-medium uppercase tracking-widest">
                         {incident.dept}
                       </span>
                     </td>
@@ -334,18 +334,18 @@ const Dashboard = () => {
                        <div className="flex items-center gap-2.5">
                           <div className={`w-2.5 h-2.5 rounded-full ring-4 ${
                              incident.status === 'Completed' ? 'bg-emerald-500 ring-emerald-50' : 
-                             incident.status === 'Pending' ? 'bg-rose-500 ring-rose-50' : 'bg-violet-500 ring-violet-50'
+                             incident.status === 'Pending' ? 'bg-rose-500 ring-rose-50' : 'bg-[#040404] ring-[#040404]'
                           }`}></div>
-                          <span className="text-[11px] font-medium text-slate-900 uppercase tracking-widest">{incident.status}</span>
+                          <span className="text-[11px] font-medium text-black font-bold uppercase tracking-widest">{incident.status}</span>
                        </div>
                     </td>
                     <td className="px-8 py-6 text-right pr-8">
                        <div className="flex items-center justify-end gap-3">
-                          <button className="w-9 h-9 rounded-md bg-white border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all duration-300 active:scale-95 shadow-sm">
+                          <button className="w-9 h-9 rounded-md bg-white border border-slate-200 text-black font-bold flex items-center justify-center hover:bg-[var(--color-primary)] hover:text-white hover:border-[var(--color-primary)] transition-all duration-300 active:scale-95 shadow-sm">
                              <Eye className="w-4 h-4" />
                           </button>
                           {isAdmin && (
-                            <button className="w-9 h-9 rounded-md bg-white border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all duration-300 active:scale-95 shadow-sm">
+                            <button className="w-9 h-9 rounded-md bg-white border border-slate-200 text-black font-bold flex items-center justify-center hover:bg-[var(--color-primary)] hover:text-white hover:border-[var(--color-primary)] transition-all duration-300 active:scale-95 shadow-sm">
                                <FileEdit className="w-4 h-4" />
                             </button>
                           )}
@@ -387,10 +387,10 @@ const Dashboard = () => {
                  <h5 className="font-black text-sm uppercase tracking-widest mb-2">Latest Guidelines</h5>
                  <p className="text-xs text-emerald-50 font-medium opacity-80 leading-relaxed">Version 4.2 of the Clinical Protocol is now live in the document library. Please review.</p>
               </div>
-              <div className="p-6 rounded-[2rem] bg-gradient-to-br from-[#2dd4bf] to-[#3b82f6] text-slate-950 shadow-xl shadow-[#2dd4bf]/20">
+              <div className="p-6 rounded-[2rem] bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] text-black font-bold shadow-xl shadow-[var(--color-primary)]/20">
                  <Activity className="w-10 h-10 mb-4 opacity-50" />
                  <h5 className="font-black text-sm uppercase tracking-widest mb-2">Need Support?</h5>
-                 <p className="text-xs text-slate-50 font-medium opacity-80 leading-relaxed">The Quality Assurance team is available 24/7 for incident investigation support.</p>
+                 <p className="text-xs text-black font-bold font-medium opacity-80 leading-relaxed">The Quality Assurance team is available 24/7 for incident investigation support.</p>
               </div>
            </div>
         )}

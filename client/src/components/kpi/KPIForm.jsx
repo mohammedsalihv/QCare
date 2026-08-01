@@ -90,12 +90,12 @@ const KPIForm = ({ isOpen, onClose, onSave, kpiData }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div className="bg-white dark:bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
         <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+          <h2 className="text-xl font-bold text-black font-bold dark:text-white">
             {kpiData ? 'Edit KPI Indicator' : 'New KPI Indicator'}
           </h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+          <button onClick={onClose} className="text-black font-bold hover:text-black font-bold dark:hover:text-black font-bold">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -103,24 +103,24 @@ const KPIForm = ({ isOpen, onClose, onSave, kpiData }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Indicator Code</label>
+              <label className="text-sm font-medium text-black font-bold dark:text-black font-bold">Indicator Code</label>
               <input
                 type="text"
                 name="indicatorCode"
                 value={formData.indicatorCode}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-[#040404] outline-none"
                 placeholder="e.g. PS-001"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Category</label>
+              <label className="text-sm font-medium text-black font-bold dark:text-black font-bold">Category</label>
               <select
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-[#040404] outline-none"
               >
                 <option value="patient-safety">Patient Safety</option>
                 <option value="clinical-effectiveness">Clinical Effectiveness</option>
@@ -130,34 +130,34 @@ const KPIForm = ({ isOpen, onClose, onSave, kpiData }) => {
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Indicator Name (EN)</label>
+              <label className="text-sm font-medium text-black font-bold dark:text-black font-bold">Indicator Name (EN)</label>
               <input
                 type="text"
                 name="indicatorName"
                 value={formData.indicatorName}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-[#040404] outline-none"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 text-right">اسم المؤشر (AR)</label>
+              <label className="text-sm font-medium text-black font-bold dark:text-black font-bold text-right">اسم المؤشر (AR)</label>
               <input
                 type="text"
                 name="indicatorName_ar"
                 value={formData.indicatorName_ar}
                 onChange={handleChange}
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none text-right"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-[#040404] outline-none text-right"
                 dir="rtl"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Reporting Period</label>
+              <label className="text-sm font-medium text-black font-bold dark:text-black font-bold">Reporting Period</label>
               <select
                 name="reportingPeriod"
                 value={formData.reportingPeriod}
                 onChange={handleChange}
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-[#040404] outline-none"
               >
                 <option value="Q1">Q1</option>
                 <option value="Q2">Q2</option>
@@ -166,58 +166,58 @@ const KPIForm = ({ isOpen, onClose, onSave, kpiData }) => {
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Year</label>
+              <label className="text-sm font-medium text-black font-bold dark:text-black font-bold">Year</label>
               <input
                 type="number"
                 name="reportingYear"
                 value={formData.reportingYear}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:ring-2 focus:ring-[#040404] outline-none"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Numerator</label>
+              <label className="text-sm font-medium text-black font-bold dark:text-black font-bold">Numerator</label>
               <input
                 type="number"
                 name="numerator"
                 value={formData.numerator}
                 onChange={handleChange}
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-white focus:ring-2 focus:ring-[#040404] outline-none"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Denominator</label>
+              <label className="text-sm font-medium text-black font-bold dark:text-black font-bold">Denominator</label>
               <input
                 type="number"
                 name="denominator"
                 value={formData.denominator}
                 onChange={handleChange}
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-white focus:ring-2 focus:ring-[#040404] outline-none"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Target %</label>
+              <label className="text-sm font-medium text-black font-bold dark:text-black font-bold">Target %</label>
               <input
                 type="number"
                 name="target"
                 value={formData.target}
                 onChange={handleChange}
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-white focus:ring-2 focus:ring-[#040404] outline-none"
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-between p-4 border border-blue-100 dark:border-blue-900/30 bg-blue-50/30 dark:bg-blue-900/10 rounded-xl">
+          <div className="flex items-center justify-between p-4 border border-blue-100 dark:border-blue-900/30 bg-slate-100/30 dark:bg-[#040404]/10 rounded-xl">
             <div>
-              <p className="text-sm text-slate-500">Calculated Value</p>
-              <p className="text-2xl font-bold text-blue-600">{formData.calculatedValue}%</p>
+              <p className="text-sm text-black font-bold">Calculated Value</p>
+              <p className="text-2xl font-bold text-[#040404]">{formData.calculatedValue}%</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-slate-500">Status</p>
+              <p className="text-sm text-black font-bold">Status</p>
               <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
                 formData.status === 'on-track' ? 'bg-green-100 text-green-700' :
                 formData.status === 'at-risk' ? 'bg-amber-100 text-amber-700' :
@@ -232,13 +232,13 @@ const KPIForm = ({ isOpen, onClose, onSave, kpiData }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors"
+              className="px-6 py-2 rounded-lg text-black font-bold hover:bg-slate-100 dark:text-black font-bold dark:hover:bg-slate-800 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors shadow-lg shadow-blue-200 dark:shadow-none"
+              className="px-6 py-2 rounded-lg bg-[#040404] hover:bg-[#040404] text-white font-medium transition-colors shadow-lg shadow-[#040404]/20 dark:shadow-none"
             >
               {kpiData ? 'Update Indicator' : 'Create Indicator'}
             </button>

@@ -43,7 +43,7 @@ const JawdaBN = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/jawda/bn');
+      const response = await axios.get('http://192.168.1.160:5000/api/jawda/bn');
       setData(response.data);
     } catch (err) {
       showNotification('Failed to load BN data', 'error');
@@ -55,7 +55,7 @@ const JawdaBN = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/jawda/bn', formData);
+      await axios.post('http://192.168.1.160:5000/api/jawda/bn', formData);
       showNotification('Burn admission registered', 'success');
       setShowModal(false);
       fetchData();
@@ -74,7 +74,7 @@ const JawdaBN = () => {
 
   const stats = [
     { label: 'Total Patients', value: data.length, icon: Users, color: 'text-orange-600', bg: 'bg-orange-50' },
-    { label: 'Avg LOS / TBSA', value: '1.2d', icon: Clock, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { label: 'Avg LOS / TBSA', value: '1.2d', icon: Clock, color: 'text-[#040404]', bg: 'bg-slate-100' },
     { label: 'Sepsis Rate', value: '2.1', icon: Activity, color: 'text-rose-600', bg: 'bg-rose-50' },
     { label: 'Graft Loss', value: '4%', icon: Droplets, color: 'text-emerald-600', bg: 'bg-emerald-50' },
   ];
@@ -85,26 +85,26 @@ const JawdaBN = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 text-sm font-bold text-slate-400 tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-sm font-bold text-black font-bold tracking-widest mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#2dd4bf]">Regulatory</span>
+              <span className="text-[var(--color-primary)]">Regulatory</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#2dd4bf]">Burn Services</span>
+              <span className="text-[var(--color-primary)]">Burn Services</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+            <h1 className="text-2xl font-extrabold text-black font-bold tracking-tight flex items-center gap-3">
               <Flame className="w-8 h-8 text-orange-500" />
-              JAWDA Burn Module <span className="text-sm font-medium text-slate-400 ml-2 bg-slate-100 px-2 py-0.5 rounded">V4 Q1-2026</span>
+              JAWDA Burn Module <span className="text-sm font-medium text-black font-bold ml-2 bg-slate-100 px-2 py-0.5 rounded">V4 Q1-2026</span>
             </h1>
           </div>
           
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all">
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-black font-bold hover:bg-slate-50 transition-all">
               <Download className="w-4 h-4" /> Export BN Dataset
             </button>
             <button 
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-bold shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-95"
+              className="flex items-center gap-2 px-6 py-3 bg-[#040404] text-white rounded-xl text-sm font-bold shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-95"
             >
               <Plus className="w-4 h-4" /> New Burn Admission
             </button>
@@ -119,8 +119,8 @@ const JawdaBN = () => {
                 <stat.icon className={`w-7 h-7 ${stat.color}`} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
-                <p className="text-xl font-black text-slate-900">{stat.value}</p>
+                <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest">{stat.label}</p>
+                <p className="text-xl font-black text-black font-bold">{stat.value}</p>
               </div>
             </div>
           ))}
@@ -130,10 +130,10 @@ const JawdaBN = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm">
             <div className="p-6 border-b border-slate-100 bg-slate-50/30 flex items-center justify-between">
-              <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest">Active Burn Inpatients</h3>
+              <h3 className="text-xs font-black text-black font-bold uppercase tracking-widest">Active Burn Inpatients</h3>
               <div className="flex items-center gap-2">
                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold" />
                     <input type="text" placeholder="Search..." className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-[10px] font-bold w-48" />
                  </div>
               </div>
@@ -142,11 +142,11 @@ const JawdaBN = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50/50">
-                    <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Case ID</th>
-                    <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">TBSA %</th>
-                    <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Adm. Date</th>
-                    <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Infection Risk</th>
-                    <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Status</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Case ID</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">TBSA %</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Adm. Date</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Infection Risk</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -154,8 +154,8 @@ const JawdaBN = () => {
                     <tr key={item._id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <span className="text-sm font-bold text-slate-900">{item.patientId}</span>
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{item.patientName}</span>
+                          <span className="text-sm font-bold text-black font-bold">{item.patientId}</span>
+                          <span className="text-[10px] font-bold text-black font-bold uppercase tracking-tight">{item.patientName}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -163,10 +163,10 @@ const JawdaBN = () => {
                            <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                               <div className={`h-full ${item.tbsa > 20 ? 'bg-rose-500' : 'bg-orange-500'}`} style={{ width: `${item.tbsa}%` }}></div>
                            </div>
-                           <span className="text-xs font-bold text-slate-700">{item.tbsa}%</span>
+                           <span className="text-xs font-bold text-black font-bold">{item.tbsa}%</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-xs font-bold text-slate-600">
+                      <td className="px-6 py-4 text-xs font-bold text-black font-bold">
                         {new Date(item.admissionDate).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4">
@@ -175,7 +175,7 @@ const JawdaBN = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-[10px] font-black text-slate-500 uppercase">{item.status}</span>
+                        <span className="text-[10px] font-black text-black font-bold uppercase">{item.status}</span>
                       </td>
                     </tr>
                   )) : (
@@ -191,7 +191,7 @@ const JawdaBN = () => {
             </div>
           </div>
 
-          <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden flex flex-col justify-between">
+          <div className="bg-white rounded-[2.5rem] p-8 text-white relative overflow-hidden flex flex-col justify-between">
             <div className="absolute top-0 right-0 p-8 opacity-10">
               <Thermometer className="w-32 h-32 text-orange-500" />
             </div>
@@ -202,19 +202,19 @@ const JawdaBN = () => {
               <ul className="space-y-6">
                 <li className="flex gap-4">
                   <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-1.5 shrink-0"></div>
-                  <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                  <p className="text-xs text-black font-bold font-medium leading-relaxed">
                     <span className="text-white font-bold">BN001 VAE:</span> Patient must be ventilated ≥4 calendar days. Day of intubation is Day 1.
                   </p>
                 </li>
                 <li className="flex gap-4">
                   <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-1.5 shrink-0"></div>
-                  <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                  <p className="text-xs text-black font-bold font-medium leading-relaxed">
                     <span className="text-white font-bold">BN015 Delayed Excision:</span> Target is &lt;10% for TBSA ≥20% patients.
                   </p>
                 </li>
                 <li className="flex gap-4">
                   <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-1.5 shrink-0"></div>
-                  <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                  <p className="text-xs text-black font-bold font-medium leading-relaxed">
                     <span className="text-white font-bold">Exclusions:</span> Friction injuries and traumatic degloving are EXCLUDED from BN KPIs.
                   </p>
                 </li>
@@ -233,11 +233,11 @@ const JawdaBN = () => {
                  <ShieldCheck className="w-8 h-8" />
               </div>
               <div>
-                 <h3 className="text-lg font-black text-slate-900 tracking-tight">BN Module V4 Effective Q1 2026</h3>
-                 <p className="text-sm text-slate-600 font-medium mt-1">Quarterly reporting via JAWDA online portal is mandatory for all licensed burn units.</p>
+                 <h3 className="text-lg font-black text-black font-bold tracking-tight">BN Module V4 Effective Q1 2026</h3>
+                 <p className="text-sm text-black font-bold font-medium mt-1">Quarterly reporting via JAWDA online portal is mandatory for all licensed burn units.</p>
               </div>
            </div>
-           <button className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-3">
+           <button className="px-8 py-4 bg-[#040404] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-3">
               Official Guidance <ArrowUpRight className="w-4 h-4" />
            </button>
         </div>
@@ -246,16 +246,16 @@ const JawdaBN = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-white/60 backdrop-blur-sm animate-in fade-in duration-300">
            <div className="bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
-              <div className="p-8 bg-slate-900 text-white flex items-center justify-between">
+              <div className="p-8 bg-[#040404] text-white flex items-center justify-between">
                  <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center">
                        <Flame className="w-6 h-6 text-orange-500" />
                     </div>
                     <div>
                        <h3 className="text-lg font-black uppercase tracking-tight">New Burn Admission</h3>
-                       <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">JAWDA BN V4.0</p>
+                       <p className="text-xs text-black font-bold font-bold uppercase tracking-widest">JAWDA BN V4.0</p>
                     </div>
                  </div>
                  <button onClick={() => setShowModal(false)} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
@@ -266,7 +266,7 @@ const JawdaBN = () => {
               <form onSubmit={handleSubmit} className="p-8 space-y-6">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Patient ID</label>
+                       <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest">Patient ID</label>
                        <input 
                         required
                         type="text" 
@@ -276,7 +276,7 @@ const JawdaBN = () => {
                        />
                     </div>
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Full Name</label>
+                       <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest">Full Name</label>
                        <input 
                         required
                         type="text" 
@@ -289,7 +289,7 @@ const JawdaBN = () => {
 
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">TBSA %</label>
+                       <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest">TBSA %</label>
                        <input 
                         required
                         type="number" 
@@ -301,7 +301,7 @@ const JawdaBN = () => {
                        />
                     </div>
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Admission Date</label>
+                       <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest">Admission Date</label>
                        <input 
                         required
                         type="date" 
@@ -313,7 +313,7 @@ const JawdaBN = () => {
                  </div>
 
                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">ICD-10 Burn Code (T20-T32)</label>
+                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest">ICD-10 Burn Code (T20-T32)</label>
                     <input 
                       required
                       type="text" 
@@ -325,8 +325,8 @@ const JawdaBN = () => {
                  </div>
 
                  <div className="pt-4 flex gap-3">
-                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-4 bg-slate-50 text-slate-600 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-all">Cancel</button>
-                    <button type="submit" className="flex-1 py-4 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all">Add Admission</button>
+                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-4 bg-slate-50 text-black font-bold rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-all">Cancel</button>
+                    <button type="submit" className="flex-1 py-4 bg-[#040404] text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all">Add Admission</button>
                  </div>
               </form>
            </div>

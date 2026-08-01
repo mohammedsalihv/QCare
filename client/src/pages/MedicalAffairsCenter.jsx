@@ -62,17 +62,17 @@ const MedicalAffairsCenter = () => {
                  <ShieldCheck className="w-8 h-8" />
               </div>
               <div>
-                 <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Medical Affairs Center</h2>
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Credentialing & Privileging (C&P) • DOH Medical Director Oversight</p>
+                 <h2 className="text-2xl font-black text-black font-bold dark:text-white tracking-tight uppercase">Medical Affairs Center</h2>
+                 <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest mt-1">Credentialing & Privileging (C&P) • DOH Medical Director Oversight</p>
               </div>
            </div>
 
            <div className="flex gap-3 w-full md:w-auto">
-              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-2xl border border-slate-200 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
+              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-black font-bold dark:text-white rounded-2xl border border-slate-200 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm">
                 <FileBadge className="w-4 h-4 text-emerald-600" />
                 DOH Dataflow Sync
               </button>
-              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95">
+              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-[#040404] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95">
                 <UserPlus className="w-4 h-4" />
                 Add Clinician
               </button>
@@ -80,13 +80,13 @@ const MedicalAffairsCenter = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex bg-white dark:bg-slate-900 p-2 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm w-fit overflow-x-auto scrollbar-none">
+        <div className="flex bg-white dark:bg-white p-2 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm w-fit overflow-x-auto scrollbar-none">
            {navItems.map((item) => (
              <button
                key={item.id}
                onClick={() => setView(item.id)}
                className={`flex items-center gap-3 px-8 py-3 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
-                 view === item.id ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400 hover:text-slate-600 hover:bg-white/5'
+                 view === item.id ? 'bg-[#040404] text-white shadow-lg' : 'text-black font-bold hover:text-black font-bold hover:bg-white/5'
                }`}
              >
                <item.icon className="w-4 h-4" />
@@ -104,10 +104,10 @@ const MedicalAffairsCenter = () => {
             {view === 'dashboard' && <CPDashboard stats={stats} />}
             {view === 'privileges' && <PrivilegeMatrix privileges={privileges} />}
             {view === 'credentials' && (
-               <div className="bg-white dark:bg-slate-900 p-20 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center text-center">
-                  <Activity className="w-16 h-16 text-slate-200 mb-6" />
-                  <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Credential Verification Register</h3>
-                  <p className="text-xs text-slate-400 max-w-sm mt-2">Central log for BLS, ACLS, Malpractice Insurance, and Primary Source Verification (Dataflow).</p>
+               <div className="bg-white dark:bg-white p-20 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center text-center">
+                  <Activity className="w-16 h-16 text-black font-bold mb-6" />
+                  <h3 className="text-xl font-black text-black font-bold dark:text-white uppercase tracking-tight">Credential Verification Register</h3>
+                  <p className="text-xs text-black font-bold max-w-sm mt-2">Central log for BLS, ACLS, Malpractice Insurance, and Primary Source Verification (Dataflow).</p>
                   <button className="mt-8 px-8 py-4 bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-600 hover:text-white transition-all">Upload New Credential</button>
                </div>
             )}

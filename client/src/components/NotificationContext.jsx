@@ -20,9 +20,18 @@ export const NotificationProvider = ({ children }) => {
     const [confirmState, setConfirmState] = useState(null);
 
     const showNotification = useCallback((message, type = 'info', duration = 5000) => {
-        const id = Math.random().toString(36).substr(2, 9);
-        setNotifications((prev) => [...prev, { id, message, type, duration }]);
+        // Prevent duplicate notifications within 5 seconds
+        const now = Date.now();
+        setNotifications((prev) => {
+          // Remove notifications older than 5 seconds for duplicate check
+          const recent = prev.filter((n) => now - n.timestamp < 5000);
+          if (recent.some((n) => n.message === message && n.type === type)) {
+            return prev; // duplicate, do not add
+          }
+          return [...prev, { id: Math.random().toString(36).substr(2, 9), message, type, duration, timestamp: now }];
+        });
     }, []);
+
 
     const removeNotification = useCallback((id) => {
         setNotifications((prev) => prev.filter((notification) => notification.id !== id));
@@ -30,7 +39,7 @@ export const NotificationProvider = ({ children }) => {
 
     const fetchFeed = useCallback(async () => {
         try {
-            const { data } = await axios.get('http://localhost:5000/api/notifications', getAuthConfig());
+            const { data } = await axios.get('http://192.168.1.160:5000/api/notifications', getAuthConfig());
             setFeedNotifications(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Error fetching notification feed:', error);
@@ -39,7 +48,7 @@ export const NotificationProvider = ({ children }) => {
 
     const clearFeed = useCallback(async () => {
         try {
-            await axios.delete('http://localhost:5000/api/notifications/clear-all', getAuthConfig());
+            await axios.delete('http://192.168.1.160:5000/api/notifications/clear-all', getAuthConfig());
             setFeedNotifications([]);
         } catch (error) {
             console.error('Error clearing notification feed:', error);
@@ -83,7 +92,7 @@ export const NotificationProvider = ({ children }) => {
             {confirmState && (
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
                     <div 
-                        className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300"
+                        className="absolute inset-0 bg-white/40 backdrop-blur-md animate-in fade-in duration-300"
                         onClick={closeConfirm}
                     ></div>
                     <div className="bg-white rounded-[2rem] shadow-2xl relative w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-300">
@@ -97,10 +106,10 @@ export const NotificationProvider = ({ children }) => {
                                     <HelpCircle className="w-8 h-8" />
                                 )}
                             </div>
-                            <h3 className="text-xl font-black text-slate-900 tracking-tight mb-2">
+                            <h3 className="text-xl font-black text-black font-bold tracking-tight mb-2">
                                 {confirmState.title}
                             </h3>
-                            <p className="text-sm font-medium text-slate-500 leading-relaxed">
+                            <p className="text-sm font-medium text-black font-bold leading-relaxed">
                                 {confirmState.message}
                             </p>
                         </div>
@@ -108,7 +117,7 @@ export const NotificationProvider = ({ children }) => {
                         <div className="p-6 pt-2 flex gap-3">
                             <button 
                                 onClick={closeConfirm}
-                                className="flex-1 py-3.5 px-4 rounded-xl text-xs font-black text-slate-400 hover:bg-slate-50 border border-slate-100 transition-all uppercase tracking-widest active:scale-95"
+                                className="flex-1 py-3.5 px-4 rounded-xl text-xs font-black text-black font-bold hover:bg-slate-50 border border-slate-100 transition-all uppercase tracking-widest active:scale-95"
                             >
                                 Cancel
                             </button>
@@ -126,7 +135,7 @@ export const NotificationProvider = ({ children }) => {
 
                         <button 
                             onClick={closeConfirm}
-                            className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 hover:text-slate-600 hover:bg-slate-50 transition-all"
+                            className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-black font-bold hover:text-black font-bold hover:bg-slate-50 transition-all"
                         >
                             <X className="w-4 h-4" />
                         </button>

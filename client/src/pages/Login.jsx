@@ -24,14 +24,15 @@ function Login() {
     setLoading(true);
 
     try {
-      const { data } = await axios.post('http://localhost:5000/api/auth/login', {
+      const { data } = await axios.post('http://192.168.1.160:5000/api/auth/login', {
         employeeId: username, // Sending as employeeId for backend compatibility
         password,
       });
 
        setError('');
        localStorage.setItem("userInfo", JSON.stringify(data));
-       showNotification('Authentication Successful. Welcome, ' + (data.employeeName || 'User'), 'success');
+       localStorage.setItem("token", data.token);
+       showNotification('Welcome, ' + (data.employeeName || 'User') + '!', 'success');
        navigate('/dashboard');
      } catch (err) {
        const errorMsg = err.response?.data?.message || 'Authentication failed. Please verify credentials.';
@@ -43,26 +44,26 @@ function Login() {
 
   /* Modern Corporate Tech Theme */
   const C = {
-    primary: '#0ea5e9', // Sky blue
+    primary: 'var(--color-primary)', // Sky blue
     background: '#f1f5f9',
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center font-sans relative overflow-hidden bg-[#f0f9ff]">
+    <div className="min-h-screen flex items-center justify-center font-sans relative overflow-hidden bg-slate-50">
       {/* Pure Medical Field Background Animation */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute -bottom-[5%] -left-[5%] opacity-[0.03] -rotate-12">
-          <Stethoscope size={500} strokeWidth={0.5} className="text-blue-900" />
+          <Stethoscope size={500} strokeWidth={0.5} className="text-[#040404]" />
         </div>
         <div className="absolute -top-[10%] -right-[5%] opacity-[0.03] rotate-12">
-          <Activity size={600} strokeWidth={0.5} className="text-blue-900" />
+          <Activity size={600} strokeWidth={0.5} className="text-[#040404]" />
         </div>
 
         <div className="absolute top-[45%] w-full h-[120px] opacity-[0.08]">
           <svg width="100%" height="100%" viewBox="0 0 1000 120" preserveAspectRatio="none">
             <path 
               d="M0,60 L200,60 L210,30 L220,90 L230,10 L240,110 L250,60 L1000,60" 
-              stroke="#0ea5e9" 
+              stroke="var(--color-primary)" 
               strokeWidth="2" 
               fill="none"
               strokeDasharray="1000"
@@ -78,15 +79,15 @@ function Login() {
           </svg>
         </div>
 
-        <div className="absolute top-[15%] left-[8%] text-blue-600/10 animate-float-slow">
+        <div className="absolute top-[15%] left-[8%] text-[var(--color-primary)]/10 animate-float-slow">
           <Stethoscope size={120} strokeWidth={1} />
         </div>
-        <div className="absolute bottom-[20%] right-[10%] text-sky-600/10 animate-float-slow" style={{ animationDelay: '-4s' }}>
+        <div className="absolute bottom-[20%] right-[10%] text-[var(--color-secondary)]/10 animate-float-slow" style={{ animationDelay: '-4s' }}>
           <ShieldCheck size={120} strokeWidth={1} />
         </div>
 
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="absolute text-blue-500/15 animate-pulse-medical" style={{
+          <div key={i} className="absolute text-[#C9A84C]/15 animate-pulse-medical" style={{
             top: `${15 + Math.random() * 70}%`,
             left: `${5 + Math.random() * 90}%`,
             animationDelay: `${i * 1.5}s`
@@ -98,13 +99,13 @@ function Login() {
 
       <style>{`
         .bg-mesh {
-          background-color: #0f172a;
+          background-color: #FFFFFF;
           background-image: 
-            radial-gradient(at 0% 0%, hsla(198,100%,30%,1) 0px, transparent 50%),
-            radial-gradient(at 100% 0%, hsla(189,100%,40%,1) 0px, transparent 50%),
-            radial-gradient(at 100% 100%, hsla(198,100%,30%,1) 0px, transparent 50%),
-            radial-gradient(at 0% 100%, hsla(189,100%,40%,1) 0px, transparent 50%),
-            radial-gradient(at 50% 50%, hsla(198,100%,20%,1) 0px, transparent 50%);
+            radial-gradient(at 0% 0%, hsla(44, 64%, 37%, 1) 0px, transparent 50%),
+            radial-gradient(at 100% 0%, hsla(45, 63%, 45%, 1) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, hsla(43, 60%, 94%, 0.8) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, hsla(44, 65%, 30%, 1) 0px, transparent 50%),
+            radial-gradient(at 50% 50%, hsla(45, 60%, 25%, 1) 0px, transparent 50%);
           position: relative;
           background-size: 150% 150%;
           animation: meshGradient 15s ease infinite alternate;
@@ -158,32 +159,32 @@ function Login() {
             <div className="absolute inset-0 bg-black/20 z-0"></div>
             
             <div className="relative z-10 flex items-center gap-3 slide-up" style={{ animationDelay: '0.1s' }}>
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-[#0f172a] shadow-lg">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-[#FFFFFF] shadow-lg">
                 <Activity size={28} strokeWidth={2.5} />
               </div>
-              <h1 className="text-3xl font-extrabold tracking-tight">QCare<span className="text-[#38bdf8]">.</span></h1>
+              <h1 className="text-3xl font-extrabold tracking-tight">QCare<span className="text-[var(--color-primary)]">.</span></h1>
             </div>
 
             <div className="relative z-10 slide-up" style={{ animationDelay: '0.3s' }}>
               <h2 className="text-5xl font-bold leading-tight mb-6">
                 Health & Medical <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#38bdf8] to-white">Quality Portal</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-white">Quality Portal</span>
               </h2>
-              <p className="text-lg text-slate-300 max-w-md font-medium leading-relaxed">
+              <p className="text-lg text-black font-bold max-w-md font-medium leading-relaxed">
                 Enhancing clinical excellence, ensuring patient safety, and streamlining healthcare quality standards.
               </p>
               
               <div className="mt-12 space-y-4">
-                <div className="flex items-center gap-3 text-slate-300">
-                  <CheckCircle className="text-[#38bdf8]" size={20} />
+                <div className="flex items-center gap-3 text-black font-bold">
+                  <CheckCircle className="text-[var(--color-primary)]" size={20} />
                   <span>JCI & ISO 9001 Compliant Workflows</span>
                 </div>
-                <div className="flex items-center gap-3 text-slate-300">
-                  <CheckCircle className="text-[#38bdf8]" size={20} />
+                <div className="flex items-center gap-3 text-black font-bold">
+                  <CheckCircle className="text-[var(--color-primary)]" size={20} />
                   <span>Real-time Risk Mitigation Dashboard</span>
                 </div>
-                <div className="flex items-center gap-3 text-slate-300">
-                  <CheckCircle className="text-[#38bdf8]" size={20} />
+                <div className="flex items-center gap-3 text-black font-bold">
+                  <CheckCircle className="text-[var(--color-primary)]" size={20} />
                   <span>Automated PDCA Cycle Optimization</span>
                 </div>
               </div>
@@ -199,11 +200,11 @@ function Login() {
              <div className="w-full max-w-md slide-up" style={{ animationDelay: '0.2s' }}>
                 
                 <div className="text-center lg:text-left mb-10">
-                   <div className="inline-flex lg:hidden w-16 h-16 bg-slate-900 rounded-2xl items-center justify-center text-white mb-6 shadow-xl">
-                      <Activity size={32} strokeWidth={2.5} className="text-[#38bdf8]" />
+                   <div className="inline-flex lg:hidden w-16 h-16 bg-white rounded-2xl items-center justify-center text-white mb-6 shadow-xl">
+                      <Activity size={32} strokeWidth={2.5} className="text-[var(--color-primary)]" />
                    </div>
-                   <h3 className="text-3xl font-bold text-slate-900 mb-3 tracking-tight">Welcome Back</h3>
-                   <p className="text-slate-500 font-medium text-sm">Please enter your credentials to access the portal.</p>
+                   <h3 className="text-3xl font-bold text-black font-bold mb-3 tracking-tight">Welcome Back</h3>
+                   <p className="text-black font-bold font-medium text-sm">Please enter your credentials to access the portal.</p>
                 </div>
 
                 {error && (
@@ -220,12 +221,12 @@ function Login() {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="username">
+                    <label className="text-xs font-bold uppercase tracking-wider text-black font-bold" htmlFor="username">
                       Username or Email
                     </label>
                     <div className="relative group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Fingerprint className="h-5 w-5 text-slate-400 group-focus-within:text-[#0ea5e9] transition-colors" />
+                        <Fingerprint className="h-5 w-5 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
                       </div>
                       <input
                         id="username"
@@ -234,7 +235,7 @@ function Login() {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         disabled={loading}
-                        className="w-full pl-12 pr-4 py-3.5 border-0 border-b-2 border-slate-200 bg-white text-slate-900 font-semibold focus:outline-none focus:border-[#0ea5e9] transition-all duration-200"
+                        className="w-full pl-12 pr-4 py-3.5 border-0 border-b-2 border-slate-200 bg-white text-black font-bold font-semibold focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200"
                         placeholder="e.g. johndoe or john@example.com"
                       />
                     </div>
@@ -242,16 +243,16 @@ function Login() {
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="password">
+                      <label className="text-xs font-bold uppercase tracking-wider text-black font-bold" htmlFor="password">
                         Password
                       </label>
-                      <a href="#" className="text-xs font-bold text-[#0ea5e9] hover:text-[#0284c7] transition-colors">
+                      <a href="#" className="text-xs font-bold text-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors">
                         Forgot Password?
                       </a>
                     </div>
                     <div className="relative group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Lock className="h-5 w-5 text-slate-400 group-focus-within:text-[#0ea5e9] transition-colors" />
+                        <Lock className="h-5 w-5 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
                       </div>
                       <input
                         id="password"
@@ -260,7 +261,7 @@ function Login() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={loading}
-                        className="w-full pl-12 pr-4 py-3.5 border-0 border-b-2 border-slate-200 bg-white text-slate-900 font-semibold focus:outline-none focus:border-[#0ea5e9] transition-all duration-200"
+                        className="w-full pl-12 pr-4 py-3.5 border-0 border-b-2 border-slate-200 bg-white text-black font-bold font-semibold focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200"
                         placeholder="••••••••"
                       />
                     </div>
@@ -271,7 +272,7 @@ function Login() {
                     disabled={loading}
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
-                    className="w-full py-4 rounded-md text-white font-bold text-sm bg-slate-900 hover:bg-slate-800 transition-all focus:outline-none focus:ring-4 focus:ring-slate-200 flex justify-center items-center gap-2 group mt-8 shadow-lg shadow-slate-900/20 disabled:opacity-70"
+                    className="w-full py-4 rounded-md text-white font-bold text-sm bg-[var(--color-primary)] hover:bg-[var(--color-primary)] transition-all focus:outline-none focus:ring-4 focus:ring-[var(--color-primary)]/20 flex justify-center items-center gap-2 group mt-8 shadow-lg shadow-[var(--color-primary)]/20 disabled:opacity-70"
                   >
                     {loading ? (
                       <RefreshCcw className="w-5 h-5 animate-spin" />
@@ -285,14 +286,14 @@ function Login() {
                 </form>
 
                 <div className="mt-12 text-center border-t border-slate-100 pt-8 slide-up" style={{ animationDelay: '0.4s' }}>
-                  <div className="flex items-center justify-center gap-6 mb-6 text-slate-400">
-                    <Database size={24} className="hover:text-slate-600 transition-colors cursor-pointer" />
-                    <ShieldCheck size={24} className="hover:text-slate-600 transition-colors cursor-pointer" />
-                    <Activity size={24} className="hover:text-slate-600 transition-colors cursor-pointer" />
+                  <div className="flex items-center justify-center gap-6 mb-6 text-black font-bold">
+                    <Database size={24} className="hover:text-black font-bold transition-colors cursor-pointer" />
+                    <ShieldCheck size={24} className="hover:text-black font-bold transition-colors cursor-pointer" />
+                    <Activity size={24} className="hover:text-black font-bold transition-colors cursor-pointer" />
                   </div>
-                  <p className="text-xs font-semibold text-slate-500">
+                  <p className="text-xs font-semibold text-black font-bold">
                     &copy; {new Date().getFullYear()} CMC Holding. All rights reserved. <br/>
-                    <span className="text-slate-400 mt-1 inline-block">Developed by Enterprise IT Department</span>
+                    <span className="text-black font-bold mt-1 inline-block">Developed by Enterprise IT Department</span>
                   </p>
                 </div>
 

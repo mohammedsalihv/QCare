@@ -20,9 +20,9 @@ const RiskMatrix = ({ matrixData, onSelectRisk }) => {
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       {/* 5x5 Heatmap */}
-      <div className="flex-1 bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm relative">
-        <div className="absolute left-4 top-1/2 -rotate-90 text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Likelihood →</div>
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Impact →</div>
+      <div className="flex-1 bg-white dark:bg-white p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm relative">
+        <div className="absolute left-4 top-1/2 -rotate-90 text-[10px] font-black text-black font-bold uppercase tracking-[0.4em]">Likelihood →</div>
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[10px] font-black text-black font-bold uppercase tracking-[0.4em]">Impact →</div>
         
         <div className="grid grid-cols-5 gap-2 h-[450px]">
           {[5, 4, 3, 2, 1].map(l => (
@@ -45,11 +45,11 @@ const RiskMatrix = ({ matrixData, onSelectRisk }) => {
       </div>
 
       {/* Side Drawer for Selected Cell */}
-      <div className={`w-full lg:w-96 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-xl overflow-hidden transition-all ${selectedCell ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none hidden'}`}>
+      <div className={`w-full lg:w-96 bg-white dark:bg-white rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-xl overflow-hidden transition-all ${selectedCell ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none hidden'}`}>
         <div className="p-6 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
            <div>
-              <h4 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">Risks in Segment</h4>
-              <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">
+              <h4 className="text-xs font-black text-black font-bold dark:text-white uppercase tracking-widest">Risks in Segment</h4>
+              <p className="text-[10px] text-black font-bold font-bold uppercase mt-1">
                 L: {selectedCell?.likelihood} × I: {selectedCell?.impact} = {selectedCell?.likelihood * selectedCell?.impact}
               </p>
            </div>
@@ -64,8 +64,8 @@ const RiskMatrix = ({ matrixData, onSelectRisk }) => {
                 onClick={() => onSelectRisk(risk._id)}
                 className="p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 cursor-pointer hover:border-blue-200 transition-all group"
               >
-                 <span className="text-[10px] font-black text-blue-600 uppercase tracking-wider">{risk.riskId}</span>
-                 <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mt-1 line-clamp-2">{risk.title}</p>
+                 <span className="text-[10px] font-black text-[#040404] uppercase tracking-wider">{risk.riskId}</span>
+                 <p className="text-sm font-bold text-black font-bold dark:text-black font-bold mt-1 line-clamp-2">{risk.title}</p>
                  <div className="mt-3 flex justify-between items-center">
                     <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${
                       risk.level === 'critical' ? 'bg-rose-100 text-rose-600' :

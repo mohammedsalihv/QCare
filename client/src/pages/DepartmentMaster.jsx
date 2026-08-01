@@ -24,6 +24,7 @@ import {
 const DepartmentMaster = () => {
   const [departments, setDepartments] = useState([]);
   const [users, setUsers] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -32,6 +33,7 @@ const DepartmentMaster = () => {
   const recordsPerPage = 10;
   const navigate = useNavigate();
   const { showNotification, confirm } = useNotification();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -44,9 +46,7 @@ const DepartmentMaster = () => {
     const userInfo = localStorage.getItem('userInfo');
     if (userInfo) {
       const { role } = JSON.parse(userInfo);
-      if (role !== 'admin' && role !== 'superadmin') {
-        navigate('/dashboard');
-      }
+      setIsAdmin(!!role?.toLowerCase().includes('admin'));
     } else {
       navigate('/');
     }
@@ -63,7 +63,7 @@ const DepartmentMaster = () => {
 
   const fetchDepartments = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/departments', getAuthConfig());
+      const { data } = await axios.get('http://192.168.1.160:5000/api/departments', getAuthConfig());
       setDepartments(data);
     } catch (err) {
       console.error('Error fetching departments:', err);
@@ -74,7 +74,7 @@ const DepartmentMaster = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/users', getAuthConfig());
+      const { data } = await axios.get('http://192.168.1.160:5000/api/users', getAuthConfig());
       // Map users to options for Dropdown
       const userOptions = data.map(u => ({
         label: u.employeeName,
@@ -86,9 +86,23 @@ const DepartmentMaster = () => {
     }
   };
 
+  const fetchLocations = async () => {
+    try {
+      const { data } = await axios.get('http://192.168.1.160:5000/api/locations', getAuthConfig());
+      const locationOptions = data.map(l => ({
+        label: `${l.name} (${l.code})`,
+        value: `${l.name} (${l.code})`
+      }));
+      setLocations(locationOptions);
+    } catch (err) {
+      console.error('Error fetching locations:', err);
+    }
+  };
+
   useEffect(() => {
     fetchDepartments();
     fetchUsers();
+    fetchLocations();
   }, []);
 
   const handleInputChange = (e) => {
@@ -130,7 +144,7 @@ const DepartmentMaster = () => {
       type: 'danger',
       onConfirm: async () => {
         try {
-          await axios.delete(`http://localhost:5000/api/departments/${id}`, getAuthConfig());
+          await axios.delete(`http://192.168.1.160:5000/api/departments/${id}`, getAuthConfig());
           showNotification('Department removed successfully', 'success');
           fetchDepartments();
         } catch (err) {
@@ -142,12 +156,20 @@ const DepartmentMaster = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.head) {
+      showNotification('Please select an In-Charge (Head)', 'error');
+      return;
+    }
+    if (!formData.location) {
+      showNotification('Please select a Location / Floor', 'error');
+      return;
+    }
     try {
        if (isEditing) {
-         await axios.put(`http://localhost:5000/api/departments/${currentDept._id}`, formData, getAuthConfig());
+         await axios.put(`http://192.168.1.160:5000/api/departments/${currentDept._id}`, formData, getAuthConfig());
          showNotification('Department updated successfully', 'success');
        } else {
-         await axios.post('http://localhost:5000/api/departments', formData, getAuthConfig());
+         await axios.post('http://192.168.1.160:5000/api/departments', formData, getAuthConfig());
          showNotification('New department established successfully', 'success');
        }
        setShowModal(false);
@@ -166,32 +188,34 @@ const DepartmentMaster = () => {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-[10px] font-bold text-black uppercase tracking-widest mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[#b59662]">Administration</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[#b59662]">Department Master</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Department Master</h1>
+            <h1 className="text-2xl font-extrabold text-black tracking-tight">Department Master</h1>
           </div>
           
-          <button 
-            onClick={handleAddClick}
-            className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
-          >
-             <div className="flex items-center gap-3">
-                <Plus className="w-5 h-5" />
-                <span>Add New Department</span>
-             </div>
-             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </button>
+          {isAdmin && (
+            <button 
+              onClick={handleAddClick}
+              className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg active:scale-95 group text-sm"
+            >
+               <div className="flex items-center gap-3">
+                  <Plus className="w-5 h-5 text-[#b59662]" />
+                  <span>Add New Department</span>
+               </div>
+               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </button>
+          )}
         </div>
 
         <div className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-100 flex flex-col sm:row items-center justify-between gap-4 bg-slate-50/20">
+          <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/20">
             <div className="relative w-full sm:w-[400px]">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
                <input 
                  type="text" 
                  placeholder="Search department by name or code..."
@@ -204,12 +228,12 @@ const DepartmentMaster = () => {
             <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
                 <tr className="bg-slate-100/50">
-                  <th className="w-1/4 px-7 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Department Name</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Dept Code</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Head of Department</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Staff Count</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">Location</th>
-                  <th className="w-36 px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
+                  <th className="w-1/4 px-7 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Department Name</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Dept Code</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Head of Department</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Staff Count</th>
+                  <th className="px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Location</th>
+                  <th className="w-36 px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -217,44 +241,50 @@ const DepartmentMaster = () => {
                   <tr key={dept._id} className="hover:bg-slate-50/20 transition-colors group">
                     <td className="px-7 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center font-medium text-slate-400 text-[10px]">
-                          <Building2 className="w-4 h-4" />
+                        <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center font-medium text-black text-[10px]">
+                          <Building2 className="w-4 h-4 text-[#b59662]" />
                         </div>
-                        <span className="text-xs font-medium text-slate-900 leading-snug">{dept.name}</span>
+                        <span className="text-xs font-medium text-black leading-snug">{dept.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-xs font-medium font-mono text-slate-600">{dept.code}</td>
+                    <td className="px-6 py-4 text-xs font-medium font-mono text-black">{dept.code}</td>
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-medium text-slate-600">{dept.head}</span>
+                          <span className="text-xs font-medium text-black">{dept.head}</span>
                        </div>
                     </td>
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
-                          <Users className="w-3.5 h-3.5 text-slate-300" />
-                          <span className="text-xs font-medium text-slate-500">{dept.employeesCount} Members</span>
+                          <Users className="w-3.5 h-3.5 text-black" />
+                          <span className="text-xs font-medium text-black">{dept.employeesCount} Members</span>
                        </div>
                     </td>
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
-                          <MapPin className="w-3.5 h-3.5 text-slate-300" />
-                          <span className="text-sm font-medium text-slate-500 tracking-tight">{dept.location}</span>
+                          <MapPin className="w-3.5 h-3.5 text-black" />
+                          <span className="text-sm font-medium text-black tracking-tight">{dept.location}</span>
                        </div>
                     </td>
                     <td className="px-6 py-4 text-right pr-8">
                        <div className="flex items-center justify-end gap-2.5">
-                          <button 
-                            onClick={() => handleEditClick(dept)}
-                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-slate-900 hover:border-slate-900 hover:text-white transition-all duration-300 active:scale-95 shadow-sm"
-                          >
-                             <FileEdit className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleDeleteClick(dept._id)}
-                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 active:scale-95 shadow-sm"
-                          >
-                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          {isAdmin ? (
+                            <>
+                              <button 
+                                onClick={() => handleEditClick(dept)}
+                                className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-600 flex items-center justify-center hover:border-slate-800 hover:text-slate-800 transition-all duration-300 active:scale-95 shadow-sm"
+                              >
+                                 <FileEdit className="w-4 h-4" />
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteClick(dept._id)}
+                                className="w-9 h-9 rounded-md border border-slate-200 bg-white text-rose-500 flex items-center justify-center hover:bg-rose-50 hover:border-rose-200 transition-all duration-300 active:scale-95 shadow-sm"
+                              >
+                                 <Trash2 className="w-4 h-4" />
+                              </button>
+                            </>
+                          ) : (
+                            <span className="text-[10px] text-slate-450 font-bold uppercase tracking-wider">View Only</span>
+                          )}
                        </div>
                     </td>
                   </tr>
@@ -284,7 +314,7 @@ const DepartmentMaster = () => {
         {/* Modal */}
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
             <div className="bg-white rounded-[2.5rem] shadow-2xl relative w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300">
               <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white relative">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#b59662] to-transparent opacity-20"></div>
@@ -293,13 +323,13 @@ const DepartmentMaster = () => {
                       <Building2 className="w-7 h-7 text-[#b59662]" />
                    </div>
                    <div>
-                      <h3 className="text-xl font-black text-slate-900 tracking-tight">
+                      <h3 className="text-xl font-black text-black font-bold tracking-tight">
                         {isEditing ? 'Modify Department' : 'Configure New Dept'}
                       </h3>
-                      <p className="text-xs text-slate-500 font-medium tracking-tight">Establish structural units for CMC Holding</p>
+                      <p className="text-xs text-black font-bold font-medium tracking-tight">Establish structural units for CMC Holding</p>
                    </div>
                 </div>
-                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-all border border-slate-100 shadow-sm active:scale-95">
+                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-black font-bold hover:text-black font-bold transition-all border border-slate-100 shadow-sm active:scale-95">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -307,43 +337,48 @@ const DepartmentMaster = () => {
               <form onSubmit={handleSubmit} className="p-8 pb-12 space-y-8 bg-white">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Department Name</label>
+                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Department Name</label>
                     <div className="relative group">
-                       <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#b59662] transition-colors" />
-                       <input name="name" value={formData.name} onChange={handleInputChange} required placeholder="e.g. Clinical Quality" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-slate-800" />
+                       <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[#b59662] transition-colors" />
+                       <input name="name" value={formData.name} onChange={handleInputChange} required placeholder="e.g. Clinical Quality" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-black font-bold" />
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Dept Code</label>
+                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Dept Code</label>
                     <div className="relative group">
-                       <Code2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#b59662] transition-colors" />
-                       <input name="code" value={formData.code} onChange={handleInputChange} required placeholder="QUAL-OPS" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-black font-mono text-slate-800" />
+                       <Code2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[#b59662] transition-colors" />
+                       <input name="code" value={formData.code} onChange={handleInputChange} required placeholder="QUAL-OPS" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-black font-mono text-black font-bold" />
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">In-Charge (Head)</label>
+                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">In-Charge (Head) *</label>
                     <Dropdown
                       options={users}
                       value={formData.head}
                       onSelect={(val) => setFormData({ ...formData, head: val })}
                       placeholder="Select Department Head"
+                      searchable
                       fullWidth
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Location / Floor</label>
-                    <div className="relative group">
-                       <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#b59662] transition-colors" />
-                       <input name="location" value={formData.location} onChange={handleInputChange} required placeholder="Building A, 2nd Floor" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-slate-800" />
-                    </div>
+                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Location / Floor *</label>
+                    <Dropdown
+                      options={locations}
+                      value={formData.location}
+                      onSelect={(val) => setFormData({ ...formData, location: val })}
+                      placeholder="Select Location"
+                      searchable
+                      fullWidth
+                    />
                   </div>
                 </div>
 
                 <div className="flex gap-4 pt-4 border-t border-slate-100">
-                   <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-slate-400 hover:bg-slate-50 hover:text-slate-600 rounded-xl transition-all border border-slate-200 uppercase tracking-[0.15em] active:scale-95">
+                   <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-black font-bold hover:bg-slate-50 hover:text-black font-bold rounded-xl transition-all border border-slate-200 uppercase tracking-[0.15em] active:scale-95">
                      Discard
                    </button>
-                   <button type="submit" className="flex-[2] py-3 bg-slate-900 text-white text-sm font-bold rounded-md shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-[0.98]">
+                   <button type="submit" className="flex-[2] py-3 bg-[#040404] text-white text-sm font-bold rounded-md shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-[0.98]">
                      {isEditing ? 'Update Structural Unit' : 'Establish Department'}
                    </button>
                 </div>
@@ -352,13 +387,7 @@ const DepartmentMaster = () => {
           </div>
         )}
 
-        <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 py-6 border-t border-slate-200 text-slate-400">
-           <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#b59662]" />
-              <span className="text-[10px] font-bold tracking-tight text-slate-500 uppercase">QCare Master Database</span>
-           </div>
-           <span className="text-[9px] font-black uppercase tracking-widest">Enterprise Structural Master</span>
-        </div>
+          {/* Footer / branding removed */}
       </div>
     </DashboardLayout>
   );

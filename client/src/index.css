@@ -1,22 +1,62 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  
-  /* 3-Color Medical Palette */
-  --color-primary: #2dd4bf;       /* Medical Teal (Primary) */
-  --color-secondary: #3b82f6;     /* Bright Blue (Secondary) */
-  --color-accent: #0f172a;        /* Deep Navy (Background) */
-  
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* CMC Holding Gold Palette */
+  --color-primary: #9A7B22;       /* CMC Gold (Primary) */
+  --color-secondary: #B8962A;     /* CMC Light Gold (Secondary) */
+  --color-accent: #FFFFFF;        /* Deep Warm Brown (Background) */
+  --color-gold-dark: #8A6E1C;     /* CMC Dark Gold */
+  --color-gold-muted: #C9A84C;    /* CMC Mid Gold */
+
+  /* Tailwind CSS v4 Color System Overrides */
+  /* Redirecting Blues, Indigos, and Sky to Premium Gold/Champagne tints */
+  --color-blue-50: #FDFBF7;
+  --color-blue-100: #FAF6EB;
+  --color-blue-200: #EFE6D0;
+  --color-blue-300: #DFCFA7;
+  --color-blue-400: #CBAE75;
+  --color-blue-500: #B8962A;
+  --color-blue-600: #9A7B22;
+  --color-blue-700: #8A6E1C;
+  --color-blue-800: #6E5613;
+  --color-blue-900: #4E3E0C;
+  --color-blue-950: #2F2507;
+
+  --color-indigo-50: #FDFBF7;
+  --color-indigo-100: #FAF6EB;
+  --color-indigo-200: #EFE6D0;
+  --color-indigo-300: #DFCFA7;
+  --color-indigo-400: #CBAE75;
+  --color-indigo-500: #B8962A;
+  --color-indigo-600: #9A7B22;
+  --color-indigo-700: #8A6E1C;
+  --color-indigo-800: #6E5613;
+  --color-indigo-900: #4E3E0C;
+  --color-indigo-950: #2F2507;
+
+  --color-sky-50: #FDFBF7;
+  --color-sky-100: #FAF6EB;
+  --color-sky-200: #EFE6D0;
+  --color-sky-300: #DFCFA7;
+  --color-sky-400: #CBAE75;
+  --color-sky-500: #B8962A;
+  --color-sky-600: #9A7B22;
+  --color-sky-700: #8A6E1C;
+  --color-sky-800: #6E5613;
+  --color-sky-900: #4E3E0C;
+  --color-sky-950: #2F2507;
+
   /* Modern Typography Scale */
-  --font-size-sm: 0.95rem;     /* Increased from 0.875rem */
-  --font-size-base: 1.1rem;    /* Increased from 1rem */
-  --font-size-lg: 1.25rem;     /* Increased from 1.125rem */
-  --font-size-xl: 1.5rem;      /* Increased from 1.25rem */
-  --font-size-2xl: 1.75rem;    /* Increased from 1.5rem */
-  --font-size-3xl: 2rem;       /* Increased from 1.875rem */
-  --font-size-4xl: 2.5rem;     /* Increased from 2.25rem */
-  --font-size-5xl: 3.5rem;     /* Increased from 3rem */
+  --font-size-sm: 0.95rem;
+  --font-size-base: 1.1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 1.75rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.5rem;
+  --font-size-5xl: 3.5rem;
 }
 
 html {
@@ -27,6 +67,11 @@ html {
 
 body {
   font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.025em;
 }
 
 button {
@@ -50,9 +95,9 @@ button {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
+  background: #8A6E1C;
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
+  background: #9A7B22;
 }

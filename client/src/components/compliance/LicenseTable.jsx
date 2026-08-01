@@ -22,12 +22,12 @@ const LicenseTable = ({ facilityLicenses, staffLicenses }) => {
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="border-b border-slate-100 dark:border-slate-800">
-            <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">License No</th>
-            <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</th>
-            <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Expiry Date</th>
-            <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Days Left</th>
-            <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-            <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+            <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">License No</th>
+            <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Type</th>
+            <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Expiry Date</th>
+            <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest text-center">Days Left</th>
+            <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Status</th>
+            <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -37,29 +37,29 @@ const LicenseTable = ({ facilityLicenses, staffLicenses }) => {
               <tr key={lic._id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                 <td className="p-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                    <div className="p-2 bg-slate-100 text-[#040404] rounded-lg">
                       <Building className="w-4 h-4" />
                     </div>
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{lic.licenseNumber}</span>
+                    <span className="text-sm font-bold text-black font-bold dark:text-black font-bold">{lic.licenseNumber}</span>
                   </div>
                 </td>
                 <td className="p-4">
-                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400 capitalize">{lic.licenseType}</span>
+                  <span className="text-xs font-medium text-black font-bold dark:text-black font-bold capitalize">{lic.licenseType}</span>
                 </td>
                 <td className="p-4">
-                  <div className="flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+                  <div className="flex items-center gap-2 text-xs font-medium text-black font-bold dark:text-black font-bold">
                     <Calendar className="w-3 h-3" />
                     {new Date(lic.expiryDate).toLocaleDateString()}
                   </div>
                 </td>
                 <td className="p-4 text-center">
-                  <span className={`text-xs font-black ${days < 30 ? 'text-rose-600' : days < 90 ? 'text-amber-600' : 'text-slate-600'}`}>
+                  <span className={`text-xs font-black ${days < 30 ? 'text-rose-600' : days < 90 ? 'text-amber-600' : 'text-black font-bold'}`}>
                     {days}
                   </span>
                 </td>
                 <td className="p-4">{getStatusBadge(lic.expiryDate)}</td>
                 <td className="p-4 text-right">
-                  <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                  <button className="p-2 text-[#040404] hover:bg-slate-100 rounded-lg transition-colors">
                     <FileText className="w-4 h-4" />
                   </button>
                 </td>
@@ -68,7 +68,7 @@ const LicenseTable = ({ facilityLicenses, staffLicenses }) => {
           })}
           {(!Array.isArray(facilityLicenses) || facilityLicenses.length === 0) && (
             <tr>
-              <td colSpan="6" className="p-10 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
+              <td colSpan="6" className="p-10 text-center text-xs font-bold text-black font-bold uppercase tracking-widest">
                 No facility licenses found
               </td>
             </tr>
@@ -83,12 +83,12 @@ const LicenseTable = ({ facilityLicenses, staffLicenses }) => {
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="border-b border-slate-100 dark:border-slate-800">
-            <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Provider</th>
-            <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">License No</th>
-            <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Specialty</th>
-            <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Expiry Date</th>
-            <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-            <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+            <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Provider</th>
+            <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">License No</th>
+            <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Specialty</th>
+            <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Expiry Date</th>
+            <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Status</th>
+            <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -100,23 +100,23 @@ const LicenseTable = ({ facilityLicenses, staffLicenses }) => {
                     <User className="w-4 h-4" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{lic.staffId?.employeeName}</span>
-                    <span className="text-[10px] text-slate-500">{lic.staffId?.employeeId}</span>
+                    <span className="text-sm font-bold text-black font-bold dark:text-black font-bold">{lic.staffId?.employeeName}</span>
+                    <span className="text-[10px] text-black font-bold">{lic.staffId?.employeeId}</span>
                   </div>
                 </div>
               </td>
               <td className="p-4">
-                <span className="text-xs font-bold text-blue-600">{lic.licenseNumber}</span>
+                <span className="text-xs font-bold text-[#040404]">{lic.licenseNumber}</span>
               </td>
               <td className="p-4">
-                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{lic.specialty}</span>
+                <span className="text-xs font-medium text-black font-bold dark:text-black font-bold">{lic.specialty}</span>
               </td>
               <td className="p-4">
-                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{new Date(lic.expiryDate).toLocaleDateString()}</span>
+                <span className="text-xs font-medium text-black font-bold dark:text-black font-bold">{new Date(lic.expiryDate).toLocaleDateString()}</span>
               </td>
               <td className="p-4">{getStatusBadge(lic.expiryDate)}</td>
               <td className="p-4 text-right">
-                <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                <button className="p-2 text-[#040404] hover:bg-slate-100 rounded-lg transition-colors">
                   <ExternalLink className="w-4 h-4" />
                 </button>
               </td>
@@ -124,7 +124,7 @@ const LicenseTable = ({ facilityLicenses, staffLicenses }) => {
           ))}
           {(!Array.isArray(staffLicenses) || staffLicenses.length === 0) && (
             <tr>
-              <td colSpan="6" className="p-10 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
+              <td colSpan="6" className="p-10 text-center text-xs font-bold text-black font-bold uppercase tracking-widest">
                 No staff licenses found
               </td>
             </tr>
@@ -135,12 +135,12 @@ const LicenseTable = ({ facilityLicenses, staffLicenses }) => {
   );
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div className="bg-white dark:bg-white rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
       <div className="flex border-b border-slate-100 dark:border-slate-800">
         <button
           onClick={() => setActiveTab('facility')}
           className={`px-8 py-4 text-xs font-black uppercase tracking-widest transition-all ${
-            activeTab === 'facility' ? 'border-b-2 border-blue-600 text-blue-600 bg-blue-50/30' : 'text-slate-400 hover:text-slate-600'
+            activeTab === 'facility' ? 'border-b-2 border-[#040404] text-[#040404] bg-slate-100/30' : 'text-black font-bold hover:text-black font-bold'
           }`}
         >
           Facility Licenses
@@ -148,7 +148,7 @@ const LicenseTable = ({ facilityLicenses, staffLicenses }) => {
         <button
           onClick={() => setActiveTab('staff')}
           className={`px-8 py-4 text-xs font-black uppercase tracking-widest transition-all ${
-            activeTab === 'staff' ? 'border-b-2 border-blue-600 text-blue-600 bg-blue-50/30' : 'text-slate-400 hover:text-slate-600'
+            activeTab === 'staff' ? 'border-b-2 border-[#040404] text-[#040404] bg-slate-100/30' : 'text-black font-bold hover:text-black font-bold'
           }`}
         >
           Staff Licenses

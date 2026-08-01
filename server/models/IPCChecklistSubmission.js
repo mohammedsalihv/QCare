@@ -15,7 +15,6 @@ const ipcChecklistSubmissionSchema = new mongoose.Schema({
     notes: String
   }],
   overallCompliance: { type: Number },
-  timestamps: true
 }, {
   timestamps: true
 });

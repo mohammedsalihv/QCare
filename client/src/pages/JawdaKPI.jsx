@@ -95,21 +95,21 @@ const JawdaKPI = () => {
                 name="period"
                 value={filters.period}
                 onChange={handleFilterChange}
-                className="pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg appearance-none focus:ring-2 focus:ring-blue-500 outline-none font-medium"
+                className="pl-10 pr-4 py-2 bg-white dark:bg-white border border-slate-200 dark:border-slate-800 rounded-lg appearance-none focus:ring-2 focus:ring-[#040404] outline-none font-medium"
               >
                 <option value="Q1">Quarter 1</option>
                 <option value="Q2">Quarter 2</option>
                 <option value="Q3">Quarter 3</option>
                 <option value="Q4">Quarter 4</option>
               </select>
-              <Filter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Filter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-black font-bold" />
             </div>
             <input
               type="number"
               name="year"
               value={filters.year}
               onChange={handleFilterChange}
-              className="w-24 px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-medium"
+              className="w-24 px-4 py-2 bg-white dark:bg-white border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-[#040404] outline-none font-medium"
             />
           </div>
 
@@ -118,7 +118,7 @@ const JawdaKPI = () => {
             {isQualityManager && (
               <button
                 onClick={handleAdd}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg shadow-blue-200 dark:shadow-none transition-all"
+                className="flex items-center gap-2 bg-[#040404] hover:bg-[#040404] text-white px-4 py-2 rounded-lg shadow-lg shadow-[#040404]/20 dark:shadow-none transition-all"
               >
                 <Plus className="w-4 h-4" />
                 Add Indicator
@@ -140,12 +140,12 @@ const JawdaKPI = () => {
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-4 bg-slate-50 dark:bg-slate-800/30 p-4 rounded-xl">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-slate-500">Status:</span>
+              <span className="text-sm font-medium text-black font-bold">Status:</span>
               <select
                 name="status"
                 value={filters.status}
                 onChange={handleFilterChange}
-                className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm outline-none"
+                className="px-3 py-1.5 bg-white dark:bg-white border border-slate-200 dark:border-slate-800 rounded-lg text-sm outline-none"
               >
                 <option value="">All Status</option>
                 <option value="on-track">On Track</option>
@@ -154,12 +154,12 @@ const JawdaKPI = () => {
               </select>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-slate-500">Category:</span>
+              <span className="text-sm font-medium text-black font-bold">Category:</span>
               <select
                 name="category"
                 value={filters.category}
                 onChange={handleFilterChange}
-                className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm outline-none"
+                className="px-3 py-1.5 bg-white dark:bg-white border border-slate-200 dark:border-slate-800 rounded-lg text-sm outline-none"
               >
                 <option value="">All Categories</option>
                 <option value="patient-safety">Patient Safety</option>

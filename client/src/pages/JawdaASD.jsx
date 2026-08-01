@@ -42,7 +42,7 @@ const JawdaASD = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/jawda/asd');
+      const response = await axios.get('http://192.168.1.160:5000/api/jawda/asd');
       setData(response.data);
     } catch (err) {
       showNotification('Failed to load ASD data', 'error');
@@ -54,7 +54,7 @@ const JawdaASD = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/jawda/asd', formData);
+      await axios.post('http://192.168.1.160:5000/api/jawda/asd', formData);
       showNotification('Referral registered successfully', 'success');
       setShowModal(false);
       fetchData();
@@ -74,8 +74,8 @@ const JawdaASD = () => {
   const stats = [
     { label: 'Timely Access (14d)', value: '94.2%', icon: Timer, color: 'text-indigo-600', bg: 'bg-indigo-50' },
     { label: 'Report Compliance', value: '88.5%', icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'Avg Dx Time', value: '32d', icon: Clock, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Active Referrals', value: data.filter(d => d.status === 'InAssessment').length, icon: Users, color: 'text-slate-600', bg: 'bg-slate-50' },
+    { label: 'Avg Dx Time', value: '32d', icon: Clock, color: 'text-[#040404]', bg: 'bg-slate-100' },
+    { label: 'Active Referrals', value: data.filter(d => d.status === 'InAssessment').length, icon: Users, color: 'text-black font-bold', bg: 'bg-slate-50' },
   ];
 
   return (
@@ -84,26 +84,26 @@ const JawdaASD = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 text-sm font-bold text-slate-400 tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-sm font-bold text-black font-bold tracking-widest mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#2dd4bf]">Regulatory</span>
+              <span className="text-[var(--color-primary)]">Regulatory</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#2dd4bf]">Autism Services</span>
+              <span className="text-[var(--color-primary)]">Autism Services</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+            <h1 className="text-2xl font-extrabold text-black font-bold tracking-tight flex items-center gap-3">
               <Puzzle className="w-8 h-8 text-indigo-500" />
-              JAWDA ASD Module <span className="text-sm font-medium text-slate-400 ml-2 bg-slate-100 px-2 py-0.5 rounded">V1.0 Q4-2026</span>
+              JAWDA ASD Module <span className="text-sm font-medium text-black font-bold ml-2 bg-slate-100 px-2 py-0.5 rounded">V1.0 Q4-2026</span>
             </h1>
           </div>
           
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all">
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-black font-bold hover:bg-slate-50 transition-all">
               <Download className="w-4 h-4" /> Export JAWDA XML
             </button>
             <button 
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-bold shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-95"
+              className="flex items-center gap-2 px-6 py-3 bg-[#040404] text-white rounded-xl text-sm font-bold shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-95"
             >
               <Plus className="w-4 h-4" /> New Referral
             </button>
@@ -113,13 +113,13 @@ const JawdaASD = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {stats.map((stat, i) => (
-            <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4 group hover:border-[#2dd4bf] transition-all cursor-default">
+            <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4 group hover:border-[var(--color-primary)] transition-all cursor-default">
               <div className={`w-14 h-14 rounded-2xl ${stat.bg} flex items-center justify-center transition-transform group-hover:scale-110`}>
                 <stat.icon className={`w-7 h-7 ${stat.color}`} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
-                <p className="text-xl font-black text-slate-900">{stat.value}</p>
+                <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest">{stat.label}</p>
+                <p className="text-xl font-black text-black font-bold">{stat.value}</p>
               </div>
             </div>
           ))}
@@ -130,15 +130,15 @@ const JawdaASD = () => {
           <div className="p-6 border-b border-slate-100 bg-slate-50/30 flex items-center justify-between">
             <div className="flex items-center gap-3">
                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input type="text" placeholder="Search referrals..." className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#2dd4bf] text-xs font-bold w-64" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold" />
+                  <input type="text" placeholder="Search referrals..." className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-bold w-64" />
                </div>
-               <button className="flex items-center gap-2 px-3 py-2.5 border border-slate-200 rounded-xl text-[10px] font-black text-slate-500 hover:bg-white transition-all uppercase tracking-widest">
+               <button className="flex items-center gap-2 px-3 py-2.5 border border-slate-200 rounded-xl text-[10px] font-black text-black font-bold hover:bg-white transition-all uppercase tracking-widest">
                   <Filter className="w-3.5 h-3.5" /> Criteria
                </button>
             </div>
             <div className="flex items-center gap-2">
-               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Quarterly Reporting: Q1 2026</span>
+               <span className="text-[10px] font-black text-black font-bold uppercase tracking-widest">Quarterly Reporting: Q1 2026</span>
             </div>
           </div>
 
@@ -146,12 +146,12 @@ const JawdaASD = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-100/50">
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-200">Patient ID</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-200">Timeline Progress</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-200">Gates</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-200">Comorbidity</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-200">Status</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Actions</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-black font-bold uppercase tracking-widest border-b border-slate-200">Patient ID</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-black font-bold uppercase tracking-widest border-b border-slate-200">Timeline Progress</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-black font-bold uppercase tracking-widest border-b border-slate-200">Gates</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-black font-bold uppercase tracking-widest border-b border-slate-200">Comorbidity</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-black font-bold uppercase tracking-widest border-b border-slate-200">Status</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-black font-bold uppercase tracking-widest border-b border-slate-200 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -159,14 +159,14 @@ const JawdaASD = () => {
                   <tr key={item._id} className="hover:bg-slate-50/50 transition-colors group">
                     <td className="px-8 py-6">
                       <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-900">{item.patientId}</span>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Ref: {new Date(item.referralDate).toLocaleDateString()}</span>
+                        <span className="text-sm font-bold text-black font-bold">{item.patientId}</span>
+                        <span className="text-[10px] font-bold text-black font-bold uppercase tracking-tight">Ref: {new Date(item.referralDate).toLocaleDateString()}</span>
                       </div>
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex flex-col gap-1.5">
                         <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-tighter">
-                           <span className="text-slate-400">Dx Completion</span>
+                           <span className="text-black font-bold">Dx Completion</span>
                            <span className="text-emerald-600">Day 12 / 42</span>
                         </div>
                         <div className="w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -176,10 +176,10 @@ const JawdaASD = () => {
                     </td>
                     <td className="px-8 py-6">
                        <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${item.isReportInEMR ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-slate-50 border-slate-100 text-slate-300'}`} title="EMR Documented">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${item.isReportInEMR ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-slate-50 border-slate-100 text-black font-bold'}`} title="EMR Documented">
                              <LayoutGrid className="w-4 h-4" />
                           </div>
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${item.isReportProvidedToParents ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-slate-50 border-slate-100 text-slate-300'}`} title="Provided to Parents">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${item.isReportProvidedToParents ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-slate-50 border-slate-100 text-black font-bold'}`} title="Provided to Parents">
                              <Users className="w-4 h-4" />
                           </div>
                        </div>
@@ -187,19 +187,19 @@ const JawdaASD = () => {
                     <td className="px-8 py-6">
                        <div className="flex items-center gap-2">
                           <div className={`w-2 h-2 rounded-full ${item.coexistingConditionAssessmentDate ? 'bg-emerald-500' : 'bg-slate-200 animate-pulse'}`}></div>
-                           <span className="text-[10px] font-bold text-slate-500 uppercase">{item.coexistingConditionAssessmentDate ? 'Completed' : 'Pending'}</span>
+                           <span className="text-[10px] font-bold text-black font-bold uppercase">{item.coexistingConditionAssessmentDate ? 'Completed' : 'Pending'}</span>
                        </div>
                     </td>
                     <td className="px-8 py-6">
                       <span className={`inline-flex px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
                         item.status === 'Diagnosed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 
-                        item.status === 'InAssessment' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-slate-100 text-slate-500'
+                        item.status === 'InAssessment' ? 'bg-slate-100 text-[#040404] border border-blue-100' : 'bg-slate-100 text-black font-bold'
                       }`}>
                         {item.status}
                       </span>
                     </td>
                     <td className="px-8 py-6 text-right">
-                      <button className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-all">
+                      <button className="p-2 rounded-xl hover:bg-slate-100 text-black font-bold hover:text-black font-bold transition-all">
                         <ClipboardList className="w-4 h-4" />
                       </button>
                     </td>
@@ -220,15 +220,15 @@ const JawdaASD = () => {
         </div>
         
         {/* Compliance Footer */}
-        <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden group">
+        <div className="bg-white rounded-[2.5rem] p-8 text-white relative overflow-hidden group">
            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -mr-32 -mt-32 transition-transform group-hover:scale-150 duration-700"></div>
            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
               <div className="max-w-xl">
                  <h3 className="text-xl font-black tracking-tight mb-4 flex items-center gap-3">
-                    <ShieldCheck className="w-6 h-6 text-[#2dd4bf]" />
+                    <ShieldCheck className="w-6 h-6 text-[var(--color-primary)]" />
                     ASD Diagnostic Hub Standards
                  </h3>
-                 <p className="text-slate-400 text-sm font-medium leading-relaxed">
+                 <p className="text-black font-bold text-sm font-medium leading-relaxed">
                     Referrals must attend initial assessment within 14 calendar days (ASD001). 
                     Diagnostic reports must be documented in EMR and provided to parents within 42 days (ASD002). 
                     Reporting is mandatory on a quarterly basis via the JAWDA portal.
@@ -244,16 +244,16 @@ const JawdaASD = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-white/60 backdrop-blur-sm animate-in fade-in duration-300">
            <div className="bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
-              <div className="p-8 bg-slate-900 text-white flex items-center justify-between">
+              <div className="p-8 bg-[#040404] text-white flex items-center justify-between">
                  <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
                        <Puzzle className="w-6 h-6 text-indigo-500" />
                     </div>
                     <div>
                        <h3 className="text-lg font-black uppercase tracking-tight">New ASD Referral</h3>
-                       <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">JAWDA ASD V1.0</p>
+                       <p className="text-xs text-black font-bold font-bold uppercase tracking-widest">JAWDA ASD V1.0</p>
                     </div>
                  </div>
                  <button onClick={() => setShowModal(false)} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
@@ -263,7 +263,7 @@ const JawdaASD = () => {
               
               <form onSubmit={handleSubmit} className="p-8 space-y-6">
                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Patient ID</label>
+                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest">Patient ID</label>
                     <input 
                       required
                       type="text" 
@@ -275,7 +275,7 @@ const JawdaASD = () => {
 
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Referral Date</label>
+                       <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest">Referral Date</label>
                        <input 
                         required
                         type="date" 
@@ -285,7 +285,7 @@ const JawdaASD = () => {
                        />
                     </div>
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Assessment Status</label>
+                       <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest">Assessment Status</label>
                        <select 
                         value={formData.status}
                         onChange={(e) => setFormData({...formData, status: e.target.value})}
@@ -299,7 +299,7 @@ const JawdaASD = () => {
                  </div>
 
                  <div className="space-y-4 pt-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Compliance Gates</label>
+                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block">Compliance Gates</label>
                     <div className="flex items-center gap-6">
                        <label className="flex items-center gap-3 cursor-pointer group">
                           <input 
@@ -308,7 +308,7 @@ const JawdaASD = () => {
                             onChange={(e) => setFormData({...formData, isReportInEMR: e.target.checked})}
                             className="w-5 h-5 rounded-lg border-slate-200 text-indigo-500 focus:ring-indigo-500/20" 
                           />
-                          <span className="text-xs font-bold text-slate-600 group-hover:text-slate-900 transition-colors">EMR Documented</span>
+                          <span className="text-xs font-bold text-black font-bold group-hover:text-black font-bold transition-colors">EMR Documented</span>
                        </label>
                        <label className="flex items-center gap-3 cursor-pointer group">
                           <input 
@@ -317,14 +317,14 @@ const JawdaASD = () => {
                             onChange={(e) => setFormData({...formData, isReportProvidedToParents: e.target.checked})}
                             className="w-5 h-5 rounded-lg border-slate-200 text-indigo-500 focus:ring-indigo-500/20" 
                           />
-                          <span className="text-xs font-bold text-slate-600 group-hover:text-slate-900 transition-colors">Parent Report Sent</span>
+                          <span className="text-xs font-bold text-black font-bold group-hover:text-black font-bold transition-colors">Parent Report Sent</span>
                        </label>
                     </div>
                  </div>
 
                  <div className="pt-4 flex gap-3">
-                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-4 bg-slate-50 text-slate-600 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-all">Cancel</button>
-                    <button type="submit" className="flex-1 py-4 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all">Register Referral</button>
+                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-4 bg-slate-50 text-black font-bold rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-all">Cancel</button>
+                    <button type="submit" className="flex-1 py-4 bg-[#040404] text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all">Register Referral</button>
                  </div>
               </form>
            </div>

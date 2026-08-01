@@ -69,8 +69,8 @@ const ComplianceManagement = () => {
                 <ShieldCheck className="w-6 h-6" />
              </div>
              <div>
-                <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Compliance Center</h2>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Regulatory & Licensing Management</p>
+                <h2 className="text-xl font-black text-black font-bold dark:text-white uppercase tracking-tight">Compliance Center</h2>
+                <p className="text-xs font-bold text-black font-bold uppercase tracking-widest">Regulatory & Licensing Management</p>
              </div>
           </div>
           {isAdmin && (
@@ -88,7 +88,7 @@ const ComplianceManagement = () => {
 
         {/* Licenses Section */}
         <div className="space-y-4">
-          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Licensing Inventory</h3>
+          <h3 className="text-[10px] font-black text-black font-bold uppercase tracking-[0.2em] px-2">Licensing Inventory</h3>
           <LicenseTable 
             facilityLicenses={facilityLicenses} 
             staffLicenses={staffLicenses} 
@@ -97,7 +97,7 @@ const ComplianceManagement = () => {
 
         {/* Circulars Section */}
         <div className="space-y-4">
-          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Regulatory Circulars</h3>
+          <h3 className="text-[10px] font-black text-black font-bold uppercase tracking-[0.2em] px-2">Regulatory Circulars</h3>
           <CircularList 
             circulars={circulars} 
             onAcknowledge={handleAcknowledge}

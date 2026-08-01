@@ -23,8 +23,8 @@ const ComplianceDashboard = ({ stats }) => {
       label: 'Overdue Circulars', 
       value: stats?.pendingCirculars || 0, 
       icon: ClipboardCheck, 
-      color: 'text-blue-600', 
-      bg: 'bg-blue-50',
+      color: 'text-[#040404]', 
+      bg: 'bg-slate-100',
       description: 'Pending acknowledgments'
     },
     { 
@@ -40,16 +40,16 @@ const ComplianceDashboard = ({ stats }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {cards.map((card, idx) => (
-        <div key={idx} className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-md">
+        <div key={idx} className="bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-md">
           <div className="flex items-center justify-between mb-4">
             <div className={`p-3 rounded-xl ${card.bg}`}>
               <card.icon className={`w-6 h-6 ${card.color}`} />
             </div>
-            <span className="text-2xl font-black text-slate-900 dark:text-white">{card.value}</span>
+            <span className="text-2xl font-black text-black font-bold dark:text-white">{card.value}</span>
           </div>
           <div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{card.label}</p>
-            <p className="text-[10px] text-slate-400 mt-1">{card.description}</p>
+            <p className="text-xs font-bold text-black font-bold uppercase tracking-wider">{card.label}</p>
+            <p className="text-[10px] text-black font-bold mt-1">{card.description}</p>
           </div>
         </div>
       ))}

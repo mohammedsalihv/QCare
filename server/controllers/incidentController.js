@@ -68,7 +68,8 @@ const getIncidents = async (req, res) => {
     let query = {};
 
     // If not admin/superadmin, only show own reported incidents
-    if (req.user.role !== "admin" && req.user.role !== "superadmin") {
+    const roleLower = req.user.role?.toLowerCase();
+    if (roleLower !== "admin" && roleLower !== "superadmin") {
       query = { reportedBy: req.user._id };
     }
 
@@ -94,7 +95,8 @@ const updateIncident = async (req, res) => {
     }
 
     // Role check for updating (only admins can update status/findings)
-    if (req.user.role !== "admin" && req.user.role !== "superadmin") {
+    const roleLower = req.user.role?.toLowerCase();
+    if (roleLower !== "admin" && roleLower !== "superadmin") {
       return res.status(403).json({ message: "Not authorized to update incidents" });
     }
 

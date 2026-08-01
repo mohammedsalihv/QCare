@@ -6,15 +6,15 @@ const StaffComplianceView = ({ compliance }) => {
     switch (status) {
       case 'compliant': return { icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-50', label: 'Current' };
       case 'expired': return { icon: AlertCircle, color: 'text-rose-500', bg: 'bg-rose-50', label: 'Overdue' };
-      case 'missing': return { icon: XCircle, color: 'text-slate-300', bg: 'bg-slate-50', label: 'Not Attempted' };
-      default: return { icon: Clock, color: 'text-blue-500', bg: 'bg-blue-50', label: 'Expiring Soon' };
+      case 'missing': return { icon: XCircle, color: 'text-black font-bold', bg: 'bg-slate-50', label: 'Not Attempted' };
+      default: return { icon: Clock, color: 'text-[#040404]', bg: 'bg-slate-100', label: 'Expiring Soon' };
     }
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div className="bg-white dark:bg-white rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
       <div className="p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
-         <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">Mandatory DOH Competencies</h3>
+         <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest">Mandatory DOH Competencies</h3>
       </div>
       <div className="p-8 space-y-4">
          {compliance?.map((item, idx) => {
@@ -26,21 +26,21 @@ const StaffComplianceView = ({ compliance }) => {
                       <info.icon className="w-6 h-6" />
                    </div>
                    <div>
-                      <h4 className="text-base font-bold text-slate-900 dark:text-white">{item.name}</h4>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{item.code}</p>
+                      <h4 className="text-base font-bold text-black font-bold dark:text-white">{item.name}</h4>
+                      <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest mt-1">{item.code}</p>
                    </div>
                 </div>
                 
                 <div className="flex items-center gap-12">
                    <div className="text-right">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Last Completed</p>
-                      <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest mb-1">Last Completed</p>
+                      <p className="text-xs font-bold text-black font-bold dark:text-black font-bold">
                          {item.lastCompleted ? new Date(item.lastCompleted).toLocaleDateString() : '—'}
                       </p>
                    </div>
                    <div className="text-right">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Renewal Due</p>
-                      <p className={`text-xs font-bold ${item.status === 'expired' ? 'text-rose-600' : 'text-slate-700 dark:text-slate-300'}`}>
+                      <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest mb-1">Renewal Due</p>
+                      <p className={`text-xs font-bold ${item.status === 'expired' ? 'text-rose-600' : 'text-black font-bold dark:text-black font-bold'}`}>
                          {item.expiry ? new Date(item.expiry).toLocaleDateString() : '—'}
                       </p>
                    </div>
@@ -54,7 +54,7 @@ const StaffComplianceView = ({ compliance }) => {
            );
          })}
          {(!compliance || compliance.length === 0) && (
-           <div className="text-center py-20 text-slate-400 font-black uppercase text-[10px] tracking-widest">
+           <div className="text-center py-20 text-black font-bold font-black uppercase text-[10px] tracking-widest">
               No mandatory competencies defined for this role.
            </div>
          )}

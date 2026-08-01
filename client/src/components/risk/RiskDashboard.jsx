@@ -3,7 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 import { AlertCircle, AlertTriangle, CheckCircle, Clock, TrendingDown } from 'lucide-react';
 
 const RiskDashboard = ({ stats }) => {
-  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#64748b'];
+  const COLORS = ['var(--color-secondary)', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#64748b'];
 
   const categoryData = stats?.categories?.map(c => ({
     name: c._id.charAt(0).toUpperCase() + c._id.slice(1),
@@ -21,22 +21,22 @@ const RiskDashboard = ({ stats }) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card, idx) => (
-          <div key={idx} className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-md">
+          <div key={idx} className="bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-md">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${card.bg}`}>
                 <card.icon className={`w-6 h-6 ${card.color}`} />
               </div>
-              <span className="text-2xl font-black text-slate-900 dark:text-white">{card.value}</span>
+              <span className="text-2xl font-black text-black font-bold dark:text-white">{card.value}</span>
             </div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{card.label}</p>
+            <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest">{card.label}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Risk Distribution by Category */}
-        <div className="lg:col-span-1 bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm min-w-0">
-          <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest mb-8">Risk Distribution</h3>
+        <div className="lg:col-span-1 bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm min-w-0">
+          <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8">Risk Distribution</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -61,8 +61,8 @@ const RiskDashboard = ({ stats }) => {
         </div>
 
         {/* Top Critical Risks */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-          <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest mb-8 flex items-center justify-between">
+        <div className="lg:col-span-2 bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
+          <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8 flex items-center justify-between">
             Top Critical Risks
             <span className="px-3 py-1 bg-rose-100 text-rose-600 text-[10px] font-black rounded-full uppercase">High Priority</span>
           </h3>
@@ -74,10 +74,10 @@ const RiskDashboard = ({ stats }) => {
                       {risk.riskScore}
                    </div>
                    <div>
-                      <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-rose-600 transition-colors">{risk.riskTitle}</h4>
+                      <h4 className="text-sm font-bold text-black font-bold dark:text-white group-hover:text-rose-600 transition-colors">{risk.riskTitle}</h4>
                       <div className="flex gap-3 mt-1">
-                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">{risk.riskId}</span>
-                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Owner: {risk.owner?.employeeName}</span>
+                         <span className="text-[10px] font-black text-black font-bold uppercase tracking-wider">{risk.riskId}</span>
+                         <span className="text-[10px] font-black text-black font-bold uppercase tracking-wider">Owner: {risk.owner?.employeeName}</span>
                       </div>
                    </div>
                 </div>

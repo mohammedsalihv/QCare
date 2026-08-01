@@ -4,7 +4,6 @@ const kpiIndicatorSchema = new mongoose.Schema({
   indicatorCode: {
     type: String,
     required: [true, 'Indicator code is required'],
-    unique: true,
     trim: true
   },
   indicatorName: {
@@ -18,13 +17,55 @@ const kpiIndicatorSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    required: [true, 'Category is required'],
-    enum: ['patient-safety', 'clinical-effectiveness', 'patient-experience', 'efficiency', 'access']
+    required: [true, 'Category is required']
+  },
+  mainCategory: {
+    type: String,
+    trim: true
+  },
+  subCategory: {
+    type: String,
+    trim: true
+  },
+  owner: {
+    type: String,
+    trim: true
+  },
+  reportingFrequency: {
+    type: String,
+    trim: true
+  },
+  description: {
+    type: String,
+    trim: true
+  },
+  rationale: {
+    type: String,
+    trim: true
+  },
+  criteria: {
+    type: String,
+    trim: true
+  },
+  numeratorDesc: {
+    type: String,
+    trim: true
+  },
+  denominatorDesc: {
+    type: String,
+    trim: true
+  },
+  sampleSize: {
+    type: String,
+    default: 'All'
+  },
+  unit: {
+    type: String,
+    default: '%'
   },
   reportingPeriod: {
     type: String,
-    required: [true, 'Reporting period is required'],
-    enum: ['Q1', 'Q2', 'Q3', 'Q4']
+    required: [true, 'Reporting period is required']
   },
   reportingYear: {
     type: Number,
@@ -58,6 +99,11 @@ const kpiIndicatorSchema = new mongoose.Schema({
     enum: ['on-track', 'at-risk', 'breached'],
     default: 'on-track'
   },
+  validationStatus: {
+    type: String,
+    enum: ['Draft', 'Pending Validation', 'Pending Approval', 'Approved'],
+    default: 'Draft'
+  },
   submittedToDOH: {
     type: Boolean,
     default: false
@@ -67,7 +113,7 @@ const kpiIndicatorSchema = new mongoose.Schema({
   },
   facilityId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Facility' // Assuming a Facility model exists or will be added
+    ref: 'Facility'
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -77,10 +123,31 @@ const kpiIndicatorSchema = new mongoose.Schema({
   updatedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  },
+  validatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  validatedDate: {
+    type: Date
+  },
+  approvedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  approvedDate: {
+    type: Date
+  },
+  rejectionReason: {
+    type: String,
+    trim: true
   }
 }, {
   timestamps: true
 });
+
+// Compound unique index to support periodic submissions of the same KPI
+kpiIndicatorSchema.index({ indicatorCode: 1, reportingPeriod: 1, reportingYear: 1 }, { unique: true });
 
 // Pre-save hook to compute calculatedValue, variance, and status
 kpiIndicatorSchema.pre('save', function(next) {
@@ -95,14 +162,6 @@ kpiIndicatorSchema.pre('save', function(next) {
   this.variance = parseFloat((this.calculatedValue - this.target).toFixed(2));
 
   // Determine status from variance
-  // Logic: Positive variance is usually good, but depends on indicator. 
-  // For most KPIs, Actual >= Target is on-track.
-  // Let's assume:
-  // variance >= 0 => on-track
-  // variance < 0 and variance >= -5 => at-risk
-  // variance < -5 => breached
-  // (This can be customized, but I'll use a standard logic)
-  
   if (this.variance >= 0) {
     this.status = 'on-track';
   } else if (this.variance < 0 && this.variance >= -10) {
@@ -115,3 +174,4 @@ kpiIndicatorSchema.pre('save', function(next) {
 });
 
 module.exports = mongoose.model('KPIIndicator', kpiIndicatorSchema);
+

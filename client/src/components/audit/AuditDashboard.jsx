@@ -11,8 +11,8 @@ const AuditDashboard = ({ stats }) => {
 
   const statCards = [
     { label: 'Completed Audits', value: stats?.counts?.find(c => c._id === 'completed')?.count || 0, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'In Progress', value: stats?.counts?.find(c => c._id === 'in-progress')?.count || 0, icon: Clock, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Scheduled', value: stats?.counts?.find(c => c._id === 'scheduled')?.count || 0, icon: ClipboardCheck, color: 'text-slate-600', bg: 'bg-slate-50' },
+    { label: 'In Progress', value: stats?.counts?.find(c => c._id === 'in-progress')?.count || 0, icon: Clock, color: 'text-[#040404]', bg: 'bg-slate-100' },
+    { label: 'Scheduled', value: stats?.counts?.find(c => c._id === 'scheduled')?.count || 0, icon: ClipboardCheck, color: 'text-black font-bold', bg: 'bg-slate-50' },
     { label: 'Overdue', value: stats?.overdue?.length || 0, icon: AlertCircle, color: 'text-rose-600', bg: 'bg-rose-50' },
   ];
 
@@ -20,22 +20,22 @@ const AuditDashboard = ({ stats }) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card, idx) => (
-          <div key={idx} className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+          <div key={idx} className="bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${card.bg}`}>
                 <card.icon className={`w-6 h-6 ${card.color}`} />
               </div>
-              <span className="text-2xl font-black text-slate-900 dark:text-white">{card.value}</span>
+              <span className="text-2xl font-black text-black font-bold dark:text-white">{card.value}</span>
             </div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{card.label}</p>
+            <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest">{card.label}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Radar Chart for Governance Pillars */}
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm min-w-0">
-          <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest mb-8">Governance Pillar Performance</h3>
+        <div className="bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm min-w-0">
+          <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8">Governance Pillar Performance</h3>
           <div className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={pillarData}>
@@ -45,8 +45,8 @@ const AuditDashboard = ({ stats }) => {
                 <Radar
                   name="Compliance %"
                   dataKey="score"
-                  stroke="#3b82f6"
-                  fill="#3b82f6"
+                  stroke="var(--color-secondary)"
+                  fill="var(--color-secondary)"
                   fillOpacity={0.4}
                 />
                 <Tooltip 
@@ -58,8 +58,8 @@ const AuditDashboard = ({ stats }) => {
         </div>
 
         {/* Overdue List */}
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-          <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest mb-8 flex items-center justify-between">
+        <div className="bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
+          <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8 flex items-center justify-between">
             Critical Overdue Audits
             <span className="px-3 py-1 bg-rose-100 text-rose-600 text-[10px] font-black rounded-full">ACTION REQUIRED</span>
           </h3>
@@ -67,8 +67,8 @@ const AuditDashboard = ({ stats }) => {
             {stats?.overdue?.map((audit, idx) => (
               <div key={idx} className="p-4 rounded-2xl bg-rose-50/50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/30 flex justify-between items-center">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">{audit.auditTitle}</h4>
-                  <p className="text-[10px] text-slate-500 uppercase font-black">{audit.department}</p>
+                  <h4 className="text-sm font-bold text-black font-bold dark:text-white">{audit.auditTitle}</h4>
+                  <p className="text-[10px] text-black font-bold uppercase font-black">{audit.department}</p>
                 </div>
                 <div className="text-right">
                   <span className="text-[10px] font-black text-rose-600 uppercase">

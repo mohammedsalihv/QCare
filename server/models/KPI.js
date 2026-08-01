@@ -9,7 +9,7 @@ const kpiSchema = new mongoose.Schema({
   category: { 
     type: String, 
     required: [true, 'Please specify a category'],
-    enum: ['Clinical', 'Operational', 'Financial', 'Patient Experience', 'Staff Safety'],
+      enum: ['Clinical', 'Operational', 'Financial', 'Patient Experience', 'Staff Safety', 'Medical', 'LeathClinic'],
     default: 'Clinical'
   },
   department: {

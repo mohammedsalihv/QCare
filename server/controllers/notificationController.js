@@ -5,7 +5,8 @@ const Notification = require("../models/Notification");
 // @access  Private
 const getNotifications = async (req, res) => {
   try {
-    if (req.user.role === 'superadmin') {
+    const roleLower = req.user.role?.toLowerCase();
+    if (roleLower === 'superadmin') {
       roleQuery = {
         $or: [
           { recipientRole: "all" },
@@ -14,7 +15,7 @@ const getNotifications = async (req, res) => {
           { recipientId: req.user._id }
         ]
       };
-    } else if (req.user.role === 'admin') {
+    } else if (roleLower === 'admin') {
       roleQuery = {
         $or: [
           { recipientRole: "all" },
@@ -100,11 +101,12 @@ const deleteNotification = async (req, res) => {
 const clearAllNotifications = async (req, res) => {
   try {
     let roleQuery;
-    if (req.user.role === 'admin' || req.user.role === 'superadmin') {
+    const roleLower = req.user.role?.toLowerCase();
+    if (roleLower === 'admin' || roleLower === 'superadmin') {
       roleQuery = {
         $or: [
           { recipientRole: "all" },
-          { recipientRole: req.user.role === "superadmin" ? "superadmin" : "admin" },
+          { recipientRole: roleLower === "superadmin" ? "superadmin" : "admin" },
           { recipientId: req.user._id }
         ]
       };

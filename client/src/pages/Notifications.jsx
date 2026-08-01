@@ -48,7 +48,7 @@ const Notifications = () => {
 
   const markAsRead = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/notifications/${id}/read`, {}, getAuthConfig());
+      await axios.patch(`http://192.168.1.160:5000/api/notifications/${id}/read`, {}, getAuthConfig());
       setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
     } catch (error) {
       showNotification('Error updating notification', 'error');
@@ -57,7 +57,7 @@ const Notifications = () => {
 
   const deleteNotification = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/notifications/${id}`, getAuthConfig());
+      await axios.delete(`http://192.168.1.160:5000/api/notifications/${id}`, getAuthConfig());
       setNotifications(prev => prev.filter(n => n._id !== id));
       showNotification('Notification removed', 'success');
     } catch (error) {
@@ -102,10 +102,10 @@ const Notifications = () => {
   const getTypeIcon = (type) => {
     switch (type) {
       case 'incident_report': return <AlertTriangle className="w-5 h-5 text-rose-500" />;
-      case 'document_upload': return <Monitor className="w-5 h-5 text-blue-500" />;
+      case 'document_upload': return <Monitor className="w-5 h-5 text-[#040404]" />;
       case 'document_like':
       case 'document_endorsement': return <ThumbsUp className="w-5 h-5 text-amber-500" />;
-      default: return <Bell className="w-5 h-5 text-slate-500" />;
+      default: return <Bell className="w-5 h-5 text-black font-bold" />;
     }
   };
 
@@ -114,8 +114,8 @@ const Notifications = () => {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-             <h1 className="text-3xl font-black text-slate-900 tracking-tight">Notification Center</h1>
-             <p className="text-xs text-slate-500 font-medium mt-1">History of all system activities and your personalized alerts.</p>
+             <h1 className="text-3xl font-black text-black font-bold tracking-tight">Notification Center</h1>
+             <p className="text-xs text-black font-bold font-medium mt-1">History of all system activities and your personalized alerts.</p>
           </div>
           <button 
             onClick={clearAll}
@@ -130,7 +130,7 @@ const Notifications = () => {
            {/* Filters Sidebar */}
            <div className="lg:col-span-1 space-y-6">
               <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
-                 <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-6">Quick Filters</h4>
+                 <h4 className="text-[10px] font-black text-black font-bold uppercase tracking-widest mb-6">Quick Filters</h4>
                  <div className="flex flex-col gap-2">
                     {[
                       { id: 'all', label: 'All Activities', icon: Bell },
@@ -140,7 +140,7 @@ const Notifications = () => {
                         key={filter.id}
                         onClick={() => setActiveFilter(filter.id)}
                         className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
-                          activeFilter === filter.id ? 'bg-slate-900 text-white shadow-lg' : 'hover:bg-slate-50 text-slate-500'
+                          activeFilter === filter.id ? 'bg-[#040404] text-white shadow-lg' : 'hover:bg-slate-50 text-black font-bold'
                         }`}
                       >
                          <div className="flex items-center gap-3">
@@ -157,11 +157,11 @@ const Notifications = () => {
                  </div>
               </div>
 
-              <div className="bg-gradient-to-br from-[#3b82f6] to-[#2dd4bf] p-6 rounded-[2rem] shadow-xl shadow-blue-500/20 text-slate-950 relative overflow-hidden group">
+              <div className="bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-primary)] p-6 rounded-[2rem] shadow-xl shadow-[#040404]/20/20 text-black font-bold relative overflow-hidden group">
                  <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
                  <Shield className="w-8 h-8 mb-4 opacity-50" />
                  <h5 className="font-black text-sm uppercase tracking-widest mb-2">Notification Guard</h5>
-                 <p className="text-[10px] text-slate-950/80 font-medium leading-relaxed">Notifications are retained for 30 days. Please ensure critical alerts are reviewed regularly.</p>
+                 <p className="text-[10px] text-black font-bold/80 font-medium leading-relaxed">Notifications are retained for 30 days. Please ensure critical alerts are reviewed regularly.</p>
               </div>
            </div>
 
@@ -170,17 +170,17 @@ const Notifications = () => {
               <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
                  <div className="p-6 border-b border-slate-100 bg-slate-50/30 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="relative w-full sm:w-96">
-                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold" />
                        <input 
                          type="text" 
                          value={searchTerm}
                          onChange={(e) => setSearchTerm(e.target.value)}
                          placeholder="Search by activity or user..." 
-                         className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-sm"
+                         className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-sm"
                        />
                     </div>
                     <div className="flex items-center gap-2">
-                       <button className="p-2 text-slate-400 hover:text-slate-900 transition-colors">
+                       <button className="p-2 text-black font-bold hover:text-black font-bold transition-colors">
                           <Filter className="w-5 h-5" />
                        </button>
                     </div>
@@ -203,7 +203,7 @@ const Notifications = () => {
                           key={n._id} 
                           className={`p-6 md:p-8 flex items-start gap-6 hover:bg-slate-50 transition-all group relative ${!n.isRead ? 'bg-slate-50/30' : ''}`}
                         >
-                           {!n.isRead && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#2dd4bf]"></div>}
+                           {!n.isRead && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--color-primary)]"></div>}
                            
                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border border-slate-100 bg-white shadow-sm group-hover:scale-110 transition-transform`}>
                               {getTypeIcon(n.type)}
@@ -211,26 +211,26 @@ const Notifications = () => {
 
                            <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between gap-4 mb-2">
-                                 <span className="text-[10px] font-black text-[#3b82f6] uppercase tracking-[0.2em]">{n.type.replace('_', ' ')}</span>
-                                 <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+                                 <span className="text-[10px] font-black text-[var(--color-secondary)] uppercase tracking-[0.2em]">{n.type.replace('_', ' ')}</span>
+                                 <div className="flex items-center gap-2 text-black font-bold text-[10px] font-bold uppercase tracking-widest">
                                     <Clock className="w-3 h-3" />
                                     {new Date(n.createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                  </div>
                               </div>
-                              <h4 className="text-sm md:text-base font-bold text-slate-900 mb-2 leading-snug">{n.message}</h4>
+                              <h4 className="text-sm md:text-base font-bold text-black font-bold mb-2 leading-snug">{n.message}</h4>
                               
                               <div className="flex flex-wrap items-center gap-6 mt-4">
                                  <div className="flex items-center gap-2">
                                     <div className="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center">
-                                       <User className="w-3.5 h-3.5 text-slate-400" />
+                                       <User className="w-3.5 h-3.5 text-black font-bold" />
                                     </div>
-                                    <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">{n.user}</span>
+                                    <span className="text-[11px] font-bold text-black font-bold uppercase tracking-wider">{n.user}</span>
                                  </div>
                                  <div className="flex items-center gap-2">
                                     <div className="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center">
-                                       <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                                       <Calendar className="w-3.5 h-3.5 text-black font-bold" />
                                     </div>
-                                    <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">Action Recorded</span>
+                                    <span className="text-[11px] font-bold text-black font-bold uppercase tracking-wider">Action Recorded</span>
                                  </div>
                               </div>
                            </div>
@@ -255,7 +255,7 @@ const Notifications = () => {
                               {n.actionLink && (
                                 <button 
                                   onClick={() => navigate(n.actionLink)}
-                                  className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-400 hover:bg-slate-900 hover:text-white flex items-center justify-center transition-all shadow-sm"
+                                  className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-black font-bold hover:bg-white hover:text-white flex items-center justify-center transition-all shadow-sm"
                                   title="View target"
                                 >
                                    <ExternalLink className="w-4 h-4" />
@@ -267,10 +267,10 @@ const Notifications = () => {
                     ) : (
                       <div className="p-24 text-center">
                          <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Bell className="w-10 h-10 text-slate-200" />
+                            <Bell className="w-10 h-10 text-black font-bold" />
                          </div>
-                         <h3 className="text-lg font-black text-slate-900 mb-1 tracking-tight">No notifications found</h3>
-                         <p className="text-xs text-slate-400 font-medium uppercase tracking-widest">Your notification feed is currently empty.</p>
+                         <h3 className="text-lg font-black text-black font-bold mb-1 tracking-tight">No notifications found</h3>
+                         <p className="text-xs text-black font-bold font-medium uppercase tracking-widest">Your notification feed is currently empty.</p>
                       </div>
                     )}
                  </div>

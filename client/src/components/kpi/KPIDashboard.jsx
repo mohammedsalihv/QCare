@@ -4,7 +4,7 @@ import { Target, AlertTriangle, CheckCircle, XCircle, TrendingUp } from 'lucide-
 
 const KPIDashboard = ({ stats, trend, topBreached }) => {
   const statCards = [
-    { title: 'Total KPIs', value: stats?.total || 0, icon: Target, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { title: 'Total KPIs', value: stats?.total || 0, icon: Target, color: 'text-[#040404]', bg: 'bg-slate-100' },
     { title: 'On Track', value: stats?.onTrack || 0, icon: CheckCircle, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     { title: 'At Risk', value: stats?.atRisk || 0, icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-50' },
     { title: 'Breached', value: stats?.breached || 0, icon: XCircle, color: 'text-red-600', bg: 'bg-red-50' }
@@ -21,13 +21,13 @@ const KPIDashboard = ({ stats, trend, topBreached }) => {
       {/* Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card, index) => (
-          <div key={index} className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center gap-4">
+          <div key={index} className="bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center gap-4">
             <div className={`p-3 rounded-xl ${card.bg}`}>
               <card.icon className={`w-6 h-6 ${card.color}`} />
             </div>
             <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{card.title}</p>
-              <h3 className="text-2xl font-bold text-slate-800 dark:text-white">{card.value}</h3>
+              <p className="text-sm text-black font-bold dark:text-black font-bold">{card.title}</p>
+              <h3 className="text-2xl font-bold text-black font-bold dark:text-white">{card.value}</h3>
             </div>
           </div>
         ))}
@@ -35,13 +35,13 @@ const KPIDashboard = ({ stats, trend, topBreached }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Trend Chart */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 min-w-0">
+        <div className="lg:col-span-2 bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 min-w-0">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-blue-600" />
+            <h3 className="text-lg font-bold text-black font-bold dark:text-white flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-[#040404]" />
               Performance Trend
             </h3>
-            <div className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+            <div className="text-sm font-medium text-[#040404] bg-slate-100 px-3 py-1 rounded-full">
               Avg. Achievement: {stats?.avgAchievement}%
             </div>
           </div>
@@ -56,7 +56,7 @@ const KPIDashboard = ({ stats, trend, topBreached }) => {
                   itemStyle={{ color: '#fff' }}
                 />
                 <Legend />
-                <Bar dataKey="Actual" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Actual" fill="var(--color-secondary)" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="Target" fill="#94a3b8" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -64,8 +64,8 @@ const KPIDashboard = ({ stats, trend, topBreached }) => {
         </div>
 
         {/* Top Breached */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
-          <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-6">Top Breached Indicators</h3>
+        <div className="bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+          <h3 className="text-lg font-bold text-black font-bold dark:text-white mb-6">Top Breached Indicators</h3>
           <div className="space-y-4">
             {topBreached && topBreached.length > 0 ? (
               topBreached.map((kpi, idx) => (
@@ -74,7 +74,7 @@ const KPIDashboard = ({ stats, trend, topBreached }) => {
                     <span className="text-xs font-bold text-red-600 uppercase">{kpi.indicatorCode}</span>
                     <span className="text-xs font-medium text-red-500">Variance: {kpi.variance}%</span>
                   </div>
-                  <p className="text-sm font-medium text-slate-800 dark:text-slate-200 line-clamp-1">{kpi.indicatorName}</p>
+                  <p className="text-sm font-medium text-black font-bold dark:text-black font-bold line-clamp-1">{kpi.indicatorName}</p>
                   <div className="mt-3 w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
                     <div 
                       className="bg-red-500 h-full transition-all duration-500" 
@@ -84,7 +84,7 @@ const KPIDashboard = ({ stats, trend, topBreached }) => {
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-slate-500">No breached indicators</div>
+              <div className="text-center py-8 text-black font-bold">No breached indicators</div>
             )}
           </div>
         </div>

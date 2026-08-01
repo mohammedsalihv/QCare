@@ -7,12 +7,14 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
+      immutable: true,
     },
     username: {
       type: String,
       unique: true,
       sparse: true,
       trim: true,
+      immutable: true,
     },
 
     employeeName: {
@@ -46,7 +48,7 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["SuperAdmin", "QualityManager", "DepartmentHead", "Staff", "admin", "Quality", "user", "Director"],
+      enum: ["SuperAdmin", "superadmin", "QualityManager", "DepartmentHead", "Staff", "admin", "Quality", "user", "Director"],
       default: "Staff",
     },
 

@@ -7,6 +7,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const departmentRoutes = require("./routes/departmentRoutes");
+const locationRoutes = require("./routes/locationRoutes");
 const kpiRoutes = require("./routes/kpiRoutes");
 const documentRoutes = require("./routes/documentRoutes");
 const incidentRoutes = require("./routes/incidentRoutes");
@@ -15,6 +16,7 @@ const riskRoutes = require("./routes/riskRoutes");
 const auditRoutes = require("./routes/auditRoutes");
 const complianceRoutes = require("./routes/complianceRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
+const designationRoutes = require("./routes/designationRoutes");
 const path = require("path");
 
 dotenv.config();
@@ -78,6 +80,8 @@ io.on("connection", (socket) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/departments", departmentRoutes);
+app.use("/api/locations", locationRoutes);
+app.use("/api/designations", designationRoutes);
 app.use("/api/kpi", kpiRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/incidents", incidentRoutes);
@@ -94,7 +98,9 @@ app.use("/api/medication", require("./routes/medicationRoutes"));
 app.use("/api/fms", require("./routes/fmsRoutes"));
 app.use("/api/cp", require("./routes/cpRoutes"));
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api/qms", require("./routes/qmsRoutes"));
 app.use("/api/settings", require("./routes/settingsRoutes"));
+app.use("/api/ooppe", require("./routes/ooppeRoutes"));
 
 const PORT = process.env.PORT || 5000;
 

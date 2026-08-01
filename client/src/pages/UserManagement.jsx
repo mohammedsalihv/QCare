@@ -5,9 +5,9 @@ import Pagination from '../components/Pagination';
 import Dropdown from '../components/Dropdown';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../components/NotificationContext';
-import { 
-  Search, 
-  FileEdit, 
+import {
+  Search,
+  FileEdit,
   Trash2,
   ChevronRight,
   ShieldCheck,
@@ -35,6 +35,7 @@ const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [departments, setDepartments] = useState([]);
+  const [designations, setDesignations] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -45,7 +46,7 @@ const UserManagement = () => {
 
   // Logged-in user info
   const loggedInUser = JSON.parse(localStorage.getItem('userInfo') || '{}');
-  const loggedInId   = loggedInUser?._id;
+  const loggedInId = loggedInUser?._id;
   const loggedInRole = loggedInUser?.role;
 
   // Filter + sort state
@@ -87,7 +88,7 @@ const UserManagement = () => {
     const userInfo = localStorage.getItem('userInfo');
     if (userInfo) {
       const { role } = JSON.parse(userInfo);
-      if (role !== 'admin' && role !== 'superadmin') {
+      if (!role?.toLowerCase().includes('admin')) {
         navigate('/dashboard');
       }
     } else {
@@ -106,7 +107,7 @@ const UserManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/users', getAuthConfig());
+      const { data } = await axios.get('http://192.168.1.160:5000/api/users', getAuthConfig());
       setUsers(data);
     } catch (err) {
       console.error('Error fetching users:', err);
@@ -117,16 +118,26 @@ const UserManagement = () => {
 
   const fetchDepartments = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/departments', getAuthConfig());
+      const { data } = await axios.get('http://192.168.1.160:5000/api/departments', getAuthConfig());
       setDepartments(data.map(d => ({ label: d.name, value: d.name })));
     } catch (err) {
       console.error('Error fetching departments:', err);
     }
   };
 
+  const fetchDesignations = async () => {
+    try {
+      const { data } = await axios.get('http://192.168.1.160:5000/api/designations', getAuthConfig());
+      setDesignations(data);
+    } catch (err) {
+      console.error('Error fetching designations:', err);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
     fetchDepartments();
+    fetchDesignations();
   }, []);
 
   const handleInputChange = (e) => {
@@ -180,7 +191,7 @@ const UserManagement = () => {
       type: 'danger',
       onConfirm: async () => {
         try {
-          await axios.delete(`http://localhost:5000/api/users/${user._id}`, getAuthConfig());
+          await axios.delete(`http://192.168.1.160:5000/api/users/${user._id}`, getAuthConfig());
           showNotification('Professional profile removed successfully', 'success');
           fetchUsers();
         } catch (err) {
@@ -201,7 +212,7 @@ const UserManagement = () => {
       onConfirm: async () => {
         try {
           const { data } = await axios.patch(
-            `http://localhost:5000/api/users/${user._id}/toggle-status`,
+            `http://192.168.1.160:5000/api/users/${user._id}/toggle-status`,
             { status: newStatus },
             getAuthConfig()
           );
@@ -216,40 +227,38 @@ const UserManagement = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Client-side validation
-    const required = ['employeeId', 'username', 'employeeName', 'email', 'department', 'designation'];
-    if (!isEditing) required.push('password');
-    
+
+    // Validation for editable fields only
+    const required = ['department', 'designation'];
     const missing = required.filter(f => !formData[f]);
     if (missing.length > 0) {
-      const fieldLabels = {
-        employeeId: 'Employee ID',
-        employeeName: 'Full Name',
-        email: 'Email',
-        department: 'Department',
-        designation: 'Designation',
-        password: 'Password'
-      };
+      const fieldLabels = { department: 'Department', designation: 'Designation' };
       const label = fieldLabels[missing[0]] || missing[0];
       showNotification(`${label} is required`, 'error');
       return;
     }
 
+    // Build payload with only editable fields
+    const payload = {
+      department: formData.department,
+      designation: formData.designation,
+      role: formData.role,
+    };
+
     try {
-       if (isEditing) {
-         await axios.put(`http://localhost:5000/api/users/${currentUser._id}`, formData, getAuthConfig());
-         showNotification('Professional profile updated successfully', 'success');
-       } else {
-         await axios.post('http://localhost:5000/api/users', formData, getAuthConfig());
-         showNotification('New professional onboarded successfully', 'success');
-       }
-       setShowModal(false);
-       fetchUsers();
-     } catch (err) {
-       showNotification(err.response?.data?.message || 'Error saving user', 'error');
-     }
-   };
+      if (isEditing) {
+        await axios.put(`http://192.168.1.160:5000/api/users/${currentUser._id}`, payload, getAuthConfig());
+        showNotification('Professional profile updated successfully', 'success');
+      } else {
+        await axios.post('http://192.168.1.160:5000/api/users', payload, getAuthConfig());
+        showNotification('New professional onboarded successfully', 'success');
+      }
+      setShowModal(false);
+      fetchUsers();
+    } catch (err) {
+      showNotification(err.response?.data?.message || 'Error saving user', 'error');
+    }
+  };
 
   // Derived: filter + sort
   const filteredSortedUsers = users
@@ -282,8 +291,8 @@ const UserManagement = () => {
   const SortIcon = ({ field }) => {
     if (sortField !== field) return <ChevronsUpDown className="w-3 h-3 opacity-30 inline ml-1" />;
     return sortDir === 'asc'
-      ? <ChevronUp className="w-3 h-3 inline ml-1 text-[#2dd4bf]" />
-      : <ChevronDown className="w-3 h-3 inline ml-1 text-[#2dd4bf]" />;
+      ? <ChevronUp className="w-3 h-3 inline ml-1 text-[var(--color-primary)]" />
+      : <ChevronDown className="w-3 h-3 inline ml-1 text-[var(--color-primary)]" />;
   };
 
   const indexOfLastRecord = currentPage * recordsPerPage;
@@ -291,9 +300,9 @@ const UserManagement = () => {
   const currentRecords = filteredSortedUsers.slice(indexOfFirstRecord, indexOfLastRecord);
 
   const statusOptions = [
-    { value: 'active',   label: 'Active',   color: 'text-emerald-600', bg: 'bg-emerald-50', dot: 'bg-emerald-500', icon: CheckCircle2 },
-    { value: 'blocked',  label: 'Blocked',  color: 'text-rose-500',    bg: 'bg-rose-50',    dot: 'bg-rose-400',    icon: Ban },
-    { value: 'inactive', label: 'Inactive', color: 'text-slate-400',   bg: 'bg-slate-50',   dot: 'bg-slate-300',   icon: UserX },
+    { value: 'active', label: 'Active', color: 'text-emerald-600', bg: 'bg-emerald-50', dot: 'bg-emerald-500', icon: CheckCircle2 },
+    { value: 'blocked', label: 'Blocked', color: 'text-rose-500', bg: 'bg-rose-50', dot: 'bg-rose-400', icon: Ban },
+    { value: 'inactive', label: 'Inactive', color: 'text-black font-bold', bg: 'bg-slate-50', dot: 'bg-slate-300', icon: UserX },
   ];
 
   const getStatusMeta = (user) => {
@@ -301,30 +310,46 @@ const UserManagement = () => {
     return statusOptions.find(o => o.value === s) || statusOptions[0];
   };
 
+  const activeDesignationOptions = designations
+    .filter(d => d.status === 'Active')
+    .map(d => ({ label: d.title, value: d.title }));
+
+  const hasCurrentDesignation = formData.designation && activeDesignationOptions.some(opt => opt.value === formData.designation);
+
+  const designationDropdownOptions = [...activeDesignationOptions];
+  if (formData.designation && !hasCurrentDesignation) {
+    const foundDesg = designations.find(d => d.title === formData.designation);
+    if (foundDesg) {
+      designationDropdownOptions.push({ label: `${foundDesg.title} (Inactive)`, value: foundDesg.title });
+    } else {
+      designationDropdownOptions.push({ label: formData.designation, value: formData.designation });
+    }
+  }
+
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-sm font-bold text-slate-400 tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-sm font-bold text-black font-bold tracking-widest mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#2dd4bf]">Administration</span>
+              <span className="text-[var(--color-primary)]">Administration</span>
               <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#2dd4bf]">User Management</span>
+              <span className="text-[var(--color-primary)]">User Management</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">User Management</h1>
+            <h1 className="text-2xl font-extrabold text-black font-bold tracking-tight">User Management</h1>
           </div>
-          
-          <button 
+
+          <button
             onClick={handleAddClick}
             className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
           >
-             <div className="flex items-center gap-3">
-                <UserPlus className="w-5 h-5" />
-                <span>Add New Professional</span>
-             </div>
-             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            <div className="flex items-center gap-3">
+              <UserPlus className="w-5 h-5" />
+              <span>Add New Professional</span>
+            </div>
+            <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </button>
         </div>
 
@@ -334,18 +359,18 @@ const UserManagement = () => {
             <div className="flex flex-wrap items-center gap-3">
               {/* Search */}
               <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-black font-bold" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                   placeholder="Search name, ID, email..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-semibold"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-xs font-semibold"
                 />
               </div>
               {/* Dept filter */}
               <div className="min-w-[180px]">
-                <Dropdown 
+                <Dropdown
                   options={[{ label: 'All Departments', value: '' }, ...departments]}
                   value={filterDept}
                   onSelect={(val) => { setFilterDept(val); setCurrentPage(1); }}
@@ -354,7 +379,7 @@ const UserManagement = () => {
               </div>
               {/* Status filter */}
               <div className="min-w-[160px]">
-                <Dropdown 
+                <Dropdown
                   options={statusFilterOptions}
                   value={filterStatus}
                   onSelect={(val) => { setFilterStatus(val); setCurrentPage(1); }}
@@ -370,7 +395,7 @@ const UserManagement = () => {
                   <X className="w-3 h-3" /> Clear
                 </button>
               )}
-              <span className="ml-auto text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              <span className="ml-auto text-[10px] font-bold text-black font-bold uppercase tracking-widest">
                 {filteredSortedUsers.length} of {users.length} records
               </span>
             </div>
@@ -381,39 +406,39 @@ const UserManagement = () => {
               <thead>
                 <tr className="bg-slate-100/50">
                   <th
-                    className="w-40 px-7 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[#2dd4bf] transition-colors"
+                    className="w-40 px-7 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
                     onClick={() => handleSort('employeeId')}
                   >
                     Employee ID & User <SortIcon field="employeeId" />
                   </th>
                   <th
-                    className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[#2dd4bf] transition-colors"
+                    className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
                     onClick={() => handleSort('employeeName')}
                   >
                     Full Name <SortIcon field="employeeName" />
                   </th>
                   <th
-                    className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[#2dd4bf] transition-colors"
+                    className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
                     onClick={() => handleSort('designation')}
                   >
                     Designation <SortIcon field="designation" />
                   </th>
                   <th
-                    className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[#2dd4bf] transition-colors"
+                    className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
                     onClick={() => handleSort('department')}
                   >
                     Department <SortIcon field="department" />
                   </th>
                   <th
-                    className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[#2dd4bf] transition-colors"
+                    className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
                     onClick={() => handleSort('role')}
                   >
                     Role <SortIcon field="role" />
                   </th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200">
+                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">
                     Status
                   </th>
-                  <th className="w-32 px-6 py-5 text-[12px] font-bold text-slate-900 tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
+                  <th className="w-32 px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -421,104 +446,101 @@ const UserManagement = () => {
                   const sm = getStatusMeta(user);
                   const isOwnRow = user._id === loggedInId;
                   // Only superadmin can change own status; admins cannot change own or another superadmin's status
-                  const canChangeStatus = !isOwnRow || loggedInRole === 'superadmin';
+                  const canChangeStatus = !isOwnRow || loggedInRole?.toLowerCase() === 'superadmin';
                   return (
-                  <tr key={user._id} className={`hover:bg-slate-50/20 transition-colors group ${sm.value !== 'active' ? 'opacity-70' : ''}`}>
-                    <td className="px-7 py-4">
-                      <div className="flex flex-col">
-                        <span className="text-sm font-mono font-bold text-slate-700">{user.employeeId}</span>
-                        <span className="text-[10px] text-slate-400 font-medium">@{user.username || '—'}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-bold text-slate-900 leading-snug">{user.employeeName}</span>
-                          {isOwnRow && (
-                            <span className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wide bg-[#2dd4bf]/10 text-[#2dd4bf] border border-[#2dd4bf]/20">You</span>
-                          )}
+                    <tr key={user._id} className={`hover:bg-slate-50/20 transition-colors group ${sm.value !== 'active' ? 'opacity-70' : ''}`}>
+                      <td className="px-7 py-4">
+                        <div className="flex flex-col">
+                          <span className="text-sm font-mono font-bold text-black font-bold">{user.employeeId}</span>
+                          <span className="text-[10px] text-black font-bold font-medium">@{user.username || '—'}</span>
                         </div>
-                        <span className="text-[10px] text-slate-400 font-bold tracking-wide">{user.email}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-slate-500 font-medium">{user.designation}</td>
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-slate-500 font-medium tracking-tight">{user.department}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide ${
-                        user.role === 'superadmin' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
-                        user.role === 'admin' ? 'bg-purple-50 text-purple-600 border border-purple-100' : 'bg-blue-50 text-blue-600 border border-blue-100'
-                      }`}>
-                        {user.role}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="relative inline-block">
-                        {canChangeStatus ? (
-                          <>
-                            <button
-                              onClick={() => setOpenStatusMenu(openStatusMenu === user._id ? null : user._id)}
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide border transition-all hover:shadow-sm ${sm.bg} ${sm.color} border-current/10`}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-sm font-bold text-black font-bold leading-snug">{user.employeeName}</span>
+                            {isOwnRow && (
+                              <span className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wide bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/20">You</span>
+                            )}
+                          </div>
+                          <span className="text-[10px] text-black font-bold font-bold tracking-wide">{user.email}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-black font-bold font-medium">{user.designation}</td>
+                      <td className="px-6 py-4">
+                        <span className="text-sm text-black font-bold font-medium tracking-tight">{user.department}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide ${user.role?.toLowerCase() === 'superadmin' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
+                          user.role?.toLowerCase() === 'admin' ? 'bg-purple-50 text-purple-600 border border-purple-100' : 'bg-slate-100 text-[#040404] border border-blue-100'
+                          }`}>
+                          {user.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="relative inline-block">
+                          {canChangeStatus ? (
+                            <>
+                              <button
+                                onClick={() => setOpenStatusMenu(openStatusMenu === user._id ? null : user._id)}
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide border transition-all hover:shadow-sm ${sm.bg} ${sm.color} border-current/10`}
+                              >
+                                <span className={`w-1.5 h-1.5 rounded-full ${sm.dot}`}></span>
+                                {sm.label}
+                                <ChevronDown className="w-2.5 h-2.5 opacity-60" />
+                              </button>
+                              {openStatusMenu === user._id && (
+                                <div className="absolute left-0 top-full mt-1.5 z-50 bg-white rounded-xl shadow-2xl border border-slate-100 overflow-hidden min-w-[130px] animate-in fade-in zoom-in-95 duration-150">
+                                  {statusOptions.map(opt => (
+                                    <button
+                                      key={opt.value}
+                                      onClick={() => handleSetStatus(user, opt.value)}
+                                      className={`w-full flex items-center gap-2 px-3 py-2.5 text-[10px] font-black uppercase tracking-wider transition-colors hover:bg-slate-50 ${sm.value === opt.value ? `${opt.color} ${opt.bg}` : 'text-black font-bold'
+                                        }`}
+                                    >
+                                      <span className={`w-1.5 h-1.5 rounded-full ${opt.dot}`}></span>
+                                      {opt.label}
+                                      {sm.value === opt.value && <CheckCircle2 className="w-3 h-3 ml-auto" />}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <span
+                              title="You cannot change your own account status"
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border cursor-not-allowed opacity-80 ${sm.bg} ${sm.color} border-current/10`}
                             >
                               <span className={`w-1.5 h-1.5 rounded-full ${sm.dot}`}></span>
                               {sm.label}
-                              <ChevronDown className="w-2.5 h-2.5 opacity-60" />
-                            </button>
-                            {openStatusMenu === user._id && (
-                              <div className="absolute left-0 top-full mt-1.5 z-50 bg-white rounded-xl shadow-2xl border border-slate-100 overflow-hidden min-w-[130px] animate-in fade-in zoom-in-95 duration-150">
-                                {statusOptions.map(opt => (
-                                  <button
-                                    key={opt.value}
-                                    onClick={() => handleSetStatus(user, opt.value)}
-                                    className={`w-full flex items-center gap-2 px-3 py-2.5 text-[10px] font-black uppercase tracking-wider transition-colors hover:bg-slate-50 ${
-                                      sm.value === opt.value ? `${opt.color} ${opt.bg}` : 'text-slate-500'
-                                    }`}
-                                  >
-                                    <span className={`w-1.5 h-1.5 rounded-full ${opt.dot}`}></span>
-                                    {opt.label}
-                                    {sm.value === opt.value && <CheckCircle2 className="w-3 h-3 ml-auto" />}
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <span
-                            title="You cannot change your own account status"
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border cursor-not-allowed opacity-80 ${sm.bg} ${sm.color} border-current/10`}
-                          >
-                            <span className={`w-1.5 h-1.5 rounded-full ${sm.dot}`}></span>
-                            {sm.label}
-                            <Lock className="w-2.5 h-2.5 opacity-50" />
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right pr-8">
-                       <div className="flex items-center justify-end gap-2">
-                          <button 
+                              <Lock className="w-2.5 h-2.5 opacity-50" />
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right pr-8">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
                             onClick={() => handleEditClick(user)}
                             title="Edit"
-                            className="w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-400 flex items-center justify-center hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all duration-300 active:scale-95"
+                            className="w-8 h-8 rounded-full border border-slate-200 bg-white text-black font-bold flex items-center justify-center hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all duration-300 active:scale-95"
                           >
-                             <FileEdit className="w-3.5 h-3.5" />
+                            <FileEdit className="w-3.5 h-3.5" />
                           </button>
-                          <button 
+                          <button
                             onClick={() => !isOwnRow && handleDeleteClick(user)}
                             title={isOwnRow ? 'Cannot delete your own account' : 'Delete Permanently'}
                             disabled={isOwnRow}
-                            className={`w-8 h-8 rounded-full border border-slate-200 bg-white flex items-center justify-center transition-all duration-300 ${
-                              isOwnRow
-                                ? 'text-slate-200 cursor-not-allowed'
-                                : 'text-slate-400 hover:bg-rose-500 hover:border-rose-500 hover:text-white active:scale-95'
-                            }`}
+                            className={`w-8 h-8 rounded-full border border-slate-200 bg-white flex items-center justify-center transition-all duration-300 ${isOwnRow
+                              ? 'text-black font-bold cursor-not-allowed'
+                              : 'text-black font-bold hover:bg-rose-500 hover:border-rose-500 hover:text-white active:scale-95'
+                              }`}
                           >
-                             <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
-                       </div>
-                    </td>
-                  </tr>
+                        </div>
+                      </td>
+                    </tr>
                   );
                 })}
                 {currentRecords.length === 0 && (
@@ -534,34 +556,34 @@ const UserManagement = () => {
               </tbody>
             </table>
           </div>
-          
-          <Pagination 
-            totalRecords={filteredSortedUsers.length} 
-            recordsPerPage={recordsPerPage} 
-            currentPage={currentPage} 
-            onPageChange={setCurrentPage} 
+
+          <Pagination
+            totalRecords={filteredSortedUsers.length}
+            recordsPerPage={recordsPerPage}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
           />
         </div>
 
         {/* Modal */}
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
             <div className="bg-white rounded-[2.5rem] shadow-2xl relative w-full max-w-4xl overflow-hidden animate-in zoom-in-95 duration-300">
               <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white relative">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2dd4bf] to-transparent opacity-20"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--color-primary)] to-transparent opacity-20"></div>
                 <div className="flex items-center gap-4">
-                   <div className="w-14 h-14 rounded-2xl bg-[#2dd4bf]/5 flex items-center justify-center border border-[#2dd4bf]/10 shadow-inner">
-                      <UserPlus className="w-7 h-7 text-[#2dd4bf]" />
-                   </div>
-                   <div>
-                      <h3 className="text-xl font-black text-slate-900 tracking-tight">
-                        {isEditing ? 'Modify User Profile' : 'Onboard New Profile'}
-                      </h3>
-                      <p className="text-xs text-slate-500 font-medium tracking-tight">Configure professional credentials and access level</p>
-                   </div>
+                  <div className="w-14 h-14 rounded-2xl bg-[var(--color-primary)]/5 flex items-center justify-center border border-[var(--color-primary)]/10 shadow-inner">
+                    <UserPlus className="w-7 h-7 text-[var(--color-primary)]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black text-black font-bold tracking-tight">
+                      {isEditing ? 'Modify User Profile' : 'Onboard New Profile'}
+                    </h3>
+                    <p className="text-xs text-black font-bold font-medium tracking-tight">Configure professional credentials and access level</p>
+                  </div>
                 </div>
-                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-all border border-slate-100 shadow-sm active:scale-95">
+                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-black font-bold hover:text-black font-bold transition-all border border-slate-100 shadow-sm active:scale-95">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -570,112 +592,115 @@ const UserManagement = () => {
                 <div className="space-y-10">
                   {/* Identity Group */}
                   <div>
-                     <h4 className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-[0.25em] mb-5">
-                        <User className="w-3 h-3" />
-                        Identity Credentials
-                     </h4>
-                     <div className="grid grid-cols-3 gap-6">
-                        <div className="space-y-1.5 focus-within:text-[#2dd4bf] transition-colors">
-                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Full Name <span className="text-rose-500">*</span></label>
-                           <div className="relative group">
-                              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#2dd4bf] transition-colors" />
-                              <input name="employeeName" value={formData.employeeName} onChange={handleInputChange} required placeholder="Dr. Jameel Ahmed" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-bold text-slate-800 shadow-inner-sm" />
-                           </div>
+                    <h4 className="flex items-center gap-2 text-[9px] font-black text-black font-bold uppercase tracking-[0.25em] mb-5">
+                      <User className="w-3 h-3" />
+                      Identity Credentials
+                    </h4>
+                    <div className="grid grid-cols-3 gap-6">
+                      <div className="space-y-1.5 transition-colors">
+                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Full Name <span className="text-rose-500">*</span></label>
+                        <div className="relative group">
+                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
+                          <input name="employeeName" value={formData.employeeName} onChange={handleInputChange} placeholder="Dr. Jameel Ahmed" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs font-bold text-black font-bold shadow-inner-sm" disabled title="Full name is managed via AD" readOnly />
                         </div>
-                         <div className="space-y-1.5 focus-within:text-[#2dd4bf] transition-colors">
-                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Employee ID <span className="text-rose-500">*</span></label>
-                            <div className="relative group">
-                               <IdCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#2dd4bf] transition-colors" />
-                               <input name="employeeId" value={formData.employeeId} onChange={handleInputChange} required placeholder="EMP2024XX" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-black font-mono text-slate-800 shadow-inner-sm disabled:opacity-50" disabled={isEditing} />
-                            </div>
-                         </div>
-                         <div className="space-y-1.5 focus-within:text-[#2dd4bf] transition-colors">
-                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Username <span className="text-rose-500">*</span></label>
-                            <div className="relative group">
-                               <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#2dd4bf] transition-colors" />
-                               <input name="username" value={formData.username} onChange={handleInputChange} required placeholder="johndoe" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-bold text-slate-800 shadow-inner-sm" />
-                            </div>
-                         </div>
-                        <div className="space-y-1.5 focus-within:text-[#2dd4bf] transition-colors">
-                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Designation <span className="text-rose-500">*</span></label>
-                           <div className="relative group">
-                              <BadgeCheck className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#2dd4bf] transition-colors" />
-                              <input name="designation" value={formData.designation} onChange={handleInputChange} required placeholder="Chief Physician" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-bold text-slate-800 shadow-inner-sm" />
-                           </div>
+                      </div>
+                      <div className="space-y-1.5 transition-colors">
+                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Employee ID <span className="text-rose-500">*</span></label>
+                        <div className="relative group">
+                          <IdCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
+                          <input name="employeeId" value={formData.employeeId} onChange={handleInputChange} placeholder="EMP2024XX" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs font-black font-mono text-black font-bold shadow-inner-sm" disabled title="Employee ID is managed via AD" readOnly />
                         </div>
-                     </div>
+                      </div>
+                      <div className="space-y-1.5 transition-colors">
+                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Username <span className="text-rose-500">*</span></label>
+                        <div className="relative group">
+                          <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
+                          <input name="username" value={formData.username} onChange={handleInputChange} placeholder="johndoe" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs font-bold text-black font-bold shadow-inner-sm" disabled title="Username is managed via AD" readOnly />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5 focus-within:text-[var(--color-primary)] transition-colors">
+                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Designation <span className="text-rose-500">*</span></label>
+                        <Dropdown
+                          options={designationDropdownOptions}
+                          value={formData.designation}
+                          onSelect={(val) => setFormData(prev => ({ ...prev, designation: val }))}
+                          placeholder="Select Designation"
+                          fullWidth
+                        />
+                      </div>
+                    </div>
                   </div>
 
                   {/* Access & Placement Group */}
                   <div className="grid grid-cols-2 gap-x-10">
-                     <div className="space-y-6">
-                        <h4 className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-[0.25em] mb-4">
-                           <Lock className="w-3 h-3" />
-                           Security
-                        </h4>
-                        <div className="space-y-4">
-                           <div className="space-y-1.5 focus-within:text-[#2dd4bf] transition-colors">
-                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Email <span className="text-rose-500">*</span></label>
-                              <div className="relative group">
-                                 <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#2dd4bf] transition-colors" />
-                                 <input name="email" value={formData.email} onChange={handleInputChange} required type="email" placeholder="email@cmcholding.local" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-bold text-slate-800 shadow-inner-sm" />
-                              </div>
-                           </div>
-                           <div className="space-y-1.5 focus-within:text-[#2dd4bf] transition-colors">
-                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Password {!isEditing && <span className="text-rose-500">*</span>}</label>
-                              <div className="relative group">
-                                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#2dd4bf] transition-colors" />
-                                 <input name="password" value={formData.password} onChange={handleInputChange} required={!isEditing} type="password" placeholder={isEditing ? '••••••••' : '••••••••'} className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#2dd4bf] focus:ring-4 focus:ring-[#2dd4bf]/5 transition-all text-xs font-bold text-slate-800 shadow-inner-sm" />
-                              </div>
-                           </div>
+                    <div className="space-y-6">
+                      <h4 className="flex items-center gap-2 text-[9px] font-black text-black font-bold uppercase tracking-[0.25em] mb-4">
+                        <Lock className="w-3 h-3" />
+                        Security
+                      </h4>
+                      <div className="space-y-4">
+                        <div className="space-y-1.5 focus-within:text-[var(--color-primary)] transition-colors">
+                          <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Email <span className="text-rose-500">*</span></label>
+                          <div className="relative group">
+                            <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
+                            <input name="email" value={formData.email} onChange={handleInputChange} type="email" placeholder="email@cmcholding.local" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs font-bold text-black font-bold shadow-inner-sm" disabled title="Email is managed via AD" readOnly />
+                          </div>
                         </div>
-                     </div>
+                        <div className="space-y-1.5 focus-within:text-[var(--color-primary)] transition-colors">
+                          <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Password {!isEditing && <span className="text-rose-500">*</span>}</label>
+                          <div className="relative group">
+                            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
+                            <input name="password" value={formData.password} onChange={handleInputChange} type="password" placeholder="••••••••" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs font-bold text-black font-bold shadow-inner-sm" disabled title="Password is managed via AD" readOnly />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
-                     <div className="space-y-6">
-                        <h4 className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-[0.25em] mb-4">
-                           <Shield className="w-3 h-3" />
-                           Placement
-                        </h4>
-                        <div className="space-y-4">
-                           <div className="space-y-1.5">
-                               <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Department <span className="text-rose-500">*</span></label>
-                               <Dropdown
-                                  options={departments}
-                                  value={formData.department}
-                                  onSelect={(val) => setFormData(prev => ({ ...prev, department: val }))}
-                                  placeholder="Select Department"
-                                  fullWidth
-                               />
-                            </div>
-                           <div className="space-y-1.5">
-                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">System Privilege</label>
-                              <Dropdown 
-                                 options={roleOptions} 
-                                 value={formData.role} 
-                                 onSelect={handleRoleSelect} 
-                                 fullWidth
-                              />
-                           </div>
+                    <div className="space-y-6">
+                      <h4 className="flex items-center gap-2 text-[9px] font-black text-black font-bold uppercase tracking-[0.25em] mb-4">
+                        <Shield className="w-3 h-3" />
+                        Placement
+                      </h4>
+                      <div className="space-y-4">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Department <span className="text-rose-500">*</span></label>
+                          <Dropdown
+                            options={departments}
+                            value={formData.department}
+                            onSelect={(val) => setFormData(prev => ({ ...prev, department: val }))}
+                            placeholder="Select Department"
+                            fullWidth
+                          />
                         </div>
-                     </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">System Privilege</label>
+                          <Dropdown
+                            options={roleOptions}
+                            value={formData.role}
+                            onSelect={handleRoleSelect}
+                            fullWidth
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <div className="flex gap-4 pt-4 border-t border-slate-100">
-                   <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-slate-400 hover:bg-slate-50 hover:text-slate-600 rounded-xl transition-all border border-slate-200 uppercase tracking-[0.15em] active:scale-95">
-                     Cancel
-                   </button>
-                   <button type="submit" className="flex-[2] py-3 bg-slate-900 text-white text-sm font-bold rounded-md shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-[0.98]">
-                     {isEditing ? 'Confirm Changes' : 'Initialize User'}
-                   </button>
+                  <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-black font-bold hover:bg-slate-50 hover:text-black font-bold rounded-xl transition-all border border-slate-200 uppercase tracking-[0.15em] active:scale-95">
+                    Cancel
+                  </button>
+                  <button type="submit" className="flex-[2] py-3 bg-[#040404] text-white text-sm font-bold rounded-md shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-[0.98]">
+                    {isEditing ? 'Confirm Changes' : 'Initialize User'}
+                  </button>
                 </div>
               </form>
             </div>
           </div>
         )}
 
-        <div className="mt-8 flex flex-col md:flex-row items-center justify-center py-6 border-t border-slate-200 text-slate-400">
-           <ShieldCheck className="w-4 h-4 text-[#2dd4bf]/50" />
+        <div className="mt-8 flex flex-col md:flex-row items-center justify-center py-6 border-t border-slate-200 text-black font-bold">
+          <ShieldCheck className="w-4 h-4 text-[var(--color-primary)]/50" />
         </div>
       </div>
     </DashboardLayout>

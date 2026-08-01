@@ -9,13 +9,19 @@ const auditLogSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  pageName: {
+    type: String
+  },
+  activity: {
+    type: String
+  },
   details: {
     type: mongoose.Schema.Types.Mixed
   },
   performedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false
   },
   ipAddress: {
     type: String

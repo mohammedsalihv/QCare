@@ -3,7 +3,7 @@ const Settings = require('../models/Settings');
 const User = require('../models/users');
 const LdapSyncLog = require('../models/LdapSyncLog');
 
-const syncLDAPUsers = async () => {
+const syncLDAPUsers = async (targetConfigId = null) => {
   try {
     const settings = await Settings.findOne();
     if (!settings || !settings.ldapConfigs || settings.ldapConfigs.length === 0) {
@@ -11,9 +11,15 @@ const syncLDAPUsers = async () => {
       return null;
     }
 
-    const enabledConfigs = settings.ldapConfigs.filter(c => c.ldapEnabled);
+    let enabledConfigs = settings.ldapConfigs;
+    if (targetConfigId) {
+      enabledConfigs = enabledConfigs.filter(c => c._id.toString() === targetConfigId.toString());
+    } else {
+      enabledConfigs = enabledConfigs.filter(c => c.ldapEnabled);
+    }
+
     if (enabledConfigs.length === 0) {
-      console.log("No enabled LDAP configurations, skipping sync.");
+      console.log("No matching/enabled LDAP configurations, skipping sync.");
       return null;
     }
 
@@ -51,8 +57,21 @@ const syncLDAPUsers = async () => {
 
       try {
         await new Promise((resolve, reject) => {
+          let isFinished = false;
+
+          const handlePromiseError = (err) => {
+            if (isFinished) return;
+            isFinished = true;
+            client.unbind();
+            reject(new Error(`[${config.configName}] LDAP connection error: ` + err.message));
+          };
+
+          client.once('error', handlePromiseError);
+
           client.bind(config.ldapBindDN, config.ldapBindPassword, async (err) => {
             if (err) {
+              if (isFinished) return;
+              isFinished = true;
               client.unbind();
               if (configIndex !== -1) {
                 settings.ldapConfigs[configIndex].executionStatus = 'Failed';
@@ -83,14 +102,16 @@ const syncLDAPUsers = async () => {
 
             const userPromises = [];
 
-              client.search(config.ldapBaseDN, searchOptions, (err, res) => {
-                if (err) {
-                  client.unbind();
-                  console.error(`[${config.configName}] Search initiation failed:`, err.message);
-                  return reject(new Error(`[${config.configName}] Search failed: ` + err.message));
-                }
+            client.search(config.ldapBaseDN, searchOptions, (err, res) => {
+              if (err) {
+                if (isFinished) return;
+                isFinished = true;
+                client.unbind();
+                console.error(`[${config.configName}] Search initiation failed:`, err.message);
+                return reject(new Error(`[${config.configName}] Search failed: ` + err.message));
+              }
 
-                console.log(`[${config.configName}] Search initiated with filter: ${searchOptions.filter} and BaseDN: ${config.ldapBaseDN}`);
+              console.log(`[${config.configName}] Search initiated with filter: ${searchOptions.filter} and BaseDN: ${config.ldapBaseDN}`);
 
               res.on('searchEntry', (entry) => {
                 console.log(`[${config.configName}] Found entry: ${entry.dn.toString()}`);
@@ -128,6 +149,7 @@ const syncLDAPUsers = async () => {
                       const designation = adUser.title || adUser.description || 'LDAP User';
                       await User.create({
                         employeeId,
+                        username: employeeId,
                         employeeName: fullName,
                         email: email,
                         password: Math.random().toString(36).slice(-8),
@@ -162,7 +184,10 @@ const syncLDAPUsers = async () => {
 
               res.on('error', (err) => {
                 console.error(`[${config.configName}] Search error:`, err.message);
-                // Don't reject yet, try to wait for existing promises
+                if (isFinished) return;
+                isFinished = true;
+                client.unbind();
+                reject(new Error(`[${config.configName}] Search response error: ` + err.message));
               });
 
               res.on('end', async () => {
@@ -170,6 +195,7 @@ const syncLDAPUsers = async () => {
                   console.log(`[${config.configName}] Search ended. Waiting for ${userPromises.length} users to be processed...`);
                   await Promise.all(userPromises);
                   client.unbind();
+                  isFinished = true;
                   console.log(`[${config.configName}] Sync finished. Processed ${totalSuccessCount} successfully, ${totalFailedCount} failed.`);
                   if (configIndex !== -1) {
                     settings.ldapConfigs[configIndex].executionStatus = 'Success';
@@ -179,6 +205,7 @@ const syncLDAPUsers = async () => {
                   resolve();
                 } catch (e) {
                   client.unbind();
+                  isFinished = true;
                   console.error(`[${config.configName}] Final processing error:`, e.message);
                   reject(e);
                 }

@@ -2,6 +2,7 @@ const User = require("../models/users");
 const Settings = require("../models/Settings");
 const { authenticateLDAP } = require("../utils/ldapAuth");
 const jwt = require("jsonwebtoken");
+const AuditLog = require("../models/AuditLog");
 
 // @desc    Auth user & get token
 // @route   POST /api/auth/login
@@ -9,9 +10,108 @@ const jwt = require("jsonwebtoken");
 const loginUser = async (req, res) => {
   try {
     const { employeeId, password } = req.body;
-    const loginIdentifier = employeeId; // Contains either EMP ID, Username, or Email
+    const loginIdentifier = employeeId; // Could be employeeId, username, or email
 
-    // Find user by employeeId, username, or email
+    // Load LDAP settings early
+    const settings = await Settings.findOne();
+    const ldapEnabled = settings && settings.ldapConfigs && settings.ldapConfigs.some(c => c.ldapEnabled);
+
+    // If LDAP is enabled, attempt LDAP authentication first
+    if (ldapEnabled) {
+      try {
+        const ldapUser = await authenticateLDAP(loginIdentifier, password);
+        if (ldapUser) {
+          console.log("LDAP Auth Success. ldapUser:", JSON.stringify(ldapUser));
+          // Provision or update local user based on LDAP info using canonical identifiers
+          const canonicalEmployeeId = ldapUser.sAMAccountName || ldapUser.userPrincipalName || loginIdentifier;
+          const canonicalEmail = ldapUser.email;
+          console.log("canonicalEmployeeId:", canonicalEmployeeId, "canonicalEmail:", canonicalEmail);
+
+          let userDoc = null;
+          if (canonicalEmail) {
+            userDoc = await User.findOne({ email: canonicalEmail.toLowerCase() });
+          }
+          if (!userDoc && canonicalEmployeeId) {
+            userDoc = await User.findOne({ employeeId: canonicalEmployeeId });
+          }
+          console.log("Found userDoc:", userDoc ? userDoc._id : "null");
+
+          const fullName = ldapUser.name ||
+            (ldapUser.firstName && ldapUser.lastName ? `${ldapUser.firstName} ${ldapUser.lastName}` : canonicalEmployeeId);
+
+          if (!userDoc) {
+            userDoc = await User.create({
+              employeeId: canonicalEmployeeId,
+              employeeName: fullName,
+              username: canonicalEmployeeId,
+              email: canonicalEmail || `${canonicalEmployeeId}@example.com`,
+              password: password, // stored hashed via pre‑save hook if present
+              role: 'user',
+              department: ldapUser.department || ldapUser.office || 'Unassigned',
+              designation: ldapUser.designation || 'LDAP User',
+              status: 'active',
+              authSource: ldapUser.authSource || 'LDAP'
+            });
+          } else {
+            let updated = false;
+            if (fullName && userDoc.employeeName !== fullName) { userDoc.employeeName = fullName; updated = true; }
+            if (canonicalEmail && userDoc.email !== canonicalEmail) {
+              const emailInUse = await User.findOne({ email: canonicalEmail.toLowerCase(), _id: { $ne: userDoc._id } });
+              if (!emailInUse) {
+                userDoc.email = canonicalEmail;
+                updated = true;
+              } else {
+                console.warn(`LDAP sync email update skipped: ${canonicalEmail} is already in use by user ${emailInUse._id}`);
+              }
+            }
+            if (ldapUser.department && userDoc.department !== ldapUser.department) { userDoc.department = ldapUser.department; updated = true; }
+            if (ldapUser.designation && userDoc.designation !== ldapUser.designation) { userDoc.designation = ldapUser.designation; updated = true; }
+            if (userDoc.authSource !== (ldapUser.authSource || 'LDAP')) { userDoc.authSource = ldapUser.authSource || 'LDAP'; updated = true; }
+            if (updated) await userDoc.save();
+          }
+
+          // Account status checks
+          if (userDoc.status === 'blocked' || userDoc.status === 'inactive' || userDoc.isActive === false) {
+            return res.status(403).json({ message: "Your account is restricted. Contact administrator." });
+          }
+
+          const token = jwt.sign(
+            { id: userDoc._id, role: userDoc.role },
+            process.env.JWT_SECRET || "default_secret",
+            { expiresIn: "30d" }
+          );
+
+          userDoc.lastLogin = new Date();
+          await userDoc.save();
+
+          // Log successful login to AuditLog
+          await AuditLog.create({
+            action: 'USER_LOGGED_IN',
+            module: 'Main Master',
+            pageName: 'Login',
+            activity: `User '${userDoc.employeeName}' Logged In`,
+            performedBy: userDoc._id,
+            ipAddress: req.ip || req.headers['x-forwarded-for'] || '127.0.0.1'
+          });
+
+          return res.json({
+            _id: userDoc._id,
+            employeeId: userDoc.employeeId,
+            employeeName: userDoc.employeeName,
+            email: userDoc.email,
+            role: userDoc.role,
+            department: userDoc.department,
+            designation: userDoc.designation,
+            token,
+          });
+        }
+      } catch (ldapError) {
+        console.error("LDAP auth error:", ldapError.message);
+        // Continue to local auth fallback
+      }
+    }
+
+    // Local authentication fallback
     const user = await User.findOne({
       $or: [
         { employeeId: loginIdentifier },
@@ -44,6 +144,16 @@ const loginUser = async (req, res) => {
       user.lastLogin = new Date();
       await user.save();
 
+      // Log successful login to AuditLog
+      await AuditLog.create({
+        action: 'USER_LOGGED_IN',
+        module: 'Main Master',
+        pageName: 'Login',
+        activity: `User '${user.employeeName}' Logged In`,
+        performedBy: user._id,
+        ipAddress: req.ip || req.headers['x-forwarded-for'] || '127.0.0.1'
+      });
+
       res.json({
         _id: user._id,
         employeeId: user.employeeId,
@@ -58,77 +168,16 @@ const loginUser = async (req, res) => {
         token: token,
       });
     } else {
-      // If local authentication fails, check LDAP
-      const settings = await Settings.findOne();
-      if (settings && settings.ldapEnabled) {
-        try {
-          // If the user was found locally by email, use their stored employeeId (AD username) for LDAP bind
-          const ldapLookupId = user ? user.employeeId : loginIdentifier;
-          
-          const ldapUser = await authenticateLDAP(ldapLookupId, password);
-          if (ldapUser) {
-            // Find or provision user locally using the canonical LDAP ID
-            let userDoc = await User.findOne({ employeeId: ldapLookupId });
-            
-            // Construct best-effort name from AD fields if standard name field is missing
-            const fullName = ldapUser.name || 
-                             (ldapUser.firstName && ldapUser.lastName ? `${ldapUser.firstName} ${ldapUser.lastName}` : null) || 
-                             ldapLookupId;
-
-            if (!userDoc) {
-              // JIT Provisioning for LDAP users
-              userDoc = await User.create({
-                employeeId: ldapLookupId,
-                employeeName: fullName,
-                email: ldapUser.email || `${ldapLookupId}@internal.com`,
-                password: password, // Store encrypted for local fallback if desired
-                role: 'user', // Default role (fixed from 'staff' which was not in enum)
-                department: ldapUser.department || ldapUser.office || 'Unassigned',
-                designation: ldapUser.designation || 'LDAP User',
-                status: 'active'
-              });
-            } else {
-              // Optional: Update local user data with fresh AD data on each login
-              let updated = false;
-              if (fullName !== ldapLookupId && userDoc.employeeName !== fullName) { userDoc.employeeName = fullName; updated = true; }
-              if (ldapUser.email && userDoc.email !== ldapUser.email) { userDoc.email = ldapUser.email; updated = true; }
-              if (ldapUser.department && userDoc.department !== ldapUser.department) { userDoc.department = ldapUser.department; updated = true; }
-              if (ldapUser.designation && userDoc.designation !== ldapUser.designation) { userDoc.designation = ldapUser.designation; updated = true; }
-              
-              if (updated) {
-                await userDoc.save();
-              }
-            }
-
-            // Standard login logic for the LDAP user
-            if (userDoc.status === 'blocked' || userDoc.status === 'inactive' || userDoc.isActive === false) {
-              return res.status(403).json({ message: "Your account is restricted. Contact administrator." });
-            }
-
-            const token = jwt.sign(
-              { id: userDoc._id, role: userDoc.role },
-              process.env.JWT_SECRET || "default_secret",
-              { expiresIn: "30d" }
-            );
-
-            userDoc.lastLogin = new Date();
-            await userDoc.save();
-
-            return res.json({
-              _id: userDoc._id,
-              employeeId: userDoc.employeeId,
-              employeeName: userDoc.employeeName,
-              email: userDoc.email,
-              role: userDoc.role,
-              department: userDoc.department,
-              designation: userDoc.designation,
-              token: token,
-            });
-          }
-        } catch (ldapError) {
-          console.error("LDAP Auth Failed:", ldapError.message);
-        }
-      }
+      // Log failed/unauthorized login to AuditLog
+      await AuditLog.create({
+        action: 'UNAUTHORIZED_ACCESS',
+        module: 'Main Master',
+        pageName: 'Login',
+        activity: `Unauthorized Access - Tried to Login with Invalid Employee ID/Password`,
+        performedBy: null,
+        ipAddress: req.ip || req.headers['x-forwarded-for'] || '127.0.0.1',
+        details: { loginIdentifier }
+      });
       res.status(401).json({ message: "Invalid Username/Email or Password" });
     }
   } catch (error) {
@@ -208,27 +257,24 @@ const updateUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
-    if (user) {
-      user.employeeName = req.body.employeeName || user.employeeName;
-      user.email = req.body.email || user.email;
-      user.role = req.body.role || user.role;
-      user.department = req.body.department || user.department;
-      user.designation = req.body.designation || user.designation;
-
-      if (req.body.password) {
-        user.password = req.body.password;
-      }
-
-      const updatedUser = await user.save();
-
-      res.json({
-        _id: updatedUser._id,
-        employeeName: updatedUser.employeeName,
-        email: updatedUser.email,
-        role: updatedUser.role,
-        isActive: updatedUser.isActive,
-      });
-    } else {
+      if (user) {
+        // Only allow safe fields to be updated; AD-managed fields are immutable
+        const allowedUpdates = ['department', 'designation', 'role'];
+        allowedUpdates.forEach(field => {
+          if (req.body[field] !== undefined) user[field] = req.body[field];
+        });
+        // password, employeeName, email, username remain unchanged
+        const updatedUser = await user.save();
+        res.json({
+          _id: updatedUser._id,
+          employeeName: updatedUser.employeeName,
+          email: updatedUser.email,
+          role: updatedUser.role,
+          department: updatedUser.department,
+          designation: updatedUser.designation,
+          isActive: updatedUser.isActive,
+        });
+      } else {
       res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
@@ -258,12 +304,12 @@ const toggleUserStatus = async (req, res) => {
     const requesterRole = req.user.role;
 
     // Rule 1: Only superadmin can change their own status
-    if (requesterId === targetId && requesterRole !== 'superadmin') {
+    if (requesterId === targetId && requesterRole?.toLowerCase() !== 'superadmin') {
       return res.status(403).json({ message: "You cannot change your own account status." });
     }
 
     // Rule 2: Only superadmin can change another superadmin's status
-    if (user.role === 'superadmin' && requesterRole !== 'superadmin') {
+    if (user.role?.toLowerCase() === 'superadmin' && requesterRole?.toLowerCase() !== 'superadmin') {
       return res.status(403).json({ message: "Only a Super Admin can modify another Super Admin's status." });
     }
 
@@ -296,13 +342,13 @@ const updateUserProfile = async (req, res) => {
       user.employeeName = req.body.employeeName || user.employeeName;
       user.email = req.body.email || user.email;
       
-      if (req.file) {
+      if (req.body.removePhoto === 'true' || req.body.removePhoto === true) {
+        user.photo = "";
+      } else if (req.file) {
         user.photo = `/uploads/profiles/${req.file.filename}`;
       }
 
-      if (req.body.password) {
-        user.password = req.body.password;
-      }
+      // password updates are disabled - not editable
 
       const updatedUser = await user.save();
 
