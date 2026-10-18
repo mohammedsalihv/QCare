@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Lock, ArrowRight, ShieldCheck, Activity, Fingerprint, Database, CheckCircle, Heart, Plus, Stethoscope } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Lock, ArrowRight, ShieldCheck, Activity, User, Database, CheckCircle, Heart, Plus, Stethoscope, Mail, X, Send } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../components/NotificationContext';
@@ -11,6 +11,12 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotUsername, setForgotUsername] = useState('');
+  const [forgotSent, setForgotSent] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+  const forgotInputRef = useRef(null);
   
   const navigate = useNavigate();
   const { showNotification } = useNotification();
@@ -226,7 +232,7 @@ function Login() {
                     </label>
                     <div className="relative group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Fingerprint className="h-5 w-5 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
+                        <User className="h-5 w-5 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
                       </div>
                       <input
                         id="username"
@@ -236,7 +242,7 @@ function Login() {
                         onChange={(e) => setUsername(e.target.value)}
                         disabled={loading}
                         className="w-full pl-12 pr-4 py-3.5 border-0 border-b-2 border-slate-200 bg-white text-black font-bold font-semibold focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200"
-                        placeholder="e.g. johndoe or john@example.com"
+                        placeholder="••••••••"
                       />
                     </div>
                   </div>
@@ -246,9 +252,13 @@ function Login() {
                       <label className="text-xs font-bold uppercase tracking-wider text-black font-bold" htmlFor="password">
                         Password
                       </label>
-                      <a href="#" className="text-xs font-bold text-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors">
+                      <button
+                        type="button"
+                        onClick={() => { setShowForgotModal(true); setForgotUsername(''); setForgotSent(false); }}
+                        className="text-xs font-bold text-[var(--color-primary)] hover:underline transition-colors focus:outline-none"
+                      >
                         Forgot Password?
-                      </a>
+                      </button>
                     </div>
                     <div className="relative group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -301,6 +311,133 @@ function Login() {
           </div>
         </div>
       </div>
+      {/* Forgot Password Modal */}
+      {showForgotModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+          onClick={(e) => { if (e.target === e.currentTarget) { setShowForgotModal(false); setForgotSent(false); } }}
+        >
+          <style>{`
+            @keyframes modalIn {
+              from { opacity: 0; transform: scale(0.92) translateY(24px); }
+              to   { opacity: 1; transform: scale(1) translateY(0); }
+            }
+            .modal-pop { animation: modalIn 0.35s cubic-bezier(0.16,1,0.3,1) forwards; }
+          `}</style>
+
+          <div className="modal-pop bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+            {/* Header */}
+            <div className="bg-mesh relative px-8 pt-8 pb-6">
+              <div className="absolute inset-0 bg-black/20" />
+              <div className="relative z-10 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <Mail size={22} className="text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Forgot Password?</h2>
+                    <p className="text-xs text-white/70 mt-0.5">We'll help you reset it</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => { setShowForgotModal(false); setForgotSent(false); }}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 hover:bg-white/25 text-white transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="px-8 py-7">
+              {!forgotSent ? (
+                <>
+                  <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+                    Enter your <span className="font-semibold text-slate-800">username</span> below and we'll send a
+                    password reset request to our support team at{' '}
+                    <span className="font-semibold text-[var(--color-primary)]">support@canadiancmc.com</span>.
+                  </p>
+
+                  <div className="space-y-2 mb-6">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600" htmlFor="forgot-username">
+                      Your Username
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <User className="h-5 w-5 text-slate-400 group-focus-within:text-[var(--color-primary)] transition-colors" />
+                      </div>
+                      <input
+                        id="forgot-username"
+                        ref={forgotInputRef}
+                        type="text"
+                        value={forgotUsername}
+                        onChange={(e) => setForgotUsername(e.target.value)}
+                        className="w-full pl-12 pr-4 py-3.5 border-0 border-b-2 border-slate-200 bg-slate-50 text-slate-800 font-semibold focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200 rounded-t-md"
+                        placeholder="Enter your username"
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={!forgotUsername.trim() || forgotLoading}
+                    onClick={async () => {
+                      setForgotLoading(true);
+                      setForgotError('');
+                      try {
+                        await axios.post('http://192.168.1.160:5000/api/auth/forgot-password', {
+                          username: forgotUsername.trim(),
+                        });
+                        setForgotSent(true);
+                      } catch (err) {
+                        setForgotError(err.response?.data?.message || 'Failed to send email. Please try again.');
+                      } finally {
+                        setForgotLoading(false);
+                      }
+                    }}
+                    className="w-full py-3.5 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-[var(--color-primary)]/20"
+                    style={{
+                      background: (forgotUsername.trim() && !forgotLoading) ? 'var(--color-primary)' : '#cbd5e1',
+                      cursor: (forgotUsername.trim() && !forgotLoading) ? 'pointer' : 'not-allowed',
+                      boxShadow: (forgotUsername.trim() && !forgotLoading) ? '0 8px 24px -4px color-mix(in srgb, var(--color-primary) 40%, transparent)' : 'none'
+                    }}
+                  >
+                    {forgotLoading ? (
+                      <RefreshCcw className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Send size={16} />
+                    )}
+                    {forgotLoading ? 'Sending...' : 'Send Reset Request'}
+                  </button>
+                  {forgotError && (
+                    <p className="mt-3 text-xs text-red-500 font-semibold text-center">{forgotError}</p>
+                  )}
+                </>
+              ) : (
+                <div className="text-center py-4">
+                  <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-5">
+                    <CheckCircle size={36} className="text-green-500" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-800 mb-2">Request Sent!</h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">
+                    Your password reset request has been sent directly to{' '}
+                    <span className="font-semibold text-[var(--color-primary)]">support@canadiancmc.com</span>.
+                    The support team will contact you shortly.
+                  </p>
+                  <button
+                    onClick={() => { setShowForgotModal(false); setForgotSent(false); }}
+                    className="mt-6 w-full py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-semibold text-sm hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all"
+                  >
+                    Back to Login
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
