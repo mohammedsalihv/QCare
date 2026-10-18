@@ -1,3 +1,4 @@
+import Table from '../Table.jsx';
 import React, { useState } from 'react';
 import { FileText, ExternalLink, Calendar, User, Building } from 'lucide-react';
 
@@ -19,7 +20,7 @@ const LicenseTable = ({ facilityLicenses, staffLicenses }) => {
 
   const renderFacilityTable = () => (
     <div className="overflow-x-auto">
-      <table className="w-full text-left border-collapse">
+      <Table className="w-full text-left border-collapse">
         <thead>
           <tr className="border-b border-slate-100 dark:border-slate-800">
             <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">License No</th>
@@ -74,13 +75,13 @@ const LicenseTable = ({ facilityLicenses, staffLicenses }) => {
             </tr>
           )}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 
   const renderStaffTable = () => (
     <div className="overflow-x-auto">
-      <table className="w-full text-left border-collapse">
+      <Table className="w-full text-left border-collapse">
         <thead>
           <tr className="border-b border-slate-100 dark:border-slate-800">
             <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Provider</th>
@@ -130,7 +131,7 @@ const LicenseTable = ({ facilityLicenses, staffLicenses }) => {
             </tr>
           )}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 

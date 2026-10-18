@@ -1,3 +1,4 @@
+import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -316,7 +317,7 @@ const ChangeManagement = () => {
                     
                     <div className="space-y-2">
                       <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block">Priority</label>
-                      <select 
+                      <Select 
                         value={priority}
                         onChange={(e) => setPriority(e.target.value)}
                         className="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-900 text-xs font-bold bg-white"
@@ -325,7 +326,7 @@ const ChangeManagement = () => {
                         <option value="Medium">Medium</option>
                         <option value="High">High</option>
                         <option value="Critical">Critical</option>
-                      </select>
+                      </Select>
                     </div>
                   </div>
                 </div>

@@ -90,6 +90,26 @@ const kpiIndicatorSchema = new mongoose.Schema({
     required: [true, 'Target value is required'],
     default: 0
   },
+  importRule: {
+    aggregationMode: { type: String, enum: ['rows', 'totals'] },
+    numeratorColumn: String,
+    denominatorColumn: String,
+    outcomeColumn: String,
+    matchingValues: [String],
+    otherValues: [String],
+    eligibilityColumn: String,
+    eligibleValues: [String],
+    excludedValues: [String],
+    idColumn: String,
+    dateColumn: String,
+    reasonColumn: String,
+    riskColumn: String,
+    measureType: { type: String, enum: ['compliance', 'event'] },
+    multiplier: { type: Number, enum: [100, 1000, 10000] },
+    targetDirection: { type: String, enum: ['higher', 'lower'] }
+  },
+  importSummary: { type: mongoose.Schema.Types.Mixed },
+  calculationRule: { type: mongoose.Schema.Types.Mixed },
   variance: {
     type: Number,
     default: 0
@@ -124,6 +144,10 @@ const kpiIndicatorSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
+  submittedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   validatedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -150,10 +174,10 @@ const kpiIndicatorSchema = new mongoose.Schema({
 kpiIndicatorSchema.index({ indicatorCode: 1, reportingPeriod: 1, reportingYear: 1 }, { unique: true });
 
 // Pre-save hook to compute calculatedValue, variance, and status
-kpiIndicatorSchema.pre('save', function(next) {
+kpiIndicatorSchema.pre('save', function() {
   // Calculate value: (numerator / denominator) * 100
   if (this.denominator && this.denominator !== 0) {
-    this.calculatedValue = parseFloat(((this.numerator / this.denominator) * 100).toFixed(2));
+    this.calculatedValue = parseFloat(((this.numerator / this.denominator) * (this.calculationRule?.multiplier || 100)).toFixed(2));
   } else {
     this.calculatedValue = 0;
   }
@@ -162,15 +186,15 @@ kpiIndicatorSchema.pre('save', function(next) {
   this.variance = parseFloat((this.calculatedValue - this.target).toFixed(2));
 
   // Determine status from variance
-  if (this.variance >= 0) {
+  const achievement = this.calculationRule?.targetDirection === 'lower' ? -this.variance : this.variance;
+  if (achievement >= 0) {
     this.status = 'on-track';
-  } else if (this.variance < 0 && this.variance >= -10) {
+  } else if (achievement >= -10) {
     this.status = 'at-risk';
   } else {
     this.status = 'breached';
   }
 
-  next();
 });
 
 module.exports = mongoose.model('KPIIndicator', kpiIndicatorSchema);

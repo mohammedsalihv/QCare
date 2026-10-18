@@ -1,3 +1,4 @@
+import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -367,7 +368,7 @@ const EquipmentManagement = () => {
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block">Criticality Level</label>
-                    <select 
+                    <Select 
                       value={criticality}
                       onChange={(e) => setCriticality(e.target.value)}
                       className="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-900 text-xs font-bold bg-white"
@@ -375,7 +376,7 @@ const EquipmentManagement = () => {
                       <option value="non-critical">Non-Critical</option>
                       <option value="critical">Critical</option>
                       <option value="life-saving">Life-Saving</option>
-                    </select>
+                    </Select>
                   </div>
                 </div>
 
@@ -444,7 +445,7 @@ const EquipmentManagement = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block">Activity Type</label>
-                    <select 
+                    <Select 
                       value={logType}
                       onChange={(e) => setLogType(e.target.value)}
                       className="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-900 text-xs font-bold bg-white"
@@ -453,12 +454,12 @@ const EquipmentManagement = () => {
                       <option value="PPM">Planned Preventive Maintenance (PPM)</option>
                       <option value="repair">Fault Repair</option>
                       <option value="inspection">Routine Safety Inspection</option>
-                    </select>
+                    </Select>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block">Activity Result</label>
-                    <select 
+                    <Select 
                       value={result}
                       onChange={(e) => setResult(e.target.value)}
                       className="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-900 text-xs font-bold bg-white"
@@ -466,7 +467,7 @@ const EquipmentManagement = () => {
                       <option value="pass">Pass (Compliant & Functional)</option>
                       <option value="fail">Fail (Needs Repair / Quarantined)</option>
                       <option value="conditional">Conditional Pass (Under Watch)</option>
-                    </select>
+                    </Select>
                   </div>
                 </div>
 

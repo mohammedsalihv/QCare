@@ -1,3 +1,4 @@
+import Table from '../components/Table.jsx';
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import Pagination from '../components/Pagination';
@@ -118,7 +119,7 @@ const PasswordManagement = () => {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse table-fixed min-w-[800px]">
+                <Table className="w-full text-left border-collapse table-fixed min-w-[800px]">
                   <thead>
                     <tr className="bg-slate-100/50">
                       <th className="w-1/3 px-7 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Employee Details</th>
@@ -193,7 +194,7 @@ const PasswordManagement = () => {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </Table>
               </div>
               
               <Pagination 

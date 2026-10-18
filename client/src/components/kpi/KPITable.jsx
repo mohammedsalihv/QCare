@@ -1,3 +1,4 @@
+import Table from '../Table.jsx';
 import React from 'react';
 import { Edit2, Send, CheckCircle2, Clock } from 'lucide-react';
 
@@ -19,7 +20,7 @@ const KPITable = ({ kpis, onEdit, onSubmit, userRole }) => {
 
   return (
     <div className="overflow-x-auto bg-white dark:bg-white rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
-      <table className="w-full text-left border-collapse">
+      <Table className="w-full text-left border-collapse">
         <thead>
           <tr className="border-b border-slate-100 dark:border-slate-800">
             <th className="p-4 text-sm font-bold text-black font-bold uppercase tracking-wider">Code</th>
@@ -97,7 +98,7 @@ const KPITable = ({ kpis, onEdit, onSubmit, userRole }) => {
             </tr>
           )}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Lock, ArrowRight, ShieldCheck, Activity, User, Database, CheckCircle, Heart, Plus, Stethoscope, Mail, X, Send } from 'lucide-react';
+import { Lock, ArrowRight, ShieldCheck, Activity, User, Database, CheckCircle, Heart, Plus, Stethoscope, Mail, X, Send, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../components/NotificationContext';
@@ -7,6 +7,7 @@ import { useNotification } from '../components/NotificationContext';
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -105,13 +106,7 @@ function Login() {
 
       <style>{`
         .bg-mesh {
-          background-color: #FFFFFF;
-          background-image: 
-            radial-gradient(at 0% 0%, hsla(44, 64%, 37%, 1) 0px, transparent 50%),
-            radial-gradient(at 100% 0%, hsla(45, 63%, 45%, 1) 0px, transparent 50%),
-            radial-gradient(at 100% 100%, hsla(43, 60%, 94%, 0.8) 0px, transparent 50%),
-            radial-gradient(at 0% 100%, hsla(44, 65%, 30%, 1) 0px, transparent 50%),
-            radial-gradient(at 50% 50%, hsla(45, 60%, 25%, 1) 0px, transparent 50%);
+          background: linear-gradient(155deg, #153f3c, #245e56);
           position: relative;
           background-size: 150% 150%;
           animation: meshGradient 15s ease infinite alternate;
@@ -142,6 +137,7 @@ function Login() {
         }
         .animate-float-slow { animation: float-slow 12s infinite ease-in-out; }
         .animate-pulse-medical { animation: pulse-medical 4s infinite ease-in-out; }
+        #password::-ms-reveal, #password::-ms-clear { display: none; }
         .slide-up {
           animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
           opacity: 0;
@@ -158,55 +154,55 @@ function Login() {
         }
       `}</style>
       
-      <div className={`w-full flex items-center justify-center lg:p-12 transition-all duration-1000 ease-in-out ${mounted ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="w-full max-w-[1080px] lg:h-[640px] bg-white lg:rounded-2xl shadow-2xl flex overflow-hidden relative hover-lift">
+      <div className={`w-full flex items-center justify-center p-4 sm:p-6 transition-all duration-1000 ease-in-out ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="w-full max-w-md lg:max-w-[940px] bg-white rounded-2xl shadow-2xl flex overflow-hidden relative">
           
-          <div className="hidden lg:flex flex-col w-5/12 bg-mesh relative p-12 text-white overflow-hidden justify-between">
+          <div className="hidden lg:flex flex-col w-5/12 bg-mesh relative p-8 text-white overflow-hidden justify-between">
             <div className="absolute inset-0 bg-black/20 z-0"></div>
             
             <div className="relative z-10 flex items-center gap-3 slide-up" style={{ animationDelay: '0.1s' }}>
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-[#FFFFFF] shadow-lg">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-teal-700 shadow-lg">
                 <Activity size={28} strokeWidth={2.5} />
               </div>
               <h1 className="text-3xl font-extrabold tracking-tight">QCare<span className="text-[var(--color-primary)]">.</span></h1>
             </div>
 
             <div className="relative z-10 slide-up" style={{ animationDelay: '0.3s' }}>
-              <h2 className="text-5xl font-bold leading-tight mb-6">
-                Health & Medical <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-white">Quality Portal</span>
+              <h2 className="text-4xl font-bold leading-tight mb-4">
+                Better care.<br />
+                <span className="text-teal-200">Clearer action.</span>
               </h2>
-              <p className="text-lg text-black font-bold max-w-md font-medium leading-relaxed">
-                Enhancing clinical excellence, ensuring patient safety, and streamlining healthcare quality standards.
+              <p className="text-sm text-white/75 max-w-md font-medium leading-relaxed">
+                One workspace to measure quality, learn from incidents and move improvements forward.
               </p>
               
-              <div className="mt-12 space-y-4">
-                <div className="flex items-center gap-3 text-black font-bold">
+              <div className="mt-6 space-y-3 text-xs">
+                <div className="flex items-center gap-3 text-white/85 font-medium">
                   <CheckCircle className="text-[var(--color-primary)]" size={20} />
-                  <span>JCI & ISO 9001 Compliant Workflows</span>
+                  <span>Measure what matters</span>
                 </div>
-                <div className="flex items-center gap-3 text-black font-bold">
+                <div className="flex items-center gap-3 text-white/85 font-medium">
                   <CheckCircle className="text-[var(--color-primary)]" size={20} />
-                  <span>Real-time Risk Mitigation Dashboard</span>
+                  <span>Learn from every incident</span>
                 </div>
-                <div className="flex items-center gap-3 text-black font-bold">
+                <div className="flex items-center gap-3 text-white/85 font-medium">
                   <CheckCircle className="text-[var(--color-primary)]" size={20} />
-                  <span>Automated PDCA Cycle Optimization</span>
+                  <span>Keep evidence and actions together</span>
                 </div>
               </div>
             </div>
 
             <div className="relative z-10 flex items-center gap-4 text-sm font-semibold slide-up" style={{ animationDelay: '0.5s', color: 'rgba(255,255,255,0.6)' }}>
               <ShieldCheck size={18} />
-              <span>Secure End-to-End Encryption Enabled</span>
+              <span>Healthcare quality, connected</span>
             </div>
           </div>
 
-          <div className="w-full lg:w-7/12 flex flex-col justify-center items-center p-8 sm:p-16 relative bg-white">
+          <div className="w-full lg:w-7/12 flex flex-col justify-center items-center p-6 sm:p-8 relative bg-white">
              <div className="w-full max-w-md slide-up" style={{ animationDelay: '0.2s' }}>
                 
-                <div className="text-center lg:text-left mb-10">
-                   <div className="inline-flex lg:hidden w-16 h-16 bg-white rounded-2xl items-center justify-center text-white mb-6 shadow-xl">
+                <div className="text-center lg:text-left mb-6">
+                   <div className="inline-flex lg:hidden w-12 h-12 bg-white rounded-xl items-center justify-center text-white mb-4 shadow-lg">
                       <Activity size={32} strokeWidth={2.5} className="text-[var(--color-primary)]" />
                    </div>
                    <h3 className="text-3xl font-bold text-black font-bold mb-3 tracking-tight">Welcome Back</h3>
@@ -225,7 +221,7 @@ function Login() {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-wider text-black font-bold" htmlFor="username">
                       Username or Email
@@ -236,6 +232,7 @@ function Login() {
                       </div>
                       <input
                         id="username"
+                        autoComplete="username"
                         type="text"
                         required
                         value={username}
@@ -266,14 +263,26 @@ function Login() {
                       </div>
                       <input
                         id="password"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
+                        autoComplete="current-password"
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={loading}
-                        className="w-full pl-12 pr-4 py-3.5 border-0 border-b-2 border-slate-200 bg-white text-black font-bold font-semibold focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200"
+                        className="w-full pl-12 pr-14 py-3.5 border-0 border-b-2 border-slate-200 bg-white text-black font-bold font-semibold focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200"
                         placeholder="••••••••"
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((visible) => !visible)}
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        aria-pressed={showPassword}
+                        aria-controls="password"
+                        title={showPassword ? 'Hide password' : 'Show password'}
+                        className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded text-slate-500 hover:text-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-[var(--color-primary)]"
+                      >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
                     </div>
                   </div>
 
@@ -295,8 +304,8 @@ function Login() {
                   </button>
                 </form>
 
-                <div className="mt-12 text-center border-t border-slate-100 pt-8 slide-up" style={{ animationDelay: '0.4s' }}>
-                  <div className="flex items-center justify-center gap-6 mb-6 text-black font-bold">
+                <div className="mt-6 text-center border-t border-slate-100 pt-4 slide-up" style={{ animationDelay: '0.4s' }}>
+                  <div className="flex items-center justify-center gap-6 mb-3 text-black font-bold">
                     <Database size={24} className="hover:text-black font-bold transition-colors cursor-pointer" />
                     <ShieldCheck size={24} className="hover:text-black font-bold transition-colors cursor-pointer" />
                     <Activity size={24} className="hover:text-black font-bold transition-colors cursor-pointer" />

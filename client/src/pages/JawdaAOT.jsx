@@ -1,3 +1,5 @@
+import Table from '../components/Table.jsx';
+import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -141,7 +143,7 @@ const JawdaAOT = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <Table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-100/50">
                   <th className="px-8 py-5 text-[10px] font-black text-black font-bold uppercase tracking-widest border-b border-slate-200">Recipient ID</th>
@@ -205,7 +207,7 @@ const JawdaAOT = () => {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </Table>
           </div>
         </div>
         
@@ -278,7 +280,7 @@ const JawdaAOT = () => {
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest">Organ Type</label>
-                       <select 
+                       <Select 
                         value={formData.organType}
                         onChange={(e) => setFormData({...formData, organType: e.target.value})}
                         className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-[var(--color-primary)] text-sm font-bold appearance-none cursor-pointer"
@@ -288,18 +290,18 @@ const JawdaAOT = () => {
                           <option>Heart</option>
                           <option>Lung</option>
                           <option>Pancreas-Kidney</option>
-                       </select>
+                       </Select>
                     </div>
                     <div className="space-y-2">
                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest">Donor Type</label>
-                       <select 
+                       <Select 
                         value={formData.donorType}
                         onChange={(e) => setFormData({...formData, donorType: e.target.value})}
                         className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-[var(--color-primary)] text-sm font-bold appearance-none cursor-pointer"
                        >
                           <option>Living</option>
                           <option>Deceased</option>
-                       </select>
+                       </Select>
                     </div>
                  </div>
 

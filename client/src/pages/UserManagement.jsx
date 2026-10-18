@@ -1,3 +1,4 @@
+import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -402,7 +403,7 @@ const UserManagement = () => {
           </div>
 
           <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
+            <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
                 <tr className="bg-slate-100/50">
                   <th
@@ -554,7 +555,7 @@ const UserManagement = () => {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </Table>
           </div>
 
           <Pagination

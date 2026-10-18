@@ -1,3 +1,4 @@
+import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -208,7 +209,7 @@ const LocationTypes = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
+            <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
 <thead>
                 <tr className="bg-slate-100/50">
                   <th className="w-20 px-7 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">S.No</th>
@@ -282,7 +283,7 @@ const LocationTypes = () => {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </Table>
           </div>
           
           <Pagination 

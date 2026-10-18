@@ -1,3 +1,5 @@
+import Table from '../components/Table.jsx';
+import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -166,7 +168,7 @@ const DeviationsNCs = () => {
             
             <div className="bg-white border border-slate-100 rounded-[2rem] overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <Table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50/50">
                       <th className="p-6 text-[10px] font-black text-black font-bold uppercase tracking-[0.2em]">Ref ID</th>
@@ -248,7 +250,7 @@ const DeviationsNCs = () => {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </Table>
               </div>
             </div>
           </div>
@@ -287,7 +289,7 @@ const DeviationsNCs = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block">Category</label>
-                    <select 
+                    <Select 
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
                       className="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-900 text-xs font-bold bg-white"
@@ -297,12 +299,12 @@ const DeviationsNCs = () => {
                       <option value="Facility">Facility</option>
                       <option value="Safety">Safety</option>
                       <option value="Other">Other</option>
-                    </select>
+                    </Select>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block">Severity</label>
-                    <select 
+                    <Select 
                       value={severity}
                       onChange={(e) => setSeverity(e.target.value)}
                       className="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-900 text-xs font-bold bg-white"
@@ -310,7 +312,7 @@ const DeviationsNCs = () => {
                       <option value="Minor">Minor (No clinical impact)</option>
                       <option value="Major">Major (Potential risk)</option>
                       <option value="Critical">Critical (Immediate event/exposure)</option>
-                    </select>
+                    </Select>
                   </div>
                 </div>
 

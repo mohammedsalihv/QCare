@@ -1,3 +1,4 @@
+import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -327,7 +328,7 @@ const SupplierManagement = () => {
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block">Supply Category</label>
-                    <select 
+                    <Select 
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
                       className="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-900 text-xs font-bold bg-white"
@@ -337,7 +338,7 @@ const SupplierManagement = () => {
                       <option value="Pharmaceuticals">Pharmaceuticals</option>
                       <option value="IT & Software">IT & Software Systems</option>
                       <option value="Facilities">Facilities & Support</option>
-                    </select>
+                    </Select>
                   </div>
                 </div>
 

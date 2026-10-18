@@ -1,3 +1,4 @@
+import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNotification } from '../components/NotificationContext';
@@ -265,7 +266,7 @@ const DocumentLibrary = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse whitespace-nowrap min-w-[1300px]">
+            <Table className="w-full text-left border-collapse whitespace-nowrap min-w-[1300px]">
               <thead>
                 <tr className="bg-slate-100/50">
                   <th className="w-16 px-4 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 text-center">S.No</th>
@@ -361,7 +362,7 @@ const DocumentLibrary = () => {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </Table>
           </div>
           
           <Pagination 

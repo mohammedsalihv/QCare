@@ -1,3 +1,4 @@
+import Select from '../Select.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { X } from 'lucide-react';
@@ -116,7 +117,7 @@ const KPIForm = ({ isOpen, onClose, onSave, kpiData }) => {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-black font-bold dark:text-black font-bold">Category</label>
-              <select
+              <Select
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
@@ -127,7 +128,7 @@ const KPIForm = ({ isOpen, onClose, onSave, kpiData }) => {
                 <option value="patient-experience">Patient Experience</option>
                 <option value="efficiency">Efficiency</option>
                 <option value="access">Access</option>
-              </select>
+              </Select>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-black font-bold dark:text-black font-bold">Indicator Name (EN)</label>
@@ -153,7 +154,7 @@ const KPIForm = ({ isOpen, onClose, onSave, kpiData }) => {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-black font-bold dark:text-black font-bold">Reporting Period</label>
-              <select
+              <Select
                 name="reportingPeriod"
                 value={formData.reportingPeriod}
                 onChange={handleChange}
@@ -163,7 +164,7 @@ const KPIForm = ({ isOpen, onClose, onSave, kpiData }) => {
                 <option value="Q2">Q2</option>
                 <option value="Q3">Q3</option>
                 <option value="Q4">Q4</option>
-              </select>
+              </Select>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-black font-bold dark:text-black font-bold">Year</label>

@@ -1,3 +1,4 @@
+import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -139,7 +140,7 @@ const JawdaBN = () => {
               </div>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <Table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50/50">
                     <th className="px-6 py-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Case ID</th>
@@ -187,7 +188,7 @@ const JawdaBN = () => {
                     </tr>
                   )}
                 </tbody>
-              </table>
+              </Table>
             </div>
           </div>
 

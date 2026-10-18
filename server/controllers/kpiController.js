@@ -4,6 +4,7 @@ const ExcelJS = require('exceljs');
 const KPISelectionCriteria = require('../models/KPISelectionCriteria');
 const KPIIndicatorType = require('../models/KPIIndicatorType');
 const KPINotificationRule = require('../models/KPINotificationRule');
+const { verifyPreview, ruleDigest, validateRule } = require('../utils/indicatorImport');
 
 // @desc    Create new indicator
 // @route   POST /api/kpi
@@ -134,25 +135,62 @@ exports.updateIndicator = async (req, res) => {
 
 // @desc    Submit data values for validation
 // @route   POST /api/kpi/submit-data
-// @access  Private (QualityManager/SuperAdmin)
+// @access  Private (all authenticated staff; review remains restricted)
 exports.submitData = async (req, res) => {
   try {
-    const { indicatorCode, reportingPeriod, reportingYear, numerator, denominator } = req.body;
+    const { indicatorCode, reportingPeriod, reportingYear, importToken } = req.body;
+    let { numerator, denominator } = req.body;
+    let imported;
+    if (importToken) {
+      try { imported = verifyPreview(importToken); }
+      catch { return res.status(400).json({ message: 'The import preview expired or is invalid. Analyze the file again.' }); }
+      if (imported.userId !== String(req.user._id) || imported.indicatorCode !== indicatorCode || imported.reportingPeriod !== reportingPeriod || imported.reportingYear !== Number(reportingYear)) {
+        return res.status(400).json({ message: 'This preview belongs to another user, indicator or period. Analyze the file again.' });
+      }
+      numerator = imported.summary.numerator;
+      denominator = imported.summary.denominator;
+    }
+    if (typeof indicatorCode !== 'string' || !indicatorCode.trim() ||
+        !['Q1', 'Q2', 'Q3', 'Q4'].includes(reportingPeriod) ||
+        !Number.isInteger(Number(reportingYear)) || Number(reportingYear) < 2000 || Number(reportingYear) > 2100 ||
+        !['number', 'string'].includes(typeof numerator) || String(numerator).trim() === '' ||
+        !['number', 'string'].includes(typeof denominator) || String(denominator).trim() === '' ||
+        !Number.isFinite(Number(numerator)) || Number(numerator) < 0 ||
+        !Number.isFinite(Number(denominator)) || Number(denominator) <= 0) {
+      return res.status(400).json({ message: 'Choose an indicator and quarter, enter a valid year, a non-negative numerator and a denominator greater than zero.' });
+    }
     
     // Find the definition (Draft or original document) to clone details
     const definition = await KPIIndicator.findOne({ indicatorCode }).sort({ createdAt: 1 });
     if (!definition) {
       return res.status(404).json({ message: 'KPI definition not found' });
     }
+    if (imported && imported.ruleDigest !== ruleDigest(definition)) {
+      return res.status(409).json({ message: 'The indicator rule or target changed. Analyze the file again.' });
+    }
+    const calculationRule = definition.importRule?.outcomeColumn || definition.importRule?.numeratorColumn ? validateRule(definition.importRule) : undefined;
 
     // Check if there is already a record for this period
     let record = await KPIIndicator.findOne({ indicatorCode, reportingPeriod, reportingYear });
     
     if (record) {
+      if (record.submittedToDOH || ['Approved', 'Pending Approval'].includes(record.validationStatus)) {
+        return res.status(409).json({ message: 'This report is already under approval or finalized. Contact the quality team for a correction.' });
+      }
+      const canManage = ['admin', 'superadmin', 'qualitymanager'].includes(req.user.role?.toLowerCase());
+      const submitter = record.submittedBy || (record.validationStatus === 'Pending Validation' ? record.createdBy : null);
+      if (!canManage && submitter && String(submitter) !== String(req.user._id)) {
+        return res.status(403).json({ message: 'Another user has submitted this indicator for this period. Contact the quality team to correct it.' });
+      }
       record.numerator = parseFloat(numerator);
       record.denominator = parseFloat(denominator);
       record.validationStatus = 'Pending Validation';
       record.updatedBy = req.user._id;
+      record.calculationRule = calculationRule;
+      record.target = definition.target;
+      record.importSummary = imported ? { ...imported.summary, importedAt: new Date() } : undefined;
+      record.submittedBy = req.user._id;
+      record.rejectionReason = undefined;
       const saved = await record.save();
       return res.json(saved);
     } else {
@@ -178,12 +216,16 @@ exports.submitData = async (req, res) => {
         numerator: parseFloat(numerator),
         denominator: parseFloat(denominator),
         validationStatus: 'Pending Validation',
+        calculationRule,
+        importSummary: imported ? { ...imported.summary, importedAt: new Date() } : undefined,
+        submittedBy: req.user._id,
         createdBy: req.user._id
       });
       const saved = await newSub.save();
       return res.status(201).json(saved);
     }
   } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ message: 'A report already exists for this period. Refresh before submitting again.' });
     res.status(400).json({ message: error.message });
   }
 };
@@ -196,6 +238,10 @@ exports.validateIndicator = async (req, res) => {
     const { action, rejectionReason } = req.body;
     const kpi = await KPIIndicator.findById(req.params.id);
     if (!kpi) return res.status(404).json({ message: 'KPI not found' });
+
+    if (kpi.validationStatus !== 'Pending Validation' || kpi.submittedToDOH) {
+      return res.status(409).json({ message: 'Only reports awaiting validation can be validated or returned.' });
+    }
 
     if (action === 'approve') {
       kpi.validationStatus = 'Pending Approval';
@@ -223,6 +269,10 @@ exports.approveIndicator = async (req, res) => {
   try {
     const kpi = await KPIIndicator.findById(req.params.id);
     if (!kpi) return res.status(404).json({ message: 'KPI not found' });
+
+    if (kpi.validationStatus !== 'Pending Approval' || kpi.submittedToDOH) {
+      return res.status(409).json({ message: 'Validate the report before approving it.' });
+    }
 
     kpi.validationStatus = 'Approved';
     kpi.approvedBy = req.user._id;

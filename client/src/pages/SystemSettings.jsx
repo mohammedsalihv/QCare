@@ -1,3 +1,5 @@
+import Table from '../components/Table.jsx';
+import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -262,7 +264,7 @@ const SystemSettings = () => {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <Table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-slate-100/50">
                       <th className="py-5 px-8 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Name</th>
@@ -358,7 +360,7 @@ const SystemSettings = () => {
                       ))
                     )}
                   </tbody>
-                </table>
+                </Table>
               </div>
             </div>
 
@@ -490,7 +492,7 @@ const SystemSettings = () => {
                         />
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest ml-1">Schedule Frequency</label>
-                          <select
+                          <Select
                             name="scheduleFrequency"
                             value={settings.ldapConfigs[editingLdapIndex]?.scheduleFrequency || 'Daily'}
                             onChange={(e) => handleLdapChange(editingLdapIndex, e)}
@@ -500,11 +502,11 @@ const SystemSettings = () => {
                             <option value="Weekly">Weekly</option>
                             <option value="Hourly">Hourly</option>
                             <option value="Manual">Manual</option>
-                          </select>
+                          </Select>
                         </div>
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest ml-1">Server Type</label>
-                          <select
+                          <Select
                             name="serverType"
                             value={settings.ldapConfigs[editingLdapIndex]?.serverType || 'Microsoft AD'}
                             onChange={(e) => handleLdapChange(editingLdapIndex, e)}
@@ -513,7 +515,7 @@ const SystemSettings = () => {
                             <option value="Microsoft AD">Microsoft AD</option>
                             <option value="OpenLDAP">OpenLDAP</option>
                             <option value="Generic">Generic / Other</option>
-                          </select>
+                          </Select>
                         </div>
                         <div className="md:col-span-2 pt-4">
                           <Checkbox
@@ -690,7 +692,7 @@ const SystemSettings = () => {
 
                <div className="p-0 overflow-hidden">
                   <div className="overflow-x-auto max-h-[60vh] custom-scrollbar">
-                    <table className="w-full text-left border-collapse">
+                    <Table className="w-full text-left border-collapse">
                       <thead className="bg-slate-100/50 sticky top-0 z-10">
                         <tr>
                           <th className="py-4 px-6 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Timestamp</th>
@@ -800,7 +802,7 @@ const SystemSettings = () => {
                                                   <h4 className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Successfully Imported/Updated Users</h4>
                                                 </div>
                                                 <div className="max-h-80 overflow-y-auto custom-scrollbar">
-                                                  <table className="w-full text-left">
+                                                  <Table className="w-full text-left">
                                                     <thead className="bg-slate-50 sticky top-0 border-b border-slate-100">
                                                       <tr>
                                                         <th className="py-3 px-6 text-[10px] font-black uppercase text-black font-bold">Employee ID</th>
@@ -819,7 +821,7 @@ const SystemSettings = () => {
                                                         </tr>
                                                       ))}
                                                     </tbody>
-                                                  </table>
+                                                  </Table>
                                                 </div>
                                               </div>
                                             )}
@@ -830,7 +832,7 @@ const SystemSettings = () => {
                                                   <h4 className="text-[10px] font-black text-rose-700 uppercase tracking-widest font-black">Failed Import Details</h4>
                                                 </div>
                                                 <div className="max-h-80 overflow-y-auto custom-scrollbar">
-                                                  <table className="w-full text-left">
+                                                  <Table className="w-full text-left">
                                                     <thead className="bg-slate-50 sticky top-0 border-b border-slate-100">
                                                       <tr>
                                                         <th className="py-3 px-6 text-[10px] font-black uppercase text-black font-bold">Employee ID</th>
@@ -847,7 +849,7 @@ const SystemSettings = () => {
                                                         </tr>
                                                       ))}
                                                     </tbody>
-                                                  </table>
+                                                  </Table>
                                                 </div>
                                               </div>
                                             )}
@@ -862,7 +864,7 @@ const SystemSettings = () => {
                           })
                         )}
                       </tbody>
-                    </table>
+                    </Table>
                   </div>
                </div>
             </div>

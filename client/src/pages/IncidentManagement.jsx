@@ -1,5 +1,7 @@
+import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { useNotification } from '../components/NotificationContext';
 import Dropdown from '../components/Dropdown';
@@ -30,9 +32,19 @@ import {
 } from 'lucide-react';
 
 const IncidentManagement = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(searchParams.get('action') === 'new');
+  const [submitting, setSubmitting] = useState(false);
+  const closeReport = () => {
+    setShowModal(false);
+    if (searchParams.has('action')) {
+      const next = new URLSearchParams(searchParams);
+      next.delete('action');
+      setSearchParams(next, { replace: true });
+    }
+  };
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState(null);
   const { showNotification } = useNotification();
@@ -104,12 +116,14 @@ const IncidentManagement = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     try {
       await axios.post('http://192.168.1.160:5000/api/incidents', formData, {
         headers: { Authorization: `Bearer ${loggedInUser.token}` }
       });
       showNotification('Incident reported successfully', 'success');
-      setShowModal(false);
+      closeReport();
       
       const reportedSeverity = formData.severity;
       const reportedTitle = formData.title;
@@ -137,6 +151,8 @@ const IncidentManagement = () => {
       }
     } catch (error) {
       showNotification(error.response?.data?.message || 'Failed to report incident', 'error');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -262,7 +278,7 @@ const IncidentManagement = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
+            <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
                 <tr className="bg-slate-100/50">
                   <th className="px-7 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 w-[11%]">ID</th>
@@ -350,7 +366,7 @@ const IncidentManagement = () => {
                   ))
                 )}
               </tbody>
-            </table>
+            </Table>
           </div>
         </div>
       </div>
@@ -358,22 +374,22 @@ const IncidentManagement = () => {
       {/* Report Modal */}
       {showModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-white/60 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setShowModal(false)} />
-          <div className="relative bg-white rounded-[2.5rem] shadow-2xl w-full max-w-5xl overflow-hidden animate-in zoom-in-95 duration-300">
+          <div className="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" />
+          <div role="dialog" aria-modal="true" aria-labelledby="report-incident-title" className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92dvh] overflow-y-auto">
             <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)] flex items-center justify-center text-black font-bold shadow-lg shadow-[var(--color-primary)]/30">
                   <AlertCircle className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-black font-bold tracking-tight uppercase">Report Incident</h3>
-                  <p className="text-[10px] text-black font-bold font-black uppercase tracking-[0.2em]">Safety & Quality Assurance</p>
+                  <h3 id="report-incident-title" className="text-xl font-semibold text-slate-800">Report an incident</h3>
+                  <p className="text-xs text-slate-500 mt-1">Capture the facts now. Your team can follow up.</p>
                 </div>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-2 rounded-xl hover:bg-white hover:shadow-sm text-black font-bold transition-all"><X className="w-6 h-6" /></button>
+              <button disabled={submitting} aria-label="Close incident report" onClick={closeReport} className="p-2 rounded-xl hover:bg-white hover:shadow-sm text-black transition-all"><X className="w-6 h-6" /></button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-10 grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6 max-h-[80vh] overflow-y-auto">
+            <form onSubmit={handleSubmit} className="p-6 grid grid-cols-1 md:grid-cols-3 gap-x-5 gap-y-4">
               <div className="md:col-span-3">
                 <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block mb-2 ml-1">Incident Title / Summary</label>
                 <input 
@@ -438,8 +454,8 @@ const IncidentManagement = () => {
               </div>
 
               <div className="md:col-span-3 pt-6 border-t border-slate-100">
-                <button type="submit" className="w-full py-4 bg-[#040404] text-white rounded-md text-sm font-bold transition-all shadow-lg shadow-slate-900/20 hover:bg-slate-800 active:scale-[0.98]">
-                  Submit Official Incident Report
+                <button type="submit" disabled={submitting} className="w-full py-4 bg-[#040404] text-white rounded-md text-sm font-bold transition-all shadow-lg shadow-slate-900/20 hover:bg-slate-800 active:scale-[0.98]">
+                  {submitting ? 'Submitting…' : 'Submit incident'}
                 </button>
               </div>
             </form>
@@ -522,7 +538,7 @@ const IncidentManagement = () => {
                     ></textarea>
                   </div>
 
-                  <button type="submit" className="w-full py-4 bg-[#040404] text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-xl active:scale-[0.98]">
+                  <button type="submit" disabled={submitting} className="w-full py-4 bg-[#040404] text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-xl active:scale-[0.98]">
                     Save Investigation & Update Status
                   </button>
                 </form>

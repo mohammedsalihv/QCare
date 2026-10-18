@@ -1,3 +1,4 @@
+import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Plus, Filter, Search } from 'lucide-react';
@@ -91,7 +92,7 @@ const JawdaKPI = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <select
+              <Select
                 name="period"
                 value={filters.period}
                 onChange={handleFilterChange}
@@ -101,7 +102,7 @@ const JawdaKPI = () => {
                 <option value="Q2">Quarter 2</option>
                 <option value="Q3">Quarter 3</option>
                 <option value="Q4">Quarter 4</option>
-              </select>
+              </Select>
               <Filter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-black font-bold" />
             </div>
             <input
@@ -141,7 +142,7 @@ const JawdaKPI = () => {
           <div className="flex flex-wrap items-center gap-4 bg-slate-50 dark:bg-slate-800/30 p-4 rounded-xl">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-black font-bold">Status:</span>
-              <select
+              <Select
                 name="status"
                 value={filters.status}
                 onChange={handleFilterChange}
@@ -151,11 +152,11 @@ const JawdaKPI = () => {
                 <option value="on-track">On Track</option>
                 <option value="at-risk">At Risk</option>
                 <option value="breached">Breached</option>
-              </select>
+              </Select>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-black font-bold">Category:</span>
-              <select
+              <Select
                 name="category"
                 value={filters.category}
                 onChange={handleFilterChange}
@@ -167,7 +168,7 @@ const JawdaKPI = () => {
                 <option value="patient-experience">Patient Experience</option>
                 <option value="efficiency">Efficiency</option>
                 <option value="access">Access</option>
-              </select>
+              </Select>
             </div>
           </div>
 

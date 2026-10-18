@@ -1,3 +1,5 @@
+import Table from '../components/Table.jsx';
+import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import Pagination from '../components/Pagination';
@@ -168,7 +170,7 @@ const MallCredential = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
+            <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
                 <tr className="bg-slate-100/50">
                   <th className="w-1/4 px-7 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Staff Name</th>
@@ -240,7 +242,7 @@ const MallCredential = () => {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </Table>
           </div>
           
           <Pagination 
@@ -282,7 +284,7 @@ const MallCredential = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Credential Type</label>
-                    <select name="type" value={formData.type} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
+                    <Select name="type" value={formData.type} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
                       <option value="BLS">BLS (Basic Life Support)</option>
                       <option value="ACLS">ACLS (Adv Cardiac Life Support)</option>
                       <option value="PALS">PALS (Pediatric Adv Life Support)</option>
@@ -291,7 +293,7 @@ const MallCredential = () => {
                       <option value="Dataflow-Report">Dataflow Verification Report</option>
                       <option value="Degree-Verification">Medical Degree Verification</option>
                       <option value="Police-Clearance">Police Clearance Certificate</option>
-                    </select>
+                    </Select>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Document Number</label>
@@ -307,12 +309,12 @@ const MallCredential = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Verification Status</label>
-                    <select name="verificationStatus" value={formData.verificationStatus} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
+                    <Select name="verificationStatus" value={formData.verificationStatus} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
                       <option value="pending">Pending Verification</option>
                       <option value="verified">Verified</option>
                       <option value="rejected">Rejected</option>
                       <option value="expired">Expired</option>
-                    </select>
+                    </Select>
                   </div>
                 </div>
 
