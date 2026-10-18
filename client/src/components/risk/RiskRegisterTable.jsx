@@ -1,3 +1,4 @@
+import Table from '../Table.jsx';
 import React from 'react';
 import { Eye, Edit3, AlertCircle, ShieldCheck, ChevronRight } from 'lucide-react';
 
@@ -19,7 +20,7 @@ const RiskRegisterTable = ({ risks, onView, onEdit }) => {
   return (
     <div className="bg-white dark:bg-white rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+        <Table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50">
               <th className="p-6 text-[10px] font-black text-black font-bold uppercase tracking-[0.2em]">Risk ID & Title</th>
@@ -99,7 +100,7 @@ const RiskRegisterTable = ({ risks, onView, onEdit }) => {
               </tr>
             )}
           </tbody>
-        </table>
+        </Table>
       </div>
     </div>
   );

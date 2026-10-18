@@ -1,3 +1,4 @@
+import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -314,7 +315,7 @@ const CapaManagement = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block">Assign Actionee</label>
-                      <select 
+                      <Select 
                         value={assignedTo}
                         onChange={(e) => setAssignedTo(e.target.value)}
                         className="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-900 text-xs font-bold bg-white"
@@ -323,7 +324,7 @@ const CapaManagement = () => {
                         {users.map(u => (
                           <option key={u._id} value={u._id}>{u.employeeName} ({u.department})</option>
                         ))}
-                      </select>
+                      </Select>
                     </div>
 
                     <div className="space-y-2">

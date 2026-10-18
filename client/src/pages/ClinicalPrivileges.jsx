@@ -1,3 +1,5 @@
+import Table from '../components/Table.jsx';
+import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
 import { useNotification } from '../components/NotificationContext';
 import DashboardLayout from '../components/DashboardLayout';
@@ -208,7 +210,7 @@ const ClinicalPrivileges = () => {
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-end gap-4">
               <div className="flex-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Procedure Type*</label>
-                <select 
+                <Select 
                   value={procedureType} 
                   onChange={(e) => setProcedureType(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
@@ -218,7 +220,7 @@ const ClinicalPrivileges = () => {
                   <option value="Non-Surgical">Non-Surgical</option>
                   <option value="Diagnostic">Diagnostic</option>
                   <option value="Interventional">Interventional</option>
-                </select>
+                </Select>
               </div>
               <button className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all">
                 Fetch Details
@@ -249,7 +251,7 @@ const ClinicalPrivileges = () => {
                   />
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
+                  <Table className="w-full text-left text-xs">
                     <thead>
                       <tr className="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                         <th className="p-3">S.No</th>
@@ -272,7 +274,7 @@ const ClinicalPrivileges = () => {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </Table>
                 </div>
               </div>
 
@@ -298,7 +300,7 @@ const ClinicalPrivileges = () => {
                   />
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
+                  <Table className="w-full text-left text-xs">
                     <thead>
                       <tr className="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                         <th className="p-3">S.No</th>
@@ -325,7 +327,7 @@ const ClinicalPrivileges = () => {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </Table>
                 </div>
               </div>
             </div>
@@ -334,7 +336,7 @@ const ClinicalPrivileges = () => {
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
               <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">Approvers</h4>
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <Table className="w-full text-left text-xs">
                   <thead>
                     <tr className="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                       <th className="p-3">S.No</th>
@@ -351,7 +353,7 @@ const ClinicalPrivileges = () => {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </Table>
               </div>
             </div>
 
@@ -383,14 +385,14 @@ const ClinicalPrivileges = () => {
                   <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">Add New Procedure</h3>
                   <div>
                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1">Category</label>
-                    <select 
+                    <Select 
                       value={newProcCat}
                       onChange={(e) => setNewProcCat(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
                     >
                       <option value="">Select Category</option>
                       {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                    </select>
+                    </Select>
                   </div>
                   <div>
                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1">Procedure Name</label>
@@ -433,7 +435,7 @@ const ClinicalPrivileges = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Clinician Grade/Role</label>
-                <select 
+                <Select 
                   value={submasterRole}
                   onChange={(e) => setSubmasterRole(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
@@ -442,11 +444,11 @@ const ClinicalPrivileges = () => {
                   <option value="Specialist">Specialist</option>
                   <option value="Resident">Resident</option>
                   <option value="Fellow">Fellow</option>
-                </select>
+                </Select>
               </div>
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Specialty Specialty</label>
-                <select 
+                <Select 
                   value={submasterSpecialty}
                   onChange={(e) => setSubmasterSpecialty(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
@@ -455,7 +457,7 @@ const ClinicalPrivileges = () => {
                   <option value="Orthopedics">Orthopedics</option>
                   <option value="Pediatrics">Pediatrics</option>
                   <option value="Anaesthesia">Anaesthesia</option>
-                </select>
+                </Select>
               </div>
             </div>
 
@@ -495,7 +497,7 @@ const ClinicalPrivileges = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Trigger Event</label>
-                <select 
+                <Select 
                   value={notifTrigger}
                   onChange={(e) => setNotifTrigger(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
@@ -505,7 +507,7 @@ const ClinicalPrivileges = () => {
                   <option value="Rejection Alert">Rejection Alert</option>
                   <option value="Expiring in 30 Days">Expiring in 30 Days</option>
                   <option value="Expiring in 90 Days">Expiring in 90 Days</option>
-                </select>
+                </Select>
               </div>
               <div className="flex items-center pt-8">
                 <label className="flex items-center gap-3 cursor-pointer">
@@ -536,7 +538,7 @@ const ClinicalPrivileges = () => {
             </div>
 
             <div className="overflow-x-auto pt-4 border-t border-slate-100">
-              <table className="w-full text-left text-xs">
+              <Table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                     <th className="p-3">S.No</th>
@@ -561,7 +563,7 @@ const ClinicalPrivileges = () => {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </Table>
             </div>
           </div>
         );
@@ -587,7 +589,7 @@ const ClinicalPrivileges = () => {
               </div>
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Specialty</label>
-                <select 
+                <Select 
                   value={searchSpecialty}
                   onChange={(e) => setSearchSpecialty(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
@@ -596,11 +598,11 @@ const ClinicalPrivileges = () => {
                   <option value="Cardiology">Cardiology</option>
                   <option value="Orthopedics">Orthopedics</option>
                   <option value="Pediatrics">Pediatrics</option>
-                </select>
+                </Select>
               </div>
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Status</label>
-                <select 
+                <Select 
                   value={searchStatus}
                   onChange={(e) => setSearchStatus(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
@@ -609,12 +611,12 @@ const ClinicalPrivileges = () => {
                   <option value="Active">Active</option>
                   <option value="Expiring Soon">Expiring Soon</option>
                   <option value="Expired">Expired</option>
-                </select>
+                </Select>
               </div>
             </div>
 
             <div className="overflow-x-auto pt-4">
-              <table className="w-full text-left text-xs">
+              <Table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                     <th className="p-3">Clinician</th>
@@ -648,7 +650,7 @@ const ClinicalPrivileges = () => {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </Table>
             </div>
           </div>
         );
@@ -677,25 +679,25 @@ const ClinicalPrivileges = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Select Clinician</label>
-                    <select 
+                    <Select 
                       value={applyClinician}
                       onChange={(e) => setApplyClinician(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
                     >
                       <option value="Dr. James Smith">Dr. James Smith</option>
                       <option value="Dr. Emily Watson">Dr. Emily Watson</option>
-                    </select>
+                    </Select>
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Medical Specialty</label>
-                    <select 
+                    <Select 
                       value={applySpecialty}
                       onChange={(e) => setApplySpecialty(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
                     >
                       <option value="Cardiology">Cardiology</option>
                       <option value="Orthopedics">Orthopedics</option>
-                    </select>
+                    </Select>
                   </div>
                 </div>
                 <div className="flex justify-end">
@@ -786,7 +788,7 @@ const ClinicalPrivileges = () => {
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Clinical reviews and credential committee authorizations</p>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <Table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                     <th className="p-3">Applicant</th>
@@ -818,7 +820,7 @@ const ClinicalPrivileges = () => {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </Table>
             </div>
           </div>
         );
@@ -889,10 +891,10 @@ const ClinicalPrivileges = () => {
             </div>
             <div>
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Select Doctor</label>
-              <select className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800">
+              <Select className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800">
                 <option value="Dr. Alistair Cook">Dr. Alistair Cook (Expired)</option>
                 <option value="Dr. Emily Watson">Dr. Emily Watson (Active)</option>
-              </select>
+              </Select>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button onClick={() => showNotification('Privileges put on hold', 'warning')} className="p-6 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-3xl transition-all text-left">
@@ -918,7 +920,7 @@ const ClinicalPrivileges = () => {
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Historical files and audit trails</p>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <Table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                     <th className="p-3">Log ID</th>
@@ -944,7 +946,7 @@ const ClinicalPrivileges = () => {
                     <td className="p-3 text-[10px]">2026-06-25 14:30</td>
                   </tr>
                 </tbody>
-              </table>
+              </Table>
             </div>
           </div>
         );

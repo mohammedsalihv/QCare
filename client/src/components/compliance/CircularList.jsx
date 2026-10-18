@@ -1,3 +1,4 @@
+import Table from '../Table.jsx';
 import React from 'react';
 import { FileText, CheckCircle2, Clock, Users } from 'lucide-react';
 
@@ -11,7 +12,7 @@ const CircularList = ({ circulars, onAcknowledge, currentUserId }) => {
         </h3>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+        <Table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-slate-100 dark:border-slate-800">
               <th className="p-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">Circular</th>
@@ -74,7 +75,7 @@ const CircularList = ({ circulars, onAcknowledge, currentUserId }) => {
               );
             })}
           </tbody>
-        </table>
+        </Table>
       </div>
     </div>
   );

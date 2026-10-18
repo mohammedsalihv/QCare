@@ -1,3 +1,4 @@
+import Select from '../Select.jsx';
 import React, { useState, useEffect } from 'react';
 import { X, AlertCircle, Save, Calculator } from 'lucide-react';
 
@@ -125,7 +126,7 @@ const RiskForm = ({ isOpen, onClose, onSave, initialData = null }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-100 dark:border-slate-800">
              <div className="space-y-2">
                 <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest ml-1">Risk Category</label>
-                <select 
+                <Select 
                   value={formData.riskCategory}
                   onChange={(e) => setFormData({...formData, riskCategory: e.target.value})}
                   className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl outline-none focus:border-[#040404] transition-all font-bold text-black font-bold dark:text-white appearance-none"
@@ -137,7 +138,7 @@ const RiskForm = ({ isOpen, onClose, onSave, initialData = null }) => {
                   <option value="reputational">Reputational</option>
                   <option value="information-security">Information Security</option>
                   <option value="infrastructure">Infrastructure</option>
-                </select>
+                </Select>
              </div>
              <div className="space-y-2">
                 <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest ml-1">Department</label>

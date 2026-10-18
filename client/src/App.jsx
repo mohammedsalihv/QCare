@@ -44,6 +44,7 @@ import MailLog from "./pages/MailLog";
 import ReportGenerator from "./pages/ReportGenerator";
 import ClinicalPrivileges from "./pages/ClinicalPrivileges";
 import KeyPerformanceIndicator from "./pages/KeyPerformanceIndicator";
+import IndicatorWorkspace from "./pages/IndicatorWorkspace";
 import OoppeManagement from "./pages/OoppeManagement";
 import { 
   Menu, 
@@ -96,7 +97,7 @@ function App() {
           <Route path="/dashboard/documents" element={<DocumentLibrary/>} />
           <Route path="/dashboard/users" element={<UserManagement/>} />
           <Route path="/dashboard/departments" element={<DepartmentMaster/>} />
-          <Route path="/dashboard/kpi" element={<JawdaKPI/>} />
+          <Route path="/dashboard/kpi" element={<IndicatorWorkspace/>} />
           <Route path="/dashboard/incidents" element={<IncidentManagement/>} />
           <Route path="/notifications" element={<Notifications/>} />
           <Route path="/dashboard/settings" element={<SystemSettings/>} />
@@ -135,7 +136,8 @@ function App() {
           <Route path="/dashboard/mail-log" element={<MailLog/>} />
           <Route path="/dashboard/report-generator" element={<ReportGenerator/>} />
           <Route path="/dashboard/clinical-privileges" element={<ClinicalPrivileges/>} />
-          <Route path="/dashboard/key-performance-indicator" element={<KeyPerformanceIndicator/>} />
+          <Route path="/dashboard/key-performance-indicator" element={<IndicatorWorkspace/>} />
+          <Route path="/dashboard/indicator-settings" element={<KeyPerformanceIndicator/>} />
         </Routes>
       </BrowserRouter>
     </NotificationProvider>

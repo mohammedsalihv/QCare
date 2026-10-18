@@ -1,3 +1,5 @@
+import Table from '../components/Table.jsx';
+import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -143,7 +145,7 @@ const JawdaASD = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <Table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-100/50">
                   <th className="px-8 py-5 text-[10px] font-black text-black font-bold uppercase tracking-widest border-b border-slate-200">Patient ID</th>
@@ -215,7 +217,7 @@ const JawdaASD = () => {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </Table>
           </div>
         </div>
         
@@ -286,7 +288,7 @@ const JawdaASD = () => {
                     </div>
                     <div className="space-y-2">
                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest">Assessment Status</label>
-                       <select 
+                       <Select 
                         value={formData.status}
                         onChange={(e) => setFormData({...formData, status: e.target.value})}
                         className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-indigo-500 text-sm font-bold appearance-none cursor-pointer"
@@ -294,7 +296,7 @@ const JawdaASD = () => {
                           <option value="InAssessment">In Assessment</option>
                           <option value="Diagnosed">Diagnosed</option>
                           <option value="Referred">Referred Out</option>
-                       </select>
+                       </Select>
                     </div>
                  </div>
 

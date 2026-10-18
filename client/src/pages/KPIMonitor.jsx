@@ -1,3 +1,5 @@
+import Table from '../components/Table.jsx';
+import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -240,7 +242,7 @@ const KPIMonitor = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse table-fixed min-w-[1100px]">
+            <Table className="w-full text-left border-collapse table-fixed min-w-[1100px]">
               <thead>
                 <tr className="bg-slate-100/50">
                   <th className="w-1/4 px-7 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">KPI Metric</th>
@@ -328,7 +330,7 @@ const KPIMonitor = () => {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </Table>
           </div>
           
           <Pagination 
@@ -371,17 +373,17 @@ const KPIMonitor = () => {
                   
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Category</label>
-                    <select name="category" value={formData.category} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-black font-bold">
+                    <Select name="category" value={formData.category} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-black font-bold">
                       {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                    </select>
+                    </Select>
                   </div>
                   
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Department</label>
-                    <select name="department" value={formData.department} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-black font-bold">
+                    <Select name="department" value={formData.department} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-black font-bold">
                       <option value="">Select Department</option>
                       {departments.map(dept => <option key={dept._id} value={dept._id}>{dept.name}</option>)}
-                    </select>
+                    </Select>
                   </div>
 
                   <div className="space-y-1.5">
@@ -401,9 +403,9 @@ const KPIMonitor = () => {
 
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Tracking Period</label>
-                    <select name="period" value={formData.period} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-black font-bold">
+                    <Select name="period" value={formData.period} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-black font-bold">
                       {periods.map(p => <option key={p} value={p}>{p}</option>)}
-                    </select>
+                    </Select>
                   </div>
 
                   <div className="col-span-2 space-y-1.5">

@@ -1,3 +1,5 @@
+import Table from '../components/Table.jsx';
+import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNotification } from '../components/NotificationContext';
@@ -54,7 +56,7 @@ const KeyPerformanceIndicator = () => {
 
   // Authenticated user checks
   const user = JSON.parse(localStorage.getItem('userInfo') || '{}');
-  const isQualityManager = user.role === 'QualityManager' || user.role === 'SuperAdmin';
+  const isQualityManager = ['qualitymanager', 'superadmin', 'admin'].includes(user.role?.toLowerCase());
 
   const getAuthConfig = () => {
     const token = localStorage.getItem('token');
@@ -598,7 +600,7 @@ const KeyPerformanceIndicator = () => {
 
               {/* criteria grid table */}
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <Table className="w-full text-left text-xs">
                   <thead>
                     <tr className="bg-slate-800 text-white font-black uppercase tracking-wider">
                       <th className="p-3.5 rounded-l-xl">S.No</th>
@@ -628,7 +630,7 @@ const KeyPerformanceIndicator = () => {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </Table>
               </div>
             </div>
 
@@ -667,7 +669,7 @@ const KeyPerformanceIndicator = () => {
 
               {/* type grid table */}
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <Table className="w-full text-left text-xs">
                   <thead>
                     <tr className="bg-slate-800 text-white font-black uppercase tracking-wider">
                       <th className="p-3.5 rounded-l-xl">S.No</th>
@@ -697,7 +699,7 @@ const KeyPerformanceIndicator = () => {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </Table>
               </div>
             </div>
 
@@ -759,14 +761,14 @@ const KeyPerformanceIndicator = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Trigger Threshold</label>
-                    <select 
+                    <Select 
                       value={notifTrigger}
                       onChange={(e) => setNotifTrigger(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
                     >
                       <option value="Indicator Critical">KPI Dropped Below Critical</option>
                       <option value="Validation Overdue">Data Verification Overdue</option>
-                    </select>
+                    </Select>
                   </div>
                   <div className="flex items-center pt-8">
                     <label className="flex items-center gap-3 cursor-pointer">
@@ -804,7 +806,7 @@ const KeyPerformanceIndicator = () => {
             )}
 
             <div className="overflow-x-auto pt-4 border-t border-slate-100">
-              <table className="w-full text-left text-xs">
+              <Table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                     <th className="p-3">S.No</th>
@@ -834,7 +836,7 @@ const KeyPerformanceIndicator = () => {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </Table>
             </div>
           </div>
         );
@@ -977,7 +979,7 @@ const KeyPerformanceIndicator = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">KPI Category (DB Code)</label>
-                    <select 
+                    <Select 
                       value={newKpiCat}
                       onChange={(e) => setNewKpiCat(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
@@ -987,22 +989,22 @@ const KeyPerformanceIndicator = () => {
                       <option value="patient-experience">Patient Experience</option>
                       <option value="efficiency">Efficiency</option>
                       <option value="access">Access</option>
-                    </select>
+                    </Select>
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Main Category (UI)</label>
-                    <select 
+                    <Select 
                       value={newKpiMainCat}
                       onChange={(e) => setNewKpiMainCat(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
                     >
                       <option value="Ambulatory">Ambulatory</option>
                       <option value="Inpatient">Inpatient</option>
-                    </select>
+                    </Select>
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Sub Category</label>
-                    <select 
+                    <Select 
                       value={newKpiSubCat}
                       onChange={(e) => setNewKpiSubCat(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
@@ -1011,25 +1013,25 @@ const KeyPerformanceIndicator = () => {
                       <option value="Facility Management and Safety">Facility Management and Safety</option>
                       <option value="IPSG">IPSG</option>
                       <option value="Operational">Operational</option>
-                    </select>
+                    </Select>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Selection Criteria</label>
-                    <select 
+                    <Select 
                       value={newKpiCrit}
                       onChange={(e) => setNewKpiCrit(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
                     >
                       <option value="">Select Criteria...</option>
                       {criteriaList.map(c => <option key={c._id} value={c.criteria}>{c.criteria}</option>)}
-                    </select>
+                    </Select>
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Reporting Frequency</label>
-                    <select 
+                    <Select 
                       value={newKpiFreq}
                       onChange={(e) => setNewKpiFreq(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
@@ -1037,7 +1039,7 @@ const KeyPerformanceIndicator = () => {
                       <option value="Monthly">Monthly</option>
                       <option value="Quarterly">Quarterly</option>
                       <option value="Yearly">Yearly</option>
-                    </select>
+                    </Select>
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Target & Unit</label>
@@ -1050,7 +1052,7 @@ const KeyPerformanceIndicator = () => {
                         className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
                         required
                       />
-                      <select 
+                      <Select 
                         value={newKpiUnit}
                         onChange={(e) => setNewKpiUnit(e.target.value)}
                         className="w-20 px-2 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
@@ -1058,7 +1060,7 @@ const KeyPerformanceIndicator = () => {
                         <option value="%">%</option>
                         <option value="mins">mins</option>
                         <option value="hrs">hrs</option>
-                      </select>
+                      </Select>
                     </div>
                   </div>
                 </div>
@@ -1172,7 +1174,7 @@ const KeyPerformanceIndicator = () => {
 
             {/* Table registry */}
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border border-slate-200 rounded-2xl overflow-hidden">
+              <Table className="w-full text-left text-xs border border-slate-200 rounded-2xl overflow-hidden">
                 <thead>
                   <tr className="bg-sky-600 text-white font-black uppercase tracking-wider">
                     <th className="p-3.5 border-r border-sky-700">S.No</th>
@@ -1217,7 +1219,7 @@ const KeyPerformanceIndicator = () => {
                     </tr>
                   )}
                 </tbody>
-              </table>
+              </Table>
             </div>
           </div>
         );
@@ -1231,12 +1233,12 @@ const KeyPerformanceIndicator = () => {
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Submit numerator & denominator values for the current period</p>
             </div>
             
-            {isQualityManager ? (
+            {(
               <form onSubmit={handleDataSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Select KPI Indicator</label>
-                    <select 
+                    <Select 
                       value={submissionKpi}
                       onChange={(e) => setSubmissionKpi(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
@@ -1246,7 +1248,7 @@ const KeyPerformanceIndicator = () => {
                       {getDistinctDefinitions(definedIndicators).map(k => (
                         <option key={k._id} value={k.indicatorCode}>{k.indicatorCode} - {k.indicatorName}</option>
                       ))}
-                    </select>
+                    </Select>
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Numerator (Cases)</label>
@@ -1275,7 +1277,7 @@ const KeyPerformanceIndicator = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Reporting Period</label>
-                    <select 
+                    <Select 
                       value={submissionPeriod}
                       onChange={(e) => setSubmissionPeriod(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-xs font-semibold text-slate-800"
@@ -1284,7 +1286,7 @@ const KeyPerformanceIndicator = () => {
                       <option value="Q2">Quarter 2 (Q2)</option>
                       <option value="Q3">Quarter 3 (Q3)</option>
                       <option value="Q4">Quarter 4 (Q4)</option>
-                    </select>
+                    </Select>
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Reporting Year</label>
@@ -1303,15 +1305,11 @@ const KeyPerformanceIndicator = () => {
                   </button>
                 </div>
               </form>
-            ) : (
-              <div className="p-4 bg-amber-50 text-amber-800 border border-amber-200 rounded-2xl text-xs font-semibold">
-                Submission requires Quality Manager or administrator authorization
-              </div>
             )}
 
             <div className="overflow-x-auto pt-6 border-t border-slate-100">
               <h4 className="text-xs font-black text-slate-700 uppercase tracking-wider mb-3">Pending Validation Queue</h4>
-              <table className="w-full text-left text-xs">
+              <Table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                     <th className="p-3">Indicator Code</th>
@@ -1343,7 +1341,7 @@ const KeyPerformanceIndicator = () => {
                     </tr>
                   )}
                 </tbody>
-              </table>
+              </Table>
             </div>
           </div>
         );
@@ -1357,7 +1355,7 @@ const KeyPerformanceIndicator = () => {
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Audit and verify incoming metrics reports accuracy</p>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <Table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                     <th className="p-3">Code</th>
@@ -1402,7 +1400,7 @@ const KeyPerformanceIndicator = () => {
                     </tr>
                   )}
                 </tbody>
-              </table>
+              </Table>
             </div>
           </div>
         );
@@ -1416,7 +1414,7 @@ const KeyPerformanceIndicator = () => {
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">HOD and Quality Directors metrics release sign-offs</p>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <Table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                     <th className="p-3">Code</th>
@@ -1455,7 +1453,7 @@ const KeyPerformanceIndicator = () => {
                     </tr>
                   )}
                 </tbody>
-              </table>
+              </Table>
             </div>
           </div>
         );
@@ -1472,7 +1470,7 @@ const KeyPerformanceIndicator = () => {
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Mitigate KPIs missing target standards</p>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <Table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                     <th className="p-3">KPI Code</th>
@@ -1502,7 +1500,7 @@ const KeyPerformanceIndicator = () => {
                     </tr>
                   )}
                 </tbody>
-              </table>
+              </Table>
             </div>
           </div>
         );
@@ -1529,7 +1527,7 @@ const KeyPerformanceIndicator = () => {
               </div>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <Table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                     <th className="p-3">Code</th>
@@ -1562,7 +1560,7 @@ const KeyPerformanceIndicator = () => {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </Table>
             </div>
           </div>
         );

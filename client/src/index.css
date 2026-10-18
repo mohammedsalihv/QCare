@@ -1,53 +1,15 @@
 @import "tailwindcss";
+@import "./workspace.css";
+@import "./controls.css";
 
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
-  /* CMC Holding Gold Palette */
-  --color-primary: #9A7B22;       /* CMC Gold (Primary) */
-  --color-secondary: #B8962A;     /* CMC Light Gold (Secondary) */
-  --color-accent: #FFFFFF;        /* Deep Warm Brown (Background) */
-  --color-gold-dark: #8A6E1C;     /* CMC Dark Gold */
-  --color-gold-muted: #C9A84C;    /* CMC Mid Gold */
-
-  /* Tailwind CSS v4 Color System Overrides */
-  /* Redirecting Blues, Indigos, and Sky to Premium Gold/Champagne tints */
-  --color-blue-50: #FDFBF7;
-  --color-blue-100: #FAF6EB;
-  --color-blue-200: #EFE6D0;
-  --color-blue-300: #DFCFA7;
-  --color-blue-400: #CBAE75;
-  --color-blue-500: #B8962A;
-  --color-blue-600: #9A7B22;
-  --color-blue-700: #8A6E1C;
-  --color-blue-800: #6E5613;
-  --color-blue-900: #4E3E0C;
-  --color-blue-950: #2F2507;
-
-  --color-indigo-50: #FDFBF7;
-  --color-indigo-100: #FAF6EB;
-  --color-indigo-200: #EFE6D0;
-  --color-indigo-300: #DFCFA7;
-  --color-indigo-400: #CBAE75;
-  --color-indigo-500: #B8962A;
-  --color-indigo-600: #9A7B22;
-  --color-indigo-700: #8A6E1C;
-  --color-indigo-800: #6E5613;
-  --color-indigo-900: #4E3E0C;
-  --color-indigo-950: #2F2507;
-
-  --color-sky-50: #FDFBF7;
-  --color-sky-100: #FAF6EB;
-  --color-sky-200: #EFE6D0;
-  --color-sky-300: #DFCFA7;
-  --color-sky-400: #CBAE75;
-  --color-sky-500: #B8962A;
-  --color-sky-600: #9A7B22;
-  --color-sky-700: #8A6E1C;
-  --color-sky-800: #6E5613;
-  --color-sky-900: #4E3E0C;
-  --color-sky-950: #2F2507;
-
+  --color-primary: #0f766e;
+  --color-secondary: #14b8a6;
+  --color-accent: #ffffff;
+  --color-gold-dark: #8A6E1C;
+  --color-gold-muted: #C9A84C;
   /* Modern Typography Scale */
   --font-size-sm: 0.95rem;
   --font-size-base: 1.1rem;

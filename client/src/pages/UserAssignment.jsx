@@ -1,3 +1,5 @@
+import Table from '../components/Table.jsx';
+import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import Pagination from '../components/Pagination';
@@ -121,7 +123,7 @@ const UserAssignment = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
+            <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
                 <tr className="bg-slate-100/50">
                   <th className="w-1/4 px-7 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Employee Details</th>
@@ -210,7 +212,7 @@ const UserAssignment = () => {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </Table>
           </div>
           
           <Pagination 
@@ -256,19 +258,19 @@ const UserAssignment = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">System Access Role</label>
-                    <select name="role" value={formData.role} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
+                    <Select name="role" value={formData.role} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
                       {roles.map((r) => (
                         <option key={r.value} value={r.value}>{r.label}</option>
                       ))}
-                    </select>
+                    </Select>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Hospital Department</label>
-                    <select name="department" value={formData.department} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
+                    <Select name="department" value={formData.department} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
                       {departments.map((d) => (
                         <option key={d} value={d}>{d}</option>
                       ))}
-                    </select>
+                    </Select>
                   </div>
                   <div className="space-y-1.5 col-span-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Employee Designation / Job Title</label>

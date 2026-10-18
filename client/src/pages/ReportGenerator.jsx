@@ -1,3 +1,5 @@
+import Table from '../components/Table.jsx';
+import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import {
@@ -228,7 +230,7 @@ const ReportGenerator = () => {
             <div>
               <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-3">Department Filter</label>
               <div className="relative">
-                <select value={department} onChange={e => setDepartment(e.target.value)}
+                <Select value={department} onChange={e => setDepartment(e.target.value)}
                   className="w-full appearance-none px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all pr-8">
                   <option value="All">All Departments</option>
                   <option value="Emergency Medicine">Emergency Medicine</option>
@@ -236,7 +238,7 @@ const ReportGenerator = () => {
                   <option value="Neurology">Neurology</option>
                   <option value="ICU">ICU</option>
                   <option value="Pharmacy">Pharmacy</option>
-                </select>
+                </Select>
                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
               </div>
             </div>
@@ -270,7 +272,7 @@ const ReportGenerator = () => {
               <CheckCircle2 className="w-5 h-5 text-emerald-500" />
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[600px]">
+              <Table className="w-full text-left border-collapse min-w-[600px]">
                 <thead>
                   <tr className="bg-slate-100/50">
                     {generatedReport.columns.map(c => (
@@ -287,7 +289,7 @@ const ReportGenerator = () => {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </Table>
             </div>
             <div className="px-8 py-4 bg-slate-50/20 border-t border-slate-100 flex items-center justify-between">
               <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">

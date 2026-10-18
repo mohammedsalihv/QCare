@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import Notification from './Notification';
-import { HelpCircle, AlertTriangle, X } from 'lucide-react';
+import ConfirmationDialog from './ConfirmationDialog';
 import axios from 'axios';
 import { getAuthConfig } from '../utils/authConfig';
 
@@ -55,8 +55,8 @@ export const NotificationProvider = ({ children }) => {
         }
     }, []);
 
-    const confirm = useCallback(({ title, message, onConfirm, type = 'warning' }) => {
-        setConfirmState({ title, message, onConfirm, type });
+    const confirm = useCallback(({ title, message, onConfirm, type = 'warning', confirmLabel, cancelLabel }) => {
+        setConfirmState({ title, message, onConfirm, type, confirmLabel, cancelLabel });
     }, []);
 
     const closeConfirm = () => setConfirmState(null);
@@ -88,60 +88,7 @@ export const NotificationProvider = ({ children }) => {
                 ))}
             </div>
 
-            {/* Premium Confirmation Modal */}
-            {confirmState && (
-                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
-                    <div 
-                        className="absolute inset-0 bg-white/40 backdrop-blur-md animate-in fade-in duration-300"
-                        onClick={closeConfirm}
-                    ></div>
-                    <div className="bg-white rounded-[2rem] shadow-2xl relative w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-300">
-                        <div className="p-8 pb-6 flex flex-col items-center text-center">
-                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${
-                                confirmState.type === 'danger' ? 'bg-rose-50 text-rose-500' : 'bg-amber-50 text-amber-500'
-                            }`}>
-                                {confirmState.type === 'danger' ? (
-                                    <AlertTriangle className="w-8 h-8" />
-                                ) : (
-                                    <HelpCircle className="w-8 h-8" />
-                                )}
-                            </div>
-                            <h3 className="text-xl font-black text-black font-bold tracking-tight mb-2">
-                                {confirmState.title}
-                            </h3>
-                            <p className="text-sm font-medium text-black font-bold leading-relaxed">
-                                {confirmState.message}
-                            </p>
-                        </div>
-
-                        <div className="p-6 pt-2 flex gap-3">
-                            <button 
-                                onClick={closeConfirm}
-                                className="flex-1 py-3.5 px-4 rounded-xl text-xs font-black text-black font-bold hover:bg-slate-50 border border-slate-100 transition-all uppercase tracking-widest active:scale-95"
-                            >
-                                Cancel
-                            </button>
-                            <button 
-                                onClick={handleConfirmAction}
-                                className={`flex-1 py-3.5 px-4 rounded-xl text-xs font-black text-white shadow-lg transition-all uppercase tracking-widest active:scale-[0.98] ${
-                                    confirmState.type === 'danger' 
-                                    ? 'bg-rose-500 shadow-rose-500/20 hover:bg-rose-600' 
-                                    : 'bg-[#b59662] shadow-[#b59662]/20 hover:bg-[#a68959]'
-                                }`}
-                            >
-                                Confirm
-                            </button>
-                        </div>
-
-                        <button 
-                            onClick={closeConfirm}
-                            className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-black font-bold hover:text-black font-bold hover:bg-slate-50 transition-all"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    </div>
-                </div>
-            )}
+            {confirmState && <ConfirmationDialog state={confirmState} onCancel={closeConfirm} onConfirm={handleConfirmAction} />}
         </NotificationContext.Provider>
     );
 };

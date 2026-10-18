@@ -1,3 +1,4 @@
+import Table from '../components/Table.jsx';
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import Pagination from '../components/Pagination';
@@ -127,7 +128,7 @@ const PhysicianDemographyVerification = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse table-fixed min-w-[1200px]">
+            <Table className="w-full text-left border-collapse table-fixed min-w-[1200px]">
               <thead>
                 <tr className="bg-slate-100/50">
                   <th className="w-1/4 px-7 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Physician Profile</th>
@@ -215,7 +216,7 @@ const PhysicianDemographyVerification = () => {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </Table>
           </div>
           
           <Pagination 

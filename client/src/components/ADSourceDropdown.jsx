@@ -1,3 +1,4 @@
+import Select from './Select.jsx';
 import React from 'react';
 
 /**
@@ -9,7 +10,7 @@ import React from 'react';
  * @param {string} [className] - Additional Tailwind classes.
  */
 const ADSourceDropdown = ({ options, selected, onChange, className }) => (
-  <select
+  <Select
     value={selected}
     onChange={onChange}
     className={`px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[#040404] transition-all text-xs font-bold text-black font-bold ${className || ''}`.trim()}
@@ -19,7 +20,7 @@ const ADSourceDropdown = ({ options, selected, onChange, className }) => (
         {opt.label}
       </option>
     ))}
-  </select>
+  </Select>
 );
 
 export default ADSourceDropdown;

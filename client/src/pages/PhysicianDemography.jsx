@@ -1,3 +1,5 @@
+import Table from '../components/Table.jsx';
+import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import Pagination from '../components/Pagination';
@@ -166,7 +168,7 @@ const PhysicianDemography = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse table-fixed min-w-[1200px]">
+            <Table className="w-full text-left border-collapse table-fixed min-w-[1200px]">
               <thead>
                 <tr className="bg-slate-100/50">
                   <th className="w-1/4 px-7 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Physician Name</th>
@@ -271,7 +273,7 @@ const PhysicianDemography = () => {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </Table>
           </div>
           
           <Pagination 
@@ -317,10 +319,10 @@ const PhysicianDemography = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Gender</label>
-                    <select name="gender" value={formData.gender} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
+                    <Select name="gender" value={formData.gender} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
-                    </select>
+                    </Select>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Clinical Specialty</label>
@@ -332,11 +334,11 @@ const PhysicianDemography = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">License Type</label>
-                    <select name="licenseType" value={formData.licenseType} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
+                    <Select name="licenseType" value={formData.licenseType} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
                       <option value="DOH">DOH (Abu Dhabi)</option>
                       <option value="DHA">DHA (Dubai)</option>
                       <option value="MOHAP">MOHAP (UAE)</option>
-                    </select>
+                    </Select>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">License Number</label>
@@ -348,10 +350,10 @@ const PhysicianDemography = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Status</label>
-                    <select name="status" value={formData.status} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
+                    <Select name="status" value={formData.status} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800">
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
-                    </select>
+                    </Select>
                   </div>
                 </div>
 

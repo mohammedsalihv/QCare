@@ -1,3 +1,4 @@
+import Table from '../components/Table.jsx';
 // OOPPE Management Page
 // ------------------------------------------------------------
 // This page allows users to view, create, edit, and delete OOPPE records.
@@ -103,7 +104,7 @@ const OoppeManagement = () => {
       {loading ? (
         <p className="mt-4">Loading...</p>
       ) : (
-        <table className="min-w-full mt-4 border-collapse shadow-lg">
+        <Table className="min-w-full mt-4 border-collapse shadow-lg">
           <thead className="bg-gray-100">
             <tr>
               <th className="p-2 border">Title</th>
@@ -135,7 +136,7 @@ const OoppeManagement = () => {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       )}
     </div>
   );
