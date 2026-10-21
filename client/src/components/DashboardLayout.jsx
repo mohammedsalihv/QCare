@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import WorkspaceNav from './WorkspaceNav';
+import AppFooter from './AppFooter';
 import ProfileDrawer from './ProfileDrawer';
 import { io } from 'socket.io-client';
 import { useNotification } from './NotificationContext';
@@ -58,7 +59,7 @@ const DashboardLayout = ({ children }) => {
   return (
     <div className="qc-app">
       <WorkspaceNav openProfileDrawer={openProfileDrawer} user={user} />
-      <main className="qc-main">{children}</main>
+      <main className="qc-main">{children}<AppFooter /></main>
       <ProfileDrawer
         isOpen={isProfileDrawerOpen}
         onClose={closeProfileDrawer}

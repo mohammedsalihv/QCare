@@ -102,10 +102,10 @@ const Notifications = () => {
   const getTypeIcon = (type) => {
     switch (type) {
       case 'incident_report': return <AlertTriangle className="w-5 h-5 text-rose-500" />;
-      case 'document_upload': return <Monitor className="w-5 h-5 text-[#040404]" />;
+      case 'document_upload': return <Monitor className="w-5 h-5 text-slate-800" />;
       case 'document_like':
       case 'document_endorsement': return <ThumbsUp className="w-5 h-5 text-amber-500" />;
-      default: return <Bell className="w-5 h-5 text-black font-bold" />;
+      default: return <Bell className="w-5 h-5 text-slate-800 font-semibold" />;
     }
   };
 
@@ -114,12 +114,12 @@ const Notifications = () => {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-             <h1 className="text-3xl font-black text-black font-bold tracking-tight">Notification Center</h1>
-             <p className="text-xs text-black font-bold font-medium mt-1">History of all system activities and your personalized alerts.</p>
+             <h1 className="text-3xl font-semibold text-slate-800 tracking-tight">Notification Center</h1>
+             <p className="text-[13px] text-slate-800 font-semibold font-medium mt-1">History of all system activities and your personalized alerts.</p>
           </div>
           <button 
             onClick={clearAll}
-            className="flex items-center gap-2 px-6 py-3 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all active:scale-95"
+            className="flex items-center gap-2 px-6 py-3 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-2xl text-[12px] font-semibold normal-case tracking-normal transition-all active:scale-95"
           >
              <Trash2 className="w-4 h-4" />
              <span>Clear Notifications</span>
@@ -129,8 +129,8 @@ const Notifications = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
            {/* Filters Sidebar */}
            <div className="lg:col-span-1 space-y-6">
-              <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
-                 <h4 className="text-[10px] font-black text-black font-bold uppercase tracking-widest mb-6">Quick Filters</h4>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                 <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-6">Quick Filters</h4>
                  <div className="flex flex-col gap-2">
                     {[
                       { id: 'all', label: 'All Activities', icon: Bell },
@@ -140,15 +140,15 @@ const Notifications = () => {
                         key={filter.id}
                         onClick={() => setActiveFilter(filter.id)}
                         className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
-                          activeFilter === filter.id ? 'bg-[#040404] text-white shadow-lg' : 'hover:bg-slate-50 text-black font-bold'
+                          activeFilter === filter.id ? 'bg-primary text-white shadow-lg' : 'hover:bg-slate-50 text-slate-800 font-semibold'
                         }`}
                       >
                          <div className="flex items-center gap-3">
                             <filter.icon className="w-4 h-4" />
-                            <span className="text-xs font-bold">{filter.label}</span>
+                            <span className="text-[13px] font-semibold">{filter.label}</span>
                          </div>
                          {filter.id === 'unread' && notifications.filter(n => !n.isRead).length > 0 && (
-                           <span className="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-black">
+                           <span className="bg-rose-500 text-white text-[12px] px-2 py-0.5 rounded-full font-semibold">
                              {notifications.filter(n => !n.isRead).length}
                            </span>
                          )}
@@ -157,20 +157,20 @@ const Notifications = () => {
                  </div>
               </div>
 
-              <div className="bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-primary)] p-6 rounded-[2rem] shadow-xl shadow-[#040404]/20/20 text-black font-bold relative overflow-hidden group">
+              <div className="bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-primary)] p-6 rounded-2xl shadow-xl shadow-[#040404]/20/20 text-slate-800 font-semibold relative overflow-hidden group">
                  <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
                  <Shield className="w-8 h-8 mb-4 opacity-50" />
-                 <h5 className="font-black text-sm uppercase tracking-widest mb-2">Notification Guard</h5>
-                 <p className="text-[10px] text-black font-bold/80 font-medium leading-relaxed">Notifications are retained for 30 days. Please ensure critical alerts are reviewed regularly.</p>
+                 <h5 className="font-semibold text-sm normal-case tracking-normal mb-2">Notification Guard</h5>
+                 <p className="text-[12px] text-slate-800 font-bold/80 font-medium leading-relaxed">Notifications are retained for 30 days. Please ensure critical alerts are reviewed regularly.</p>
               </div>
            </div>
 
            {/* Notifications List */}
            <div className="lg:col-span-3">
-              <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                  <div className="p-6 border-b border-slate-100 bg-slate-50/30 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="relative w-full sm:w-96">
-                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold" />
+                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold" />
                        <input 
                          type="text" 
                          value={searchTerm}
@@ -180,7 +180,7 @@ const Notifications = () => {
                        />
                     </div>
                     <div className="flex items-center gap-2">
-                       <button className="p-2 text-black font-bold hover:text-black font-bold transition-colors">
+                       <button className="p-2 text-slate-800 font-semibold hover:text-slate-800 transition-colors">
                           <Filter className="w-5 h-5" />
                        </button>
                     </div>
@@ -211,26 +211,26 @@ const Notifications = () => {
 
                            <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between gap-4 mb-2">
-                                 <span className="text-[10px] font-black text-[var(--color-secondary)] uppercase tracking-[0.2em]">{n.type.replace('_', ' ')}</span>
-                                 <div className="flex items-center gap-2 text-black font-bold text-[10px] font-bold uppercase tracking-widest">
+                                 <span className="text-[12px] font-semibold text-[var(--color-secondary)] normal-case tracking-normal">{n.type.replace('_', ' ')}</span>
+                                 <div className="flex items-center gap-2 text-slate-800 font-semibold text-[12px] normal-case tracking-normal">
                                     <Clock className="w-3 h-3" />
                                     {new Date(n.createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                  </div>
                               </div>
-                              <h4 className="text-sm md:text-base font-bold text-black font-bold mb-2 leading-snug">{n.message}</h4>
+                              <h4 className="text-sm md:text-base font-semibold text-slate-800 mb-2 leading-snug">{n.message}</h4>
                               
                               <div className="flex flex-wrap items-center gap-6 mt-4">
                                  <div className="flex items-center gap-2">
                                     <div className="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center">
-                                       <User className="w-3.5 h-3.5 text-black font-bold" />
+                                       <User className="w-3.5 h-3.5 text-slate-800 font-semibold" />
                                     </div>
-                                    <span className="text-[11px] font-bold text-black font-bold uppercase tracking-wider">{n.user}</span>
+                                    <span className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">{n.user}</span>
                                  </div>
                                  <div className="flex items-center gap-2">
                                     <div className="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center">
-                                       <Calendar className="w-3.5 h-3.5 text-black font-bold" />
+                                       <Calendar className="w-3.5 h-3.5 text-slate-800 font-semibold" />
                                     </div>
-                                    <span className="text-[11px] font-bold text-black font-bold uppercase tracking-wider">Action Recorded</span>
+                                    <span className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Action Recorded</span>
                                  </div>
                               </div>
                            </div>
@@ -255,7 +255,7 @@ const Notifications = () => {
                               {n.actionLink && (
                                 <button 
                                   onClick={() => navigate(n.actionLink)}
-                                  className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-black font-bold hover:bg-white hover:text-white flex items-center justify-center transition-all shadow-sm"
+                                  className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-800 font-semibold hover:bg-white hover:text-white flex items-center justify-center transition-all shadow-sm"
                                   title="View target"
                                 >
                                    <ExternalLink className="w-4 h-4" />
@@ -267,10 +267,10 @@ const Notifications = () => {
                     ) : (
                       <div className="p-24 text-center">
                          <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Bell className="w-10 h-10 text-black font-bold" />
+                            <Bell className="w-10 h-10 text-slate-800 font-semibold" />
                          </div>
-                         <h3 className="text-lg font-black text-black font-bold mb-1 tracking-tight">No notifications found</h3>
-                         <p className="text-xs text-black font-bold font-medium uppercase tracking-widest">Your notification feed is currently empty.</p>
+                         <h3 className="text-lg font-semibold text-slate-800 mb-1 tracking-tight">No notifications found</h3>
+                         <p className="text-[13px] text-slate-800 font-semibold font-medium normal-case tracking-normal">Your notification feed is currently empty.</p>
                       </div>
                     )}
                  </div>

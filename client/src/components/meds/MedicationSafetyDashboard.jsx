@@ -21,22 +21,22 @@ const MedicationSafetyDashboard = ({ stats }) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card, idx) => (
-          <div key={idx} className="bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+          <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 ">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${card.bg}`}>
                 <card.icon className={`w-6 h-6 ${card.color}`} />
               </div>
-              <span className="text-2xl font-black text-black font-bold dark:text-white">{card.value}</span>
+              <span className="text-2xl font-semibold text-slate-800 ">{card.value}</span>
             </div>
-            <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest">{card.label}</p>
+            <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">{card.label}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Error Types Chart */}
-        <div className="bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-           <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8">Errors by Classification</h3>
+        <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
+           <h3 className="text-sm font-semibold text-slate-800 normal-case tracking-normal mb-8">Errors by Classification</h3>
            <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={typeData} layout="vertical">
@@ -55,28 +55,28 @@ const MedicationSafetyDashboard = ({ stats }) => {
         </div>
 
         {/* Recent Errors List */}
-        <div className="bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-           <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8">Recent Safety Alerts</h3>
+        <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
+           <h3 className="text-sm font-semibold text-slate-800 normal-case tracking-normal mb-8">Recent Safety Alerts</h3>
            <div className="space-y-4">
               {stats?.recent?.map((error) => (
-                <div key={error._id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div key={error._id} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                    <div className="flex items-center gap-4">
-                      <div className={`p-2 rounded-lg ${error.harmLevel === 'none' ? 'bg-slate-100 text-[#040404]' : 'bg-rose-100 text-rose-600'}`}>
+                      <div className={`p-2 rounded-lg ${error.harmLevel === 'none' ? 'bg-slate-100 text-slate-800' : 'bg-rose-100 text-rose-600'}`}>
                          <ShieldAlert className="w-4 h-4" />
                       </div>
                       <div>
-                         <h4 className="text-xs font-bold text-black font-bold dark:text-white">{error.medicationName}</h4>
-                         <p className="text-[10px] font-black text-black font-bold uppercase">{error.errorType?.replace('-', ' ')} • {error.errorRef}</p>
+                         <h4 className="text-[13px] font-semibold text-slate-800 ">{error.medicationName}</h4>
+                         <p className="text-[12px] font-semibold text-slate-800 normal-case">{error.errorType?.replace('-', ' ')} • {error.errorRef}</p>
                       </div>
                    </div>
-                   <span className={`text-[8px] font-black uppercase px-2 py-1 rounded-md ${error.status === 'open' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                   <span className={`text-[12px] font-semibold normal-case px-2 py-1 rounded-md ${error.status === 'open' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'}`}>
                       {error.status}
                    </span>
                 </div>
               ))}
               {(!stats?.recent || stats.recent.length === 0) && (
                 <div className="text-center py-10">
-                   <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest">No recent errors reported.</p>
+                   <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">No recent errors reported.</p>
                 </div>
               )}
            </div>

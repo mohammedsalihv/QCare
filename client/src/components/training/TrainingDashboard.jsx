@@ -20,22 +20,22 @@ const TrainingDashboard = ({ stats }) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card, idx) => (
-          <div key={idx} className="bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+          <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 ">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${card.bg}`}>
                 <card.icon className={`w-6 h-6 ${card.color}`} />
               </div>
-              <span className="text-2xl font-black text-black font-bold dark:text-white">{card.value}</span>
+              <span className="text-2xl font-semibold text-slate-800 ">{card.value}</span>
             </div>
-            <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest">{card.label}</p>
+            <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">{card.label}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Compliance Gauge */}
-        <div className="bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center text-center">
-           <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8">Workforce Compliance</h3>
+        <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center justify-center text-center">
+           <h3 className="text-sm font-semibold text-slate-800 normal-case tracking-normal mb-8">Workforce Compliance</h3>
            <div className="relative w-full h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -57,39 +57,39 @@ const TrainingDashboard = ({ stats }) => {
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pt-10">
-                 <span className="text-4xl font-black text-black font-bold dark:text-white">{stats?.complianceRate}%</span>
-                 <span className="text-[10px] font-black text-emerald-500 uppercase">Certified</span>
+                 <span className="text-4xl font-semibold text-slate-800 ">{stats?.complianceRate}%</span>
+                 <span className="text-[12px] font-semibold text-emerald-500 normal-case">Certified</span>
               </div>
            </div>
         </div>
 
         {/* Action Required List */}
-        <div className="lg:col-span-2 bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-           <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8 flex items-center justify-between">
+        <div className="lg:col-span-2 bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
+           <h3 className="text-sm font-semibold text-slate-800 normal-case tracking-normal mb-8 flex items-center justify-between">
               Critical Training Actions
-              <span className="px-3 py-1 bg-rose-100 text-rose-600 text-[10px] font-black rounded-full">URGENT</span>
+              <span className="px-3 py-1 bg-rose-100 text-rose-600 text-[12px] font-semibold rounded-full">URGENT</span>
            </h3>
            <div className="space-y-4">
-              <div className="p-5 rounded-2xl bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 flex items-center justify-between">
+              <div className="p-5 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-between">
                  <div className="flex items-center gap-4">
                     <Clock className="w-5 h-5 text-amber-600" />
                     <div>
-                       <h4 className="text-sm font-bold text-black font-bold dark:text-white">Annual DOH Competency Refreshers</h4>
-                       <p className="text-[10px] font-black text-black font-bold uppercase">Deadline: May 30, 2026</p>
+                       <h4 className="text-sm font-semibold text-slate-800 ">Annual DOH Competency Refreshers</h4>
+                       <p className="text-[12px] font-semibold text-slate-800 normal-case">Deadline: May 30, 2026</p>
                     </div>
                  </div>
-                 <button className="px-4 py-2 bg-white dark:bg-slate-800 text-black font-bold dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 text-[10px] font-black uppercase tracking-widest border border-amber-200 dark:border-amber-800 rounded-lg">Notify All</button>
+                 <button className="px-4 py-2 bg-white text-slate-800 font-semibold hover:bg-slate-50 text-[12px] normal-case tracking-normal border border-amber-200 rounded-lg">Notify All</button>
               </div>
 
-              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                  <div className="flex items-center gap-4">
                     <AlertTriangle className="w-5 h-5 text-rose-600" />
                     <div>
-                       <h4 className="text-sm font-bold text-black font-bold dark:text-white">New Hires: Mandatory Orientation</h4>
-                       <p className="text-[10px] font-black text-black font-bold uppercase">3 Staff Members Pending</p>
+                       <h4 className="text-sm font-semibold text-slate-800 ">New Hires: Mandatory Orientation</h4>
+                       <p className="text-[12px] font-semibold text-slate-800 normal-case">3 Staff Members Pending</p>
                     </div>
                  </div>
-                 <button className="px-4 py-2 bg-[#040404] text-white text-[10px] font-black uppercase tracking-widest rounded-lg">Manage</button>
+                 <button className="px-4 py-2 bg-primary text-white text-[12px] font-semibold normal-case tracking-normal rounded-lg">Manage</button>
               </div>
            </div>
         </div>

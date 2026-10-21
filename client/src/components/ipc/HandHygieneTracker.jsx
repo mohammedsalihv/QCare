@@ -12,31 +12,31 @@ const HandHygieneTracker = ({ trendData }) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Statistics and Goals */}
-        <div className="bg-[#040404] text-white p-8 rounded-[2.5rem] flex flex-col justify-between overflow-hidden relative group">
+        <div className="bg-primary text-white p-8 rounded-2xl flex flex-col justify-between overflow-hidden relative group">
            <Droplets className="absolute -right-4 -top-4 w-32 h-32 text-white/5 group-hover:scale-110 transition-transform duration-700" />
            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#040404]">Hand Hygiene Goal</p>
-              <h3 className="text-4xl font-black mt-2">85.0%</h3>
-              <p className="text-[10px] text-black font-bold font-bold uppercase mt-1">National Benchmark Target</p>
+              <p className="text-[12px] font-semibold normal-case tracking-normal text-slate-800">Hand Hygiene Goal</p>
+              <h3 className="text-4xl font-semibold mt-2">85.0%</h3>
+              <p className="text-[12px] text-slate-800 font-semibold normal-case mt-1">National Benchmark Target</p>
            </div>
            <div className="mt-8 space-y-4">
-              <div className="flex justify-between items-center text-xs">
-                 <span className="font-black uppercase tracking-widest text-black font-bold">Current Performance</span>
-                 <span className="font-black text-[#040404]">84.2%</span>
+              <div className="flex justify-between items-center text-[13px]">
+                 <span className="font-semibold normal-case tracking-normal text-slate-800">Current Performance</span>
+                 <span className="font-semibold text-slate-800">84.2%</span>
               </div>
-              <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
-                 <div className="h-full bg-[#040404] w-[84.2%]" />
+              <div className="w-full h-1 bg-primary rounded-full overflow-hidden">
+                 <div className="h-full bg-primary w-[84.2%]" />
               </div>
            </div>
-           <button className="mt-8 w-full py-4 bg-[#040404] rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#040404] transition-all flex items-center justify-center gap-2">
+           <button className="mt-8 w-full py-4 bg-primary rounded-2xl text-[12px] font-semibold normal-case tracking-normal hover:bg-primary transition-all flex items-center justify-center gap-2">
               <Plus className="w-4 h-4" />
               New Audit Entry
            </button>
         </div>
 
         {/* Trend Chart */}
-        <div className="lg:col-span-2 bg-white dark:bg-white p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm">
-           <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8">Audit Compliance Trend</h3>
+        <div className="lg:col-span-2 bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
+           <h3 className="text-sm font-semibold text-slate-800 normal-case tracking-normal mb-8">Audit Compliance Trend</h3>
            <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData}>

@@ -207,21 +207,21 @@ const IncidentManagement = () => {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-bold text-black font-bold uppercase tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[var(--color-primary)]">Quality Assurance</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[var(--color-primary)]">Incident Reporting</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-black font-bold tracking-tight">
+            <h1 className="text-2xl font-semibold text-slate-800 tracking-tight">
               {isAdmin ? 'Incident Management' : 'My Incident Reports'}
             </h1>
           </div>
           
           <button 
             onClick={() => setShowModal(true)}
-            className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
+            className="flex items-center justify-between gap-4 px-6 py-4 bg-primary hover:bg-primary text-white rounded-md font-semibold transition-all shadow-lg shadow-none active:scale-95 group text-sm"
           >
              <div className="flex items-center gap-3">
                 <Plus className="w-5 h-5" />
@@ -260,18 +260,18 @@ const IncidentManagement = () => {
         </div>
 
         {/* Incident Table */}
-        <div className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="p-5 border-b border-slate-100 bg-slate-50/30 flex items-center justify-between">
             <div className="relative w-full max-w-md">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-black font-bold" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-800 font-semibold" />
               <input
                 type="text"
                 placeholder="Search by ID, title or location..."
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-xs font-semibold"
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-[13px] font-semibold"
               />
             </div>
             <div className="flex items-center gap-2">
-              <button className="p-2.5 rounded-xl border border-slate-200 hover:bg-white text-black font-bold transition-all">
+              <button className="p-2.5 rounded-xl border border-slate-200 hover:bg-white text-slate-800 font-semibold transition-all">
                 <Filter className="w-4 h-4" />
               </button>
             </div>
@@ -281,50 +281,50 @@ const IncidentManagement = () => {
             <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
                 <tr className="bg-slate-100/50">
-                  <th className="px-7 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 w-[11%]">ID</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 w-[18%]">Incident Title</th>
-                  {isAdmin && <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 w-[14%]">Reported By</th>}
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 w-[10%]">Reported Date</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 w-[10%]">Location</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 w-[10%]">Category</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 w-[9%]">Severity</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 w-[9%]">Status</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 w-[9%] text-right pr-8">Actions</th>
+                  <th className="px-7 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 w-[11%]">ID</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 w-[18%]">Incident Title</th>
+                  {isAdmin && <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 w-[14%]">Reported By</th>}
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 w-[10%]">Reported Date</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 w-[10%]">Location</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 w-[10%]">Category</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 w-[9%]">Severity</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 w-[9%]">Status</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 w-[9%] text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {loading ? (
-                  <tr><td colSpan="6" className="px-7 py-20 text-center text-black font-bold">Loading incidents...</td></tr>
+                  <tr><td colSpan="6" className="px-7 py-20 text-center text-slate-800 font-semibold">Loading incidents...</td></tr>
                 ) : incidents.length === 0 ? (
-                  <tr><td colSpan="6" className="px-7 py-20 text-center text-black font-bold">No incidents reported yet.</td></tr>
+                  <tr><td colSpan="6" className="px-7 py-20 text-center text-slate-800 font-semibold">No incidents reported yet.</td></tr>
                 ) : (
                   incidents.map((incident) => (
                     <tr key={incident._id} className="hover:bg-slate-50/20 transition-colors group">
                       <td className="px-7 py-4">
-                        <span className="text-xs font-medium font-mono text-black font-bold">{incident.incidentId}</span>
+                        <span className="text-[13px] font-medium font-mono text-slate-800 font-semibold">{incident.incidentId}</span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <span className="text-xs font-medium text-black font-bold leading-snug truncate">{incident.title}</span>
+                          <span className="text-[13px] font-medium text-slate-800 font-semibold leading-snug truncate">{incident.title}</span>
                         </div>
                       </td>
                       {isAdmin && (
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-sm font-medium text-black font-bold border border-slate-200">
+                            <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-sm font-medium text-slate-800 font-semibold border border-slate-200">
                               {incident.reportedBy?.employeeName?.charAt(0)}
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-[11px] font-medium text-black font-bold leading-none">{incident.reportedBy?.employeeName}</span>
-                              <span className="text-[9px] text-black font-bold font-medium mt-1 uppercase tracking-tighter">{incident.reportedBy?.department}</span>
+                              <span className="text-[12px] font-medium text-slate-800 font-semibold leading-none">{incident.reportedBy?.employeeName}</span>
+                              <span className="text-[12px] text-slate-800 font-semibold font-medium mt-1 normal-case tracking-tighter">{incident.reportedBy?.department}</span>
                             </div>
                           </div>
                         </td>
                       )}
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <span className="text-xs font-medium text-black font-bold">{new Date(incident.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
-                          <span className="text-[10px] text-black font-bold font-medium mt-1 flex items-center gap-1">
+                          <span className="text-[13px] font-medium text-slate-800 font-semibold">{new Date(incident.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                          <span className="text-[12px] text-slate-800 font-semibold font-medium mt-1 flex items-center gap-1">
                             <Clock className="w-2.5 h-2.5" />
                             {new Date(incident.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
                           </span>
@@ -332,32 +332,32 @@ const IncidentManagement = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <MapPin className="w-3.5 h-3.5 text-black font-bold" />
-                          <span className="text-xs font-medium text-black font-bold">{incident.location}</span>
+                          <MapPin className="w-3.5 h-3.5 text-slate-800 font-semibold" />
+                          <span className="text-[13px] font-medium text-slate-800 font-semibold">{incident.location}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex px-2 py-0.5 rounded-md text-xs font-medium tracking-wide bg-slate-100 text-black font-bold border border-slate-200">
+                        <span className="inline-flex px-2 py-0.5 rounded-md text-[13px] font-medium tracking-wide bg-slate-100 text-slate-800 font-semibold border border-slate-200">
                           {incident.category}
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-1.5">
-                          <div className={`w-1.5 h-1.5 rounded-full ${incident.severity === 'Critical' ? 'bg-red-500' : incident.severity === 'High' ? 'bg-rose-500' : incident.severity === 'Medium' ? 'bg-amber-500' : 'bg-[#040404]'}`}></div>
-                          <span className={`text-[11px] font-medium tracking-tight ${getSeverityColor(incident.severity)}`}>
+                          <div className={`w-1.5 h-1.5 rounded-full ${incident.severity === 'Critical' ? 'bg-red-500' : incident.severity === 'High' ? 'bg-rose-500' : incident.severity === 'Medium' ? 'bg-amber-500' : 'bg-primary'}`}></div>
+                          <span className={`text-[12px] font-medium tracking-tight ${getSeverityColor(incident.severity)}`}>
                             {incident.severity}
                           </span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium tracking-wider border ${getStatusColor(incident.status)}`}>
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium tracking-normal border ${getStatusColor(incident.status)}`}>
                           {incident.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right pr-8">
                         <button 
                           onClick={() => openViewModal(incident)}
-                          className="w-8 h-8 rounded-full border border-slate-200 bg-white text-black font-bold flex items-center justify-center hover:bg-[var(--color-primary)] hover:border-[var(--color-primary)] hover:text-black font-bold transition-all duration-300"
+                          className="w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-800 font-semibold flex items-center justify-center hover:bg-[var(--color-primary)] hover:border-[var(--color-primary)] hover:text-slate-800 transition-all duration-300"
                         >
                           {isAdmin ? <Settings2 className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                         </button>
@@ -378,29 +378,29 @@ const IncidentManagement = () => {
           <div role="dialog" aria-modal="true" aria-labelledby="report-incident-title" className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92dvh] overflow-y-auto">
             <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)] flex items-center justify-center text-black font-bold shadow-lg shadow-[var(--color-primary)]/30">
+                <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)] flex items-center justify-center text-slate-800 font-semibold shadow-lg shadow-[var(--color-primary)]/30">
                   <AlertCircle className="w-6 h-6" />
                 </div>
                 <div>
                   <h3 id="report-incident-title" className="text-xl font-semibold text-slate-800">Report an incident</h3>
-                  <p className="text-xs text-slate-500 mt-1">Capture the facts now. Your team can follow up.</p>
+                  <p className="text-[13px] text-slate-500 mt-1">Capture the facts now. Your team can follow up.</p>
                 </div>
               </div>
-              <button disabled={submitting} aria-label="Close incident report" onClick={closeReport} className="p-2 rounded-xl hover:bg-white hover:shadow-sm text-black transition-all"><X className="w-6 h-6" /></button>
+              <button disabled={submitting} aria-label="Close incident report" onClick={closeReport} className="p-2 rounded-xl hover:bg-white hover:shadow-sm text-slate-800 transition-all"><X className="w-6 h-6" /></button>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 grid grid-cols-1 md:grid-cols-3 gap-x-5 gap-y-4">
               <div className="md:col-span-3">
-                <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block mb-2 ml-1">Incident Title / Summary</label>
+                <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2 ml-1">Incident Title / Summary</label>
                 <input 
                   type="text" name="title" required value={formData.title} onChange={handleInputChange}
-                  className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm font-bold text-black font-bold shadow-inner-sm"
+                  className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm font-semibold text-slate-800 shadow-inner-sm"
                   placeholder="e.g., Medication Error at Ward 4"
                 />
               </div>
               
               <div className="col-span-1">
-                <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block mb-2 ml-1">Category</label>
+                <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2 ml-1">Category</label>
                 <Dropdown 
                   options={categoryOptions}
                   value={formData.category}
@@ -410,16 +410,16 @@ const IncidentManagement = () => {
               </div>
 
               <div className="col-span-1">
-                <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block mb-2 ml-1">Location / Unit</label>
+                <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2 ml-1">Location / Unit</label>
                 <input 
                   type="text" name="location" required value={formData.location} onChange={handleInputChange}
-                  className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm font-bold text-black font-bold shadow-inner-sm"
+                  className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm font-semibold text-slate-800 shadow-inner-sm"
                   placeholder="e.g., Emergency Room"
                 />
               </div>
 
               <div className="col-span-1">
-                <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block mb-2 ml-1">Date & Time of Incident</label>
+                <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2 ml-1">Date & Time of Incident</label>
                 <div className="relative">
                   <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-primary)] pointer-events-none z-10" />
                   <input 
@@ -429,13 +429,13 @@ const IncidentManagement = () => {
                     value={formData.dateOfIncident} 
                     onChange={handleInputChange}
                     max={new Date().toISOString().split('.')[0].slice(0, 16)}
-                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-bold text-black font-bold appearance-none shadow-inner-sm"
+                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800 appearance-none shadow-inner-sm"
                   />
                 </div>
               </div>
 
               <div className="col-span-1">
-                <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block mb-2 ml-1">Initial Severity</label>
+                <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2 ml-1">Initial Severity</label>
                 <Dropdown 
                   options={severityOptions}
                   value={formData.severity}
@@ -445,16 +445,16 @@ const IncidentManagement = () => {
               </div>
 
               <div className="md:col-span-3">
-                <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block mb-2 ml-1">Detailed Description & Immediate Actions</label>
+                <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2 ml-1">Detailed Description & Immediate Actions</label>
                 <textarea 
                   name="description" required value={formData.description} onChange={handleInputChange} rows="4"
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm font-bold text-black font-bold resize-none shadow-inner-sm"
+                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm font-semibold text-slate-800 resize-none shadow-inner-sm"
                   placeholder="Provide a clear and detailed account of the incident..."
                 ></textarea>
               </div>
 
               <div className="md:col-span-3 pt-6 border-t border-slate-100">
-                <button type="submit" disabled={submitting} className="w-full py-4 bg-[#040404] text-white rounded-md text-sm font-bold transition-all shadow-lg shadow-slate-900/20 hover:bg-slate-800 active:scale-[0.98]">
+                <button type="submit" disabled={submitting} className="w-full py-4 bg-primary text-white rounded-md text-sm font-semibold transition-all shadow-lg shadow-none hover:bg-primary active:scale-[0.98]">
                   {submitting ? 'Submitting…' : 'Submit incident'}
                 </button>
               </div>
@@ -467,18 +467,18 @@ const IncidentManagement = () => {
       {showViewModal && selectedIncident && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-white/60 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setShowViewModal(false)} />
-          <div className="relative bg-white rounded-[2.5rem] shadow-2xl w-full max-w-3xl overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
             <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
               <div className="flex items-center gap-3">
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${getStatusColor(selectedIncident.status).replace('bg-', 'bg-').split(' ')[0]}`}>
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${getStatusColor(selectedIncident.status).replace('bg-', 'bg-').split('  ')[0]}`}>
                   <FileText className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-black font-bold tracking-tight uppercase">{selectedIncident.incidentId}</h3>
-                  <p className="text-[10px] text-black font-bold font-black uppercase tracking-[0.2em]">Reported by {selectedIncident.reportedBy?.employeeName}</p>
+                  <h3 className="text-xl font-semibold text-slate-800 tracking-tight normal-case">{selectedIncident.incidentId}</h3>
+                  <p className="text-[12px] text-slate-800 font-semibold normal-case tracking-normal">Reported by {selectedIncident.reportedBy?.employeeName}</p>
                 </div>
               </div>
-              <button onClick={() => setShowViewModal(false)} className="p-2 rounded-xl hover:bg-white hover:shadow-sm text-black font-bold transition-all"><X className="w-6 h-6" /></button>
+              <button onClick={() => setShowViewModal(false)} className="p-2 rounded-xl hover:bg-white hover:shadow-sm text-slate-800 font-semibold transition-all"><X className="w-6 h-6" /></button>
             </div>
 
             <div className="p-8 overflow-y-auto">
@@ -489,19 +489,19 @@ const IncidentManagement = () => {
               </div>
 
               <div className="mb-8">
-                <h4 className="text-[11px] font-black text-black font-bold uppercase tracking-[0.2em] mb-3">Incident Description</h4>
-                <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 text-sm text-black font-bold leading-relaxed font-medium">
+                <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-3">Incident Description</h4>
+                <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 text-sm text-slate-800 font-semibold leading-relaxed font-medium">
                   {selectedIncident.description}
                 </div>
               </div>
 
               {isAdmin ? (
                 <form onSubmit={handleUpdateIncident} className="space-y-6 pt-6 border-t border-slate-100">
-                  <h4 className="text-[11px] font-black text-black font-bold uppercase tracking-[0.2em]">Admin Investigation & Actions</h4>
+                  <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Admin Investigation & Actions</h4>
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block mb-2">Update Status</label>
+                      <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2">Update Status</label>
                       <Dropdown 
                         options={statusOptions}
                         value={updateData.status}
@@ -510,7 +510,7 @@ const IncidentManagement = () => {
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block mb-2">Adjust Severity</label>
+                      <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2">Adjust Severity</label>
                       <Dropdown 
                         options={severityOptions}
                         value={updateData.severity}
@@ -521,30 +521,30 @@ const IncidentManagement = () => {
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block mb-2">Investigation Findings</label>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2">Investigation Findings</label>
                     <textarea 
                       value={updateData.findings} onChange={e => setUpdateData({...updateData, findings: e.target.value})} rows="3"
-                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] transition-all text-xs font-bold resize-none"
+                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold resize-none"
                       placeholder="Enter findings from the investigation..."
                     ></textarea>
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest block mb-2">Actions Taken</label>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2">Actions Taken</label>
                     <textarea 
                       value={updateData.actionsTaken} onChange={e => setUpdateData({...updateData, actionsTaken: e.target.value})} rows="3"
-                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] transition-all text-xs font-bold resize-none"
+                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold resize-none"
                       placeholder="Detail actions taken to resolve the incident..."
                     ></textarea>
                   </div>
 
-                  <button type="submit" disabled={submitting} className="w-full py-4 bg-[#040404] text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-xl active:scale-[0.98]">
+                  <button type="submit" disabled={submitting} className="w-full py-4 bg-primary text-white rounded-2xl text-[12px] font-semibold normal-case tracking-normal transition-all shadow-xl active:scale-[0.98]">
                     Save Investigation & Update Status
                   </button>
                 </form>
               ) : (
                 <div className="space-y-6 pt-6 border-t border-slate-100">
-                  <h4 className="text-[11px] font-black text-black font-bold uppercase tracking-[0.2em]">Resolution Details</h4>
+                  <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Resolution Details</h4>
                   <div className="grid grid-cols-1 gap-4">
                     <ResolutionBlock label="Investigation Findings" value={selectedIncident.findings || 'Investigation in progress...'} />
                     <ResolutionBlock label="Actions Taken" value={selectedIncident.actionsTaken || 'Resolution pending...'} />
@@ -560,33 +560,33 @@ const IncidentManagement = () => {
 };
 
 const StatCard = ({ title, value, icon: Icon, color }) => (
-  <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-5 transition-all hover:shadow-md">
+  <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-5 transition-all hover:shadow-md">
     <div className={`w-14 h-14 rounded-2xl ${color} flex items-center justify-center text-white shadow-lg shadow-black/5`}>
       <Icon className="w-7 h-7" />
     </div>
     <div>
-      <h4 className="text-[10px] font-black text-black font-bold uppercase tracking-widest mb-1">{title}</h4>
-      <span className="text-2xl font-black text-black font-bold tracking-tight">{value}</span>
+      <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">{title}</h4>
+      <span className="text-2xl font-semibold text-slate-800 tracking-tight">{value}</span>
     </div>
   </div>
 );
 
 const InfoBlock = ({ label, value, icon: Icon }) => (
   <div className="flex items-center gap-3">
-    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-black font-bold border border-slate-100">
+    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-800 font-semibold border border-slate-100">
       <Icon className="w-5 h-5" />
     </div>
     <div className="flex flex-col">
-      <span className="text-[9px] font-black text-black font-bold uppercase tracking-widest">{label}</span>
-      <span className="text-[11px] font-bold text-black font-bold">{value}</span>
+      <span className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">{label}</span>
+      <span className="text-[12px] font-semibold text-slate-800">{value}</span>
     </div>
   </div>
 );
 
 const ResolutionBlock = ({ label, value }) => (
   <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
-    <span className="text-[9px] font-black text-black font-bold uppercase tracking-widest block mb-2">{label}</span>
-    <p className="text-xs font-bold text-black font-bold leading-relaxed">{value}</p>
+    <span className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2">{label}</span>
+    <p className="text-[13px] font-semibold text-slate-800 leading-relaxed">{value}</p>
   </div>
 );
 

@@ -33,7 +33,7 @@ const Pagination = ({ totalRecords, recordsPerPage = 10, currentPage = 1, onPage
 
   return (
     <div className="p-6 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
-      <span className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em]">
+      <span className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">
         Showing {recordsPerPage} items | Total {totalRecords} Records
       </span>
       
@@ -41,7 +41,7 @@ const Pagination = ({ totalRecords, recordsPerPage = 10, currentPage = 1, onPage
         <button 
           onClick={() => { onPageChange(currentPage - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
           disabled={currentPage === 1}
-          className="w-9 h-9 rounded-md border border-slate-200 bg-white flex items-center justify-center text-black font-bold hover:text-black font-bold hover:border-slate-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shadow-sm"
+          className="w-9 h-9 rounded-md border border-slate-200 bg-white flex items-center justify-center text-slate-800 font-semibold hover:text-slate-800 hover:border-slate-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shadow-sm"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -49,15 +49,15 @@ const Pagination = ({ totalRecords, recordsPerPage = 10, currentPage = 1, onPage
         <div className="flex items-center gap-1.5 mx-1">
           {getPageNumbers().map((page, i) => (
             page === '...' ? (
-              <span key={`sep-${i}`} className="px-2 text-black font-bold font-bold">...</span>
+              <span key={`sep-${i}`} className="px-2 text-slate-800 font-semibold">...</span>
             ) : (
               <button
                 key={page}
                 onClick={() => { onPageChange(page); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                className={`w-9 h-9 rounded-md text-[10px] font-black transition-all active:scale-95 ${
+                className={`w-9 h-9 rounded-md text-[12px] font-semibold transition-all active:scale-95 ${
                   currentPage === page 
-                  ? 'bg-[#040404] text-white shadow-lg shadow-slate-900/20' 
-                  : 'bg-white border border-slate-200 text-black font-bold hover:text-black font-bold hover:border-slate-300 shadow-sm'
+                  ? 'bg-primary text-white shadow-lg shadow-none' 
+                  : 'bg-white border border-slate-200 text-slate-800 font-semibold hover:text-slate-800 hover:border-slate-300 shadow-sm'
                 }`}
               >
                 {page}
@@ -69,7 +69,7 @@ const Pagination = ({ totalRecords, recordsPerPage = 10, currentPage = 1, onPage
         <button 
           onClick={() => { onPageChange(currentPage + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
           disabled={currentPage === totalPages}
-          className="w-9 h-9 rounded-md border border-slate-200 bg-white flex items-center justify-center text-black font-bold hover:text-black font-bold hover:border-slate-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shadow-sm"
+          className="w-9 h-9 rounded-md border border-slate-200 bg-white flex items-center justify-center text-slate-800 font-semibold hover:text-slate-800 hover:border-slate-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shadow-sm"
         >
           <ChevronRight className="w-4 h-4" />
         </button>

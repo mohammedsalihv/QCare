@@ -1,0 +1,1420 @@
+PAGE 1
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+  
+ 
+  
+  
+ 
+ 
+ 
+ 
+Waiting Time Jawda 
+Guidance for Specialized 
+and General Hospitals 
+  
+Version 9.1 
+ 
+ 
+ 
+
+PAGE 2
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+2 
+ 
+Contents 
+Executive Summary ............................................................................................................................ 3 
+About Guidance ................................................................................................................................... 4 
+Glossary .................................................................................................................................................. 5 
+Hospital Wait at Point of Arrival ...................................................................................................... 7 
+Percentage of elective Inpatient admissions within 28 days. .................................................... 8 
+Door to Balloon (PCI) waiting time for patients suspected with Acute Myocardial 
+Infarction (AMI) ................................................................................................................................... 9 
+Stroke admission with CT scan timeframe .................................................................................. 10 
+Seeing a doctor in emergency department or urgent care center (Door to Doctor Time) . 11 
+Registration to leaving emergency department or urgent care center (Door to Door Time)
+ .............................................................................................................................................................. 12 
+7 Days Re-Attendance Rate To Emergency Department or Urgent Care Center .................. 13 
+Left Without Being Seen (LWBS) by an emergency department or urgent care doctor ..... 14 
+Doctor to Decision to Admit Time .................................................................................................. 15 
+Percentage of emergency department or urgent care patient admitted to hospital ........... 16 
+Proportion of patients who accessed the acute care of sepsis within specific time of 
+presentation (3-hours) .................................................................................................................... 17 
+Proportion of patients who accessed the acute care of septic shock within specific time of 
+presentation (1-hour) ...................................................................................................................... 19 
+Door to Interfacility Transfer Time for Stroke Patients to Higher Level Care Facilities 
+(Door-to-Door) .................................................................................................................................. 21 
+Days to the Third Available Appointment for Primary Care Services .................................... 22 
+Days to the Third Available Appointment for Oncology and Haematology Services ........... 23 
+Days to the Third Available Appointment for Selected Services or Specialties .................... 24 
+Summary of Changes 2025 V8 ........................................................................................................ 25 
+Summary of Changes 2026 V9 ........................................................................................................ 27 
+Summary of Changes 2026 V9.1 ..................................................................................................... 28 
+ 
+ 
+  
+PAGE 3
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+3 
+ 
+Executive Summary 
+The Department of Health— Abu Dhabi (DOH) is the regulatory body of the healthcare sector in 
+the Emirate of Abu Dhabi and ensures excellence in healthcare for the community by monitoring 
+the health status of its population. 
+ 
+The Emirate of Abu Dhabi is experiencing a substantial growth in the number of hospitals, centers 
+and clinics. This is ranging from school clinics and mobile units to internationally renowned 
+specialist and tertiary academic centers. Although, access and q uality of care has  improved 
+dramatically over the last couple of decades, mirroring the economic upturn and population 
+boom of the Abu Dhabi Emirate, however challenges remain in addressing further improvements.  
+  
+The main challenges that are presented with increasingly dynamic population include an aging 
+population with increased expectation for treatment, utilization of and diverse workforce leading 
+to increased complexity of healthcare provision in Abu Dhabi. All  of this results in an increased 
+and inherent risk to quality and patient safety. 
+  
+DOH has developed a dynamic and comprehensive quality framework in order to bring about 
+improvements across the health sector. This guidance pertains to the quality indicators that the 
+Department of Health (DOH) is requiring for quarterly reporting by healthcare facilities operating  
+emergency and outpatient care services (emergency, urgent care hospitals, and primary care 
+providers) in the Emirate of Abu Dhabi. 
+ 
+The guidance sets out the full definition and method of calculation for patient safety and clinical 
+effectiveness indicators. For enquiries about this guidance, please contact jawda@doh.gov.ae  
+ 
+This document is subject for review and therefore it is advisable to utilize online versions 
+available on the DOH website at all times. 
+ 
+  
+Published:   October 2019,  
+Updated:   Version 6, April 2021 
+Version 7, October 2021 
+Version 8, December 2024 
+Version 8.1, January 2025 
+Version 8.2, February 2025 
+Version 8.3, July 2025 
+Version 8.4, August 2025 
+Version 9, January 2026 
+Version 9.1, September 2026 
+ 
+Effective from:                Version 9.1, Q3 2026 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+PAGE 4
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+4 
+ 
+About Guidance 
+ 
+The guidance sets out the definitions, reporting, and frequency of JAWDA waiting time (WT) 
+performance indicators. Department of Health (DoH) with consultation of local and international 
+emergency and accident (E &A) consultant expertise developed waiting time performance 
+indicators that are aimed for assessing the degree to which a provider competently and safely 
+delivers the appropriate clinical services to the patient within the optimal time period.  
+The waiting time performance indictors in this guidance include measures to monitor I.e., (time 
+spent in emergency, wait time for cardiac procedures, wait time for diagnostic imaging, and 
+primary care appointment). Healthcare providers are the most qualified professionals to develop 
+and evaluate quality of care measures for emergency department. Therefore, it is crucial that 
+clinicians retain a leadership position in defining emergency department quality of care.  
+ 
+Who is this guidance for? 
+All DoH licensed healthcare facilities providing emergency and outpatient care services 
+(emergency, urgent care hospitals, and primary care providers) in the Emirate of Abu Dhabi. 
+ 
+How do I follow this guidance? 
+Each provider will nominate one member of staff to coordinate, collect, monitor and report 
+waiting time quality performance indicators data as per communicated dates. The nominated 
+healthcare facility lead must in the first instance e -mail their contact de tails (if different from 
+previous submission) to jawda@doh.gov.ae and submit the required quarterly quality 
+performance indicators through Jawda online portal. 
+ 
+What are the Regulation related to this guidance? 
+• Legislation establishing the Health Sector 
+• DOH Standard for Primary Health Care in Emirate of Abu Dhabi 
+• DOH Standard for Emergency Department 
+• As per DoH Policy for Quality and Patient Safety issued January 15th 2017, this guidance 
+applies to all DOH Licensed Hospital Healthcare Facilities in the Emirate of Abu Dhabi in 
+accordance with the requirements set out in this Standard. 
+ 
+DoH Levels of Emergency Care   
+Emergency Department (Major Trauma)    
+Emergency Department (Trauma) 
+ 
+                                               
+Urgent Care Centre 
+PAGE 5
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+5 
+ 
+Glossary  
+INPATIENT: Is a beneficiary registered and admitted to a hospital for bed occupancy for purposes 
+of receiving healthcare services and is medically expected to remain confined overnight and for a 
+period in excess of 12 consecutive hours. 
+• Daycase admission is not included in INPATIENT. 
+• Beds excluded from the inpatient bed complement: 
+o Beds/cots for healthy newborns 
+o Beds in Day Care units, such as surgical, medical, pediatric day care, interventional 
+radiology 
+o Beds in Dialysis units 
+o Beds in Labor Suites (e.g. birthday beds, birthing chairs) 
+o Beds in Operating Theatre 
+o Temporary beds such as stretchers 
+o Chairs, Cots or Beds used to accommodate sitters, parents, guardians accompanying 
+patients or sick children and healthy baby accompanying a hospitalized breast-feeding 
+mother 
+o Beds closed during renovation of patient care areas when approved by the competent 
+authority 
+EXAMPLE OF INPATIENT BED DAY COUNTING INITIATION AND TIME TO READMISSION: 
+MRN  Visit type 
+Urgent Care / 
+Emergency Arrival 
+Date & Time 
+IP admission date 
+& time from UC 
+Discharge 
+Date & Time 
+ 
+123456 Urgent Care 
+converted to Inpatient  01/01/2025 10:00 01/01/2025 13:39 03/01/2025 
+13:00 
+ 
+123456 Urgent Care 
+converted to Inpatient  12/01/2025 23:50 13/01/2025 02:00 13/01/2025 
+18:00 
+ 
+ 
+ 
+Readmission calculation: 
+It will be 13/01/2025 (Admission Date) minus 03/01/2025 (Discharge Date) = 10 days 
+ 
+DAYCASE: Daycase beds, also known as observation beds, are beds used in Day Care units such as 
+surgical, medical, pediatric day care interventional radiology. They are not included in the 
+inpatient bed complement. 
+ 
+LONG TERM CARE PATIENTS: They will be reported under LTCF Jawda Guidance. Service 
+codes (not limited to): 17-13, 17-14, 17-15, 17-16, 17-27, 17-28, 17-30, 17-31, self-pay LTC, 
+etc. 
+ 
+CRITICAL CARE AREA: A patient is in a Critical Care Area if they are receiving active cardiac 
+monitoring (including telemetry) in an Intensive Care Unit, Emergency Room, Urgent Care Centre, 
+Operating Room, Procedure Room, Anesthetic Induction Room or Recovery Area. 
+ 
+WALK-IN PATIENTS: 
+• Patients visiting without prior appointment 
+• Patients having a scheduled appointment within two hours 
+PATIENT LEFT AGAINST MEDICAL ADVICE (follow DOH Circular No. (2024/29) Malaffi 
+Discharge Disposition Description) 
+PAGE 6
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+6 
+ 
+is synonymous with the below: Discharge Against Medical Advice 
+• Discharge Against Medical Advice 
+• Against Medical Advice 
+ 
+Dead on Arrival (DOA): A person is presumed dead on arrival when no resuscitation efforts 
+are attempted. 
+ 
+Sepsis: Sepsis is a life-threatening condition that happens when the body’s immune system has 
+an extreme response to an infection, causing organ dysfunction. The body’s reaction causes 
+damage to its own tissues and organs. 
+ 
+Septic Shock: Septic shock is a subset of sepsis in which particularly profound circulatory, 
+cellular, and metabolic abnormalities are associated with a greater risk of mortality than with 
+sepsis alone.  It can lead to shock, multiple organ failure and sometimes death, especially if not 
+recognized early and treated promptly. 
+  
+PAGE 7
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+7 
+ 
+Type: Waiting Time Indicator                                             Indicator Number: WT003  
+KPI Description   
+(title):    Hospital Wait at Point of Arrival    
+Domain   Timeliness 
+Indicator Type   Process 
+Definition:   
+Percent of patients meeting the target time (in minutes) from registration to seeing 
+any Department of Health (DOH) licensed (specialist, family medicine, general 
+practitioner, or consultant).    
+Calculation:   
+Numerator: Number of patients that were seen within 30 minutes from registration 
+in attendance.    
+   
+Denominator: Total number of all patients registered by any DOH licensed 
+specialist, family medicine, general practitioner, or consultant.    
+ physician.   
+   
+Denominator Exclusions:    
+• Non-Physician Led Appointment Types   
+• Patients that required investigation done prior to seeing the doctor, as part 
+of efficient process (e.g.; hearing test, treadmill test, ECG, blood glucose, etc.) 
+• Dental and anesthesia  
+• ED/UCC visits  
+• Patients who left without being seen* 
+• Teleconsultations 
+Reporting Frequency:   Quarterly    
+Unit of Measure:   % for performance (minutes for mean, median and min. & max) 
+Reported   
+Information   
+Numerator, Denominator , Indicator Performance (also, mean waiting time, median 
+waiting time, min. & max. waiting time) 
+Target   90% within 30 minutes    
+  Notes for all facilities   
+Data sources / Report 
+Name:   
+- Local business intelligence report or any other internally designed system   
+- Applicable to licensed operational general and specialist hospitals for provision 
+of primary care and/or specialist/consultant outpatient facilities\ 
+- *DOH Circular No. (2024/29) Malaffi Discharge Disposition Description  
+   
+  
+ 
+ 
+ 
+ 
+ 
+ 
+PAGE 8
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+8 
+ 
+ Type: Waiting Time Indicator                                    Indicator Number: WT005  
+ KPI Description   
+(title):    
+ 
+ Percentage of elective Inpatient admissions within 28 days. 
+Domain    Timeliness 
+Indicator Type   Process    
+Definition:   
+ Percent of patients meeting the target (in days) it takes to admit a non- emergency 
+patient in acute care from DTA (decision to admit) made by a Department of Health 
+(DOH) licensed specialist or consultant.    
+Calculation:   
+ Numerator: Number of patients being admitted in acute care within 28 days from 
+date of DTA (Decision to Admit). DTA day=1  
+   
+Denominator:  All elective inpatient admissions in acute care 
+   
+Denominator Exclusions:    
+• Patients who are unable to have their treatment for social, work or personal 
+reasons within 28 days from DTA 
+• Patients who choose to wait longer than 28 days for their treatment    
+• Patients for whom it is not clinically appropriate to start treatment within 28 
+days    
+• Delay in admission due to insurance approval being refused or delayed >= 14 
+days    
+• Emergency/Unplanned admissions (When patient is transferred between 
+hospital, it should be a case of unplanned in most of the cases.) 
+• Same day admissions from outpatient department 
+• Day cases are excluded.  
+Reporting 
+Frequency:   
+ Quarterly    
+Unit of Measure:    % for performance (days for mean, median and min. & max) 
+Reported   
+Information   
+ Numerator, Denominator , Indicator Performance (also, mean waiting time, median 
+waiting time, min. & max. waiting time) 
+Target    90% within 28 days    
+   Notes for all facilities   
+Data  sources 
+Report Name:   
+/  - Local business intelligence report or any other internally designed system   
+- Applicable to facilities licensed to provide inpatient services    
+ 
+ 
+ 
+  
+PAGE 9
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+9 
+ 
+Type: Waiting Time Indicator                                    Indicator Number: WT006 
+ KPI Description   
+(title):    
+Door to Balloon (PCI) waiting time for patients suspected with Acute 
+Myocardial Infarction (AMI) 
+Domain   Timeliness 
+Indicator Type    Process   
+Definition:   
+Percent of patients meeting the target time (in minutes) it takes to start angioplasty 
+for emergency patients with Acute Myocardial Infarction (AMI). Acute myocardial 
+infarction (AMI) patients with ST segment elevation or LBBB on the ECG closest to 
+arrival time receiving primary PCI during the hospital stay with a time from hospital 
+arrival to PCI of ≤90 minutes.  
+Calculation:   
+Numerator: Number of patients who had primary angioplasty within 90 min of 
+attending as an emergency with AMI 
+ 
+Denominator: Total number of AMI patients with ST-elevation or LBBB on ECG 
+who are indicated to receive primary PCI. 
+ 
+ICD-10-CM Principal Diagnosis Code for AMI: I21.01, I21.02, I21.09, I21.11, 
+I21.19, I21.21, I21.29, I21.3 
+with 
+CPT Codes for Percutaneous Coronary Intervention (PCI): 92920, 92921, 
+92924, 92925, 92928, 92929, 92933, 92934, 92937, 92938, 92941, 92943, 92944, 
+92973 
+AND/ OR 
+ST-segment elevation or LBBB on the ECG performed closest to hospital 
+arrival AND 
+PCI performed within 24 hours after hospital arrival 
+ 
+Denominator Exclusions:    
+• Patients less than 18 years of age    
+• In-Patients    
+• Patients enrolled in clinical trials    
+• Patients administered fibrinolytic agent or any counter indication agent prior 
+to PCI in another facility if indicated    
+• PCI described as non-primary by a physician/advanced practice 
+nurse/physician assistant (physician/APN/PA)    
+• PCI is clinically contraindicated: such as cardiac arrest or requiring 
+resuscitation, difficult vascular access and/or crossing the culprit lesion 
+• Patient/Family refusal/ or delay in consent 
+Reporting Frequency:   Quarterly    
+Unit of Measure:   % for performance (minutes for mean, median and min. & max)  
+Reported   
+Information   
+Numerator, Denominator , Indicator Performance (also, mean waiting time, median 
+waiting time, min. & max. waiting time) 
+Target   90% within 90 minutes 
+  Notes for all facilities   
+Data  sources Report 
+Name:   
+- Local business intelligence report or any other internally designed system   
+- Applicable to facilities licensed to provide inpatient services    
+ 
+ 
+PAGE 10
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+10 
+ 
+Type: Waiting Time Indicator                                              Indicator Number: WT007   
+ KPI Description   
+(title):    
+Stroke admission with CT scan timeframe    
+Domain   Timeliness 
+Indicator Type  Process 
+Definition:   Percent of patients meeting the target time (in minutes) it takes to interpret CT 
+scan for emergency patients presenting with positive or confirmed stroke.    
+Calculation:   
+Numerator: Number of confirmed or positive stroke patients who had a CT-Scan 
+of the head which was interpreted within 45 minutes of arrival to emergency 
+department or UCC  
+   
+Denominator: All adult patients (18 years and older) visiting the emergency 
+department or urgent care center, who were positive or confirmed of a stroke at 
+discharge 
+ 
+Denominator Guidance: 
+• Discharged from ED/UCC 
+• Discharged from in-patient 
+ 
+ICD-10 CM codes: I60.00, I60.01, I60.02, I60.10, I60.11, I60.12, I60.2, I60.30, I60.31, I60.32, 
+I60.4, I60.50, I60.51, I60.52, I60.6, I60.7, I60.8, I60.9, I61.0, I61.1, I61.2, I61.3, I61.4, I61.5, 
+I61.6, I61.8, I61.9, I63.00, I63.011, I63.012, I63.013, I63.019, I63.02, I63.031, I63.032, I63.033, 
+I63.039, I63.09, I63.10, I63.111, I63.112, I63.113, I63.119, I63.12, I63.131, I63.132, I63.133, 
+I63.139, I63.19, I63.20, I63.211, I63.212, I63.213, I63.219, I63.22, I63.231, I63 .232, I63.233, 
+I63.239, I63.29, I63.30, I63.311, I63.312, I63.313, I63.319, I63.321, I63.322, I63.323, I63.329, 
+I63.331, I63.332, I63.333, I63.339, I63.341, I63.342, I63.343, I63.349, I63.39, I63.40, I63.411, 
+I63.412, I63.413, I63.419, I63.421, I63.422, I63.423, I63.429, I63.431, I63.432, I63.433, 
+I63.439, I63.441, I63.442, I63.443, I63.449, I63.49, I63.50, I63.511, I63.512, I63.513, I63.519, 
+I63.521, I63.522, I63.523, I63.529, I63.531, I63.532, I63.533, I63.539, I63.541, I63.542, 
+I63.543, I63.549, I63.59, I63.6, I63.81, I63.89, I63.9 
+   
+Denominator Exclusion:    
+• Stroke symptoms more than 6 hours before presentation    
+• Stroke symptoms of undetermined duration 
+• CT not conducted in the facility for the following reasons: 
+o If the family refused the treatment before the CT conducted 
+o Clinically unstable patients 
+o CT previously conducted by the transferring facility 
+o Patients who were seen in the ED/UCC but were transferred to a 
+higher-level care facility 
+Reporting 
+Frequency:   Quarterly 
+Unit of Measure:   % for performance (minutes for mean, median and min. & max) 
+Reported   
+Information   
+Numerator, Denominator , Indicator Performance (also, mean waiting time, 
+median waiting time, min. & max. waiting time) 
+Target   90% within 45 minutes    
+  Notes for all facilities   
+Data sources / 
+Report Name:   
+- Local business intelligence report or any other internally designed system   
+- Applicable to facilities licensed to provide inpatient services    
+    
+PAGE 11
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+11 
+ 
+Type: Waiting Time Indicator                                               Indicator Number: WT008  
+ KPI Description   
+(title):    
+Seeing a doctor in emergency department or urgent care center (Door 
+to Doctor Time) 
+Domain   Timeliness 
+Indicator Type  Process 
+Definition:   Percent of patients meeting the target time (in minutes) from registration to 
+patient seeing an emergency department or urgent care doctor .  
+Calculation:   
+Numerator: Number of patients seen by an emergency department or urgent care 
+doctor within target time (30 minutes). 
+ 
+Denominator: All emergency or urgent care encounters (irrespective of triage 
+category, only physician involved visits).    
+ 
+Denominator Exclusion:    
+• Patient Left Without Being Seen (LWBS)* 
+Reporting 
+Frequency:   Quarterly    
+Unit of Measure:   % for performance (minutes for mean, median and min. & max) 
+Reported   
+Information   
+Numerator, Denominator , Indicator Performance (also, mean waiting time, median 
+waiting time, min. & max. waiting time) 
+Target   90% within 30 minutes    
+  Notes for all facilities   
+Data sources / 
+Report Name:   
+- Local business intelligence report or any other internally designed system   
+- Applicable to facilities licensed to provide emergency and inpatient services  
+- *DOH Circular No. (2024/29) Malaffi Discharge Disposition Description 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+PAGE 12
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+12 
+ 
+Type: Waiting Time Indicator                                                     Indicator Number:   WT009  
+  
+KPI Description   
+(title):    
+ Registration to leaving emergency department or urgent care center 
+(Door to Door Time) 
+Domain    Timeliness 
+Indicator Type    Process 
+Definition:    Percent of patients meeting the target time (in minutes) from registration to patient 
+leaving the emergency department or urgent care center (admitted or discharged).    
+Calculation:   
+ Numerator: Number of patients finished their emergency or urgent care visit 
+within target time (240 minutes).  
+   
+Denominator: All emergency/urgent care encounters (irrespective of triage 
+category).    
+   
+Denominator Exclusion:    
+• Patient Left Without Being Seen (LWBS)* 
+• Patient Left Against Medical Advice* 
+ 
+Reporting 
+Frequency:   
+ Quarterly    
+Unit of Measure:    % for performance (minutes for mean, median and min. & max) 
+Reported   
+Information   
+ Numerator, Denominator , Indicator Performance (also, mean waiting time, median 
+waiting time, min. & max. waiting time) 
+Target    90% within 240 minutes    
+   Notes for all facilities   
+Data  sources 
+Report Name:   
+/  - Local business intelligence report or any other internally designed system   
+- Applicable to facilities licensed to provide emergency and inpatient services 
+- *DOH Circular No. (2024/29) Malaffi Discharge Disposition Description 
+ 
+ 
+ 
+ 
+  
+PAGE 13
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+13 
+ 
+Type: Waiting Time Indicator                                                 Indicator Number:  WT010  
+KPI Description   
+(title):    
+ 7 Days Re-Attendance Rate To Emergency Department or Urgent Care 
+Center    
+Domain    Timeliness 
+Indicator Type  Outcome   
+Definition:    Percent of patients who return to the emergency department or urgent care center 
+within 7 days of being discharged.  
+Calculation:   
+ Numerator: Number of patients who return to the emergency department or 
+urgent care center within 7 days. 
+    
+Denominator: Total number of all emergency/urgent care encounters 
+(irrespective of triage category)    
+   
+Denominator Exclusion:    
+• Died during ER / urgent care encounter (discharged as deceased)    
+• Patient Left without being seen (LWBS)*   
+• Patient Left Against Medical Advice* 
+• Transfer-out to another facility from Emergency department 
+• Repeat encounter in emergency department or urgent care within 7 days of 
+the index encounter 
+Reporting 
+Frequency:   
+ Quarterly    
+Unit of Measure:    % Re-attendance rate    
+Reported   
+Information   
+ Numerator, Denominator , Indicator Performance    
+Target    Lower is better    
+   Notes for all facilities   
+Data  sources 
+Report Name:   
+/  - Local business intelligence report or any other internally designed system   
+- Applicable to facilities licensed to provide emergency and inpatient service 
+- *DOH Circular No. (2024/29) Malaffi Discharge Disposition Description 
+   
+   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+PAGE 14
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+14 
+ 
+Type: Waiting Time Indicator                                                                     Indicator Number: WT011  
+ KPI Description   
+(title):    
+ Left Without Being Seen (LWBS) by an emergency department or urgent 
+care doctor    
+Domain    Timeliness 
+Indicator Type   Outcome    
+Definition:    Percentage of patients who chose to leave the emergency department or urgent 
+care, before an assessment by a doctor and treatment could occur.    
+Calculation:   
+ Numerator: Number of patients who left after registration in the emergency 
+department or urgent care without being seen by an emergency or urgent care 
+doctor.    
+   
+Denominator: All emergency or urgent encounters (irrespective of triage 
+category). 
+Reporting 
+Frequency:   
+ Quarterly    
+Unit of Measure:    % Left without being seen (LWBS)* 
+Reported   
+Information   
+ Numerator, Denominator , Indicator Performance    
+Target    Lower is better (3% or less) 
+   Notes for all facilities   
+Data  sources 
+Report Name:   
+/  - Local business intelligence report or any other internally designed system   
+- Applicable to facilities licensed to provide emergency and inpatient services 
+- *DOH Circular No. (2024/29) Malaffi Discharge Disposition Description 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+PAGE 15
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+15 
+ 
+Type: Waiting Time Indicator                                               Indicator Number: WT012  
+KPI Description   
+(title):    
+ Doctor to Decision to Admit Time    
+Domain    Timeliness 
+Indicator Type  Process   
+Definition:   
+ Percent of patients admitted from the emergency department or urgent care 
+center with whom admit decision time to time of departure from the emergency 
+department or urgent care is within 60 minutes; Admission order and/or time of 
+bed request may be used as a proxy.    
+Calculation:   
+ Numerator: Number of patients from the denominator population, with whom 
+admit decision time to time of departure from the emergency department or 
+urgent care center is within 60 minutes. 
+ 
+Denominator: All patients admitted to the facility (regardless of duration of stay 
+in the acute care setting) from the emergency department or urgent care. 
+Reporting 
+Frequency:   
+ Quarterly    
+Unit of Measure:    % for performance (minutes for mean, median and min. & max) 
+Reported   
+Information   
+ Numerator, Denominator , Indicator Performance (also, mean waiting time, median 
+waiting time, min. & max. waiting time) 
+Target    90% within 60 minutes    
+   Notes for all facilities   
+Data  sources 
+Report Name:   
+/  - National Quality form (NFQ) Emergency Department Throughput Measures   
+Stratification    
+- Local business intelligence report or any other internally designed system   
+- Applicable to facilities licensed to provide emergency and inpatient services    
+   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+PAGE 16
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+16 
+ 
+   Type: Waiting Time Indicator                                                          Indicator Number: WT013  
+KPI Description   
+(title):    
+ 
+Percentage of emergency department or urgent care patient admitted 
+to hospital    
+Domain    Timeliness 
+Indicator Type    Process   
+Definition:    Percentage of emergency department or urgent care patient admitted to the acute 
+care hospital   
+Calculation:   
+ Numerator: Number of patients from the denominator population that were 
+admitted (regardless of duration of stay in the acute care setting) in the hospital. 
+ 
+Denominator: All emergency or urgent care encounters (irrespective of triage 
+category). 
+ 
+Denominator Exclusion:    
+• Patient Left Without Being Seen (LWBS)* 
+Reporting 
+Frequency:   
+ Quarterly    
+Unit of Measure:    Percentage    
+Target    <20%    
+  Notes for all facilities 
+Data  sources 
+Report Name:   
+/  - Local business intelligence report or any other internally designed system   
+- Applicable to facilities licensed to provide emergency and inpatient services 
+- *DOH Circular No. (2024/29) Malaffi Discharge Disposition Description 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+PAGE 17
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+17 
+ 
+Type: Waiting Time Indicator                                     Indicator Number: WT014  
+KPI Description   
+(title):    
+ 
+Proportion of patients who accessed the acute care of sepsis within 
+specific time of presentation (3-hours) 
+Domain    Timeliness  
+Indicator Type    Process 
+Definition:    The proportion of emergency / urgent care adults (18 years and older) patients 
+diagnosed with sepsis at admission, who accessed the acute care of sepsis within 
+specific time of presentation. 
+Calculation:   
+  
+Sub- KPI a: Door to blood culture drawn prior to antibiotic 
+ 
+Numerator: Total number of adult patients aged 18 years and older whose blood 
+culture was drawn prior to antibiotic administration within 3 hours of arrival* to 
+an emergency department or urgent care  
+ 
+Sub- KPI b: Door to broad spectrum or other antibiotics administered 
+ 
+Numerator: Total number of adult patients aged 18 years and older who received 
+administration of broad- spectrum or other antibiotics within 3 hours of arrival* to 
+an emergency department or urgent care  
+ 
+Sub- KPI c: Door to initial lactate level measurement 
+ 
+Numerator: Total number of adult patients aged 18 years and older whose initial 
+lactate was measured within 3 hours of arrival* to an emergency department or 
+urgent care  
+ 
+Sub- KPI D: Proportion of patients meeting all 3 Criteria within 3 hours of 
+presentation. 
+ 
+Numerator: Total number of adult patients aged 18 years and older who are 
+meeting all 3 criteria within 3 hours of arrival* to an emergency department or 
+urgent care  
+ 
+• Blood cultures drawn prior to antibiotics. 
+• Broad spectrum or other antibiotics administered 
+• Initial lactate level measurement 
+   
+*Arrival = triage or registration (whichever is earlier) 
+ 
+Denominator:  
+Total number of adult patients aged 18 years and older with diagnosis code of 
+sepsis, at admission to an emergency department or urgent care during the 
+measurement period. 
+ 
+ICD-10 CM: A41.89, A41.9, R65.20, O86.04, O85, O08.82, O07.37, O04.87, O03.87, 
+O03.37, A02.1, A22.7, A26.7, A32.7, A40.0, A40.1, A40.3, A40.8, A40.9, A41.01, 
+A41.02, A41.1, A41.2, A41.3, A41.4, A41.50, A41.51, A41.52, A41.53, A41.59, A41.81, 
+A42.7, A54.86, B37.7 
+ 
+ 
+PAGE 18
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+18 
+ 
+Denominator Exclusion:  
+• Patient Left Against Medical Advice (see glossary) 
+Reporting 
+Frequency:   
+   Quarterly 
+Unit of Measure:    Percentage 
+Target  
+/Benchmark 
+  To be updated after receiving first set of data 
+  Notes for all facilities 
+Data  sources 
+Report Name:   
+/  • Local business intelligence report or any other internally designed system   
+• Applicable to facilities licensed to provide emergency and inpatient services    
+• https://www.sccm.org/clinical-resources/guidelines/guidelines/surviving-sepsis-
+guidelines-2021 
+• https://www.australiansepsisnetwork.net.au/wp-
+content/uploads/2024/05/surviving_sepsis_campaign__international.21.pdf 
+• https://www.mi-hms.org/sites/default/files/Sepsis-Alliance-SEP-1-Core-Measure.pdf 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+PAGE 19
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+19 
+ 
+Type: Waiting Time Indicator                                   Indicator Number: WT015 
+KPI Description   
+(title):    
+ 
+Proportion of patients who accessed the acute care of septic shock 
+within specific time of presentation (1-hour) 
+Domain    Timeliness  
+Indicator Type    Process 
+Definition:    The proportion of emergency / urgent care adults (18 years and older) patients 
+diagnosed with septic shock at admission, who accessed the acute care of septic 
+shock within specific time of presentation. 
+Calculation:   
+  
+Sub- KPI a: Door to blood culture drawn prior to antibiotic 
+ 
+Numerator: Total number of adult patients aged 18 years and older whose blood 
+culture was drawn prior to antibiotic administration within 1 hour of arrival* to an 
+emergency department or urgent care  
+ 
+ 
+Sub- KPI b: Door to broad spectrum or other antibiotics administered 
+ 
+Numerator: Total number of adult patients aged 18 years and older who received 
+administration of broad- spectrum or other antibiotics within 1 hour of arrival* to 
+an emergency department or urgent care  
+ 
+ 
+Sub- KPI c: Door to initial lactate level measurement 
+ 
+Numerator: Total number of adult patients aged 18 years and older whose initial 
+lactate was measured within 1 hour of arrival* to an emergency department or 
+urgent care  
+ 
+Sub- KPI d: Proportion of patients meeting all 3 Criteria within 1 hour of presentation 
+ 
+Numerator: Total number of adult patients aged 18 years and older who are 
+meeting all 3 criteria within 1 hour of arrival* to an emergency department or 
+urgent care  
+ 
+• Blood cultures drawn prior to antibiotics. 
+• Broad spectrum or other antibiotics administered. 
+• Initial lactate level measurement 
+ 
+  *Arrival = triage or registration (whichever is earlier) 
+ 
+Denominator:  
+Total number of adult patients aged 18 years and older with diagnosis code of 
+septic shock, at admission to an emergency department or urgent care during the 
+measurement period. 
+ 
+ICD-10 CM: A41.89, A41.9, O86.04, O85, O08.82, O07.37, O04.87, O03.87, O03.37, 
+A02.1, A22.7, A26.7, A32.7, A40.0, A40.1, A40.3, A40.8, A40.9, A41.01, A41.02, A41.1, 
+A41.2, A41.3, A41.4, A41.50, A41.51, A41.52, A41.53, A41.59, A41.81, A42.7, A54.86, 
+B37.7 
+ 
+PAGE 20
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+20 
+ 
+ 
+ PLUS A MANDATORY ICD-10 CM: R65.21 for Septic Shock 
+ 
+Denominator Exclusion:  
+• Patient Left Against Medical Advice* 
+Reporting 
+Frequency:   
+   Quarterly 
+Unit of Measure:    Percentage 
+Target  
+/Benchmark 
+  To be updated after receiving first set of data 
+  Notes for all facilities 
+Data  sources 
+Report Name:   
+/  - Local business intelligence report or any other internally designed system   
+- Applicable to facilities licensed to provide emergency and inpatient services 
+- https://www.sccm.org/clinical-resources/guidelines/guidelines/surviving-sepsis-guidelines-
+2021 
+- https://www.australiansepsisnetwork.net.au/wp-
+content/uploads/2024/05/surviving_sepsis_campaign__international.21.pdf 
+- https://www.mi-hms.org/sites/default/files/Sepsis-Alliance-SEP-1-Core-Measure.pdf 
+- *DOH Circular No. (2024/29) Malaffi Discharge Disposition Description 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+PAGE 21
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+21 
+ 
+Type: Waiting Time Indicator                                               Indicator Number: WT016 
+KPI Description 
+(title): 
+Door to Interfacility Transfer Time for Stroke Patients to Higher 
+Level Care Facilities (Door-to-Door) 
+Domain Timeliness 
+Indicator Type Process  
+Definition: Percentage of suspected stroke patients who were immediately 
+transferred to a Higher-Level Care Facility within the target timeframes. 
+Calculation: 
+Numerator: Number of suspected stroke patients who were immediately 
+transferred to a Higher -Level Care Facilit y within the target timeframes.  
+ 
+Report Separately: 
+a. Within 60 minutes, if there is no thrombolytic therapy done 
+b. Within 90 minutes, if there is thrombolytic therapy done 
+ 
+Denominator: All adult patients (18 years and older) visiting the emergency 
+department or urgent care center, who were suspected of having signs and 
+symptoms of a stroke (BEFAST Positive) and transferred to a higher -level 
+care facility, within the reporting quarter.  
+Denominator Exclusion:    
+• Suspected stroke symptoms more than 6 hours before presentation    
+• Suspected stroke symptoms of undetermined duration 
+• Patients deceased in ED/UCC 
+Reporting Frequency: Quarterly 
+Unit of Measure: % for performance (hours for mean, median and min. & max) 
+Reported 
+Information 
+Numerator, Denominator, Indicator Performance (also, mean waiting time, 
+median waiting time, min. & max. waiting time) 
+Target 95% within the target time 
+Data sources DOH Standard for Stroke Management 
+Stroke Symptoms and Warning Signs | American Stroke Association 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+PAGE 22
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+22 
+ 
+Type: Waiting Time Indicator                                               Indicator Number: WT017 
+KPI Description 
+(title): Days to the Third Available Appointment for Primary Care Services 
+Domain Timeliness 
+Indicator Type Process  
+Definition: 
+Average length of time in days (including weekends) between the day a patient 
+(dummy patient) makes a request for an appointment with a primary care clinic 
+and the third next available appointment for a new patient physical, routine 
+exam, or return visit exam. 
+ 
+N.B: The "third next available" appointment is used rather than the "next 
+available" appointment since it is a more sensitive reflection of true appointment 
+availability. For example, an appointment may be open at the time of a request 
+because of a cancellation or other unexpected event. Using the "third next 
+available" appointment eliminates these chance occurrences from the measure of 
+availability. 
+ 
+*Note: If 3NAA is today, then the value is zero (0).  This makes 3NAA a  
+patient-focused measure.  Today is day zero; tomorrow is day one, and so forth.  
+ 
+ 
+Calculation: 
+ 
+Primary Care: This is a measure of patient access to an outpatient medical 
+primary care visit and is defined as the number of days (including weekends) to 
+the third next available appointment for a routine office visit with a primary care 
+practitioner 
+ 
+ 
+Definition: Number of calendar days until third next available appointment for a 
+primary care office visit. 
+ 
+ 
+*Choose the same day of the week and the same time of day to measure each 
+Quarter. 
+ 
+Reporting 
+Frequency: Quarterly (Average of 3 months) 
+Unit of Measure: Days 
+Data sources 
+https://www.ihi.org/library/model-for-improvement/establishing-measures 
+https://cdn.ymaws.com/ohiochc.siteym.com/resource/resmgr/Third_Next_Appointment_word.pdf 
+Synopsis based on Saudi MOH limited-access document HQI Briefing Document 2024, adopted for 
+local application 
+ 
+ 
+ 
+ 
+PAGE 23
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+23 
+ 
+Type: Waiting Time Indicator                                               Indicator Number: WT018 
+KPI 
+Description 
+(title): Days to the Third Available Appointment for Oncology and Haematology Services 
+Domain Timeliness 
+Indicator 
+Type Process  
+Definition: 
+Average length of time in days (including weekends) between the day a patient (dummy patient) 
+makes a request for an appointment with a specialty care (Oncology and Haematology Services) 
+and the third next available appointment for a new patient physical, routine exam, or return visit 
+exam.  
+ 
+N.B: The "third next available" appointment is used rather than the "next available" appointment 
+since it is a more sensitive reflection of true appointment availability. For example, an appointment 
+may be open at the time of a request because of a cancellation or other unexpected event. Using the 
+"third next available" appointment eliminates these chance occurrences from the measure of 
+availability. 
+ 
+Report Separately the Numerator and Denominator for appointments: 
+a) DOH licensed Oncologists 
+b) DOH licensed Haematologists 
+ 
+*Note: If 3NAA is today, then the value is zero (0). This makes 3NAA a patient-focused measure.  
+Today is day zero; tomorrow is day one, and so forth.  
+ 
+Calculation: 
+Specialty Care: This is a measure of patient access to an outpatient medical specialist visit 
+(Oncology and Haematology Services) and is defined as the number of days (including weekends) 
+to the third next available appointment for a nonurgent office visit with a specialty care 
+practitioner. 
+ 
+Definition: Number of calendar days until third next available appointment for a specialty care 
+non-urgent visit. 
+ 
+*Choose the same day of the week and the same time of day to measure each Quarter. 
+ 
+Reporting 
+Frequency: Quarterly (Average of 3 months) 
+Unit of 
+Measure: Days 
+Data 
+sources 
+https://www.ihi.org/library/model-for-improvement/establishing-measures 
+https://cdn.ymaws.com/ohiochc.siteym.com/resource/resmgr/Third_Next_Appointment_word.pdf 
+Synopsis based on Saudi MOH limited-access document HQI Briefing Document 2024, adopted for 
+local application 
+ 
+ 
+ 
+ 
+ 
+PAGE 24
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+24 
+ 
+Type: Waiting Time Indicator                                               Indicator Number: WT019 
+KPI 
+Description 
+(title): Days to the Third Available Appointment for Selected Services or Specialties 
+Domain Timeliness 
+Indicator 
+Type Process  
+Definition: 
+Average length of time in days (including weekends) between the day a patient (dummy patient) 
+makes a request for an appointment with a specialty care and the third next available appointment 
+for a new patient physical, routine exam, or return visit exam.  
+ 
+N.B: The "third next available" appointment is used rather than the "next available" appointment 
+since it is a more sensitive reflection of true appointment availability. For example, an appointment 
+may be open at the time of a request because of a cancellation or other unexpected event. Using the 
+"third next available" appointment eliminates these chance occurrences from the measure of 
+availability. 
+ 
+Report Separately the Numerator and Denominator for appointments per specialties: 
+a) DOH licensed physicians in Internal Medicine 
+b) DOH licensed physicians in Ophthalmology 
+c) DOH licensed physicians in ENT 
+d) DOH licensed physicians in General Pediatrics 
+e) DOH licensed physicians in OBGYNE 
+ 
+*Note: If 3NAA is today, then the value is zero (0). This makes 3NAA a patient-focused measure.  
+Today is day zero; tomorrow is day one, and so forth.  
+ 
+Calculation: 
+ 
+Specialty Care: This is a measure of patient access to an outpatient medical specialist visit and is 
+defined as the number of days (including weekends) to the third next available appointment for a 
+nonurgent office visit with a specialty care practitioner. 
+ 
+ 
+Definition: Number of calendar days until third next available appointment for a specialty care 
+non-urgent visit 
+ 
+ 
+*Choose the same day of the week and the same time of day to measure each Quarter. 
+ 
+Reporting 
+Frequency: 
+Quarterly (Average of 3 months)- 
+ 
+Unit of 
+Measure: Days 
+Data 
+sources 
+https://www.ihi.org/library/model-for-improvement/establishing-measures 
+https://cdn.ymaws.com/ohiochc.siteym.com/resource/resmgr/Third_Next_Appointment_word.pdf 
+Synopsis based on Saudi MOH limited-access document HQI Briefing Document 2024, adopted for 
+local application 
+ 
+PAGE 25
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+25 
+ 
+Summary of Changes 2025 V8 
+KPI # Changes  
+All KPIs Revised Domain and added Indicator Types 
+WT001 • Added in the numerator instead of 48 hrs as 2 workings days. 
+• Rephrased denominator definition. 
+• Exclusions:  Removed the sentence - (Follow-up does not relate to billing 
+aspect). 
+WT002, 
+WT004 
+• Replace in the numerator within 2 weeks to 10 working days. 
+• Rephrased denominator definition (new and appointment) 
+• Exclusions:  Removed the sentence - (Follow-up does not relate to billing 
+aspect). 
+WT003 • Added Denominator Exclusion: Teleconsultations 
+WT005 • Change the title as: Percentage of elective Inpatient admissions within 28 
+days. 
+• Denominator Exclusion: Revised timeframe of 28 days. Added “Same day 
+admissions from outpatient department” 
+WT006 • Added denominator exclusion: PCI is clinically contraindicated: such as cardiac 
+arrest or requiring resuscitation, difficult vascular access and/or crossing the culprit 
+lesion 
+• Patient/Family refusal/ or delay in consent 
+WT007 • Denominator: Removed Appendix A Stroke ICD-10 code, added codes in the profile. 
+Removed Exclusions: Patients below 18 years of age and Transferred to Stroke 
+center 
+• Added and revised Exclusions: 
+CT not conducted in the facility for the following reasons: 
+o If the family refused the treatment before the CT conducted 
+o Clinically unstable patients 
+WT008 • Added Denominator Exclusion: Triaged out to Outpatient Services 
+WT009 • Changed the time Numerator: 180 minutes-(240 minutes) even in the target 
+changed 180 minutes to 240 minutes. 
+• Added Denominator Exclusion: Triaged out to Outpatient Services 
+visits with both unknown/invalid registration and triage date/time 
+WT010 • Change the title/definition/numerator as 24 hrs to 72 hrs 
+• Removed the phrase from definition and numerator: “for the same chief 
+complaint (s)” 
+• Added denominator exclusion: 
+Triaged-out to Outpatient Services 
+Transfer out to another facility from Emergency department 
+Repeat encounter in emergency department or urgent care within 72 hours of the 
+index encounter 
+WT011 • Added Denominator Exclusions 
+WT012 • Removed Denominator Exclusion: Observation, Mental health patient 
+WT013 • Defined numerator: Number of patients that were admitted into inpatient 
+hospitals. 
+• Added Denominator exclusion: Triaged out to Outpatient Services. 
+ 
+PAGE 26
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+26 
+ 
+Summary of Changes 2025 V8.1 
+KPI # Changes  
+Glossary Added Glossary 
+WT001 • Denominator Exclusions:  Added: 
+Walk in Patients without prior appointment (see glossary) 
+Patients who left without being seen 
+WT002 • Rephrased Title: Percentage of First Available Appointment for all Suspected 
+or Confirmed Cancer Cases 
+• Revised: 
+Numerator: Number of patients in the denominator population that were 
+seen by the relevant (DOH) licensed specialist/consultant within 10 working 
+days from receiving the referral (or self-requested appointment).    
+Denominator: Total number of all appointments referral (including self-
+referral)  for suspected or confirmed cancer cases 
+Denominator Guidance:   
+• Suspected / Confirmed with new appointment request/complaint to the 
+oncologist or haematologist of that facility 
+Denominator Exclusions:    
+• Hematologist visits related to other blood disorders, unrelated to cancer 
+• Patients who left without being seen 
+WT004 • Revised the following: 
+Numerator: Number of patients in the denominator population that were 
+seen by the relevant (DOH licensed specialist/consultant within 10 working 
+days from receiving the referral (or self-requested appointment).    
+Denominator: Total number of all new appointment requests/complaints 
+(including self-referral patients) 
+Denominator Exclusions:    
+• Walk-in without prior appointment (see glossary) 
+• Patients who left without being seen 
+WT005 Revised Denominator Exclusions: 
+• Emergency/Unplanned admissions (When patient is transferred between 
+hospital, it should be a case of unplanned in most of the cases.) 
+• Same day admissions from outpatient department 
+• Day cases are excluded. 
+WT007 Added in Denominator Exclusion: CT previously conducted by the transferring facility 
+WT009- 
+WT010 
+• Added denominator exclusion Patient Left Against Medical Advice (see glossary) 
+WT012 • Revised the following: 
+Numerator: Number of patients from the denominator population, with 
+whom admit decision time to time of departure from the emergency 
+department or urgent care center is within 60 minutes. 
+Denominator: All patients admitted to the facility (regardless of duration of 
+stay in the acute care setting) from the emergency department or urgent care.  
+WT013 Revised Numerator: Number of patients from the denominator population that were 
+admitted (regardless of duration of stay in the acute care setting) in the hospital. 
+ 
+  
+PAGE 27
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+27 
+ 
+Summary of Changes 2025 V8.2 
+KPI # Changes  
+Glossary • Updated the definition of walk-in patients: 
+o Patients having a scheduled appointment within two hours 
+• Added example of inpatient bed days starting date and time as well as time to 
+readmission. 
+WT001, 
+WT002 
+&WT004 
+Added Denominator Exclusion: 
+• Clinical requirement to be fulfilled prior to the appointment as per the physician 
+instructions 
+WT010 Added Denominator Exclusion: 
+• Died during ER / urgent care encounter (discharged as deceased)    
+WT012 Removed the following denominator exclusions: 
+• Deceased on Arrival (DOA)    
+• Left without been seen    
+• Discharged 
+ 
+Summary of Changes 2025 V8.3 
+KPI # Changes  
+Glossary 
+added Dead on Arrival (DOA): A person is presumed dead on arrival when no 
+resuscitation efforts are attempted. 
+ 
+Summary of Changes 2025 V8.4 
+KPI # Changes  
+WT014 to 
+WT015 Added new Sepsis care KPIs  
+ 
+Summary of Changes 2026 V9 
+KPI # Changes  
+Glossary 
+Removed in DAMA meaning: • Absent Without Leave • Missing Without Leave 
+Added: *DOH Circular No. (2024/29) Malaffi Discharge Disposition Description 
+WT001, 
+WT002, 
+WT004, 
+• Retired KPIs 
+WT007  • Revised the denominator:  
+o “suspected” cases to “positive or confirmed” 
+o Added the phrase “at discharge”: were positive or confirmed of a 
+stroke at discharge 
+ 
+• Added denominator guidance: 
+o Discharged from ED/UCC 
+o Discharged from in-patient 
+ 
+• Additional reason will be added under CT not conducted in the facility for the 
+following reasons denominator exclusion: 
+o Patients who were seen in the ED/UCC but were transferred to a 
+higher-level care facility 
+PAGE 28
+Waiting Times JAWDA Indicators for Specialized and General Hospitals 
+ 
+28 
+ 
+WT008 and 
+WT003 
+• Revised Numerator time from “60 minutes” to 30 minutes 
+WT008 - 
+WT011, 
+WT013 
+• Removed Denominator Exclusions 
+o Deceased on Arrival (DOA) 
+o Triaged out to Outpatient Services  
+o Visits with both unknown/invalid registration and triage 
+date/time 
+WT003, 
+WT005, 
+WT006, 
+WT008, 
+WT009 
+• Rephrased beginning of Definitions unit of measure: “Percent of patients 
+meeting the target…” 
+WT010 • Revised Numerator time from “72 hrs” to 7 days 
+WT015 • Added in Denominator: PLUS, A MANDATORY ICD-10 CM: R65.21 for Septic 
+Shock 
+WT016 - 
+WT019 
+• Added New KPIs 
+o Door to Interfacility Transfer to Comprehensive Stroke Center Departure Time 
+o Days to the Third Available Appointment for Primary Care Services 
+o Days to the Third Available Appointment for Oncology and Haematology Services 
+o Days to the Third Available Appointment for Selected Services or Specialties 
+WT016 • Amended the KPI title: Door to Interfacility Transfer Time for Stroke Patients to 
+Higher-Level Care Facility (Door-to-Door) 
+ 
+• Updated the numerator: Number of suspected stroke patients who were immediately 
+transferred to a Higher-Level Care Facility within the target timeframes. 
+ 
+• Updated the denominator: All adult patients (18 years and older) visiting the 
+emergency department or urgent care center, who were suspected of having signs and 
+symptoms of a stroke (BEFAST Positive) and transferred to a higher-level care facility, 
+within the reporting quarter. 
+ 
+• Denominator Exclusion:    
+o Suspected stroke symptoms more than 6 hours before presentation 
+o Suspected stroke symptoms of undetermined duration 
+Addition: 
+o Patients Deceased in ED/UCC 
+WT017, 
+WT018 and 
+WT019 
+Definition: Added *Note: If 3NAA is today, then the value is zero (0).  This makes 3NAA 
+a patient-focused measure.  Today is day zero; tomorrow is day one, and so forth 
+ 
+Summary of Changes 2026 V9.1 
+KPI # Changes  
+WT007 
+Denominator: Removed the ICD 10 Code series-I62.00, I62.01, I62.02, I62.03, I62.1, 
+I62.9 
+ 

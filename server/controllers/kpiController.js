@@ -5,12 +5,14 @@ const KPISelectionCriteria = require('../models/KPISelectionCriteria');
 const KPIIndicatorType = require('../models/KPIIndicatorType');
 const KPINotificationRule = require('../models/KPINotificationRule');
 const { verifyPreview, ruleDigest, validateRule } = require('../utils/indicatorImport');
+const { getPreset } = require('../utils/waitingTime');
 
 // @desc    Create new indicator
 // @route   POST /api/kpi
 // @access  Private (QualityManager/SuperAdmin)
 exports.createIndicator = async (req, res) => {
   try {
+    if (getPreset(req.body.indicatorCode) || req.body.importRule?.preset) return res.status(400).json({ message: 'Add DOH waiting-time indicators using the guidance catalog in the indicator workspace.' });
     const kpi = new KPIIndicator({
       ...req.body,
       createdBy: req.user._id
@@ -41,7 +43,7 @@ exports.getIndicators = async (req, res) => {
       .populate('validatedBy', 'employeeName')
       .populate('approvedBy', 'employeeName')
       .sort({ createdAt: -1 });
-    res.json(kpis);
+    res.json(kpis.map(kpi => ({ ...kpi.toObject(), waitingTimePreset: getPreset(kpi.importRule?.preset || kpi.calculationRule?.preset) })));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -69,13 +71,14 @@ exports.getDashboardStats = async (req, res) => {
     const atRisk = kpis.filter(k => k.status === 'at-risk').length;
     const breached = kpis.filter(k => k.status === 'breached').length;
 
-    const avgAchievement = total > 0 
-      ? (kpis.reduce((acc, k) => acc + (k.calculatedValue / (k.target || 1) * 100), 0) / total).toFixed(2)
+    const assessed = kpis.filter(k => k.target !== null && k.target > 0 && k.calculatedValue !== null);
+    const avgAchievement = assessed.length > 0
+      ? (assessed.reduce((acc, k) => acc + (k.calculationRule?.targetDirection === 'lower' ? (k.calculatedValue === 0 ? 100 : Math.min(100, k.target / k.calculatedValue * 100)) : k.calculatedValue / k.target * 100), 0) / assessed.length).toFixed(2)
       : 0;
 
     // Quarterly trend (last 4 quarters)
     const trend = await KPIIndicator.aggregate([
-      { $match: { validationStatus: 'Approved' } },
+      { $match: { validationStatus: 'Approved', unit: '%', target: { $ne: null }, calculatedValue: { $ne: null } } },
       { $group: {
         _id: { year: "$reportingYear", period: "$reportingPeriod" },
         avgValue: { $avg: "$calculatedValue" },
@@ -124,6 +127,7 @@ exports.updateIndicator = async (req, res) => {
     const kpi = await KPIIndicator.findById(req.params.id);
     if (!kpi) return res.status(404).json({ message: 'KPI not found' });
 
+    if (kpi.importRule?.preset || kpi.calculationRule?.preset || getPreset(req.body.indicatorCode) || req.body.importRule?.preset) return res.status(400).json({ message: 'Waiting-time definitions are version controlled. Submit corrections through the source upload workflow.' });
     Object.assign(kpi, req.body);
     kpi.updatedBy = req.user._id;
     const updatedKpi = await kpi.save();
@@ -168,7 +172,8 @@ exports.submitData = async (req, res) => {
     if (imported && imported.ruleDigest !== ruleDigest(definition)) {
       return res.status(409).json({ message: 'The indicator rule or target changed. Analyze the file again.' });
     }
-    const calculationRule = definition.importRule?.outcomeColumn || definition.importRule?.numeratorColumn ? validateRule(definition.importRule) : undefined;
+    if (definition.importRule?.preset && (!imported || !imported.summary.canSubmit)) return res.status(400).json({ message: 'Waiting-time indicators require a validated source-data upload.' });
+    const calculationRule = definition.importRule?.preset || definition.importRule?.outcomeColumn || definition.importRule?.numeratorColumn ? validateRule(definition.importRule) : undefined;
 
     // Check if there is already a record for this period
     let record = await KPIIndicator.findOne({ indicatorCode, reportingPeriod, reportingYear });
@@ -441,8 +446,14 @@ exports.exportToExcel = async (req, res) => {
       { header: 'Year', key: 'reportingYear', width: 10 },
       { header: 'Numerator', key: 'numerator', width: 15 },
       { header: 'Denominator', key: 'denominator', width: 15 },
-      { header: 'Actual %', key: 'calculatedValue', width: 15 },
-      { header: 'Target %', key: 'target', width: 15 },
+      { header: 'Actual', key: 'calculatedValue', width: 15 },
+      { header: 'Unit', key: 'unit', width: 12 },
+      { header: 'Target', key: 'target', width: 15 },
+      { header: 'Mean wait', key: 'waitMean', width: 15 },
+      { header: 'Median wait', key: 'waitMedian', width: 15 },
+      { header: 'Minimum wait', key: 'waitMin', width: 15 },
+      { header: 'Maximum wait', key: 'waitMax', width: 15 },
+      { header: 'Wait unit', key: 'waitUnit', width: 12 },
       { header: 'Variance', key: 'variance', width: 15 },
       { header: 'Status', key: 'status', width: 15 },
       { header: 'Submitted', key: 'submittedToDOH', width: 15 }
@@ -458,6 +469,12 @@ exports.exportToExcel = async (req, res) => {
         numerator: kpi.numerator,
         denominator: kpi.denominator,
         calculatedValue: kpi.calculatedValue,
+        unit: kpi.unit,
+        waitMean: kpi.importSummary?.waitingStatistics?.mean,
+        waitMedian: kpi.importSummary?.waitingStatistics?.median,
+        waitMin: kpi.importSummary?.waitingStatistics?.min,
+        waitMax: kpi.importSummary?.waitingStatistics?.max,
+        waitUnit: kpi.importSummary?.waitingStatistics?.unit,
         target: kpi.target,
         variance: kpi.variance,
         status: kpi.status,

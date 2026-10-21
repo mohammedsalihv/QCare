@@ -21,13 +21,13 @@ const KPIDashboard = ({ stats, trend, topBreached }) => {
       {/* Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card, index) => (
-          <div key={index} className="bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center gap-4">
+          <div key={index} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
             <div className={`p-3 rounded-xl ${card.bg}`}>
               <card.icon className={`w-6 h-6 ${card.color}`} />
             </div>
             <div>
-              <p className="text-sm text-black font-bold dark:text-black font-bold">{card.title}</p>
-              <h3 className="text-2xl font-bold text-black font-bold dark:text-white">{card.value}</h3>
+              <p className="text-sm text-slate-800 font-semibold">{card.title}</p>
+              <h3 className="text-2xl font-semibold text-slate-800 ">{card.value}</h3>
             </div>
           </div>
         ))}
@@ -35,13 +35,13 @@ const KPIDashboard = ({ stats, trend, topBreached }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Trend Chart */}
-        <div className="lg:col-span-2 bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 min-w-0">
+        <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 min-w-0">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-black font-bold dark:text-white flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-[#040404]" />
+            <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-slate-800" />
               Performance Trend
             </h3>
-            <div className="text-sm font-medium text-[#040404] bg-slate-100 px-3 py-1 rounded-full">
+            <div className="text-sm font-medium text-slate-800 bg-slate-100 px-3 py-1 rounded-full">
               Avg. Achievement: {stats?.avgAchievement}%
             </div>
           </div>
@@ -64,18 +64,18 @@ const KPIDashboard = ({ stats, trend, topBreached }) => {
         </div>
 
         {/* Top Breached */}
-        <div className="bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
-          <h3 className="text-lg font-bold text-black font-bold dark:text-white mb-6">Top Breached Indicators</h3>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 ">
+          <h3 className="text-lg font-semibold text-slate-800 mb-6">Top Breached Indicators</h3>
           <div className="space-y-4">
             {topBreached && topBreached.length > 0 ? (
               topBreached.map((kpi, idx) => (
-                <div key={idx} className="p-4 rounded-xl bg-red-50/50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30">
+                <div key={idx} className="p-4 rounded-xl bg-red-50/50 border border-red-100 ">
                   <div className="flex justify-between items-start mb-2">
-                    <span className="text-xs font-bold text-red-600 uppercase">{kpi.indicatorCode}</span>
-                    <span className="text-xs font-medium text-red-500">Variance: {kpi.variance}%</span>
+                    <span className="text-[13px] font-semibold text-red-600 normal-case">{kpi.indicatorCode}</span>
+                    <span className="text-[13px] font-medium text-red-500">Variance: {kpi.variance}%</span>
                   </div>
-                  <p className="text-sm font-medium text-black font-bold dark:text-black font-bold line-clamp-1">{kpi.indicatorName}</p>
-                  <div className="mt-3 w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                  <p className="text-sm font-medium text-slate-800 font-semibold line-clamp-1">{kpi.indicatorName}</p>
+                  <div className="mt-3 w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
                     <div 
                       className="bg-red-500 h-full transition-all duration-500" 
                       style={{ width: `${Math.min(Math.abs(kpi.calculatedValue), 100)}%` }}
@@ -84,7 +84,7 @@ const KPIDashboard = ({ stats, trend, topBreached }) => {
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-black font-bold">No breached indicators</div>
+              <div className="text-center py-8 text-slate-800 font-semibold">No breached indicators</div>
             )}
           </div>
         </div>

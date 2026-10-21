@@ -332,19 +332,19 @@ const UserManagement = () => {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-sm font-bold text-black font-bold tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-800 tracking-normal mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[var(--color-primary)]">Administration</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[var(--color-primary)]">User Management</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-black font-bold tracking-tight">User Management</h1>
+            <h1 className="text-2xl font-semibold text-slate-800 tracking-tight">User Management</h1>
           </div>
 
           <button
             onClick={handleAddClick}
-            className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
+            className="flex items-center justify-between gap-4 px-6 py-4 bg-primary hover:bg-primary text-white rounded-md font-semibold transition-all shadow-lg shadow-none active:scale-95 group text-sm"
           >
             <div className="flex items-center gap-3">
               <UserPlus className="w-5 h-5" />
@@ -354,19 +354,19 @@ const UserManagement = () => {
           </button>
         </div>
 
-        <div className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           {/* Filter Toolbar */}
           <div className="p-5 border-b border-slate-100 bg-slate-50/30">
             <div className="flex flex-wrap items-center gap-3">
               {/* Search */}
               <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-black font-bold" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-800 font-semibold" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                   placeholder="Search name, ID, email..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-xs font-semibold"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-[13px] font-semibold"
                 />
               </div>
               {/* Dept filter */}
@@ -391,12 +391,12 @@ const UserManagement = () => {
               {(searchQuery || filterDept || filterStatus) && (
                 <button
                   onClick={() => { setSearchQuery(''); setFilterDept(''); setFilterStatus(''); setCurrentPage(1); }}
-                  className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-rose-50 text-rose-500 border border-rose-100 text-xs font-black hover:bg-rose-100 transition-all"
+                  className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-rose-50 text-rose-500 border border-rose-100 text-[13px] font-semibold hover:bg-rose-100 transition-all"
                 >
                   <X className="w-3 h-3" /> Clear
                 </button>
               )}
-              <span className="ml-auto text-[10px] font-bold text-black font-bold uppercase tracking-widest">
+              <span className="ml-auto text-[12px] font-semibold text-slate-800 normal-case tracking-normal">
                 {filteredSortedUsers.length} of {users.length} records
               </span>
             </div>
@@ -407,39 +407,39 @@ const UserManagement = () => {
               <thead>
                 <tr className="bg-slate-100/50">
                   <th
-                    className="w-40 px-7 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
+                    className="w-40 px-7 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
                     onClick={() => handleSort('employeeId')}
                   >
                     Employee ID & User <SortIcon field="employeeId" />
                   </th>
                   <th
-                    className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
+                    className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
                     onClick={() => handleSort('employeeName')}
                   >
                     Full Name <SortIcon field="employeeName" />
                   </th>
                   <th
-                    className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
+                    className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
                     onClick={() => handleSort('designation')}
                   >
                     Designation <SortIcon field="designation" />
                   </th>
                   <th
-                    className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
+                    className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
                     onClick={() => handleSort('department')}
                   >
                     Department <SortIcon field="department" />
                   </th>
                   <th
-                    className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
+                    className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 cursor-pointer select-none hover:text-[var(--color-primary)] transition-colors"
                     onClick={() => handleSort('role')}
                   >
                     Role <SortIcon field="role" />
                   </th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">
                     Status
                   </th>
-                  <th className="w-32 px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
+                  <th className="w-32 px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -452,28 +452,28 @@ const UserManagement = () => {
                     <tr key={user._id} className={`hover:bg-slate-50/20 transition-colors group ${sm.value !== 'active' ? 'opacity-70' : ''}`}>
                       <td className="px-7 py-4">
                         <div className="flex flex-col">
-                          <span className="text-sm font-mono font-bold text-black font-bold">{user.employeeId}</span>
-                          <span className="text-[10px] text-black font-bold font-medium">@{user.username || '—'}</span>
+                          <span className="text-sm font-mono font-semibold text-slate-800">{user.employeeId}</span>
+                          <span className="text-[12px] text-slate-800 font-semibold font-medium">@{user.username || '—'}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-sm font-bold text-black font-bold leading-snug">{user.employeeName}</span>
+                            <span className="text-sm font-semibold text-slate-800 leading-snug">{user.employeeName}</span>
                             {isOwnRow && (
-                              <span className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wide bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/20">You</span>
+                              <span className="inline-flex px-1.5 py-0.5 rounded text-[12px] font-semibold tracking-wide bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/20">You</span>
                             )}
                           </div>
-                          <span className="text-[10px] text-black font-bold font-bold tracking-wide">{user.email}</span>
+                          <span className="text-[12px] text-slate-800 font-semibold tracking-wide">{user.email}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-black font-bold font-medium">{user.designation}</td>
+                      <td className="px-6 py-4 text-sm text-slate-800 font-semibold font-medium">{user.designation}</td>
                       <td className="px-6 py-4">
-                        <span className="text-sm text-black font-bold font-medium tracking-tight">{user.department}</span>
+                        <span className="text-sm text-slate-800 font-semibold font-medium tracking-tight">{user.department}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide ${user.role?.toLowerCase() === 'superadmin' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
-                          user.role?.toLowerCase() === 'admin' ? 'bg-purple-50 text-purple-600 border border-purple-100' : 'bg-slate-100 text-[#040404] border border-blue-100'
+                        <span className={`inline-flex px-2 py-0.5 rounded-md text-[12px] font-semibold tracking-wide ${user.role?.toLowerCase() === 'superadmin' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
+                          user.role?.toLowerCase() === 'admin' ? 'bg-purple-50 text-purple-600 border border-purple-100' : 'bg-slate-100 text-slate-800 border border-blue-100'
                           }`}>
                           {user.role}
                         </span>
@@ -484,7 +484,7 @@ const UserManagement = () => {
                             <>
                               <button
                                 onClick={() => setOpenStatusMenu(openStatusMenu === user._id ? null : user._id)}
-                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide border transition-all hover:shadow-sm ${sm.bg} ${sm.color} border-current/10`}
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold tracking-wide border transition-all hover:shadow-sm ${sm.bg}  ${sm.color} border-current/10`}
                               >
                                 <span className={`w-1.5 h-1.5 rounded-full ${sm.dot}`}></span>
                                 {sm.label}
@@ -496,7 +496,7 @@ const UserManagement = () => {
                                     <button
                                       key={opt.value}
                                       onClick={() => handleSetStatus(user, opt.value)}
-                                      className={`w-full flex items-center gap-2 px-3 py-2.5 text-[10px] font-black uppercase tracking-wider transition-colors hover:bg-slate-50 ${sm.value === opt.value ? `${opt.color} ${opt.bg}` : 'text-black font-bold'
+                                      className={`w-full flex items-center gap-2 px-3 py-2.5 text-[12px] font-semibold normal-case tracking-normal transition-colors hover:bg-slate-50 ${sm.value === opt.value ? `${opt.color}  ${opt.bg}` : 'text-slate-800 font-semibold'
                                         }`}
                                     >
                                       <span className={`w-1.5 h-1.5 rounded-full ${opt.dot}`}></span>
@@ -510,7 +510,7 @@ const UserManagement = () => {
                           ) : (
                             <span
                               title="You cannot change your own account status"
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border cursor-not-allowed opacity-80 ${sm.bg} ${sm.color} border-current/10`}
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold normal-case tracking-normal border cursor-not-allowed opacity-80 ${sm.bg}  ${sm.color} border-current/10`}
                             >
                               <span className={`w-1.5 h-1.5 rounded-full ${sm.dot}`}></span>
                               {sm.label}
@@ -524,7 +524,7 @@ const UserManagement = () => {
                           <button
                             onClick={() => handleEditClick(user)}
                             title="Edit"
-                            className="w-8 h-8 rounded-full border border-slate-200 bg-white text-black font-bold flex items-center justify-center hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all duration-300 active:scale-95"
+                            className="w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-800 font-semibold flex items-center justify-center hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all duration-300 active:scale-95"
                           >
                             <FileEdit className="w-3.5 h-3.5" />
                           </button>
@@ -533,8 +533,8 @@ const UserManagement = () => {
                             title={isOwnRow ? 'Cannot delete your own account' : 'Delete Permanently'}
                             disabled={isOwnRow}
                             className={`w-8 h-8 rounded-full border border-slate-200 bg-white flex items-center justify-center transition-all duration-300 ${isOwnRow
-                              ? 'text-black font-bold cursor-not-allowed'
-                              : 'text-black font-bold hover:bg-rose-500 hover:border-rose-500 hover:text-white active:scale-95'
+                              ? 'text-slate-800 font-semibold cursor-not-allowed'
+                              : 'text-slate-800 font-semibold hover:bg-rose-500 hover:border-rose-500 hover:text-white active:scale-95'
                               }`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -549,7 +549,7 @@ const UserManagement = () => {
                     <td colSpan="7" className="px-6 py-20 text-center">
                       <div className="flex flex-col items-center justify-center gap-3 opacity-30">
                         <Search className="w-10 h-10" />
-                        <span className="text-xs font-bold uppercase tracking-widest">No users found matching your criteria</span>
+                        <span className="text-[13px] font-semibold normal-case tracking-normal">No users found matching your criteria</span>
                       </div>
                     </td>
                   </tr>
@@ -570,7 +570,7 @@ const UserManagement = () => {
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-white/40 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
-            <div className="bg-white rounded-[2.5rem] shadow-2xl relative w-full max-w-4xl overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="bg-white rounded-2xl shadow-2xl relative w-full max-w-4xl overflow-hidden animate-in zoom-in-95 duration-300">
               <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white relative">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--color-primary)] to-transparent opacity-20"></div>
                 <div className="flex items-center gap-4">
@@ -578,13 +578,13 @@ const UserManagement = () => {
                     <UserPlus className="w-7 h-7 text-[var(--color-primary)]" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-black text-black font-bold tracking-tight">
+                    <h3 className="text-xl font-semibold text-slate-800 tracking-tight">
                       {isEditing ? 'Modify User Profile' : 'Onboard New Profile'}
                     </h3>
-                    <p className="text-xs text-black font-bold font-medium tracking-tight">Configure professional credentials and access level</p>
+                    <p className="text-[13px] text-slate-800 font-semibold font-medium tracking-tight">Configure professional credentials and access level</p>
                   </div>
                 </div>
-                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-black font-bold hover:text-black font-bold transition-all border border-slate-100 shadow-sm active:scale-95">
+                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-slate-800 font-semibold hover:text-slate-800 transition-all border border-slate-100 shadow-sm active:scale-95">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -593,34 +593,34 @@ const UserManagement = () => {
                 <div className="space-y-10">
                   {/* Identity Group */}
                   <div>
-                    <h4 className="flex items-center gap-2 text-[9px] font-black text-black font-bold uppercase tracking-[0.25em] mb-5">
+                    <h4 className="flex items-center gap-2 text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-5">
                       <User className="w-3 h-3" />
                       Identity Credentials
                     </h4>
                     <div className="grid grid-cols-3 gap-6">
                       <div className="space-y-1.5 transition-colors">
-                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Full Name <span className="text-rose-500">*</span></label>
+                        <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Full Name <span className="text-rose-500">*</span></label>
                         <div className="relative group">
-                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
-                          <input name="employeeName" value={formData.employeeName} onChange={handleInputChange} placeholder="Dr. Jameel Ahmed" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs font-bold text-black font-bold shadow-inner-sm" disabled title="Full name is managed via AD" readOnly />
+                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold group-focus-within:text-[var(--color-primary)] transition-colors" />
+                          <input name="employeeName" value={formData.employeeName} onChange={handleInputChange} placeholder="Dr. Jameel Ahmed" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-[13px] font-semibold text-slate-800 shadow-inner-sm" disabled title="Full name is managed via AD" readOnly />
                         </div>
                       </div>
                       <div className="space-y-1.5 transition-colors">
-                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Employee ID <span className="text-rose-500">*</span></label>
+                        <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Employee ID <span className="text-rose-500">*</span></label>
                         <div className="relative group">
-                          <IdCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
-                          <input name="employeeId" value={formData.employeeId} onChange={handleInputChange} placeholder="EMP2024XX" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs font-black font-mono text-black font-bold shadow-inner-sm" disabled title="Employee ID is managed via AD" readOnly />
+                          <IdCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold group-focus-within:text-[var(--color-primary)] transition-colors" />
+                          <input name="employeeId" value={formData.employeeId} onChange={handleInputChange} placeholder="EMP2024XX" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-[13px] font-semibold font-mono text-slate-800 shadow-inner-sm" disabled title="Employee ID is managed via AD" readOnly />
                         </div>
                       </div>
                       <div className="space-y-1.5 transition-colors">
-                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Username <span className="text-rose-500">*</span></label>
+                        <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Username <span className="text-rose-500">*</span></label>
                         <div className="relative group">
-                          <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
-                          <input name="username" value={formData.username} onChange={handleInputChange} placeholder="johndoe" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs font-bold text-black font-bold shadow-inner-sm" disabled title="Username is managed via AD" readOnly />
+                          <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold group-focus-within:text-[var(--color-primary)] transition-colors" />
+                          <input name="username" value={formData.username} onChange={handleInputChange} placeholder="johndoe" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-[13px] font-semibold text-slate-800 shadow-inner-sm" disabled title="Username is managed via AD" readOnly />
                         </div>
                       </div>
                       <div className="space-y-1.5 focus-within:text-[var(--color-primary)] transition-colors">
-                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Designation <span className="text-rose-500">*</span></label>
+                        <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Designation <span className="text-rose-500">*</span></label>
                         <Dropdown
                           options={designationDropdownOptions}
                           value={formData.designation}
@@ -635,36 +635,36 @@ const UserManagement = () => {
                   {/* Access & Placement Group */}
                   <div className="grid grid-cols-2 gap-x-10">
                     <div className="space-y-6">
-                      <h4 className="flex items-center gap-2 text-[9px] font-black text-black font-bold uppercase tracking-[0.25em] mb-4">
+                      <h4 className="flex items-center gap-2 text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-4">
                         <Lock className="w-3 h-3" />
                         Security
                       </h4>
                       <div className="space-y-4">
                         <div className="space-y-1.5 focus-within:text-[var(--color-primary)] transition-colors">
-                          <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Email <span className="text-rose-500">*</span></label>
+                          <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Email <span className="text-rose-500">*</span></label>
                           <div className="relative group">
-                            <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
-                            <input name="email" value={formData.email} onChange={handleInputChange} type="email" placeholder="email@cmcholding.local" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs font-bold text-black font-bold shadow-inner-sm" disabled title="Email is managed via AD" readOnly />
+                            <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold group-focus-within:text-[var(--color-primary)] transition-colors" />
+                            <input name="email" value={formData.email} onChange={handleInputChange} type="email" placeholder="email@cmcholding.local" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-[13px] font-semibold text-slate-800 shadow-inner-sm" disabled title="Email is managed via AD" readOnly />
                           </div>
                         </div>
                         <div className="space-y-1.5 focus-within:text-[var(--color-primary)] transition-colors">
-                          <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Password {!isEditing && <span className="text-rose-500">*</span>}</label>
+                          <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Password {!isEditing && <span className="text-rose-500">*</span>}</label>
                           <div className="relative group">
-                            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
-                            <input name="password" value={formData.password} onChange={handleInputChange} type="password" placeholder="••••••••" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs font-bold text-black font-bold shadow-inner-sm" disabled title="Password is managed via AD" readOnly />
+                            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold group-focus-within:text-[var(--color-primary)] transition-colors" />
+                            <input name="password" value={formData.password} onChange={handleInputChange} type="password" placeholder="••••••••" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-[13px] font-semibold text-slate-800 shadow-inner-sm" disabled title="Password is managed via AD" readOnly />
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <div className="space-y-6">
-                      <h4 className="flex items-center gap-2 text-[9px] font-black text-black font-bold uppercase tracking-[0.25em] mb-4">
+                      <h4 className="flex items-center gap-2 text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-4">
                         <Shield className="w-3 h-3" />
                         Placement
                       </h4>
                       <div className="space-y-4">
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Department <span className="text-rose-500">*</span></label>
+                          <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Department <span className="text-rose-500">*</span></label>
                           <Dropdown
                             options={departments}
                             value={formData.department}
@@ -674,7 +674,7 @@ const UserManagement = () => {
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">System Privilege</label>
+                          <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">System Privilege</label>
                           <Dropdown
                             options={roleOptions}
                             value={formData.role}
@@ -688,10 +688,10 @@ const UserManagement = () => {
                 </div>
 
                 <div className="flex gap-4 pt-4 border-t border-slate-100">
-                  <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-black font-bold hover:bg-slate-50 hover:text-black font-bold rounded-xl transition-all border border-slate-200 uppercase tracking-[0.15em] active:scale-95">
+                  <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[12px] font-semibold text-slate-800 hover:bg-slate-50 hover:text-slate-800 rounded-xl transition-all border border-slate-200 normal-case tracking-normal active:scale-95">
                     Cancel
                   </button>
-                  <button type="submit" className="flex-[2] py-3 bg-[#040404] text-white text-sm font-bold rounded-md shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-[0.98]">
+                  <button type="submit" className="flex-[2] py-3 bg-primary text-white text-sm font-semibold rounded-md shadow-lg shadow-none hover:bg-primary transition-all active:scale-[0.98]">
                     {isEditing ? 'Confirm Changes' : 'Initialize User'}
                   </button>
                 </div>
@@ -700,7 +700,7 @@ const UserManagement = () => {
           </div>
         )}
 
-        <div className="mt-8 flex flex-col md:flex-row items-center justify-center py-6 border-t border-slate-200 text-black font-bold">
+        <div className="mt-8 flex flex-col md:flex-row items-center justify-center py-6 border-t border-slate-200 text-slate-800 font-semibold">
           <ShieldCheck className="w-4 h-4 text-[var(--color-primary)]/50" />
         </div>
       </div>

@@ -3,6 +3,7 @@ import { Lock, ArrowRight, ShieldCheck, Activity, User, Database, CheckCircle, H
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../components/NotificationContext';
+import qcareLogo from '../assets/qcare-brand-logo.png';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -52,18 +53,18 @@ function Login() {
   /* Modern Corporate Tech Theme */
   const C = {
     primary: 'var(--color-primary)', // Sky blue
-    background: '#f1f5f9',
+    background: 'var(--qc-page-bg)',
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center font-sans relative overflow-hidden bg-slate-50">
+    <div className="qc-login min-h-screen flex items-center justify-center font-sans relative overflow-hidden bg-slate-50">
       {/* Pure Medical Field Background Animation */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute -bottom-[5%] -left-[5%] opacity-[0.03] -rotate-12">
-          <Stethoscope size={500} strokeWidth={0.5} className="text-[#040404]" />
+          <Stethoscope size={500} strokeWidth={0.5} className="text-slate-800" />
         </div>
         <div className="absolute -top-[10%] -right-[5%] opacity-[0.03] rotate-12">
-          <Activity size={600} strokeWidth={0.5} className="text-[#040404]" />
+          <Activity size={600} strokeWidth={0.5} className="text-slate-800" />
         </div>
 
         <div className="absolute top-[45%] w-full h-[120px] opacity-[0.08]">
@@ -94,7 +95,7 @@ function Login() {
         </div>
 
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="absolute text-[#C9A84C]/15 animate-pulse-medical" style={{
+          <div key={i} className="absolute text-teal-500/15 animate-pulse-medical" style={{
             top: `${15 + Math.random() * 70}%`,
             left: `${5 + Math.random() * 90}%`,
             animationDelay: `${i * 1.5}s`
@@ -161,14 +162,11 @@ function Login() {
             <div className="absolute inset-0 bg-black/20 z-0"></div>
             
             <div className="relative z-10 flex items-center gap-3 slide-up" style={{ animationDelay: '0.1s' }}>
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-teal-700 shadow-lg">
-                <Activity size={28} strokeWidth={2.5} />
-              </div>
-              <h1 className="text-3xl font-extrabold tracking-tight">QCare<span className="text-[var(--color-primary)]">.</span></h1>
+              <div className="qc-login-logo"><img src={qcareLogo} alt="QCare" width="150" height="50" /></div>
             </div>
 
             <div className="relative z-10 slide-up" style={{ animationDelay: '0.3s' }}>
-              <h2 className="text-4xl font-bold leading-tight mb-4">
+              <h2 className="text-4xl font-semibold leading-tight mb-4">
                 Better care.<br />
                 <span className="text-teal-200">Clearer action.</span>
               </h2>
@@ -176,7 +174,7 @@ function Login() {
                 One workspace to measure quality, learn from incidents and move improvements forward.
               </p>
               
-              <div className="mt-6 space-y-3 text-xs">
+              <div className="mt-6 space-y-3 text-[13px]">
                 <div className="flex items-center gap-3 text-white/85 font-medium">
                   <CheckCircle className="text-[var(--color-primary)]" size={20} />
                   <span>Measure what matters</span>
@@ -202,11 +200,11 @@ function Login() {
              <div className="w-full max-w-md slide-up" style={{ animationDelay: '0.2s' }}>
                 
                 <div className="text-center lg:text-left mb-6">
-                   <div className="inline-flex lg:hidden w-12 h-12 bg-white rounded-xl items-center justify-center text-white mb-4 shadow-lg">
-                      <Activity size={32} strokeWidth={2.5} className="text-[var(--color-primary)]" />
+                   <div className="inline-flex lg:hidden mb-4">
+                      <img src={qcareLogo} alt="QCare" width="150" height="50" />
                    </div>
-                   <h3 className="text-3xl font-bold text-black font-bold mb-3 tracking-tight">Welcome Back</h3>
-                   <p className="text-black font-bold font-medium text-sm">Please enter your credentials to access the portal.</p>
+                   <h3 className="text-3xl font-semibold text-slate-800 mb-3 tracking-tight">Welcome Back</h3>
+                   <p className="text-slate-800 font-semibold font-medium text-sm">Please enter your credentials to access the portal.</p>
                 </div>
 
                 {error && (
@@ -215,20 +213,20 @@ function Login() {
                       <ShieldCheck size={20} />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-red-700">Authentication Failed</h4>
-                      <p className="text-xs font-medium text-red-600 mt-1">{error}</p>
+                      <h4 className="text-sm font-semibold text-red-700">Authentication Failed</h4>
+                      <p className="text-[13px] font-medium text-red-600 mt-1">{error}</p>
                     </div>
                   </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-black font-bold" htmlFor="username">
+                    <label className="text-[13px] font-semibold normal-case tracking-normal text-slate-800" htmlFor="username">
                       Username or Email
                     </label>
                     <div className="relative group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <User className="h-5 w-5 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
+                        <User className="h-5 w-5 text-slate-800 font-semibold group-focus-within:text-[var(--color-primary)] transition-colors" />
                       </div>
                       <input
                         id="username"
@@ -238,7 +236,7 @@ function Login() {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         disabled={loading}
-                        className="w-full pl-12 pr-4 py-3.5 border-0 border-b-2 border-slate-200 bg-white text-black font-bold font-semibold focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200"
+                        className="w-full pl-12 pr-4 py-3.5 border-0 border-b-2 border-slate-200 bg-white text-slate-800 font-semibold focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200"
                         placeholder="••••••••"
                       />
                     </div>
@@ -246,20 +244,20 @@ function Login() {
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold uppercase tracking-wider text-black font-bold" htmlFor="password">
+                      <label className="text-[13px] font-semibold normal-case tracking-normal text-slate-800" htmlFor="password">
                         Password
                       </label>
                       <button
                         type="button"
                         onClick={() => { setShowForgotModal(true); setForgotUsername(''); setForgotSent(false); }}
-                        className="text-xs font-bold text-[var(--color-primary)] hover:underline transition-colors focus:outline-none"
+                        className="text-[13px] font-semibold text-[var(--color-primary)] hover:underline transition-colors focus:outline-none"
                       >
                         Forgot Password?
                       </button>
                     </div>
                     <div className="relative group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Lock className="h-5 w-5 text-black font-bold group-focus-within:text-[var(--color-primary)] transition-colors" />
+                        <Lock className="h-5 w-5 text-slate-800 font-semibold group-focus-within:text-[var(--color-primary)] transition-colors" />
                       </div>
                       <input
                         id="password"
@@ -269,7 +267,7 @@ function Login() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={loading}
-                        className="w-full pl-12 pr-14 py-3.5 border-0 border-b-2 border-slate-200 bg-white text-black font-bold font-semibold focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200"
+                        className="w-full pl-12 pr-14 py-3.5 border-0 border-b-2 border-slate-200 bg-white text-slate-800 font-semibold focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200"
                         placeholder="••••••••"
                       />
                       <button
@@ -291,7 +289,7 @@ function Login() {
                     disabled={loading}
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
-                    className="w-full py-4 rounded-md text-white font-bold text-sm bg-[var(--color-primary)] hover:bg-[var(--color-primary)] transition-all focus:outline-none focus:ring-4 focus:ring-[var(--color-primary)]/20 flex justify-center items-center gap-2 group mt-8 shadow-lg shadow-[var(--color-primary)]/20 disabled:opacity-70"
+                    className="w-full py-4 rounded-md text-white font-semibold text-sm bg-[var(--color-primary)] hover:bg-[var(--color-primary)] transition-all focus:outline-none focus:ring-4 focus:ring-[var(--color-primary)]/20 flex justify-center items-center gap-2 group mt-8 shadow-lg shadow-[var(--color-primary)]/20 disabled:opacity-70"
                   >
                     {loading ? (
                       <RefreshCcw className="w-5 h-5 animate-spin" />
@@ -305,14 +303,14 @@ function Login() {
                 </form>
 
                 <div className="mt-6 text-center border-t border-slate-100 pt-4 slide-up" style={{ animationDelay: '0.4s' }}>
-                  <div className="flex items-center justify-center gap-6 mb-3 text-black font-bold">
-                    <Database size={24} className="hover:text-black font-bold transition-colors cursor-pointer" />
-                    <ShieldCheck size={24} className="hover:text-black font-bold transition-colors cursor-pointer" />
-                    <Activity size={24} className="hover:text-black font-bold transition-colors cursor-pointer" />
+                  <div className="flex items-center justify-center gap-6 mb-3 text-slate-800 font-semibold">
+                    <Database size={24} className="hover:text-slate-800 font-semibold transition-colors cursor-pointer" />
+                    <ShieldCheck size={24} className="hover:text-slate-800 font-semibold transition-colors cursor-pointer" />
+                    <Activity size={24} className="hover:text-slate-800 font-semibold transition-colors cursor-pointer" />
                   </div>
-                  <p className="text-xs font-semibold text-black font-bold">
+                  <p className="text-[13px] font-semibold text-slate-800">
                     &copy; {new Date().getFullYear()} CMC Holding. All rights reserved. <br/>
-                    <span className="text-black font-bold mt-1 inline-block">Developed by Enterprise IT Department</span>
+                    <span className="text-slate-800 font-semibold mt-1 inline-block">Developed by Enterprise IT Department</span>
                   </p>
                 </div>
 
@@ -345,8 +343,8 @@ function Login() {
                     <Mail size={22} className="text-white" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-white">Forgot Password?</h2>
-                    <p className="text-xs text-white/70 mt-0.5">We'll help you reset it</p>
+                    <h2 className="text-lg font-semibold text-white">Forgot Password?</h2>
+                    <p className="text-[13px] text-white/70 mt-0.5">We'll help you reset it</p>
                   </div>
                 </div>
                 <button
@@ -369,12 +367,12 @@ function Login() {
                   </p>
 
                   <div className="space-y-2 mb-6">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-600" htmlFor="forgot-username">
+                    <label className="text-[13px] font-semibold normal-case tracking-normal text-slate-600" htmlFor="forgot-username">
                       Your Username
                     </label>
                     <div className="relative group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <User className="h-5 w-5 text-slate-400 group-focus-within:text-[var(--color-primary)] transition-colors" />
+                        <User className="h-5 w-5 text-slate-500 group-focus-within:text-[var(--color-primary)] transition-colors" />
                       </div>
                       <input
                         id="forgot-username"
@@ -406,7 +404,7 @@ function Login() {
                         setForgotLoading(false);
                       }
                     }}
-                    className="w-full py-3.5 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-[var(--color-primary)]/20"
+                    className="w-full py-3.5 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-[var(--color-primary)]/20"
                     style={{
                       background: (forgotUsername.trim() && !forgotLoading) ? 'var(--color-primary)' : '#cbd5e1',
                       cursor: (forgotUsername.trim() && !forgotLoading) ? 'pointer' : 'not-allowed',
@@ -421,7 +419,7 @@ function Login() {
                     {forgotLoading ? 'Sending...' : 'Send Reset Request'}
                   </button>
                   {forgotError && (
-                    <p className="mt-3 text-xs text-red-500 font-semibold text-center">{forgotError}</p>
+                    <p className="mt-3 text-[13px] text-red-500 font-semibold text-center">{forgotError}</p>
                   )}
                 </>
               ) : (
@@ -429,7 +427,7 @@ function Login() {
                   <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-5">
                     <CheckCircle size={36} className="text-green-500" />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-2">Request Sent!</h3>
+                  <h3 className="text-lg font-semibold text-slate-800 mb-2">Request Sent!</h3>
                   <p className="text-sm text-slate-500 leading-relaxed">
                     Your password reset request has been sent directly to{' '}
                     <span className="font-semibold text-[var(--color-primary)]">support@canadiancmc.com</span>.

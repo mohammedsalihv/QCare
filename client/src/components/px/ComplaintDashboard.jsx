@@ -21,22 +21,22 @@ const ComplaintDashboard = ({ stats }) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card, idx) => (
-          <div key={idx} className="bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+          <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 ">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${card.bg}`}>
                 <card.icon className={`w-6 h-6 ${card.color}`} />
               </div>
-              <span className="text-2xl font-black text-black font-bold dark:text-white">{card.value}</span>
+              <span className="text-2xl font-semibold text-slate-800 ">{card.value}</span>
             </div>
-            <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest">{card.label}</p>
+            <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">{card.label}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Category Distribution */}
-        <div className="bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm min-h-[400px]">
-           <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8">Complaints by Category</h3>
+        <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm min-h-[400px]">
+           <h3 className="text-sm font-semibold text-slate-800 normal-case tracking-normal mb-8">Complaints by Category</h3>
            <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -61,36 +61,36 @@ const ComplaintDashboard = ({ stats }) => {
               {categoryData.map((item, idx) => (
                 <div key={idx} className="flex items-center gap-2">
                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
-                   <span className="text-[10px] font-bold text-black font-bold uppercase truncate">{item.name}</span>
+                   <span className="text-[12px] font-semibold text-slate-800 normal-case truncate">{item.name}</span>
                 </div>
               ))}
            </div>
         </div>
 
         {/* Action List */}
-        <div className="bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-           <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8">Critical Attention Required</h3>
+        <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
+           <h3 className="text-sm font-semibold text-slate-800 normal-case tracking-normal mb-8">Critical Attention Required</h3>
            <div className="space-y-4">
-              <div className="p-5 rounded-2xl bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/30 flex items-center justify-between">
+              <div className="p-5 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-between">
                  <div className="flex items-center gap-4">
                     <ShieldAlert className="w-5 h-5 text-rose-600" />
                     <div>
-                       <h4 className="text-sm font-bold text-black font-bold dark:text-white">DOH Portal Escalations</h4>
-                       <p className="text-[10px] font-black text-black font-bold uppercase">2 Cases pending legal review</p>
+                       <h4 className="text-sm font-semibold text-slate-800 ">DOH Portal Escalations</h4>
+                       <p className="text-[12px] font-semibold text-slate-800 normal-case">2 Cases pending legal review</p>
                     </div>
                  </div>
-                 <button className="px-4 py-2 bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg">Review</button>
+                 <button className="px-4 py-2 bg-rose-600 text-white text-[12px] font-semibold normal-case tracking-normal rounded-lg">Review</button>
               </div>
 
-              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                  <div className="flex items-center gap-4">
-                    <Clock className="w-5 h-5 text-[#040404]" />
+                    <Clock className="w-5 h-5 text-slate-800" />
                     <div>
-                       <h4 className="text-sm font-bold text-black font-bold dark:text-white">Pending Acknowledgments</h4>
-                       <p className="text-[10px] font-black text-black font-bold uppercase">5 Complaints {'>'} 48h old</p>
+                       <h4 className="text-sm font-semibold text-slate-800 ">Pending Acknowledgments</h4>
+                       <p className="text-[12px] font-semibold text-slate-800 normal-case">5 Complaints {'>'} 48h old</p>
                     </div>
                  </div>
-                 <button className="px-4 py-2 bg-[#040404] text-white text-[10px] font-black uppercase tracking-widest rounded-lg">View</button>
+                 <button className="px-4 py-2 bg-primary text-white text-[12px] font-semibold normal-case tracking-normal rounded-lg">View</button>
               </div>
            </div>
         </div>

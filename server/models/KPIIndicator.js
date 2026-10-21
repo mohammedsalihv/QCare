@@ -87,10 +87,12 @@ const kpiIndicatorSchema = new mongoose.Schema({
   },
   target: {
     type: Number,
-    required: [true, 'Target value is required'],
+    required: function() { return !this.importRule?.preset && !this.calculationRule?.preset; },
     default: 0
   },
   importRule: {
+    preset: String,
+    version: String,
     aggregationMode: { type: String, enum: ['rows', 'totals'] },
     numeratorColumn: String,
     denominatorColumn: String,
@@ -105,7 +107,7 @@ const kpiIndicatorSchema = new mongoose.Schema({
     reasonColumn: String,
     riskColumn: String,
     measureType: { type: String, enum: ['compliance', 'event'] },
-    multiplier: { type: Number, enum: [100, 1000, 10000] },
+    multiplier: { type: Number, enum: [1, 100, 1000, 10000] },
     targetDirection: { type: String, enum: ['higher', 'lower'] }
   },
   importSummary: { type: mongoose.Schema.Types.Mixed },
@@ -116,7 +118,7 @@ const kpiIndicatorSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['on-track', 'at-risk', 'breached'],
+    enum: ['on-track', 'at-risk', 'breached', 'not-assessed'],
     default: 'on-track'
   },
   validationStatus: {
@@ -175,6 +177,18 @@ kpiIndicatorSchema.index({ indicatorCode: 1, reportingPeriod: 1, reportingYear: 
 
 // Pre-save hook to compute calculatedValue, variance, and status
 kpiIndicatorSchema.pre('save', function() {
+  const { getPreset } = require('../utils/waitingTime');
+  const preset = getPreset(this.calculationRule?.preset || this.importRule?.preset);
+  if (preset) {
+    this.target = preset.target;
+    this.unit = preset.unit;
+    const raw = this.denominator > 0 ? this.numerator / this.denominator * preset.multiplier : null;
+    this.calculatedValue = raw === null ? null : Number(raw.toFixed(2));
+    this.variance = raw === null || preset.target === null ? null : Number((raw - preset.target).toFixed(2));
+    this.status = raw === null || preset.target === null ? 'not-assessed' :
+      (preset.targetDirection === 'lower' ? (preset.targetStrict ? raw < preset.target : raw <= preset.target) : raw >= preset.target) ? 'on-track' : 'breached';
+    return;
+  }
   // Calculate value: (numerator / denominator) * 100
   if (this.denominator && this.denominator !== 0) {
     this.calculatedValue = parseFloat(((this.numerator / this.denominator) * (this.calculationRule?.multiplier || 100)).toFixed(2));

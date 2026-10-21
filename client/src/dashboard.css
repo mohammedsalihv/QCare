@@ -1,0 +1,94 @@
+.qd-dashboard { display: grid; gap: 24px; color: #25334b; padding-bottom: 12px; }
+.qd-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 4px 0 6px; }
+.qd-eyebrow { font-size: 10px; letter-spacing: .14em; font-weight: 750; color: #6c7891; margin-bottom: 9px; }
+.qd-heading h1 { font-size: clamp(27px, 3vw, 38px); font-weight: 750; line-height: 1.2; letter-spacing: -.045em; margin: 0 0 10px; }
+.qd-heading h1 > span { color: #0f9b8e; }
+.qd-heading > div > p:last-child { color: #617087; font-size: 13px; line-height: 1.7; }
+.qd-heading-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.qd-date, .qd-refresh { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; border: 1px solid #dbe3ee; border-radius: 12px; padding: 10px 14px; background: #fff; color: #475569; font-size: 12px; font-weight: 600; }
+.qd-refresh { background: #25334b; color: #fff; border-color: #25334b; }
+.qd-refresh:hover { background: #0f766e; }
+.qd-refresh:disabled { opacity: .6; cursor: wait; }
+.qd-hero { display: grid; grid-template-columns: 1fr 300px; align-items: center; position: relative; overflow: hidden; border-radius: 24px; padding: 34px 40px; background: radial-gradient(ellipse at 85% 20%, #267b75 0, transparent 55%), linear-gradient(115deg, #142e3b, #174d4d); color: #fff; }
+.qd-hero-copy { position: relative; z-index: 1; }
+.qd-hero-tag { display: inline-flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid #ffffff26; border-radius: 7px; color: #b6e7db; font-size: 9px; font-weight: 700; letter-spacing: .13em; }
+.qd-hero-tag > span { width: 6px; height: 6px; border-radius: 50%; background: #73dfb7; }
+.qd-hero h2 { margin: 18px 0 14px; font-size: clamp(27px, 3vw, 39px); letter-spacing: -.035em; line-height: 1.2; font-weight: 650; }
+.qd-hero-copy > p { max-width: 510px; font-size: 13px; color: #c3d8dc; line-height: 1.85; }
+.qd-hero-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 25px; font-size: 11px; color: #c3d8dc; }
+.qd-hero-meta > span { padding-left: 10px; border-left: 1px solid #ffffff30; margin-left: 4px; }
+.qd-hero-score { position: relative; display: flex; align-items: center; flex-direction: column; justify-content: center; gap: 7px; }
+.qd-hero-orbit { position: absolute; width: 320px; height: 320px; border: 1px solid #ffffff0d; border-radius: 50%; pointer-events: none; }
+.qd-hero-orbit::after { content: ''; position: absolute; inset: -32px; border: 1px solid #ffffff0b; border-radius: inherit; }
+.qd-score-ring { width: 160px; height: 160px; padding: 9px; border-radius: 50%; background: conic-gradient(#8be4c5 var(--score), #ffffff18 0); margin-bottom: 10px; z-index: 1; }
+.qd-score-ring > div { width: 100%; height: 100%; border-radius: 50%; background: #205451; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.qd-score-ring strong { font-size: 40px; font-weight: 700; letter-spacing: -.05em; }
+.qd-score-ring span { font-size: 12px; color: #c3e6df; }
+.qd-hero-score > p { font-size: 13px; font-weight: 600; }
+.qd-hero-score > small { font-size: 11px; color: #bdd8d6; }
+.qd-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.qd-metric { border: 1px solid #e0e6ef; background: #fff; padding: 22px; border-radius: 18px; box-shadow: 0 4px 12px #25334b03; }
+.qd-metric-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 20px; }
+.qd-metric-icon { display: inline-flex; padding: 11px; border-radius: 12px; background: #e8f6f2; color: #0d8276; }
+.qd-tone-1 .qd-metric-icon { background: #f0edfc; color: #7c65cb; }
+.qd-tone-2 .qd-metric-icon { background: #fff2e4; color: #b66c1a; }
+.qd-tone-3 .qd-metric-icon { background: #eaf1ff; color: #527ac7; }
+.qd-metric-scope { font-size: 10px; color: #64748b; }
+.qd-metric h2 { font-size: 12px; font-weight: 600; color: #56657d; }
+.qd-metric > strong { display: block; font-size: 34px; font-weight: 750; letter-spacing: -.04em; margin: 8px 0; line-height: 1.2; }
+.qd-metric > p { font-size: 11px; line-height: 1.6; color: #64748b; }
+.qd-chart-row { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 22px; }
+.qd-chart-row.qd-equal { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.qd-panel { min-width: 0; border: 1px solid #e0e6ef; background: #fff; border-radius: 20px; padding: 26px; box-shadow: 0 4px 12px #25334b02; }
+.qd-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.qd-panel-heading h2 { font-size: 17px; font-weight: 700; letter-spacing: -.025em; line-height: 1.4; }
+.qd-panel-heading > svg { color: #94a3b8; }
+.qd-panel-heading select { max-width: 145px; border: 1px solid #dce3ed; padding: 8px 10px; border-radius: 9px; background: #f8fafc; color: #475569; font-size: 11px; }
+.qd-caption { margin-top: 7px; font-size: 12px; color: #64748b; line-height: 1.7; }
+.qd-trend-summary { display: flex; align-items: center; flex-wrap: wrap; gap: 15px; margin-top: 22px; }
+.qd-trend-summary > strong { font-size: 30px; font-weight: 750; letter-spacing: -.04em; }
+.qd-trend-summary > strong > span { color: #94a3b8; font-size: 20px; }
+.qd-trend-summary > span { display: inline-flex; align-items: center; gap: 6px; color: #0d8276; background: #edf8f4; padding: 5px 8px; border-radius: 7px; font-size: 10px; }
+.qd-chart { height: 235px; margin-top: 16px; }
+.qd-chart-wide { height: 205px; }
+.qd-chart-foot { font-size: 10px; color: #64748b; line-height: 1.7; border-top: 1px solid #edf1f6; padding-top: 12px; margin-top: 12px; }
+.qd-donut { height: 215px; position: relative; margin: 10px 0; }
+.qd-donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+.qd-donut-center strong { font-size: 31px; font-weight: 750; letter-spacing: -.04em; }
+.qd-donut-center span { font-size: 10px; color: #64748b; }
+.qd-legend { display: grid; gap: 12px; padding-top: 8px; }
+.qd-legend > div { display: flex; align-items: center; gap: 9px; font-size: 12px; color: #56657d; }
+.qd-legend > div > span:first-child { width: 8px; height: 8px; border-radius: 3px; }
+.qd-legend strong { margin-left: auto; color: #25334b; }
+.qd-soft-badge, .qd-notification-count { display: inline-flex; align-items: center; gap: 6px; background: #f1f4f9; padding: 6px 9px; border-radius: 8px; font-size: 11px; color: #56657d; white-space: nowrap; }
+.qd-table-scroll { overflow-x: auto; margin-top: 22px; }
+.qd-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+.qd-table thead { background: #f6f8fb; }
+.qd-table th, .qd-table td { padding: 15px 12px; border-bottom: 1px solid #edf1f6; font-size: 12px; }
+.qd-table thead th { font-size: 10px; letter-spacing: .04em; font-weight: 650; color: #64748b; }
+.qd-table tbody th { font-weight: 500; color: #384861; white-space: normal; min-width: 180px; }
+.qd-table td:nth-child(2) { font-weight: 700; }
+.qd-table tbody tr:last-child > * { border-bottom: 0; }
+.qd-table tbody tr:hover { background: #f9fbfd; }
+.qd-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; padding: 5px 8px; border-radius: 6px; }
+.qd-status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.qd-status.attention { background: #fff4e7; color: #9a5b0d; }
+.qd-status.clear { background: #eaf7f1; color: #18735c; }
+.qd-status.neutral { background: #f1f4f9; color: #64748b; }
+.qd-feed { list-style: none; margin-top: 20px; }
+.qd-feed li { display: flex; gap: 12px; padding: 15px 0; border-bottom: 1px solid #edf1f6; }
+.qd-feed li:last-child { border-bottom: 0; }
+.qd-feed-dot { flex-shrink: 0; width: 9px; height: 9px; border-radius: 50%; background: #0f9b8e; box-shadow: 0 0 0 4px #e9f7f4; margin-top: 6px; }
+.qd-feed-dot.read { background: #94a3b8; box-shadow: 0 0 0 4px #f1f5f9; }
+.qd-feed p { font-size: 12px; line-height: 1.7; color: #475569; overflow-wrap: anywhere; }
+.qd-feed time { display: block; font-size: 10px; color: #64748b; margin-top: 5px; }
+.qd-empty { min-height: 260px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 10px; padding: 24px; background: radial-gradient(ellipse, #f5f9fc, #fff 70%); }
+.qd-empty > svg { color: #8aa7b2; margin-bottom: 6px; }
+.qd-empty strong { font-size: 14px; font-weight: 600; color: #475569; }
+.qd-empty span { max-width: 245px; font-size: 12px; color: #64748b; line-height: 1.7; }
+.qd-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-size: 11px; color: #64748b; }
+.qd-footer > span { font-size: 10px; }
+.qd-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 1100px) { .qd-heading { align-items: flex-start; } .qd-heading-actions { flex-direction: column; align-items: stretch; gap: 8px; } .qd-hero { padding: 30px; grid-template-columns: 1fr 230px; } .qd-metrics { gap: 12px; } .qd-metric { padding: 18px; } .qd-metric-scope { display: none; } .qd-chart-row { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); } .qd-panel { padding: 20px; } }
+@media (max-width: 800px) { .qd-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } .qd-metric-scope { display: inline; } .qd-chart-row, .qd-chart-row.qd-equal { grid-template-columns: 1fr; } .qd-hero { grid-template-columns: 1fr 190px; padding: 26px; } .qd-hero h2 { font-size: 29px; } .qd-score-ring { width: 135px; height: 135px; } .qd-hero-score > small { text-align: center; } .qd-hero-orbit { width: 220px; height: 220px; } }
+@media (max-width: 520px) { .qd-dashboard { gap: 18px; } .qd-heading { flex-direction: column; gap: 16px; } .qd-heading-actions { flex-direction: row; width: 100%; justify-content: space-between; } .qd-hero { grid-template-columns: 1fr; gap: 30px; padding: 25px; } .qd-hero-score { padding: 4px 0 12px; } .qd-hero h2 { font-size: 30px; } .qd-hero-copy > p { font-size: 12px; } .qd-hero-meta > span { padding-left: 0; border: 0; margin-left: 0; } .qd-metric { padding: 16px; } .qd-metric > strong { font-size: 29px; } .qd-metric-scope { display: none; } .qd-panel-heading h2 { font-size: 16px; } .qd-panel { padding: 18px; } .qd-eyebrow { font-size: 9px; } .qd-panel-heading select { max-width: 125px; } }

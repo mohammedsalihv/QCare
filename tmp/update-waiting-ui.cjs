@@ -1,0 +1,11 @@
+const fs = require('fs');
+const path = 'client/src/pages/IndicatorWorkspace.jsx';
+let s = fs.readFileSync(path, 'utf8');
+s = s.replace("import ImportReportDetails from '../components/kpi/ImportReportDetails';", "import ImportReportDetails from '../components/kpi/ImportReportDetails';\nimport WaitingTimeSetup from '../components/kpi/WaitingTimeSetup';");
+s = s.replace('    <div className="qi-toolbar">', '    {canManage && <WaitingTimeSetup period={period} year={year} onSaved={load} />}\n    <div className="qi-toolbar">');
+s = s.replace('const resultUnit = multiplier === 100', "const resultUnit = multiplier === 1 ? ' days' : multiplier === 100");
+s = s.replace('<button type="button" disabled={saving} className={entryMode === \'manual\'', '<button type="button" disabled={saving || Boolean(definition.importRule?.preset)} className={entryMode === \'manual\'');
+s = s.replaceAll("(report.calculationRule?.multiplier || 100) === 100 ? '%'", "report.unit === 'days' ? ' days' : (report.calculationRule?.multiplier || 100) === 100 ? '%'");
+s = s.replaceAll("(item.calculationRule?.multiplier || 100) === 100 ? '%'", "item.unit === 'days' ? ' days' : (item.calculationRule?.multiplier || 100) === 100 ? '%'");
+s = s.replace('!final && !otherSubmitter && <button', '!final && !otherSubmitter && !definition.importRule?.preset && <button');
+fs.writeFileSync(path, s);

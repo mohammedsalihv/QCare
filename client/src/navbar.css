@@ -1,0 +1,99 @@
+/* Navbar palette drawn from the supplied QCare identity. */
+.qc-command-header {
+  min-height: 66px;
+  padding-block: 6px;
+  border-color: #dce9ed;
+  background: #fff;
+  box-shadow: 0 5px 22px #05234b08;
+}
+
+.qc-command-header .qc-logo-brand {
+  gap: 20px;
+  min-width: 0;
+  border-radius: 10px;
+}
+
+.qc-logo-brand img {
+  display: block;
+  width: 150px;
+  height: 50px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.qc-navbar-identity { display: flex; align-items: center; min-width: 0; gap: 20px; margin-right: auto; }
+.qc-command-header .qc-navbar-identity .qc-logo-brand { margin-right: 0; }
+.qc-health-quote {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 350px;
+  height: 44px;
+  padding-left: 18px;
+  border-left: 1px solid #dce9ed;
+  color: #05234b;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: .01em;
+  line-height: 1.4;
+}
+
+.qc-health-quote > div { flex: 1; min-width: 0; }
+.qc-health-quote-text { margin: 0; min-height: 39px; font-family: Georgia, 'Times New Roman', serif; font-size: 15px; line-height: 1.3; font-weight: 500; font-style: italic; letter-spacing: .01em; color: #655345; }
+.qc-health-quote button { display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; background: transparent; color: #57717c; opacity: 0; pointer-events: none; transition: opacity .15s; }
+.qc-health-quote:hover button, .qc-health-quote:focus-within button { opacity: 1; pointer-events: auto; }
+.qc-health-quote button:hover { background: #e2f2f1; color: #008b8b; }
+.qc-quote-accessible { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.qc-quote-reduced { display: none; }
+.qc-quote-caret { display: inline-block; width: 1px; height: 1em; margin-left: 3px; background: #987858; vertical-align: -.12em; animation: qc-caret-blink 1s step-end infinite; }
+.qc-health-quote.is-paused .qc-quote-caret { animation: none; opacity: .4; }
+@keyframes qc-caret-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .qc-quote-typed { display: none; }
+  .qc-quote-reduced { display: inline; }
+  .qc-quote-caret { animation: none; }
+}
+
+.qc-command-header .qc-header-search-input {
+  background: #f1f7f8;
+  border: 1px solid #e0ecee;
+  color: #008b8b;
+  border-radius: 13px;
+}
+
+.qc-command-header .qc-header-search-input:focus-within {
+  background: #fff;
+  border-color: #008b8b;
+  box-shadow: 0 0 0 3px #008b8b12;
+}
+
+.qc-command-header > .qc-icon-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: #05234b;
+  background: #f1f7f8;
+}
+
+.qc-command-header > .qc-icon-button:hover { background: #e2f2f1; }
+.qc-command-header .qc-notification-dot { background: #008e8e; }
+.qc-command-header .qc-navbar-profile { color: #05234b; }
+.qc-command-header .qc-avatar {
+  background: #05234b;
+  color: #fff;
+  box-shadow: 0 0 0 3px #e4f3f1;
+}
+
+@media (max-width: 1100px) {
+  .qc-health-quote { display: none; }
+}
+
+@media (max-width: 600px) {
+  .qc-command-header { padding-block: 10px; }
+  .qc-logo-brand img { width: 132px; height: 44px; }
+  .qc-command-header .qc-logo-brand { gap: 0; }
+}
+
+@media (max-width: 360px) {
+  .qc-logo-brand img { width: 120px; height: 40px; }
+}

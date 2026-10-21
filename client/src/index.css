@@ -8,28 +8,47 @@
   --color-primary: #0f766e;
   --color-secondary: #14b8a6;
   --color-accent: #ffffff;
-  --color-gold-dark: #8A6E1C;
-  --color-gold-muted: #C9A84C;
+  /* Legacy accent aliases now resolve to the shared teal brand palette. */
+  --color-gold-dark: #0f766e;
+  --color-gold-muted: #5aa89f;
   /* Modern Typography Scale */
-  --font-size-sm: 0.95rem;
-  --font-size-base: 1.1rem;
-  --font-size-lg: 1.25rem;
-  --font-size-xl: 1.5rem;
-  --font-size-2xl: 1.75rem;
-  --font-size-3xl: 2rem;
-  --font-size-4xl: 2.5rem;
-  --font-size-5xl: 3.5rem;
+  --text-xs: 0.8276rem;
+  --text-sm: 0.9655rem;
+  --text-base: 1.0345rem;
+  --text-lg: 1.2414rem;
+  --text-xl: 1.3793rem;
+  --text-2xl: 1.6552rem;
+  --text-3xl: 1.931rem;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --shadow-sm: 0 2px 8px #17324d06;
+  --shadow-md: 0 4px 16px #17324d0a;
+  --shadow-lg: 0 8px 24px #17324d10;
+}
+
+:root {
+  --qc-page-bg: #edf2f6;
 }
 
 html {
+  background: var(--qc-page-bg);
   font-size: 14.5px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--qc-page-bg);
   font-family: var(--font-sans);
   letter-spacing: -0.01em;
+}
+
+#root {
+  min-height: 100vh;
 }
 
 h1, h2, h3, h4, h5, h6 {

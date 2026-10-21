@@ -157,12 +157,12 @@ const SystemManagementDrawer = ({ isOpen, onClose }) => {
           {/* Header */}
           <div className="p-8 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
             <div>
-              <h2 className="text-xl font-black text-black font-bold uppercase tracking-tight">Admin Control</h2>
-              <p className="text-[10px] text-black font-bold font-bold uppercase tracking-[0.2em] mt-1">Administrative Controls</p>
+              <h2 className="text-xl font-semibold text-slate-800 normal-case tracking-tight">Admin Control</h2>
+              <p className="text-[12px] text-slate-800 font-semibold normal-case tracking-normal mt-1">Administrative Controls</p>
             </div>
             <button 
               onClick={handleClose}
-              className="p-3 rounded-2xl bg-white shadow-sm border border-slate-100 text-black font-bold hover:text-black font-bold transition-all active:scale-95"
+              className="p-3 rounded-2xl bg-white shadow-sm border border-slate-100 text-slate-800 font-semibold hover:text-slate-800 transition-all active:scale-95"
             >
               <X className="w-6 h-6" />
             </button>
@@ -170,15 +170,15 @@ const SystemManagementDrawer = ({ isOpen, onClose }) => {
 
           {/* Quick Info */}
           <div className="p-8 pb-0">
-             <div className="p-5 rounded-3xl bg-[#040404] text-white relative overflow-hidden shadow-xl shadow-slate-200">
+             <div className="p-5 rounded-2xl bg-primary text-white relative overflow-hidden shadow-xl shadow-slate-200">
                 <div className="relative z-10">
                    <div className="flex items-center gap-3 mb-4">
                       <div className="w-8 h-8 rounded-xl bg-[var(--color-primary)]/20 flex items-center justify-center">
                          <ShieldCheck className="w-4 h-4 text-[var(--color-primary)]" />
                       </div>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-primary)]">Admin Privileges Active</span>
+                      <span className="text-[12px] font-semibold normal-case tracking-normal text-[var(--color-primary)]">Admin Privileges Active</span>
                    </div>
-                   <p className="text-xs font-medium leading-relaxed text-slate-350">
+                   <p className="text-[13px] font-medium leading-relaxed text-slate-350">
                       You have full access to system configuration. Use these tools to manage users, roles, credential matrices, and system log trails.
                    </p>
                 </div>
@@ -190,7 +190,7 @@ const SystemManagementDrawer = ({ isOpen, onClose }) => {
           <div className="flex-1 overflow-y-auto p-8 space-y-8 scrollbar-none">
             {sections.map((section, sIdx) => (
               <div key={sIdx} className="space-y-4">
-                <h4 className="text-[10px] font-black text-slate-400 font-bold uppercase tracking-[0.3em] flex items-center gap-4">
+                <h4 className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal flex items-center gap-4">
                   {section.title}
                   <div className="flex-1 h-px bg-slate-100"></div>
                 </h4>
@@ -206,10 +206,10 @@ const SystemManagementDrawer = ({ isOpen, onClose }) => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-0.5">
-                          <h4 className="font-black text-black font-bold text-xs uppercase tracking-tight truncate">{item.label}</h4>
-                          <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[var(--color-primary)] group-hover:translate-x-0.5 transition-all shrink-0" />
+                          <h4 className="font-semibold text-slate-800 text-[13px] normal-case tracking-tight truncate">{item.label}</h4>
+                          <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-[var(--color-primary)] group-hover:translate-x-0.5 transition-all shrink-0" />
                         </div>
-                        <p className="text-[10px] text-slate-450 font-bold font-medium leading-relaxed pr-4 line-clamp-2">{item.description}</p>
+                        <p className="text-[12px] text-slate-450 font-semibold font-medium leading-relaxed pr-4 line-clamp-2">{item.description}</p>
                       </div>
                     </button>
                   ))}
@@ -221,8 +221,8 @@ const SystemManagementDrawer = ({ isOpen, onClose }) => {
           {/* Footer Section */}
           <div className="p-8 border-t border-slate-100 bg-slate-50/50">
              <div className="flex items-center justify-between">
-                <span className="text-[9px] text-black font-bold font-black uppercase tracking-widest">QCare Enterprise v1.0.4</span>
-                <div className="flex items-center gap-1.5 text-[9px] font-black text-black font-bold uppercase tracking-widest">
+                <span className="text-[12px] text-slate-800 font-semibold normal-case tracking-normal">QCare Enterprise v1.0.4</span>
+                <div className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-800 normal-case tracking-normal">
                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
                    SECURE SESSION
                 </div>
