@@ -19,51 +19,51 @@ const AssetRegisterTable = ({ assets, onMaintenance, onHistory }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-white rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
       <Table className="w-full text-left border-collapse">
         <thead>
-          <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50">
-            <th className="p-6 text-[10px] font-black text-black font-bold uppercase tracking-[0.2em]">Asset ID / Name</th>
-            <th className="p-6 text-[10px] font-black text-black font-bold uppercase tracking-[0.2em]">Department</th>
-            <th className="p-6 text-[10px] font-black text-black font-bold uppercase tracking-[0.2em]">Calibration Due</th>
-            <th className="p-6 text-[10px] font-black text-black font-bold uppercase tracking-[0.2em]">Criticality</th>
-            <th className="p-6 text-[10px] font-black text-black font-bold uppercase tracking-[0.2em]">Status</th>
-            <th className="p-6 text-[10px] font-black text-black font-bold uppercase tracking-[0.2em]">Actions</th>
+          <tr className="border-b border-slate-100 bg-slate-50/50">
+            <th className="p-6 text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Asset ID / Name</th>
+            <th className="p-6 text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Department</th>
+            <th className="p-6 text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Calibration Due</th>
+            <th className="p-6 text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Criticality</th>
+            <th className="p-6 text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Status</th>
+            <th className="p-6 text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Actions</th>
           </tr>
         </thead>
         <tbody>
           {assets?.map((asset) => {
             const daysLeft = getDayCount(asset.nextCalibrationDate);
             return (
-              <tr key={asset._id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 transition-colors">
+              <tr key={asset._id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                 <td className="p-6">
-                   <span className="text-xs font-black text-black font-bold dark:text-white uppercase tracking-tight">{asset.assetId}</span>
-                   <p className="text-[10px] font-bold text-black font-bold font-bold uppercase mt-0.5">{asset.equipmentName}</p>
+                   <span className="text-[13px] font-semibold text-slate-800 normal-case tracking-tight">{asset.assetId}</span>
+                   <p className="text-[12px] font-semibold text-slate-800 normal-case mt-0.5">{asset.equipmentName}</p>
                 </td>
                 <td className="p-6">
-                   <span className="text-[10px] font-black text-black font-bold font-bold uppercase tracking-widest">{asset.department}</span>
+                   <span className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">{asset.department}</span>
                 </td>
                 <td className="p-6">
                    <div className="flex flex-col">
-                      <span className={`text-xs font-bold ${daysLeft < 30 ? 'text-rose-600' : 'text-black font-bold dark:text-black font-bold'}`}>
+                      <span className={`text-[13px] font-semibold ${daysLeft < 30 ? 'text-rose-600' : 'text-slate-800 font-semibold'}`}>
                          {new Date(asset.nextCalibrationDate).toLocaleDateString()}
                       </span>
                       {daysLeft !== null && (
-                        <span className={`text-[9px] font-black uppercase ${daysLeft < 30 ? 'text-rose-400 animate-pulse' : 'text-black font-bold'}`}>
+                        <span className={`text-[12px] font-semibold normal-case ${daysLeft < 30 ? 'text-rose-400 animate-pulse' : 'text-slate-800 font-semibold'}`}>
                            {daysLeft < 0 ? 'Overdue!' : `${daysLeft} days left`}
                         </span>
                       )}
                    </div>
                 </td>
                 <td className="p-6">
-                   <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                     asset.criticality === 'life-saving' ? 'bg-rose-100 text-rose-600 border border-rose-200' : 'bg-slate-100 text-black font-bold'
+                   <span className={`px-3 py-1 rounded-full text-[12px] font-semibold normal-case tracking-normal ${
+                     asset.criticality === 'life-saving' ? 'bg-rose-100 text-rose-600 border border-rose-200' : 'bg-slate-100 text-slate-800 font-semibold'
                    }`}>
                       {asset.criticality}
                    </span>
                 </td>
                 <td className="p-6">
-                   <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${getStatusBadge(asset.status)}`}>
+                   <span className={`px-3 py-1 rounded-full text-[12px] font-semibold normal-case tracking-normal ${getStatusBadge(asset.status)}`}>
                       {asset.status}
                    </span>
                 </td>
@@ -71,14 +71,14 @@ const AssetRegisterTable = ({ assets, onMaintenance, onHistory }) => {
                    <div className="flex gap-2">
                       <button 
                         onClick={() => onMaintenance(asset)}
-                        className="p-2 bg-slate-100 dark:bg-slate-800 text-black font-bold hover:text-[#040404] hover:bg-slate-100 rounded-xl transition-all"
+                        className="p-2 bg-slate-100 text-slate-800 font-semibold hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-all"
                         title="Log Maintenance"
                       >
                          <PenTool className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => onHistory(asset._id)}
-                        className="p-2 bg-slate-100 dark:bg-slate-800 text-black font-bold hover:text-black font-bold hover:bg-slate-200 rounded-xl transition-all"
+                        className="p-2 bg-slate-100 text-slate-800 font-semibold hover:text-slate-800 hover:bg-slate-200 rounded-xl transition-all"
                         title="View History"
                       >
                          <History className="w-4 h-4" />
@@ -90,7 +90,7 @@ const AssetRegisterTable = ({ assets, onMaintenance, onHistory }) => {
           })}
           {(!assets || assets.length === 0) && (
             <tr>
-              <td colSpan="6" className="p-20 text-center text-[10px] font-black text-black font-bold uppercase tracking-widest">
+              <td colSpan="6" className="p-20 text-center text-[12px] font-semibold text-slate-800 normal-case tracking-normal">
                 No equipment assets registered.
               </td>
             </tr>

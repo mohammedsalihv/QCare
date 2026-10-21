@@ -14,24 +14,24 @@ import {
 } from 'lucide-react';
 
 /* ─────────────────────────────────────────
-   Shared button design tokens (black & white)
+   Shared QCare button styles
    ───────────────────────────────────────── */
 
-// Primary — solid black, white text
-const btnPrimary = 'inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-black hover:bg-slate-800 active:scale-95 text-white text-[10px] font-black uppercase tracking-widest rounded-xl border border-black transition-all duration-150 select-none';
+// Primary — teal primary action
+const btnPrimary = 'inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary active:scale-95 text-white text-[12px] font-semibold normal-case tracking-normal rounded-xl border border-slate-200 transition-all duration-150 select-none';
 
-// Secondary / Cancel — white bg, black border
-const btnSecondary = 'inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-50 active:scale-95 text-black text-[10px] font-black uppercase tracking-widest rounded-xl border border-black/20 hover:border-black/40 transition-all duration-150 select-none';
+// Secondary / Cancel — white surface, neutral border
+const btnSecondary = 'inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-50 active:scale-95 text-slate-800 text-[12px] font-semibold normal-case tracking-normal rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-150 select-none';
 
 // Icon-only — ghost, tight padding
-const btnIcon = 'inline-flex items-center justify-center w-8 h-8 rounded-xl bg-white border border-slate-200 hover:border-black hover:bg-black hover:text-white text-slate-500 transition-all duration-150 active:scale-95 select-none';
+const btnIcon = 'inline-flex items-center justify-center w-8 h-8 rounded-xl bg-white border border-slate-200 hover:border-slate-200 hover:bg-primary hover:text-white text-slate-500 transition-all duration-150 active:scale-95 select-none';
 
 // Icon danger — becomes red on hover
-const btnIconDanger = 'inline-flex items-center justify-center w-8 h-8 rounded-xl bg-white border border-slate-200 hover:border-rose-400 hover:bg-rose-50 hover:text-rose-600 text-slate-400 transition-all duration-150 active:scale-95 select-none';
+const btnIconDanger = 'inline-flex items-center justify-center w-8 h-8 rounded-xl bg-white border border-slate-200 hover:border-rose-400 hover:bg-rose-50 hover:text-rose-600 text-slate-500 transition-all duration-150 active:scale-95 select-none';
 
-// Permission pill — unchecked white / checked solid black
-const permOff = 'inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-400 hover:border-slate-400 hover:text-slate-700 text-[9px] font-bold uppercase tracking-wider transition-all duration-150 active:scale-95 select-none';
-const permOn  = 'inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-black bg-black text-white text-[9px] font-bold uppercase tracking-wider transition-all duration-150 active:scale-95 select-none';
+// Permission pill — unchecked white / checked teal
+const permOff = 'inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-500 hover:border-slate-400 hover:text-slate-700 text-[12px] font-semibold normal-case tracking-normal transition-all duration-150 active:scale-95 select-none';
+const permOn  = 'inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-primary text-white text-[12px] font-semibold normal-case tracking-normal transition-all duration-150 active:scale-95 select-none';
 
 const ApplicationRoles = () => {
   const { showNotification, confirm } = useNotification();
@@ -162,29 +162,29 @@ const ApplicationRoles = () => {
 
         {/* ── Page Header ── */}
         <div>
-          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest mb-1 text-slate-500">
+          <div className="flex items-center gap-2 text-[12px] font-semibold normal-case tracking-normal mb-1 text-slate-500">
             <span>Home</span>
             <ChevronRight className="w-2.5 h-2.5" />
             <span>Security & Access</span>
             <ChevronRight className="w-2.5 h-2.5" />
-            <span className="text-black">Application Roles Matrix</span>
+            <span className="text-slate-800">Application Roles Matrix</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-black tracking-tight">Application Roles & Permissions</h1>
+          <h1 className="text-2xl font-semibold text-slate-800 tracking-tight">Application Roles & Permissions</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           {/* ── Left: Roles Panel ── */}
           <div className="lg:col-span-1 flex flex-col gap-6">
-            <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
 
               {/* panel header */}
               <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-black flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
                     <Lock className="w-3.5 h-3.5 text-white" />
                   </div>
-                  <h4 className="text-[10px] font-black text-black uppercase tracking-widest">System Roles</h4>
+                  <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">System Roles</h4>
                 </div>
                 {/* Add Role — primary black icon button */}
                 <button onClick={openAdd} title="Add New Role" className={btnPrimary + ' px-3 py-2'}>
@@ -203,16 +203,16 @@ const ApplicationRoles = () => {
                       onClick={() => setActiveRole(r.id)}
                       className={`group relative p-4 rounded-2xl border cursor-pointer transition-all duration-150 ${
                         isActive
-                          ? 'bg-black border-black'
+                          ? 'bg-primary border-slate-200'
                           : 'bg-white border-slate-100 hover:border-slate-300'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <div className={`font-bold text-sm tracking-tight ${isActive ? 'text-white' : 'text-black'}`}>
+                          <div className={`font-semibold text-sm tracking-tight ${isActive ? 'text-white' : 'text-slate-800'}`}>
                             {r.label}
                           </div>
-                          <p className={`text-[10px] font-medium leading-relaxed mt-1 ${isActive ? 'text-white/60' : 'text-slate-500'}`}>
+                          <p className={`text-[12px] font-medium leading-relaxed mt-1 ${isActive ? 'text-white/60' : 'text-slate-500'}`}>
                             {r.description}
                           </p>
                         </div>
@@ -243,12 +243,12 @@ const ApplicationRoles = () => {
             </div>
 
             {/* security notice */}
-            <div className="p-6 rounded-[2rem] bg-black text-white flex flex-col gap-3 relative overflow-hidden">
+            <div className="p-6 rounded-2xl bg-primary text-white flex flex-col gap-3 relative overflow-hidden">
               <div className="flex items-center gap-2.5">
                 <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">Security Warning</span>
+                <span className="text-[12px] font-semibold normal-case tracking-normal text-amber-400">Security Warning</span>
               </div>
-              <p className="text-[11px] font-medium leading-relaxed text-white/60">
+              <p className="text-[12px] font-medium leading-relaxed text-white/60">
                 Changes to the roles permissions matrix instantly affect active user sessions.
                 Grant permissions with caution. Ensure at least one role maintains SuperAdmin
                 access to prevent lockout.
@@ -259,14 +259,14 @@ const ApplicationRoles = () => {
 
           {/* ── Right: Permissions Matrix ── */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden flex flex-col h-full">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-full">
 
               {/* matrix header */}
               <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                 <div>
-                  <h4 className="text-[10px] font-black text-black uppercase tracking-widest">Module Authorization Matrix</h4>
-                  <p className="text-[10px] text-slate-400 font-medium mt-0.5">
-                    Editing:&nbsp;<span className="font-black text-black uppercase">{activeRole}</span>
+                  <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Module Authorization Matrix</h4>
+                  <p className="text-[12px] text-slate-500 font-medium mt-0.5">
+                    Editing:&nbsp;<span className="font-semibold text-slate-800 normal-case">{activeRole}</span>
                   </p>
                 </div>
                 {/* Save — primary black */}
@@ -282,8 +282,8 @@ const ApplicationRoles = () => {
                   return (
                     <div key={m.key} className="px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors">
                       <div>
-                        <div className="font-bold text-black text-sm tracking-tight">{m.label}</div>
-                        <p className="text-[11px] text-slate-400 font-medium mt-0.5">{m.desc}</p>
+                        <div className="font-semibold text-slate-800 text-sm tracking-tight">{m.label}</div>
+                        <p className="text-[12px] text-slate-500 font-medium mt-0.5">{m.desc}</p>
                       </div>
                       <div className="flex items-center gap-2 flex-wrap">
                         {permActions.map(({ action, label, icon: Icon }) => (
@@ -309,19 +309,19 @@ const ApplicationRoles = () => {
         {showRoleModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowRoleModal(false)} />
-            <div className="bg-white rounded-[2rem] shadow-2xl relative w-full max-w-md overflow-hidden border border-slate-200 animate-in zoom-in-95 duration-200">
+            <div className="bg-white rounded-2xl shadow-2xl relative w-full max-w-md overflow-hidden border border-slate-200 animate-in zoom-in-95 duration-200">
 
               {/* modal header */}
               <div className="px-8 pt-8 pb-6 border-b border-slate-100 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center">
                     <Lock className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-black text-black tracking-tight">
+                    <h3 className="text-lg font-semibold text-slate-800 tracking-tight">
                       {isEditingRole ? 'Edit Role' : 'Add New Role'}
                     </h3>
-                    <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                    <p className="text-[12px] text-slate-500 font-medium mt-0.5">
                       {isEditingRole ? 'Update label and description' : 'Define a custom role and its scope'}
                     </p>
                   </div>
@@ -339,24 +339,24 @@ const ApplicationRoles = () => {
               {/* modal form */}
               <form onSubmit={handleSubmit} className="px-8 py-6 space-y-5">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Role Label</label>
+                  <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal">Role Label</label>
                   <input
                     value={roleForm.label}
                     onChange={(e) => setRoleForm({ ...roleForm, label: e.target.value })}
                     required
                     placeholder="e.g. Clinical Director"
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-black transition-all text-sm font-semibold text-black placeholder:font-normal placeholder:text-slate-400"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-slate-200 transition-all text-sm font-semibold text-slate-800 placeholder:font-normal placeholder:text-slate-500"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Role Description</label>
+                  <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal">Role Description</label>
                   <textarea
                     value={roleForm.description}
                     onChange={(e) => setRoleForm({ ...roleForm, description: e.target.value })}
                     required
                     rows={3}
                     placeholder="Describe the access permissions and scope of this role..."
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-black transition-all text-sm font-semibold text-black resize-none placeholder:font-normal placeholder:text-slate-400"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-slate-200 transition-all text-sm font-semibold text-slate-800 resize-none placeholder:font-normal placeholder:text-slate-500"
                   />
                 </div>
 

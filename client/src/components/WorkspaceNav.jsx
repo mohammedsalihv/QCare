@@ -1,31 +1,54 @@
-﻿import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Activity, ArrowUpRight, Bell, Grid2X2, LogOut, Search, X } from 'lucide-react';
-import { availableWorkspaces, workspacePath, matchesToolSearch, normalizeToolSearch } from '../utils/workspaces';
+import { ArrowUpRight, Bell, ChevronDown, PanelRightOpen, Pause, Play, Search } from 'lucide-react';
+import WorkspaceSidebar from './WorkspaceSidebar';
+import { availableWorkspaces, workspacePath, matchesToolSearch } from '../utils/workspaces';
 import { useNotification } from './NotificationContext';
+import qcareLogo from '../assets/qcare-brand-logo.png';
+import '../navbar.css';
+
+// Original healthcare messages; intentionally not attributed to an author.
+const healthcareQuotes = [
+  'Compassion is at the heart of every healing journey.',
+  'Better care begins with listening.',
+  'Every patient deserves dignity, safety and kindness.',
+  'Small improvements today build safer care tomorrow.',
+  'Behind every measure is a person who matters.',
+  'Great care grows through teamwork and trust.',
+];
 
 export default function WorkspaceNav({ user, openProfileDrawer }) {
-  const [query, setQuery] = useState('');
+  const [{ quoteIndex, quoteElapsed }, setQuoteProgress] = useState({ quoteIndex: 0, quoteElapsed: 0 });
+  const [quotesPaused, setQuotesPaused] = useState(false);
+  useEffect(() => {
+    if (quotesPaused) return;
+    const timer = window.setInterval(() => {
+      if (!document.hidden) setQuoteProgress(current => current.quoteElapsed >= 11950
+        ? { quoteIndex: (current.quoteIndex + 1) % healthcareQuotes.length, quoteElapsed: 0 }
+        : { ...current, quoteElapsed: current.quoteElapsed + 50 });
+    }, 50);
+    return () => window.clearInterval(timer);
+  }, [quotesPaused]);
   const [search, setSearch] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const searchBox = useRef(null);
   const searchInput = useRef(null);
-  const dialog = useRef(null);
+  const navigationDrawer = useRef(null);
+
+
   const location = useLocation();
   const navigate = useNavigate();
   const { feedNotifications, confirm } = useNotification();
   const groups = availableWorkspaces(user?.role);
-  const filtered = groups.map(group => ({ ...group, links: group.links.filter(([label, slug]) => !normalizeToolSearch(query) || matchesToolSearch(query, label, slug, `${group.name} ${group.description}`)) })).filter(group => group.links.length);
   const matches = groups.flatMap(group => group.links.map(([label, slug]) => ({ label, slug, group: group.name }))).filter(item => matchesToolSearch(search, item.label, item.slug, item.group));
   const unread = feedNotifications.filter(item => !item.isRead).length;
-  const current = groups.flatMap(group => group.links).find(([, slug]) => workspacePath(slug) === location.pathname)?.[0];
-  const open = () => { setSearchOpen(false); setQuery(''); if (!dialog.current.open) dialog.current.showModal(); };
-  const close = () => dialog.current?.close();
+  const open = () => { setSearchOpen(false); if (!navigationDrawer.current?.open) navigationDrawer.current?.showModal(); };
+  const close = () => navigationDrawer.current?.close();
   useEffect(() => {
     const handleKey = event => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
-        if (dialog.current.open) dialog.current.close();
+        navigationDrawer.current?.close();
         searchInput.current?.focus();
         setSearchOpen(true);
       }
@@ -33,6 +56,7 @@ export default function WorkspaceNav({ user, openProfileDrawer }) {
     window.addEventListener('keydown', handleKey);
     const handleOutside = event => {
       if (!searchBox.current?.contains(event.target)) setSearchOpen(false);
+
     };
     document.addEventListener('pointerdown', handleOutside);
     return () => {
@@ -40,6 +64,7 @@ export default function WorkspaceNav({ user, openProfileDrawer }) {
       document.removeEventListener('pointerdown', handleOutside);
     };
   }, []);
+  useEffect(() => { navigationDrawer.current?.close(); }, [location.pathname, location.search]);
   const logout = () => {
     close();
     confirm({ title: 'Sign out of QCare?', message: 'You will return to the login page.', confirmLabel: 'Sign out', cancelLabel: 'Stay signed in', onConfirm: () => {
@@ -50,8 +75,18 @@ export default function WorkspaceNav({ user, openProfileDrawer }) {
   };
   return <>
     <header className="qc-command-header">
-      <Link to="/dashboard" className="qc-command-brand" aria-label="QCare home"><Activity size={25} /><span>QCare<span>.</span></span></Link>
-      <span className="qc-command-context">{current || 'Quality in motion'}</span>
+      <div className="qc-navbar-identity">
+        <Link to="/dashboard" className="qc-command-brand qc-logo-brand" aria-label="QCare home"><img src={qcareLogo} alt="QCare" width="2172" height="724" /></Link>
+        <div className={`qc-health-quote${quotesPaused ? ' is-paused' : ''}`}>
+          <div><p className="qc-health-quote-text">
+            <span className="qc-quote-accessible">“{healthcareQuotes[quoteIndex]}”</span>
+            <span className="qc-quote-typed" aria-hidden="true">“{healthcareQuotes[quoteIndex].slice(0, Math.floor(quoteElapsed / 55))}{quoteElapsed >= healthcareQuotes[quoteIndex].length * 55 ? '”' : ''}<span className="qc-quote-caret" /></span>
+            <span className="qc-quote-reduced" aria-hidden="true">“{healthcareQuotes[quoteIndex]}”</span>
+          </p></div>
+          <button type="button" onClick={() => setQuotesPaused(paused => !paused)} aria-label={quotesPaused ? 'Resume healthcare quotes' : 'Pause healthcare quotes'} title={quotesPaused ? 'Resume quotes' : 'Pause quotes'}>{quotesPaused ? <Play size={13} /> : <Pause size={13} />}</button>
+        </div>
+      </div>
+
       <div className="qc-header-search" ref={searchBox} onBlur={event => {
         if (!event.currentTarget.contains(event.relatedTarget)) setSearchOpen(false);
       }}>
@@ -72,16 +107,10 @@ export default function WorkspaceNav({ user, openProfileDrawer }) {
           if (event.key === 'Escape') { setSearchOpen(false); searchInput.current?.focus(); }
         }}><div className="qc-eyebrow">RELATED TOOLS</div>{matches.length ? matches.map(item => <Link key={item.slug} to={workspacePath(item.slug)} onClick={() => { setSearch(''); setSearchOpen(false); }}><span>{item.label}<small>{item.group}</small></span><ArrowUpRight size={16} /></Link>) : <p>No matching tools. Try “incident”, “audit” or “indicator”.</p>}</div>}
       </div>
-      <button className="qc-tools-button" onClick={open}><Grid2X2 size={18} /><span>All tools</span></button>
       <Link to="/notifications" className="qc-icon-button" aria-label={`${unread} unread notifications`}><Bell size={20} />{unread > 0 && <span className="qc-notification-dot" />}</Link>
-      <button className="qc-avatar" onClick={openProfileDrawer} aria-label="Open my profile">{user?.name?.slice(0, 1) || 'Q'}</button>
-      <button className="qc-icon-button qc-signout" onClick={logout} aria-label="Sign out" title="Sign out"><LogOut size={18} /></button>
+      <button className="qc-navbar-profile" onClick={openProfileDrawer} aria-label="Open my profile"><span className="qc-avatar">{user?.name?.slice(0, 1) || 'Q'}</span><ChevronDown size={14} /></button>
     </header>
-    <dialog ref={dialog} className="qc-tool-dialog" aria-labelledby="tool-dialog-title">
-      <div className="qc-dialog-heading"><div><div className="qc-eyebrow">YOUR TOOLKIT</div><h2 id="tool-dialog-title">Where do you want to go?</h2></div><button onClick={close} className="qc-icon-button" aria-label="Close toolkit"><X size={21} /></button></div>
-      <div className="qc-dialog-search"><Search size={20} /><input autoFocus aria-label="Search all tools" placeholder="Search incidents, indicators, evidence, audits..." value={query} onChange={event => setQuery(event.target.value)} /></div>
-      <div className="qc-tool-groups">{filtered.length ? filtered.map(group => <section key={group.name}><h3>{group.name}</h3><div>{group.links.map(([label, slug]) => <Link key={slug} to={workspacePath(slug)} onClick={close}>{label}<ArrowUpRight size={16} /></Link>)}</div></section>) : <p className="qc-no-results">No matching tools. Try a different task or module name.</p>}</div>
-      <footer><Link to="/dashboard" onClick={close}>My workspace</Link><Link to="/dashboard/support" onClick={close}>Help & support</Link><Link to="/dashboard/manuals" onClick={close}>User guides</Link><span>Esc to close</span></footer>
-    </dialog>
+    <button type="button" className="qc-drawer-launcher" onClick={open} aria-label="Open workspace tools" aria-haspopup="dialog" aria-controls="qc-navigation-drawer"><span className="qc-launcher-icon" aria-hidden="true"><PanelRightOpen size={27} /></span><span className="qc-drawer-launcher-hint">Explore your workspace</span></button>
+    <WorkspaceSidebar user={user} drawerRef={navigationDrawer} onSignOut={logout} />
   </>;
 }

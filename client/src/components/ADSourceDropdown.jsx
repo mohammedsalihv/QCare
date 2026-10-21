@@ -13,7 +13,7 @@ const ADSourceDropdown = ({ options, selected, onChange, className }) => (
   <Select
     value={selected}
     onChange={onChange}
-    className={`px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[#040404] transition-all text-xs font-bold text-black font-bold ${className || ''}`.trim()}
+    className={`px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[#040404] transition-all text-[13px] font-semibold text-slate-800 ${className || ''}`.trim()}
   >
     {options.map((opt) => (
       <option key={opt.value} value={opt.value}>

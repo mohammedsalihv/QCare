@@ -232,16 +232,16 @@ const SystemSettings = () => {
       case 'ldap':
         return (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
-            <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden relative">
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden relative">
               <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
                 <div>
-                  <h2 className="text-lg font-black text-black font-bold uppercase tracking-tight">LDAP Configurations</h2>
-                  <p className="text-[10px] text-black font-bold font-bold uppercase tracking-widest mt-1">Manage multiple authentication sources & synchronization schedules</p>
+                  <h2 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">LDAP Configurations</h2>
+                  <p className="text-[12px] text-slate-800 font-semibold normal-case tracking-normal mt-1">Manage multiple authentication sources & synchronization schedules</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => openLdapModal()}
-                    className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
+                    className="flex items-center justify-between gap-4 px-6 py-4 bg-primary hover:bg-primary text-white rounded-md font-semibold transition-all shadow-lg shadow-none active:scale-95 group text-sm"
                   >
                     <div className="flex items-center gap-3">
                       <Plus className="w-5 h-5" />
@@ -252,13 +252,13 @@ const SystemSettings = () => {
                   <button
                     onClick={handleTriggerSync}
                     disabled={syncing}
-                    className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-100 hover:bg-slate-200 text-black font-bold rounded-md font-bold transition-all shadow-md active:scale-95 group text-sm border border-slate-200"
+                    className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold rounded-md transition-all shadow-md active:scale-95 group text-sm border border-slate-200"
                   >
                     <div className="flex items-center gap-3">
-                      <UserPlus className="w-5 h-5 text-black font-bold" />
+                      <UserPlus className="w-5 h-5 text-slate-800 font-semibold" />
                       <span>Import Users</span>
                     </div>
-                    <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-black font-bold" />
+                    <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-slate-800 font-semibold" />
                   </button>
                 </div>
               </div>
@@ -267,13 +267,13 @@ const SystemSettings = () => {
                 <Table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-slate-100/50">
-                      <th className="py-5 px-8 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Name</th>
-                      <th className="py-5 px-8 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">URL</th>
-                      <th className="py-5 px-8 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Schedule Frequency</th>
-                      <th className="py-5 px-8 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Next Execution</th>
-                      <th className="py-5 px-8 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 text-center">Status</th>
-                      <th className="py-5 px-8 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 text-center">Schedule</th>
-                      <th className="py-5 px-8 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
+                      <th className="py-5 px-8 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Name</th>
+                      <th className="py-5 px-8 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">URL</th>
+                      <th className="py-5 px-8 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Schedule Frequency</th>
+                      <th className="py-5 px-8 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Next Execution</th>
+                      <th className="py-5 px-8 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-center">Status</th>
+                      <th className="py-5 px-8 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-center">Schedule</th>
+                      <th className="py-5 px-8 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-right pr-8">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
@@ -282,7 +282,7 @@ const SystemSettings = () => {
                         <td colSpan="7" className="py-20 text-center">
                           <div className="flex flex-col items-center gap-4 opacity-20">
                             <Network size={48} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">No LDAP sources configured</span>
+                            <span className="text-[12px] font-semibold normal-case tracking-normal">No LDAP sources configured</span>
                           </div>
                         </td>
                       </tr>
@@ -291,35 +291,35 @@ const SystemSettings = () => {
                         <tr key={index} className="hover:bg-slate-50/50 transition-colors group">
                           <td className="py-6 px-8 whitespace-nowrap">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-[#040404] group-hover:bg-[#040404] group-hover:text-white transition-all">
+                              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-800 group-hover:bg-primary group-hover:text-white transition-all">
                                 <Server size={14} />
                               </div>
-                              <span className="text-xs font-black text-black font-bold uppercase tracking-tight">{config.configName}</span>
+                              <span className="text-[13px] font-semibold text-slate-800 normal-case tracking-tight">{config.configName}</span>
                             </div>
                           </td>
                           <td className="py-6 px-8">
-                            <span className="px-3 py-1.5 bg-slate-100 rounded-lg text-[10px] font-bold text-black font-bold font-mono tracking-tight">
+                            <span className="px-3 py-1.5 bg-slate-100 rounded-lg text-[12px] font-semibold text-slate-800 font-mono tracking-tight">
                               {config.ldapUrl || 'Not configured'}
                             </span>
                           </td>
                           <td className="py-6 px-8">
-                            <span className="text-[11px] font-bold text-black font-bold">{config.scheduleFrequency || 'Daily'}</span>
+                            <span className="text-[12px] font-semibold text-slate-800">{config.scheduleFrequency || 'Daily'}</span>
                           </td>
                           <td className="py-6 px-8">
                             <div className="flex flex-col">
-                              <span className="text-[11px] font-black text-black font-bold">
+                              <span className="text-[12px] font-semibold text-slate-800">
                                 {config.nextExecutionTime ? new Date(config.nextExecutionTime).toLocaleString() : 'Not scheduled'}
                               </span>
-                              <span className="text-[9px] text-black font-bold font-bold uppercase mt-0.5">
+                              <span className="text-[12px] text-slate-800 font-semibold normal-case mt-0.5">
                                 Last: {config.lastExecutionDate ? new Date(config.lastExecutionDate).toLocaleDateString() : 'Never'}
                               </span>
                             </div>
                           </td>
                           <td className="py-6 px-8 text-center">
-                            <span className={`inline-flex px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${config.executionStatus === 'Success' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                            <span className={`inline-flex px-3 py-1 rounded-full text-[12px] font-semibold normal-case tracking-normal border ${config.executionStatus === 'Success' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                                 config.executionStatus === 'Failed' ? 'bg-rose-50 text-rose-600 border-rose-100' :
-                                  config.executionStatus === 'Running' ? 'bg-slate-100 text-[#040404] border-blue-100 animate-pulse' :
-                                    'bg-slate-50 text-black font-bold border-slate-100'
+                                  config.executionStatus === 'Running' ? 'bg-slate-100 text-slate-800 border-blue-100 animate-pulse' :
+                                    'bg-slate-50 text-slate-800 font-semibold border-slate-100'
                               }`}>
                               {config.executionStatus || 'Idle'}
                             </span>
@@ -341,17 +341,17 @@ const SystemSettings = () => {
                                 onClick={() => handleTriggerSync(config._id)}
                                 disabled={syncing}
                                 title="Sync this AD"
-                                className="w-9 h-9 rounded-md bg-white border border-slate-100 text-black font-bold flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all shadow-sm disabled:opacity-50"
+                                className="w-9 h-9 rounded-md bg-white border border-slate-100 text-slate-800 font-semibold flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all shadow-sm disabled:opacity-50"
                               >
-                                <RefreshCcw size={14} className={syncing ? "animate-spin text-emerald-600 hover:text-white" : "text-black font-bold"} />
+                                <RefreshCcw size={14} className={syncing ? "animate-spin text-emerald-600 hover:text-white" : "text-slate-800 font-semibold"} />
                               </button>
-                              <button onClick={() => setActiveTab('logs')} className="w-9 h-9 rounded-md bg-white border border-slate-100 text-black font-bold flex items-center justify-center hover:bg-white hover:text-white transition-all shadow-sm">
+                              <button onClick={() => setActiveTab('logs')} className="w-9 h-9 rounded-md bg-white border border-slate-100 text-slate-800 font-semibold flex items-center justify-center hover:bg-white hover:text-white transition-all shadow-sm">
                                 <History size={14} />
                               </button>
-                              <button onClick={() => openLdapModal(index)} className="w-9 h-9 rounded-md bg-white border border-slate-100 text-black font-bold flex items-center justify-center hover:bg-white hover:text-white transition-all shadow-sm">
+                              <button onClick={() => openLdapModal(index)} className="w-9 h-9 rounded-md bg-white border border-slate-100 text-slate-800 font-semibold flex items-center justify-center hover:bg-white hover:text-white transition-all shadow-sm">
                                 <Edit size={14} />
                               </button>
-                              <button onClick={() => removeLdapConfig(index)} className="w-9 h-9 rounded-md bg-white border border-slate-100 text-black font-bold flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all shadow-sm">
+                              <button onClick={() => removeLdapConfig(index)} className="w-9 h-9 rounded-md bg-white border border-slate-100 text-slate-800 font-semibold flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all shadow-sm">
                                 <Trash2 size={14} />
                               </button>
                             </div>
@@ -366,8 +366,8 @@ const SystemSettings = () => {
 
             {/* Pagination / Item Count Footnote */}
             <div className="flex items-center justify-between px-4 opacity-50">
-              <span className="text-[10px] font-black text-black font-bold uppercase tracking-widest">Showing {settings.ldapConfigs?.length || 0} Sources</span>
-              <div className="flex items-center gap-4 text-[10px] font-black text-black font-bold uppercase tracking-widest">
+              <span className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Showing {settings.ldapConfigs?.length || 0} Sources</span>
+              <div className="flex items-center gap-4 text-[12px] font-semibold text-slate-800 normal-case tracking-normal">
                 <span>10 items per page</span>
               </div>
             </div>
@@ -375,17 +375,17 @@ const SystemSettings = () => {
             {/* LDAP Configuration Modal */}
             {isLdapModalOpen && (
               <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-10 bg-white/80 backdrop-blur-md animate-in fade-in duration-300">
-                <div className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+                <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
 
                   {/* Modal Header */}
                   <div className="p-8 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                     <div>
-                      <h3 className="text-xl font-black text-black font-bold uppercase tracking-tight">
+                      <h3 className="text-xl font-semibold text-slate-800 normal-case tracking-tight">
                         {editingLdapIndex !== null ? 'Edit LDAP Configuration' : 'Create LDAP Configuration'}
                       </h3>
-                      <p className="text-xs font-bold text-black font-bold uppercase tracking-widest mt-1">Configure active directory connectivity and mapping</p>
+                      <p className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal mt-1">Configure active directory connectivity and mapping</p>
                     </div>
-                    <button onClick={closeLdapModal} className="w-10 h-10 rounded-2xl bg-white border border-slate-200 text-black font-bold hover:text-black font-bold hover:rotate-90 transition-all flex items-center justify-center">
+                    <button onClick={closeLdapModal} className="w-10 h-10 rounded-2xl bg-white border border-slate-200 text-slate-800 font-semibold hover:text-slate-800 hover:rotate-90 transition-all flex items-center justify-center">
                       <X size={20} />
                     </button>
                   </div>
@@ -394,17 +394,17 @@ const SystemSettings = () => {
                   <div className="px-8 pt-6 flex items-center gap-8 border-b border-slate-100 bg-white">
                     <button
                       onClick={() => setLdapModalTab('configuration')}
-                      className={`pb-4 text-[11px] font-black uppercase tracking-widest transition-all relative ${ldapModalTab === 'configuration' ? 'text-[#040404]' : 'text-black font-bold hover:text-black font-bold'}`}
+                      className={`pb-4 text-[12px] font-semibold normal-case tracking-normal transition-all relative ${ldapModalTab === 'configuration' ? 'text-slate-800' : 'text-slate-800 font-semibold hover:text-slate-800'}`}
                     >
                       Configuration
-                      {ldapModalTab === 'configuration' && <div className="absolute bottom-0 left-0 w-full h-1 bg-[#040404] rounded-t-full"></div>}
+                      {ldapModalTab === 'configuration' && <div className="absolute bottom-0 left-0 w-full h-1 bg-primary rounded-t-full"></div>}
                     </button>
                     <button
                       onClick={() => setLdapModalTab('mapping')}
-                      className={`pb-4 text-[11px] font-black uppercase tracking-widest transition-all relative ${ldapModalTab === 'mapping' ? 'text-[#040404]' : 'text-black font-bold hover:text-black font-bold'}`}
+                      className={`pb-4 text-[12px] font-semibold normal-case tracking-normal transition-all relative ${ldapModalTab === 'mapping' ? 'text-slate-800' : 'text-slate-800 font-semibold hover:text-slate-800'}`}
                     >
                       Mapping
-                      {ldapModalTab === 'mapping' && <div className="absolute bottom-0 left-0 w-full h-1 bg-[#040404] rounded-t-full"></div>}
+                      {ldapModalTab === 'mapping' && <div className="absolute bottom-0 left-0 w-full h-1 bg-primary rounded-t-full"></div>}
                     </button>
                   </div>
 
@@ -414,8 +414,8 @@ const SystemSettings = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <div className="flex items-center justify-between md:col-span-2 p-4 bg-slate-50 border border-slate-100 rounded-2xl mb-2">
                           <div className="flex flex-col">
-                            <span className="text-xs font-black text-black font-bold uppercase tracking-tight">Enable Authentication Source</span>
-                            <span className="text-[9px] text-black font-bold font-bold uppercase tracking-widest mt-0.5">Toggle this LDAP configuration source active or inactive</span>
+                            <span className="text-[13px] font-semibold text-slate-800 normal-case tracking-tight">Enable Authentication Source</span>
+                            <span className="text-[12px] text-slate-800 font-semibold normal-case tracking-normal mt-0.5">Toggle this LDAP configuration source active or inactive</span>
                           </div>
                           <Checkbox
                             label=""
@@ -453,11 +453,11 @@ const SystemSettings = () => {
                           </div>
                         </div>
                         <div className="md:col-span-2 py-4 border-y border-slate-50 bg-slate-50/50 -mx-8 px-8 my-2">
-                          <p className="text-[9px] font-black text-black font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <Info size={12} className="text-[#040404]" />
+                          <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-4 flex items-center gap-2">
+                            <Info size={12} className="text-slate-800" />
                             Configure multiple LDAP servers for failover and load balancing.
                           </p>
-                          <button className="text-[10px] font-black text-[#040404] uppercase tracking-widest flex items-center gap-1.5 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-all">
+                          <button className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal flex items-center gap-1.5 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-all">
                             + Add URL
                           </button>
                         </div>
@@ -491,12 +491,12 @@ const SystemSettings = () => {
                           placeholder="••••••••••••"
                         />
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest ml-1">Schedule Frequency</label>
+                          <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Schedule Frequency</label>
                           <Select
                             name="scheduleFrequency"
                             value={settings.ldapConfigs[editingLdapIndex]?.scheduleFrequency || 'Daily'}
                             onChange={(e) => handleLdapChange(editingLdapIndex, e)}
-                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#040404] transition-all text-sm font-bold text-black font-bold"
+                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#040404] transition-all text-sm font-semibold text-slate-800"
                           >
                             <option value="Daily">Daily</option>
                             <option value="Weekly">Weekly</option>
@@ -505,12 +505,12 @@ const SystemSettings = () => {
                           </Select>
                         </div>
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest ml-1">Server Type</label>
+                          <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Server Type</label>
                           <Select
                             name="serverType"
                             value={settings.ldapConfigs[editingLdapIndex]?.serverType || 'Microsoft AD'}
                             onChange={(e) => handleLdapChange(editingLdapIndex, e)}
-                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#040404] transition-all text-sm font-bold text-black font-bold"
+                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#040404] transition-all text-sm font-semibold text-slate-800"
                           >
                             <option value="Microsoft AD">Microsoft AD</option>
                             <option value="OpenLDAP">OpenLDAP</option>
@@ -545,19 +545,19 @@ const SystemSettings = () => {
                           />
                         </div>
                         <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
-                          <h4 className="text-[11px] font-black text-black font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <Layers size={14} className="text-[#040404]" />
+                          <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-4 flex items-center gap-2">
+                            <Layers size={14} className="text-slate-800" />
                             Advanced Attribute Mapping
                           </h4>
-                          <p className="text-xs text-black font-bold font-medium leading-relaxed mb-6">
+                          <p className="text-[13px] text-slate-800 font-semibold font-medium leading-relaxed mb-6">
                             Map additional AD attributes to QCare user profiles (Department, Designation, Office, etc.)
                           </p>
                           <div className="space-y-4">
                             {['department', 'title', 'physicalDeliveryOfficeName'].map((attr) => (
                               <div key={attr} className="flex items-center gap-4">
-                                <div className="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-black text-black font-bold uppercase tracking-widest">{attr}</div>
-                                <ChevronRight size={16} className="text-black font-bold" />
-                                <div className="flex-1 px-4 py-3 bg-white border border-blue-100 rounded-xl text-[10px] font-black text-[#040404] uppercase tracking-widest">Profile {attr}</div>
+                                <div className="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-xl text-[12px] font-semibold text-slate-800 normal-case tracking-normal">{attr}</div>
+                                <ChevronRight size={16} className="text-slate-800 font-semibold" />
+                                <div className="flex-1 px-4 py-3 bg-white border border-blue-100 rounded-xl text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Profile {attr}</div>
                               </div>
                             ))}
                           </div>
@@ -571,17 +571,17 @@ const SystemSettings = () => {
                     <button
                       onClick={handleTestConnection}
                       disabled={testingConnection}
-                      className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-black font-bold rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all disabled:opacity-50"
+                      className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-800 font-semibold rounded-xl text-[12px] normal-case tracking-normal hover:bg-slate-100 transition-all disabled:opacity-50"
                     >
-                      {testingConnection ? <RefreshCcw size={16} className="animate-spin text-[#040404]" /> : <Play size={16} className="text-emerald-500" />}
+                      {testingConnection ? <RefreshCcw size={16} className="animate-spin text-slate-800" /> : <Play size={16} className="text-emerald-500" />}
                       Test Connection
                     </button>
                     <div className="flex items-center gap-3">
-                      <button onClick={closeLdapModal} className="px-8 py-3 text-black font-bold text-[11px] font-black uppercase tracking-widest hover:text-black font-bold transition-all">Cancel</button>
+                      <button onClick={closeLdapModal} className="px-8 py-3 text-slate-800 font-semibold text-[12px] normal-case tracking-normal hover:text-slate-800 transition-all">Cancel</button>
                       <button
                         onClick={() => saveLdapConfig(editingLdapIndex)}
                         disabled={saving}
-                        className="px-8 py-3 bg-[#040404] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-[#040404] shadow-xl shadow-[#040404]/20 active:scale-95 transition-all flex items-center gap-2"
+                        className="px-8 py-3 bg-primary text-white rounded-xl text-[12px] font-semibold normal-case tracking-normal hover:bg-primary shadow-xl shadow-[#040404]/20 active:scale-95 transition-all flex items-center gap-2"
                       >
                         {saving && <RefreshCcw size={16} className="animate-spin" />}
                         Update
@@ -602,21 +602,21 @@ const SystemSettings = () => {
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black text-black font-bold uppercase tracking-widest">Security Policies</h2>
-                  <p className="text-[10px] text-black font-bold font-bold uppercase tracking-tighter">Access Control & Password Rules</p>
+                  <h2 className="text-sm font-semibold text-slate-800 normal-case tracking-normal">Security Policies</h2>
+                  <p className="text-[12px] text-slate-800 font-semibold normal-case tracking-tighter">Access Control & Password Rules</p>
                 </div>
               </div>
 
               <div className="p-6 space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                   <div className="space-y-4">
-                    <h3 className="text-[10px] font-black text-black font-bold uppercase tracking-[0.2em] mb-4">Password Requirements</h3>
+                    <h3 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-4">Password Requirements</h3>
                     <Field label="Minimum Length" name="minPasswordLength" type="number" value={settings.minPasswordLength} onChange={handleChange} />
                     <Checkbox label="Require Special Characters" name="requireSpecialChar" checked={settings.requireSpecialChar} onChange={handleChange} />
                     <Checkbox label="Require Numbers" name="requireNumbers" checked={settings.requireNumbers} onChange={handleChange} />
                   </div>
                   <div className="space-y-4">
-                    <h3 className="text-[10px] font-black text-black font-bold uppercase tracking-[0.2em] mb-4">Session Management</h3>
+                    <h3 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-4">Session Management</h3>
                     <Field label="Max Login Attempts" name="maxLoginAttempts" type="number" value={settings.maxLoginAttempts} onChange={handleChange} />
                     <Field label="Session Timeout (Minutes)" name="sessionTimeout" type="number" value={settings.sessionTimeout} onChange={handleChange} />
                   </div>
@@ -634,8 +634,8 @@ const SystemSettings = () => {
                   <Globe className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black text-black font-bold uppercase tracking-widest">Global Preferences</h2>
-                  <p className="text-[10px] text-black font-bold font-bold uppercase tracking-tighter">Branding & System Behavior</p>
+                  <h2 className="text-sm font-semibold text-slate-800 normal-case tracking-normal">Global Preferences</h2>
+                  <p className="text-[12px] text-slate-800 font-semibold normal-case tracking-tighter">Branding & System Behavior</p>
                 </div>
               </div>
 
@@ -645,7 +645,7 @@ const SystemSettings = () => {
                   <Field label="Primary Brand Color" name="primaryColor" type="color" value={settings.primaryColor} onChange={handleChange} />
                   <div className="md:col-span-2">
                     <Checkbox label="Allow Public User Registration" name="allowPublicRegistration" checked={settings.allowPublicRegistration} onChange={handleChange} />
-                    <p className="text-[9px] text-black font-bold font-medium mt-1 ml-9">If enabled, users can create accounts from the login screen without admin intervention.</p>
+                    <p className="text-[12px] text-slate-800 font-semibold font-medium mt-1 ml-9">If enabled, users can create accounts from the login screen without admin intervention.</p>
                   </div>
                 </div>
               </div>
@@ -666,8 +666,8 @@ const SystemSettings = () => {
                        <Database className="w-5 h-5" />
                     </div>
                     <div>
-                       <h2 className="text-sm font-black text-black font-bold uppercase tracking-widest">System Logs</h2>
-                       <p className="text-[10px] text-black font-bold font-bold uppercase tracking-tighter">LDAP Synchronization History</p>
+                       <h2 className="text-sm font-semibold text-slate-800 normal-case tracking-normal">System Logs</h2>
+                       <p className="text-[12px] text-slate-800 font-semibold normal-case tracking-tighter">LDAP Synchronization History</p>
                     </div>
                   </div>
                   
@@ -676,13 +676,13 @@ const SystemSettings = () => {
   options={[{value: 'All', label: 'All AD Sources'}, ...(settings.ldapConfigs?.map(cfg => ({value: cfg.configName, label: cfg.configName})) || [])]}
   selected={selectedLogFilter}
   onChange={(e) => setSelectedLogFilter(e.target.value)}
-  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[#040404] transition-all text-xs font-bold text-black font-bold"
+  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[#040404] transition-all text-[13px] font-semibold text-slate-800"
 />
 
                     <button 
                       onClick={() => handleTriggerSync(selectedLogFilter === 'All' ? null : settings.ldapConfigs?.find(c => c.configName === selectedLogFilter)?._id)}
                       disabled={syncing}
-                      className="flex items-center gap-2 px-4 py-2 bg-[#040404] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-colors disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl text-[12px] font-semibold normal-case tracking-normal hover:bg-primary transition-colors disabled:opacity-50"
                     >
                       <RefreshCcw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
                       {syncing ? 'Syncing...' : selectedLogFilter === 'All' ? 'Trigger Sync (All)' : `Sync (${selectedLogFilter})`}
@@ -695,18 +695,18 @@ const SystemSettings = () => {
                     <Table className="w-full text-left border-collapse">
                       <thead className="bg-slate-100/50 sticky top-0 z-10">
                         <tr>
-                          <th className="py-4 px-6 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Timestamp</th>
-                          <th className="py-4 px-6 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Status</th>
-                          <th className="py-4 px-6 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Total Fetched</th>
-                          <th className="py-4 px-6 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Success</th>
-                          <th className="py-4 px-6 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Failed</th>
-                          <th className="py-4 px-6 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 text-right pr-6">Details</th>
+                          <th className="py-4 px-6 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Timestamp</th>
+                          <th className="py-4 px-6 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Status</th>
+                          <th className="py-4 px-6 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Total Fetched</th>
+                          <th className="py-4 px-6 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Success</th>
+                          <th className="py-4 px-6 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Failed</th>
+                          <th className="py-4 px-6 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-right pr-6">Details</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {filteredLogs.length === 0 ? (
                           <tr>
-                            <td colSpan="6" className="py-8 text-center text-xs text-black font-bold font-medium">No sync logs found.</td>
+                            <td colSpan="6" className="py-8 text-center text-[13px] text-slate-800 font-semibold font-medium">No sync logs found.</td>
                           </tr>
                         ) : (
                           filteredLogs.map((log) => {
@@ -715,11 +715,11 @@ const SystemSettings = () => {
                               <React.Fragment key={log._id}>
                                 <tr className={`hover:bg-slate-50 transition-colors ${expandedLogId === log._id ? 'bg-slate-50' : ''}`}>
                                   <td className="py-3 px-6 whitespace-nowrap">
-                                    <div className="text-[11px] font-bold text-black font-bold">{new Date(log.createdAt).toLocaleString()}</div>
+                                    <div className="text-[12px] font-semibold text-slate-800">{new Date(log.createdAt).toLocaleString()}</div>
                                     {log.syncedConfigs && log.syncedConfigs.length > 0 && (
                                       <div className="flex flex-wrap gap-1 mt-1">
                                         {log.syncedConfigs.map((cfg, idx) => (
-                                          <span key={idx} className="px-2 py-0.5 bg-slate-100 border border-blue-100 rounded text-[9px] font-bold text-[#040404] uppercase tracking-tight">
+                                          <span key={idx} className="px-2 py-0.5 bg-slate-100 border border-blue-100 rounded text-[12px] font-semibold text-slate-800 normal-case tracking-tight">
                                             {cfg}
                                           </span>
                                         ))}
@@ -729,14 +729,14 @@ const SystemSettings = () => {
                                   <td className="py-3 px-6 whitespace-nowrap">
                                     <div className="flex items-center gap-2">
                                       <div className={`w-2 h-2 rounded-full ${log.status === 'success' ? 'bg-emerald-500' : log.status === 'failed' ? 'bg-rose-500' : 'bg-amber-500'}`}></div>
-                                      <span className={`text-[10px] font-black uppercase tracking-widest ${log.status === 'success' ? 'text-emerald-600' : log.status === 'failed' ? 'text-rose-600' : 'text-amber-600'}`}>
+                                      <span className={`text-[12px] font-semibold normal-case tracking-normal ${log.status === 'success' ? 'text-emerald-600' : log.status === 'failed' ? 'text-rose-600' : 'text-amber-600'}`}>
                                         {log.status}
                                       </span>
                                     </div>
                                   </td>
-                                  <td className="py-3 px-6 text-xs font-bold text-black font-bold">{log.totalFetched}</td>
-                                  <td className="py-3 px-6 text-xs font-bold text-emerald-600">{log.successCount}</td>
-                                  <td className="py-3 px-6 text-xs font-bold text-rose-600">{log.failedCount}</td>
+                                  <td className="py-3 px-6 text-[13px] font-semibold text-slate-800">{log.totalFetched}</td>
+                                  <td className="py-3 px-6 text-[13px] font-semibold text-emerald-600">{log.successCount}</td>
+                                  <td className="py-3 px-6 text-[13px] font-semibold text-rose-600">{log.failedCount}</td>
                                   <td className="py-3 px-6 text-right">
                                     <button 
                                       onClick={() => {
@@ -746,7 +746,7 @@ const SystemSettings = () => {
                                           [log._id]: log.importedUsers?.length > 0 ? 'success' : 'failed'
                                         }));
                                       }}
-                                      className="text-[10px] font-black text-[#040404] uppercase tracking-widest hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors"
+                                      className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors"
                                     >
                                       {expandedLogId === log._id ? 'Hide Details' : 'View Details'}
                                     </button>
@@ -760,8 +760,8 @@ const SystemSettings = () => {
                                       <div className="space-y-6">
                                         {log.errorMessage && (
                                           <div className="bg-rose-50 border border-rose-100 p-4 rounded-xl">
-                                            <h4 className="text-[10px] font-black text-rose-600 uppercase tracking-widest mb-1">System Error</h4>
-                                            <p className="text-xs text-rose-700 font-medium whitespace-pre-wrap">{log.errorMessage}</p>
+                                            <h4 className="text-[12px] font-semibold text-rose-600 normal-case tracking-normal mb-1">System Error</h4>
+                                            <p className="text-[13px] text-rose-700 font-medium whitespace-pre-wrap">{log.errorMessage}</p>
                                           </div>
                                         )}
                                         
@@ -772,10 +772,10 @@ const SystemSettings = () => {
                                               {log.importedUsers?.length > 0 && (
                                                 <button
                                                   onClick={() => setDetailTabs(prev => ({ ...prev, [log._id]: 'success' }))}
-                                                  className={`pb-2 px-6 text-xs font-black uppercase tracking-wider transition-all border-b-2 -mb-[1px] ${
+                                                  className={`pb-2 px-6 text-[13px] font-semibold normal-case tracking-normal transition-all border-b-2 -mb-[1px] ${
                                                     activeDetailTab === 'success' 
-                                                      ? 'border-emerald-500 text-emerald-600 font-black' 
-                                                      : 'border-transparent text-black font-bold hover:text-black font-bold'
+                                                      ? 'border-emerald-500 text-emerald-600 font-semibold' 
+                                                      : 'border-transparent text-slate-800 font-semibold hover:text-slate-800'
                                                   }`}
                                                 >
                                                   Successful Imports ({log.importedUsers.length})
@@ -784,10 +784,10 @@ const SystemSettings = () => {
                                               {log.failedUsers?.length > 0 && (
                                                 <button
                                                   onClick={() => setDetailTabs(prev => ({ ...prev, [log._id]: 'failed' }))}
-                                                  className={`pb-2 px-6 text-xs font-black uppercase tracking-wider transition-all border-b-2 -mb-[1px] ${
+                                                  className={`pb-2 px-6 text-[13px] font-semibold normal-case tracking-normal transition-all border-b-2 -mb-[1px] ${
                                                     activeDetailTab === 'failed' 
-                                                      ? 'border-rose-500 text-rose-600 font-black' 
-                                                      : 'border-transparent text-black font-bold hover:text-black font-bold'
+                                                      ? 'border-rose-500 text-rose-600 font-semibold' 
+                                                      : 'border-transparent text-slate-800 font-semibold hover:text-slate-800'
                                                   }`}
                                                 >
                                                   Failed Imports ({log.failedUsers.length})
@@ -799,25 +799,25 @@ const SystemSettings = () => {
                                             {activeDetailTab === 'success' && log.importedUsers?.length > 0 && (
                                               <div className="bg-white rounded-xl border border-emerald-100 overflow-hidden shadow-sm animate-in fade-in duration-200">
                                                 <div className="bg-emerald-50 px-6 py-3 border-b border-emerald-100 flex justify-between items-center">
-                                                  <h4 className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Successfully Imported/Updated Users</h4>
+                                                  <h4 className="text-[12px] font-semibold text-emerald-700 normal-case tracking-normal">Successfully Imported/Updated Users</h4>
                                                 </div>
                                                 <div className="max-h-80 overflow-y-auto custom-scrollbar">
                                                   <Table className="w-full text-left">
                                                     <thead className="bg-slate-50 sticky top-0 border-b border-slate-100">
                                                       <tr>
-                                                        <th className="py-3 px-6 text-[10px] font-black uppercase text-black font-bold">Employee ID</th>
-                                                        <th className="py-3 px-6 text-[10px] font-black uppercase text-black font-bold">Name</th>
-                                                        <th className="py-3 px-6 text-[10px] font-black uppercase text-black font-bold">Source AD</th>
-                                                        <th className="py-3 px-6 text-[10px] font-black uppercase text-black font-bold text-right">Action</th>
+                                                        <th className="py-3 px-6 text-[12px] font-semibold normal-case text-slate-800">Employee ID</th>
+                                                        <th className="py-3 px-6 text-[12px] font-semibold normal-case text-slate-800">Name</th>
+                                                        <th className="py-3 px-6 text-[12px] font-semibold normal-case text-slate-800">Source AD</th>
+                                                        <th className="py-3 px-6 text-[12px] font-semibold normal-case text-slate-800 text-right">Action</th>
                                                       </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-slate-50">
                                                       {log.importedUsers.map((u, i) => (
                                                         <tr key={i} className="hover:bg-slate-50">
-                                                          <td className="py-3 px-6 text-xs font-bold text-black font-bold">{u.employeeId}</td>
-                                                          <td className="py-3 px-6 text-xs font-medium text-black font-bold">{u.employeeName}</td>
-                                                          <td className="py-3 px-6 text-xs font-medium text-[#040404]">{u.source || 'N/A'}</td>
-                                                          <td className="py-3 px-6 text-xs font-bold text-emerald-600 text-right">{u.status}</td>
+                                                          <td className="py-3 px-6 text-[13px] font-semibold text-slate-800">{u.employeeId}</td>
+                                                          <td className="py-3 px-6 text-[13px] font-medium text-slate-800 font-semibold">{u.employeeName}</td>
+                                                          <td className="py-3 px-6 text-[13px] font-medium text-slate-800">{u.source || 'N/A'}</td>
+                                                          <td className="py-3 px-6 text-[13px] font-semibold text-emerald-600 text-right">{u.status}</td>
                                                         </tr>
                                                       ))}
                                                     </tbody>
@@ -829,23 +829,23 @@ const SystemSettings = () => {
                                             {activeDetailTab === 'failed' && log.failedUsers?.length > 0 && (
                                               <div className="bg-white rounded-xl border border-rose-100 overflow-hidden shadow-sm animate-in fade-in duration-200">
                                                 <div className="bg-rose-50 px-6 py-3 border-b border-rose-100 flex justify-between items-center">
-                                                  <h4 className="text-[10px] font-black text-rose-700 uppercase tracking-widest font-black">Failed Import Details</h4>
+                                                  <h4 className="text-[12px] font-semibold text-rose-700 normal-case tracking-normal">Failed Import Details</h4>
                                                 </div>
                                                 <div className="max-h-80 overflow-y-auto custom-scrollbar">
                                                   <Table className="w-full text-left">
                                                     <thead className="bg-slate-50 sticky top-0 border-b border-slate-100">
                                                       <tr>
-                                                        <th className="py-3 px-6 text-[10px] font-black uppercase text-black font-bold">Employee ID</th>
-                                                        <th className="py-3 px-6 text-[10px] font-black uppercase text-black font-bold">Source AD</th>
-                                                        <th className="py-3 px-6 text-[10px] font-black uppercase text-black font-bold">Failure Reason</th>
+                                                        <th className="py-3 px-6 text-[12px] font-semibold normal-case text-slate-800">Employee ID</th>
+                                                        <th className="py-3 px-6 text-[12px] font-semibold normal-case text-slate-800">Source AD</th>
+                                                        <th className="py-3 px-6 text-[12px] font-semibold normal-case text-slate-800">Failure Reason</th>
                                                       </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-slate-50">
                                                       {log.failedUsers.map((u, i) => (
                                                         <tr key={i} className="hover:bg-rose-50/50">
-                                                          <td className="py-3 px-6 text-xs font-bold text-rose-600">{u.employeeId}</td>
-                                                          <td className="py-3 px-6 text-xs font-medium text-[#040404]">{u.source || 'N/A'}</td>
-                                                          <td className="py-3 px-6 text-xs font-medium text-black font-bold">{u.reason}</td>
+                                                          <td className="py-3 px-6 text-[13px] font-semibold text-rose-600">{u.employeeId}</td>
+                                                          <td className="py-3 px-6 text-[13px] font-medium text-slate-800">{u.source || 'N/A'}</td>
+                                                          <td className="py-3 px-6 text-[13px] font-medium text-slate-800 font-semibold">{u.reason}</td>
                                                         </tr>
                                                       ))}
                                                     </tbody>
@@ -880,13 +880,13 @@ const SystemSettings = () => {
       <div className="flex flex-col gap-6 w-full max-w-[1600px] mx-auto min-h-[calc(100vh-160px)] px-2">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-black text-black font-bold tracking-tight uppercase">System Settings</h1>
-            <p className="text-xs text-black font-bold font-bold uppercase tracking-widest mt-1 opacity-60">Global Application & Security Parameters</p>
+            <h1 className="text-xl font-semibold text-slate-800 tracking-tight normal-case">System Settings</h1>
+            <p className="text-[13px] text-slate-800 font-semibold normal-case tracking-normal mt-1 opacity-60">Global Application & Security Parameters</p>
           </div>
           <button
             onClick={handleSubmit}
             disabled={saving}
-            className="flex items-center gap-3 px-6 py-3 bg-[#040404] text-white rounded-md text-sm font-bold transition-all shadow-lg shadow-slate-900/20 hover:bg-slate-800 active:scale-95 disabled:opacity-50"
+            className="flex items-center gap-3 px-6 py-3 bg-primary text-white rounded-md text-sm font-semibold transition-all shadow-lg shadow-none hover:bg-primary active:scale-95 disabled:opacity-50"
           >
             {saving ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             <span>{saving ? 'Saving...' : 'Save All Changes'}</span>
@@ -910,8 +910,8 @@ const SystemSettings = () => {
               <div className="absolute top-0 right-0 w-32 h-32 -mr-16 -mt-16 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
               <div className="relative z-10">
                 <Lock className="w-6 h-6 text-[var(--color-primary)] mb-3" />
-                <h3 className="text-[11px] font-black uppercase tracking-widest mb-2">Admin Security</h3>
-                <p className="text-[10px] text-black font-bold font-bold leading-relaxed opacity-80">
+                <h3 className="text-[12px] font-semibold normal-case tracking-normal mb-2">Admin Security</h3>
+                <p className="text-[12px] text-slate-800 font-semibold leading-relaxed opacity-80">
                   Changes to these parameters affect all users globally. Proceed with caution when modifying authentication or security policies.
                 </p>
               </div>
@@ -932,17 +932,17 @@ const SettingsTab = ({ icon: Icon, label, active, onClick, disabled }) => (
     onClick={onClick}
     disabled={disabled}
     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${active
-        ? 'bg-[#040404] text-white shadow-lg shadow-black/10'
-        : 'text-black font-bold hover:bg-slate-50 hover:text-black font-bold'
-      } ${disabled ? 'opacity-30 cursor-not-allowed' : ''}`}>
-    <Icon className={`w-4 h-4 ${active ? 'text-[var(--color-primary)]' : 'text-black font-bold'}`} />
-    <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+        ? 'bg-primary text-white shadow-lg shadow-black/10'
+        : 'text-slate-800 font-semibold hover:bg-slate-50 hover:text-slate-800'
+      }  ${disabled ? 'opacity-30 cursor-not-allowed' : ''}`}>
+    <Icon className={`w-4 h-4 ${active ? 'text-[var(--color-primary)]' : 'text-slate-800 font-semibold'}`} />
+    <span className="text-[12px] font-semibold normal-case tracking-normal">{label}</span>
   </button>
 );
 
 const Field = ({ label, name, value, onChange, type = 'text', placeholder, disabled }) => (
   <div className={`space-y-1.5 ${disabled ? 'opacity-50' : ''}`}>
-    <label className="text-[10px] font-black text-black font-bold uppercase tracking-widest ml-1">{label}</label>
+    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">{label}</label>
     <input
       type={type}
       name={name}
@@ -950,7 +950,7 @@ const Field = ({ label, name, value, onChange, type = 'text', placeholder, disab
       onChange={onChange}
       placeholder={placeholder}
       disabled={disabled}
-      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm font-bold text-black font-bold shadow-inner-sm disabled:cursor-not-allowed"
+      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm font-semibold text-slate-800 shadow-inner-sm disabled:cursor-not-allowed"
     />
   </div>
 );
@@ -968,7 +968,7 @@ const Checkbox = ({ label, name, checked, onChange, disabled }) => (
       />
       <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
     </label>
-    <span className="text-[10px] font-black text-black font-bold uppercase tracking-widest">{label}</span>
+    <span className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">{label}</span>
   </div>
 );
 export default SystemSettings;

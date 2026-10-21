@@ -69,13 +69,13 @@ const ComplianceManagement = () => {
                 <ShieldCheck className="w-6 h-6" />
              </div>
              <div>
-                <h2 className="text-xl font-black text-black font-bold dark:text-white uppercase tracking-tight">Compliance Center</h2>
-                <p className="text-xs font-bold text-black font-bold uppercase tracking-widest">Regulatory & Licensing Management</p>
+                <h2 className="text-xl font-semibold text-slate-800 normal-case tracking-tight">Compliance Center</h2>
+                <p className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">Regulatory & Licensing Management</p>
              </div>
           </div>
           {isAdmin && (
             <div className="flex gap-3">
-              <button className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all">
+              <button className="flex items-center gap-2 bg-primary hover:bg-primary text-white px-4 py-2 rounded-xl text-[13px] font-semibold normal-case tracking-normal transition-all">
                 <Plus className="w-4 h-4" />
                 Add License
               </button>
@@ -88,7 +88,7 @@ const ComplianceManagement = () => {
 
         {/* Licenses Section */}
         <div className="space-y-4">
-          <h3 className="text-[10px] font-black text-black font-bold uppercase tracking-[0.2em] px-2">Licensing Inventory</h3>
+          <h3 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal px-2">Licensing Inventory</h3>
           <LicenseTable 
             facilityLicenses={facilityLicenses} 
             staffLicenses={staffLicenses} 
@@ -97,7 +97,7 @@ const ComplianceManagement = () => {
 
         {/* Circulars Section */}
         <div className="space-y-4">
-          <h3 className="text-[10px] font-black text-black font-bold uppercase tracking-[0.2em] px-2">Regulatory Circulars</h3>
+          <h3 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal px-2">Regulatory Circulars</h3>
           <CircularList 
             circulars={circulars} 
             onAcknowledge={handleAcknowledge}

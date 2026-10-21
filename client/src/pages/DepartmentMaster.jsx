@@ -189,20 +189,20 @@ const DepartmentMaster = () => {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-bold text-black uppercase tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[#b59662]">Administration</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[#b59662]">Department Master</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-black tracking-tight">Department Master</h1>
+            <h1 className="text-2xl font-semibold text-slate-800 tracking-tight">Department Master</h1>
           </div>
           
           {isAdmin && (
             <button 
               onClick={handleAddClick}
-              className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg active:scale-95 group text-sm"
+              className="flex items-center justify-between gap-4 px-6 py-4 bg-primary hover:bg-primary text-white rounded-md font-semibold transition-all shadow-lg active:scale-95 group text-sm"
             >
                <div className="flex items-center gap-3">
                   <Plus className="w-5 h-5 text-[#b59662]" />
@@ -213,14 +213,14 @@ const DepartmentMaster = () => {
           )}
         </div>
 
-        <div className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/20">
             <div className="relative w-full sm:w-[400px]">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
+               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800" />
                <input 
                  type="text" 
                  placeholder="Search department by name or code..."
-                 className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#b59662] focus:ring-4 focus:ring-[#b59662]/5 transition-all text-xs font-semibold"
+                 className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#b59662] focus:ring-4 focus:ring-[#b59662]/5 transition-all text-[13px] font-semibold"
                />
             </div>
           </div>
@@ -229,12 +229,12 @@ const DepartmentMaster = () => {
             <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
                 <tr className="bg-slate-100/50">
-                  <th className="w-1/4 px-7 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Department Name</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Dept Code</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Head of Department</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Staff Count</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Location</th>
-                  <th className="w-36 px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
+                  <th className="w-1/4 px-7 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Department Name</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Dept Code</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Head of Department</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Staff Count</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Location</th>
+                  <th className="w-36 px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -242,28 +242,28 @@ const DepartmentMaster = () => {
                   <tr key={dept._id} className="hover:bg-slate-50/20 transition-colors group">
                     <td className="px-7 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center font-medium text-black text-[10px]">
+                        <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center font-medium text-slate-800 text-[12px]">
                           <Building2 className="w-4 h-4 text-[#b59662]" />
                         </div>
-                        <span className="text-xs font-medium text-black leading-snug">{dept.name}</span>
+                        <span className="text-[13px] font-medium text-slate-800 leading-snug">{dept.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-xs font-medium font-mono text-black">{dept.code}</td>
+                    <td className="px-6 py-4 text-[13px] font-medium font-mono text-slate-800">{dept.code}</td>
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-medium text-black">{dept.head}</span>
+                          <span className="text-[13px] font-medium text-slate-800">{dept.head}</span>
                        </div>
                     </td>
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
-                          <Users className="w-3.5 h-3.5 text-black" />
-                          <span className="text-xs font-medium text-black">{dept.employeesCount} Members</span>
+                          <Users className="w-3.5 h-3.5 text-slate-800" />
+                          <span className="text-[13px] font-medium text-slate-800">{dept.employeesCount} Members</span>
                        </div>
                     </td>
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
-                          <MapPin className="w-3.5 h-3.5 text-black" />
-                          <span className="text-sm font-medium text-black tracking-tight">{dept.location}</span>
+                          <MapPin className="w-3.5 h-3.5 text-slate-800" />
+                          <span className="text-sm font-medium text-slate-800 tracking-tight">{dept.location}</span>
                        </div>
                     </td>
                     <td className="px-6 py-4 text-right pr-8">
@@ -284,7 +284,7 @@ const DepartmentMaster = () => {
                               </button>
                             </>
                           ) : (
-                            <span className="text-[10px] text-slate-450 font-bold uppercase tracking-wider">View Only</span>
+                            <span className="text-[12px] text-slate-450 font-semibold normal-case tracking-normal">View Only</span>
                           )}
                        </div>
                     </td>
@@ -295,7 +295,7 @@ const DepartmentMaster = () => {
                     <td colSpan="6" className="px-6 py-20 text-center">
                       <div className="flex flex-col items-center justify-center gap-3 opacity-30">
                         <Search className="w-10 h-10" />
-                        <span className="text-xs font-bold uppercase tracking-widest">No departments found matching your criteria</span>
+                        <span className="text-[13px] font-semibold normal-case tracking-normal">No departments found matching your criteria</span>
                       </div>
                     </td>
                   </tr>
@@ -316,7 +316,7 @@ const DepartmentMaster = () => {
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-white/40 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
-            <div className="bg-white rounded-[2.5rem] shadow-2xl relative w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="bg-white rounded-2xl shadow-2xl relative w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300">
               <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white relative">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#b59662] to-transparent opacity-20"></div>
                 <div className="flex items-center gap-4">
@@ -324,13 +324,13 @@ const DepartmentMaster = () => {
                       <Building2 className="w-7 h-7 text-[#b59662]" />
                    </div>
                    <div>
-                      <h3 className="text-xl font-black text-black font-bold tracking-tight">
+                      <h3 className="text-xl font-semibold text-slate-800 tracking-tight">
                         {isEditing ? 'Modify Department' : 'Configure New Dept'}
                       </h3>
-                      <p className="text-xs text-black font-bold font-medium tracking-tight">Establish structural units for CMC Holding</p>
+                      <p className="text-[13px] text-slate-800 font-semibold font-medium tracking-tight">Establish structural units for CMC Holding</p>
                    </div>
                 </div>
-                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-black font-bold hover:text-black font-bold transition-all border border-slate-100 shadow-sm active:scale-95">
+                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-slate-800 font-semibold hover:text-slate-800 transition-all border border-slate-100 shadow-sm active:scale-95">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -338,21 +338,21 @@ const DepartmentMaster = () => {
               <form onSubmit={handleSubmit} className="p-8 pb-12 space-y-8 bg-white">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Department Name</label>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Department Name</label>
                     <div className="relative group">
-                       <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[#b59662] transition-colors" />
-                       <input name="name" value={formData.name} onChange={handleInputChange} required placeholder="e.g. Clinical Quality" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-black font-bold" />
+                       <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold group-focus-within:text-[#b59662] transition-colors" />
+                       <input name="name" value={formData.name} onChange={handleInputChange} required placeholder="e.g. Clinical Quality" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-[13px] font-semibold text-slate-800" />
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Dept Code</label>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Dept Code</label>
                     <div className="relative group">
-                       <Code2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold group-focus-within:text-[#b59662] transition-colors" />
-                       <input name="code" value={formData.code} onChange={handleInputChange} required placeholder="QUAL-OPS" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-black font-mono text-black font-bold" />
+                       <Code2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold group-focus-within:text-[#b59662] transition-colors" />
+                       <input name="code" value={formData.code} onChange={handleInputChange} required placeholder="QUAL-OPS" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-[13px] font-semibold font-mono text-slate-800" />
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">In-Charge (Head) *</label>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">In-Charge (Head) *</label>
                     <Dropdown
                       options={users}
                       value={formData.head}
@@ -363,7 +363,7 @@ const DepartmentMaster = () => {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-wider ml-1">Location / Floor *</label>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Location / Floor *</label>
                     <Dropdown
                       options={locations}
                       value={formData.location}
@@ -376,10 +376,10 @@ const DepartmentMaster = () => {
                 </div>
 
                 <div className="flex gap-4 pt-4 border-t border-slate-100">
-                   <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-black font-bold hover:bg-slate-50 hover:text-black font-bold rounded-xl transition-all border border-slate-200 uppercase tracking-[0.15em] active:scale-95">
+                   <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[12px] font-semibold text-slate-800 hover:bg-slate-50 hover:text-slate-800 rounded-xl transition-all border border-slate-200 normal-case tracking-normal active:scale-95">
                      Discard
                    </button>
-                   <button type="submit" className="flex-[2] py-3 bg-[#040404] text-white text-sm font-bold rounded-md shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-[0.98]">
+                   <button type="submit" className="flex-[2] py-3 bg-primary text-white text-sm font-semibold rounded-md shadow-lg shadow-none hover:bg-primary transition-all active:scale-[0.98]">
                      {isEditing ? 'Update Structural Unit' : 'Establish Department'}
                    </button>
                 </div>

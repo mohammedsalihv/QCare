@@ -83,7 +83,7 @@ const OoppeManagement = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-4">OOPPE Management</h1>
+      <h1 className="text-3xl font-semibold mb-4">OOPPE Management</h1>
       {error && <div className="text-red-600 mb-4">{error}</div>}
       <button
         className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded shadow hover:opacity-90 transition"
@@ -144,7 +144,7 @@ const OoppeManagement = () => {
 
 // Wrapper component to avoid naming conflict with existing "OoppeForm" import
 const OopgeFormWrapper = ({ onCancel, onSubmit, initialData }) => (
-  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+  <div className="fixed inset-0 bg-primary bg-opacity-40 flex items-center justify-center">
     <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
       <OoppeForm onCancel={onCancel} onSubmit={onSubmit} initialData={initialData} />
     </div>

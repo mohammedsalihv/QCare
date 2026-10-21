@@ -260,7 +260,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
 
   return (
     <>
-      <header className="h-20 bg-white backdrop-blur-md border-b border-slate-300/40 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-40 shadow-sm shadow-slate-100/50 text-black font-bold">
+      <header className="h-20 bg-white backdrop-blur-md border-b border-slate-300/40 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-40 shadow-sm shadow-slate-100/50 text-slate-800 font-semibold">
         {/* Left Side: Brand Logo and Title */}
         <div className="flex items-center gap-6">
           <div 
@@ -271,10 +271,10 @@ const Navbar = ({ openProfileDrawer, user }) => {
               <img src="/logo.svg" alt="QCare" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col">
-              <span className="font-black text-lg tracking-tighter whitespace-nowrap uppercase text-[#040404]">
+              <span className="font-semibold text-lg tracking-tighter whitespace-nowrap normal-case text-slate-800">
                 QCare<span className="text-[var(--color-primary)]">.</span>
               </span>
-              <span className="text-[8px] text-[#040404]/60 font-black tracking-[0.25em] uppercase">CMC Holding</span>
+              <span className="text-[12px] text-[#040404]/60 font-semibold tracking-normal normal-case">CMC Holding</span>
             </div>
           </div>
         </div>
@@ -283,7 +283,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
         <nav className="hidden lg:flex items-center gap-1 xl:gap-2 h-full mx-6 select-none">
           <button 
             onClick={() => navigate('/dashboard')} 
-            className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${
+            className={`px-4 py-2 text-[13px] font-semibold normal-case tracking-normal rounded-xl transition-all ${
               location.pathname === '/dashboard' 
               ? 'bg-[var(--color-primary)]/15 text-[var(--color-primary)]' 
               : 'text-slate-700 hover:bg-[var(--color-primary)]/15 hover:text-[var(--color-primary)]'
@@ -299,7 +299,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
             className="relative h-full flex items-center"
           >
             <button 
-              className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 ${
+              className={`px-4 py-2 text-[13px] font-semibold normal-case tracking-normal rounded-xl transition-all flex items-center gap-1.5 ${
                 activeMegaMenu === 'master' || location.pathname.includes('/dashboard/contact-master') || location.pathname.includes('/dashboard/location-types') || location.pathname.includes('/dashboard/departments') || location.pathname.includes('/dashboard/speciality-master') || location.pathname.includes('/dashboard/physician-demography') || location.pathname.includes('/dashboard/physician-demography-verification') || location.pathname.includes('/dashboard/clinical-privileges') || location.pathname.includes('/dashboard/key-performance-indicator')
                 ? 'bg-[var(--color-primary)]/15 text-[var(--color-primary)]' 
                 : 'text-slate-700 hover:bg-[var(--color-primary)]/15 hover:text-[var(--color-primary)]'
@@ -317,7 +317,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
             className="relative h-full flex items-center"
           >
             <button 
-              className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 ${
+              className={`px-4 py-2 text-[13px] font-semibold normal-case tracking-normal rounded-xl transition-all flex items-center gap-1.5 ${
                 activeMegaMenu === 'qms' || location.pathname.includes('/dashboard/documents') || location.pathname.includes('/dashboard/incidents') || location.pathname.includes('/dashboard/risks') || location.pathname.includes('/dashboard/audit') || location.pathname.includes('/dashboard/training') || location.pathname.includes('/dashboard/deviations') || location.pathname.includes('/dashboard/complaints') || location.pathname.includes('/dashboard/capa') || location.pathname.includes('/dashboard/equipment') || location.pathname.includes('/dashboard/supplier')
                 ? 'bg-[var(--color-primary)]/15 text-[var(--color-primary)]' 
                 : 'text-slate-700 hover:bg-[var(--color-primary)]/15 hover:text-[var(--color-primary)]'
@@ -332,7 +332,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
 
           <button 
             onClick={() => navigate('/dashboard/support')} 
-            className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${
+            className={`px-4 py-2 text-[13px] font-semibold normal-case tracking-normal rounded-xl transition-all ${
               location.pathname === '/dashboard/support' 
               ? 'bg-[var(--color-primary)]/15 text-[var(--color-primary)]' 
               : 'text-slate-700 hover:bg-[var(--color-primary)]/15 hover:text-[var(--color-primary)]'
@@ -345,11 +345,11 @@ const Navbar = ({ openProfileDrawer, user }) => {
         {/* Right Side: Global controls (Search, Help, Notifications, User) */}
         <div className="flex items-center gap-3 sm:gap-4 shrink-0">
           <div className="relative group hidden xl:block w-60">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[var(--color-primary)] transition-colors" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[var(--color-primary)] transition-colors" />
             <input 
               type="text" 
               placeholder="Search medical portal..." 
-              className="w-full pl-10 pr-4 py-2 bg-white/90 border border-slate-350 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-xs font-medium text-slate-800"
+              className="w-full pl-10 pr-4 py-2 bg-white/90 border border-slate-350 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-[13px] font-medium text-slate-800"
             />
           </div>
 
@@ -376,7 +376,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
             >
               <Bell className="w-5 h-5" />
               {notifications.filter(n => !n.isRead).length > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-black flex items-center justify-center rounded-full border border-white shadow-lg animate-in zoom-in duration-300">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[12px] font-semibold flex items-center justify-center rounded-full border border-white shadow-lg animate-in zoom-in duration-300">
                   {notifications.filter(n => !n.isRead).length}
                 </span>
               )}
@@ -384,13 +384,13 @@ const Navbar = ({ openProfileDrawer, user }) => {
 
             {/* Notifications Panel */}
             {showNotifications && (
-              <div className="absolute right-[-60px] sm:right-0 mt-4 w-[320px] sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="absolute right-[-60px] sm:right-0 mt-4 w-[320px] sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                  <h4 className="text-[10px] font-black text-slate-800 uppercase tracking-[0.25em]">Notifications</h4>
+                  <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Notifications</h4>
                   {notifications.length > 0 && (
                     <button 
                       onClick={clearAll}
-                      className="text-[9px] font-black text-[#040404] uppercase tracking-widest hover:underline"
+                      className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal hover:underline"
                     >
                       Clear All
                     </button>
@@ -407,7 +407,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
                         <div className="flex gap-3">
                           <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border border-slate-100 ${
                             n.type === 'incident_report' ? 'bg-rose-50 text-rose-500' :
-                            n.type === 'document_upload' ? 'bg-teal-50 text-[#040404]' : 
+                            n.type === 'document_upload' ? 'bg-teal-50 text-slate-800' : 
                             n.type === 'document_like' ? 'bg-amber-50 text-amber-500' : 
                             n.type === 'license-expiry' ? 'bg-rose-100 text-rose-600' : 'bg-emerald-50 text-emerald-500'
                           }`}>
@@ -417,11 +417,11 @@ const Navbar = ({ openProfileDrawer, user }) => {
                              n.type === 'license-expiry' ? <ShieldAlert className="w-4.5 h-4.5" /> : <Shield className="w-4.5 h-4.5" />}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-[11px] font-bold text-slate-800 leading-snug break-words">{n.message}</p>
+                            <p className="text-[12px] font-semibold text-slate-800 leading-snug break-words">{n.message}</p>
                             <div className="flex items-center gap-2 mt-1">
-                              <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">{n.user}</span>
+                              <span className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal">{n.user}</span>
                               <span className="w-1 h-1 rounded-full bg-slate-200"></span>
-                              <span className="text-[8px] text-slate-400 font-medium">
+                              <span className="text-[12px] text-slate-500 font-medium">
                                 {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </span>
                             </div>
@@ -431,15 +431,15 @@ const Navbar = ({ openProfileDrawer, user }) => {
                     ))
                   ) : (
                     <div className="py-12 text-center opacity-30 flex flex-col items-center gap-2">
-                      <Bell className="w-8 h-8 text-slate-400" />
-                      <p className="text-[9px] font-black uppercase tracking-[0.2em]">No Notifications</p>
+                      <Bell className="w-8 h-8 text-slate-500" />
+                      <p className="text-[12px] font-semibold normal-case tracking-normal">No Notifications</p>
                     </div>
                   )}
                 </div>
                 {notifications.length > 0 && (
                   <button 
                     onClick={() => { setShowNotifications(false); navigate('/notifications'); }}
-                    className="w-full py-4 text-[9px] font-black text-slate-600 hover:bg-slate-50 border-t border-slate-100 transition-all uppercase tracking-[0.2em] text-center"
+                    className="w-full py-4 text-[12px] font-semibold text-slate-600 hover:bg-slate-50 border-t border-slate-100 transition-all normal-case tracking-normal text-center"
                   >
                     View All
                   </button>
@@ -464,10 +464,10 @@ const Navbar = ({ openProfileDrawer, user }) => {
                   />
                 </div>
                 <div className="hidden md:flex flex-col items-start leading-tight">
-                  <span className="text-xs font-black text-slate-800 group-hover:text-[var(--color-primary)] transition-colors whitespace-nowrap">{user?.name?.split(' ')[0]}</span>
-                  <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">{user?.designation?.substring(0, 15) || user?.role}</span>
+                  <span className="text-[13px] font-semibold text-slate-800 group-hover:text-[var(--color-primary)] transition-colors whitespace-nowrap">{user?.name?.split(' ')[0]}</span>
+                  <span className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal">{user?.designation?.substring(0, 15) || user?.role}</span>
                 </div>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-[var(--color-primary)] transition-colors shrink-0" />
+                <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-[var(--color-primary)] transition-colors shrink-0" />
               </button>
             }
           />
@@ -498,7 +498,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
             <div className="grid grid-cols-2 gap-10 max-h-[360px] overflow-y-auto custom-scrollbar pr-4">
               {masterDataMenu.map((sec, idx) => (
                 <div key={idx} className="space-y-4">
-                  <h4 className="text-[10px] font-black text-[var(--color-primary)] uppercase tracking-[0.2em] border-b border-slate-100 pb-2">{sec.title}</h4>
+                  <h4 className="text-[12px] font-semibold text-[var(--color-primary)] normal-case tracking-normal border-b border-slate-100 pb-2">{sec.title}</h4>
                   <div className="space-y-2">
                     {sec.items.map((item) => (
                       <div 
@@ -510,8 +510,8 @@ const Navbar = ({ openProfileDrawer, user }) => {
                           <item.icon className="w-4.5 h-4.5" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-[11px] font-black uppercase tracking-wider text-slate-800 group-hover:text-[var(--color-primary)] transition-colors">{item.label}</span>
-                          <span className="text-[10px] text-slate-400 font-medium mt-0.5 leading-snug">{item.desc}</span>
+                          <span className="text-[12px] font-semibold normal-case tracking-normal text-slate-800 group-hover:text-[var(--color-primary)] transition-colors">{item.label}</span>
+                          <span className="text-[12px] text-slate-500 font-medium mt-0.5 leading-snug">{item.desc}</span>
                         </div>
                       </div>
                     ))}
@@ -525,7 +525,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
             <div className="grid grid-cols-3 gap-10">
               {qmsModulesMenu.map((sec, idx) => (
                 <div key={idx} className="space-y-4">
-                  <h4 className="text-[10px] font-black text-[var(--color-primary)] uppercase tracking-[0.2em] border-b border-slate-100 pb-2">{sec.title}</h4>
+                  <h4 className="text-[12px] font-semibold text-[var(--color-primary)] normal-case tracking-normal border-b border-slate-100 pb-2">{sec.title}</h4>
                   <div className="space-y-2">
                     {sec.items.map((item) => (
                       <div 
@@ -537,8 +537,8 @@ const Navbar = ({ openProfileDrawer, user }) => {
                           <item.icon className="w-4.5 h-4.5" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-[11px] font-black uppercase tracking-wider text-slate-800 group-hover:text-[var(--color-primary)] transition-colors">{item.label}</span>
-                          <span className="text-[10px] text-slate-400 font-medium mt-0.5 leading-snug">{item.desc}</span>
+                          <span className="text-[12px] font-semibold normal-case tracking-normal text-slate-800 group-hover:text-[var(--color-primary)] transition-colors">{item.label}</span>
+                          <span className="text-[12px] text-slate-500 font-medium mt-0.5 leading-snug">{item.desc}</span>
                         </div>
                       </div>
                     ))}
@@ -552,7 +552,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
             <div className="grid grid-cols-4 gap-10">
               {adminControlMenu.map((sec, idx) => (
                 <div key={idx} className="space-y-4">
-                  <h4 className="text-[10px] font-black text-[var(--color-primary)] uppercase tracking-[0.2em] border-b border-slate-100 pb-2">{sec.title}</h4>
+                  <h4 className="text-[12px] font-semibold text-[var(--color-primary)] normal-case tracking-normal border-b border-slate-100 pb-2">{sec.title}</h4>
                   <div className="space-y-2">
                     {sec.items.map((item) => (
                       <div 
@@ -564,8 +564,8 @@ const Navbar = ({ openProfileDrawer, user }) => {
                           <item.icon className="w-4.5 h-4.5" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-[11px] font-black uppercase tracking-wider text-slate-800 group-hover:text-[var(--color-primary)] transition-colors">{item.label}</span>
-                          <span className="text-[10px] text-slate-400 font-medium mt-0.5 leading-snug">{item.desc}</span>
+                          <span className="text-[12px] font-semibold normal-case tracking-normal text-slate-800 group-hover:text-[var(--color-primary)] transition-colors">{item.label}</span>
+                          <span className="text-[12px] text-slate-500 font-medium mt-0.5 leading-snug">{item.desc}</span>
                         </div>
                       </div>
                     ))}
@@ -581,12 +581,12 @@ const Navbar = ({ openProfileDrawer, user }) => {
       {showMobileSearch && (
         <div className="xl:hidden fixed inset-x-0 top-20 p-4 bg-white border-b border-slate-200 z-50 animate-in slide-in-from-top duration-300">
            <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-500" />
             <input 
               type="text" 
               autoFocus
               placeholder="Search Quality Portal..." 
-              className="w-full pl-12 pr-6 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800"
+              className="w-full pl-12 pr-6 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800"
             />
           </div>
         </div>
@@ -606,7 +606,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
           <div className="space-y-2">
              <button 
                onClick={() => { navigate('/dashboard'); setIsMobileMenuOpen(false); }}
-               className={`w-full text-left p-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+               className={`w-full text-left p-3.5 rounded-xl text-[13px] font-semibold normal-case tracking-normal transition-all ${
                  location.pathname === '/dashboard' ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : 'text-slate-700 hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]'
                }`}
              >
@@ -617,7 +617,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
              <div className="space-y-1">
                <button
                  onClick={() => setExpandedMobileCategory(expandedMobileCategory === 'master' ? null : 'master')}
-                 className={`w-full flex items-center justify-between p-3.5 rounded-xl text-xs font-black uppercase tracking-wider text-slate-700 hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)] ${
+                 className={`w-full flex items-center justify-between p-3.5 rounded-xl text-[13px] font-semibold normal-case tracking-normal text-slate-700 hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)] ${
                    expandedMobileCategory === 'master' ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : ''
                  }`}
                >
@@ -631,11 +631,11 @@ const Navbar = ({ openProfileDrawer, user }) => {
                        <button
                          key={item.label}
                          onClick={() => { navigate(item.path); setIsMobileMenuOpen(false); }}
-                         className={`w-full text-left p-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-slate-650 hover:bg-[var(--color-primary)]/5 flex items-center gap-2.5 ${
-                           location.pathname === item.path ? 'text-[var(--color-primary)] font-black' : ''
+                         className={`w-full text-left p-2.5 rounded-lg text-[12px] font-semibold normal-case tracking-normal text-slate-600 hover:bg-[var(--color-primary)]/5 flex items-center gap-2.5 ${
+                           location.pathname === item.path ? 'text-[var(--color-primary)] font-semibold' : ''
                          }`}
                        >
-                         <item.icon className="w-3.5 h-3.5 text-slate-400 group-hover:text-[var(--color-primary)]" />
+                         <item.icon className="w-3.5 h-3.5 text-slate-500 group-hover:text-[var(--color-primary)]" />
                          <span>{item.label}</span>
                        </button>
                     )))}
@@ -647,7 +647,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
              <div className="space-y-1">
                <button
                  onClick={() => setExpandedMobileCategory(expandedMobileCategory === 'qms' ? null : 'qms')}
-                 className={`w-full flex items-center justify-between p-3.5 rounded-xl text-xs font-black uppercase tracking-wider text-slate-700 hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)] ${
+                 className={`w-full flex items-center justify-between p-3.5 rounded-xl text-[13px] font-semibold normal-case tracking-normal text-slate-700 hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)] ${
                    expandedMobileCategory === 'qms' ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : ''
                  }`}
                >
@@ -661,11 +661,11 @@ const Navbar = ({ openProfileDrawer, user }) => {
                        <button
                          key={item.label}
                          onClick={() => { navigate(item.path); setIsMobileMenuOpen(false); }}
-                         className={`w-full text-left p-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-slate-650 hover:bg-[var(--color-primary)]/5 flex items-center gap-2.5 ${
-                           location.pathname === item.path ? 'text-[var(--color-primary)] font-black' : ''
+                         className={`w-full text-left p-2.5 rounded-lg text-[12px] font-semibold normal-case tracking-normal text-slate-600 hover:bg-[var(--color-primary)]/5 flex items-center gap-2.5 ${
+                           location.pathname === item.path ? 'text-[var(--color-primary)] font-semibold' : ''
                          }`}
                        >
-                         <item.icon className="w-3.5 h-3.5 text-slate-400" />
+                         <item.icon className="w-3.5 h-3.5 text-slate-500" />
                          <span>{item.label}</span>
                        </button>
                     )))}
@@ -675,7 +675,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
 
              <button 
                onClick={() => { navigate('/dashboard/support'); setIsMobileMenuOpen(false); }}
-               className={`w-full text-left p-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+               className={`w-full text-left p-3.5 rounded-xl text-[13px] font-semibold normal-case tracking-normal transition-all ${
                  location.pathname === '/dashboard/support' ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : 'text-slate-700 hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]'
                }`}
              >
@@ -692,28 +692,28 @@ const Navbar = ({ openProfileDrawer, user }) => {
             className="absolute inset-0 bg-white/60 backdrop-blur-md animate-in fade-in duration-200"
             onClick={() => setShowLogoutConfirm(false)} 
           />
-          <div className="relative bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200">
             <div className="p-8 pb-6 text-center">
-              <div className="w-20 h-20 rounded-[2rem] bg-red-50 mx-auto mb-6 flex items-center justify-center shadow-inner-sm">
+              <div className="w-20 h-20 rounded-2xl bg-red-50 mx-auto mb-6 flex items-center justify-center shadow-inner-sm">
                 <AlertTriangle className="w-10 h-10 text-red-500" />
               </div>
-              <h3 className="text-2xl font-black text-[#040404] mb-2 tracking-tight">End Session?</h3>
-              <p className="text-xs text-slate-500 font-medium leading-relaxed px-4">
-                You are about to log out of the <span className="font-bold text-[var(--color-primary)]">QCare Portal</span>. Any unsaved changes will be lost.
+              <h3 className="text-2xl font-semibold text-slate-800 mb-2 tracking-tight">End Session?</h3>
+              <p className="text-[13px] text-slate-500 font-medium leading-relaxed px-4">
+                You are about to log out of the <span className="font-semibold text-[var(--color-primary)]">QCare Portal</span>. Any unsaved changes will be lost.
               </p>
             </div>
 
             <div className="p-8 pt-0 flex flex-col gap-3">
               <button
                 onClick={confirmLogout}
-                className="w-full py-4 rounded-xl bg-red-500 hover:bg-red-600 text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-xl shadow-red-500/30 active:scale-[0.98] flex items-center justify-center gap-3 group"
+                className="w-full py-4 rounded-xl bg-red-500 hover:bg-red-600 text-white text-[12px] font-semibold normal-case tracking-normal transition-all shadow-xl shadow-red-500/30 active:scale-[0.98] flex items-center justify-center gap-3 group"
               >
                 <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                 <span>Confirm Logout</span>
               </button>
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="w-full py-4 rounded-xl border border-slate-200 text-[11px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 transition-all active:scale-[0.98]"
+                className="w-full py-4 rounded-xl border border-slate-200 text-[12px] font-semibold normal-case tracking-normal text-slate-700 hover:bg-slate-50 transition-all active:scale-[0.98]"
               >
                 Go Back
               </button>

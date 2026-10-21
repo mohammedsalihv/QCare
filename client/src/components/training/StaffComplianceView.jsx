@@ -12,40 +12,40 @@ const StaffComplianceView = ({ compliance }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-white rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-      <div className="p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
-         <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest">Mandatory DOH Competencies</h3>
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className="p-8 border-b border-slate-100 bg-slate-50/50 ">
+         <h3 className="text-sm font-semibold text-slate-800 normal-case tracking-normal">Mandatory DOH Competencies</h3>
       </div>
       <div className="p-8 space-y-4">
          {compliance?.map((item, idx) => {
            const info = getStatusInfo(item.status);
            return (
-             <div key={idx} className="flex items-center justify-between p-6 rounded-3xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50/50 transition-all group">
+             <div key={idx} className="flex items-center justify-between p-6 rounded-2xl border border-slate-100 hover:bg-slate-50/50 transition-all group">
                 <div className="flex items-center gap-6">
-                   <div className={`p-4 rounded-2xl ${info.bg} ${info.color}`}>
+                   <div className={`p-4 rounded-2xl ${info.bg}  ${info.color}`}>
                       <info.icon className="w-6 h-6" />
                    </div>
                    <div>
-                      <h4 className="text-base font-bold text-black font-bold dark:text-white">{item.name}</h4>
-                      <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest mt-1">{item.code}</p>
+                      <h4 className="text-base font-semibold text-slate-800 ">{item.name}</h4>
+                      <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mt-1">{item.code}</p>
                    </div>
                 </div>
                 
                 <div className="flex items-center gap-12">
                    <div className="text-right">
-                      <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest mb-1">Last Completed</p>
-                      <p className="text-xs font-bold text-black font-bold dark:text-black font-bold">
+                      <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">Last Completed</p>
+                      <p className="text-[13px] font-semibold text-slate-800">
                          {item.lastCompleted ? new Date(item.lastCompleted).toLocaleDateString() : '—'}
                       </p>
                    </div>
                    <div className="text-right">
-                      <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest mb-1">Renewal Due</p>
-                      <p className={`text-xs font-bold ${item.status === 'expired' ? 'text-rose-600' : 'text-black font-bold dark:text-black font-bold'}`}>
+                      <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">Renewal Due</p>
+                      <p className={`text-[13px] font-semibold ${item.status === 'expired' ? 'text-rose-600' : 'text-slate-800 font-semibold'}`}>
                          {item.expiry ? new Date(item.expiry).toLocaleDateString() : '—'}
                       </p>
                    </div>
                    <div className="w-24 text-right">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${info.bg} ${info.color}`}>
+                      <span className={`px-3 py-1 rounded-full text-[12px] font-semibold normal-case tracking-normal ${info.bg}  ${info.color}`}>
                          {info.label}
                       </span>
                    </div>
@@ -54,7 +54,7 @@ const StaffComplianceView = ({ compliance }) => {
            );
          })}
          {(!compliance || compliance.length === 0) && (
-           <div className="text-center py-20 text-black font-bold font-black uppercase text-[10px] tracking-widest">
+           <div className="text-center py-20 text-slate-800 font-semibold normal-case text-[12px] tracking-normal">
               No mandatory competencies defined for this role.
            </div>
          )}

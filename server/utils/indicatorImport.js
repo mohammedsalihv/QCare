@@ -2,6 +2,7 @@ const ExcelJS = require('exceljs');
 const { Readable } = require('node:stream');
 const crypto = require('node:crypto');
 const jwt = require('jsonwebtoken');
+const { getPreset, ruleFor, analyzeWaiting } = require('./waitingTime');
 
 const signingKey = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
 const normalized = value => String(value ?? '').trim().toLowerCase();
@@ -9,6 +10,7 @@ const error = message => { throw new Error(message); };
 const ruleFields = ['aggregationMode', 'numeratorColumn', 'denominatorColumn', 'outcomeColumn', 'matchingValues', 'otherValues', 'eligibilityColumn', 'eligibleValues', 'excludedValues', 'idColumn', 'dateColumn', 'reasonColumn', 'riskColumn', 'measureType', 'multiplier', 'targetDirection'];
 
 function validateRule(input) {
+  if (input?.preset) return ruleFor(input.preset);
   const rule = Object.fromEntries(ruleFields.map(key => [key, input?.[key]]).filter(([, value]) => value !== undefined));
   for (const key of ['matchingValues', 'otherValues', 'eligibleValues', 'excludedValues']) {
     rule[key] = Array.isArray(rule[key]) ? [...new Set(rule[key].map(normalized).filter(Boolean))] : [];
@@ -65,6 +67,7 @@ async function parseSpreadsheet(file) {
 }
 
 function analyzeRows({ headers, rows }, inputRule, period, year) {
+  if (inputRule?.preset) return analyzeWaiting({ headers, rows }, inputRule.preset, period, year);
   const rule = validateRule(inputRule);
   const column = name => {
     if (!name) return -1;
@@ -136,7 +139,7 @@ function analyzeRows({ headers, rows }, inputRule, period, year) {
   };
 }
 
-const ruleDigest = definition => crypto.createHash('sha256').update(JSON.stringify({ rule: validateRule(definition.importRule), target: definition.target })).digest('hex');
+const ruleDigest = definition => crypto.createHash('sha256').update(JSON.stringify({ rule: validateRule(definition.importRule), target: definition.target, preset: getPreset(definition.importRule?.preset) })).digest('hex');
 function signPreview(payload) { return jwt.sign(payload, signingKey, { expiresIn: '30m', audience: 'indicator-import', issuer: 'qcare-import' }); }
 function verifyPreview(token) { return jwt.verify(token, signingKey, { audience: 'indicator-import', issuer: 'qcare-import' }); }
 module.exports = { validateRule, parseSpreadsheet, analyzeRows, ruleDigest, signPreview, verifyPreview };

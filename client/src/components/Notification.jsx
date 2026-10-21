@@ -5,7 +5,7 @@ const icons = {
     success: <CheckCircle2 className="w-5 h-5 text-emerald-500" />,
     error: <AlertCircle className="w-5 h-5 text-red-500" />,
     warning: <AlertTriangle className="w-5 h-5 text-amber-500" />,
-    info: <Info className="w-5 h-5 text-[#040404]" />,
+    info: <Info className="w-5 h-5 text-slate-800" />,
 };
 
 const styles = {
@@ -54,10 +54,9 @@ const Notification = ({ message, type = 'info', duration = 5000, onClose }) => {
     return (
         <div 
             className={`
-                pointer-events-auto relative group overflow-hidden
-                flex items-center gap-4 p-4 pr-10 rounded-2xl border backdrop-blur-xl
-                transition-all duration-300 ease-out
+                pointer-events-auto relative group overflow-hidden flex items-center gap-4 p-4 pr-10 rounded-2xl border backdrop-blur-xl transition-all duration-300 ease-out
                 ${styles[type]}
+                
                 ${isClosing ? 'opacity-0 translate-x-12 scale-95' : 'opacity-100 translate-x-0 scale-100 animate-in slide-in-from-right-8'}
                 shadow-2xl hover:shadow-3xl
             `}
@@ -69,17 +68,17 @@ const Notification = ({ message, type = 'info', duration = 5000, onClose }) => {
             </div>
             
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-black font-bold leading-tight">
+                <p className="text-sm font-semibold text-slate-800 leading-tight">
                     {type.charAt(0) + type.slice(1)}
                 </p>
-                <p className="text-xs font-medium text-black font-bold mt-0.5 truncate">
+                <p className="text-[13px] font-medium text-slate-800 font-semibold mt-0.5 truncate">
                     {message}
                 </p>
             </div>
 
             <button 
                 onClick={handleClose}
-                className="absolute top-4 right-4 p-1 rounded-lg text-black font-bold hover:text-black font-bold hover:bg-slate-100 transition-colors"
+                className="absolute top-4 right-4 p-1 rounded-lg text-slate-800 font-semibold hover:text-slate-800 hover:bg-slate-100 transition-colors"
             >
                 <X className="w-3.5 h-3.5" />
             </button>

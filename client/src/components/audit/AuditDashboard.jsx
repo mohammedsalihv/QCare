@@ -20,22 +20,22 @@ const AuditDashboard = ({ stats }) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card, idx) => (
-          <div key={idx} className="bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+          <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 ">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${card.bg}`}>
                 <card.icon className={`w-6 h-6 ${card.color}`} />
               </div>
-              <span className="text-2xl font-black text-black font-bold dark:text-white">{card.value}</span>
+              <span className="text-2xl font-semibold text-slate-800 ">{card.value}</span>
             </div>
-            <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest">{card.label}</p>
+            <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">{card.label}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Radar Chart for Governance Pillars */}
-        <div className="bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm min-w-0">
-          <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8">Governance Pillar Performance</h3>
+        <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm min-w-0">
+          <h3 className="text-sm font-semibold text-slate-800 normal-case tracking-normal mb-8">Governance Pillar Performance</h3>
           <div className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={pillarData}>
@@ -58,20 +58,20 @@ const AuditDashboard = ({ stats }) => {
         </div>
 
         {/* Overdue List */}
-        <div className="bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-          <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8 flex items-center justify-between">
+        <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-800 normal-case tracking-normal mb-8 flex items-center justify-between">
             Critical Overdue Audits
-            <span className="px-3 py-1 bg-rose-100 text-rose-600 text-[10px] font-black rounded-full">ACTION REQUIRED</span>
+            <span className="px-3 py-1 bg-rose-100 text-rose-600 text-[12px] font-semibold rounded-full">ACTION REQUIRED</span>
           </h3>
           <div className="space-y-4">
             {stats?.overdue?.map((audit, idx) => (
-              <div key={idx} className="p-4 rounded-2xl bg-rose-50/50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/30 flex justify-between items-center">
+              <div key={idx} className="p-4 rounded-2xl bg-rose-50/50 border border-rose-100 flex justify-between items-center">
                 <div>
-                  <h4 className="text-sm font-bold text-black font-bold dark:text-white">{audit.auditTitle}</h4>
-                  <p className="text-[10px] text-black font-bold uppercase font-black">{audit.department}</p>
+                  <h4 className="text-sm font-semibold text-slate-800 ">{audit.auditTitle}</h4>
+                  <p className="text-[12px] text-slate-800 font-semibold normal-case">{audit.department}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] font-black text-rose-600 uppercase">
+                  <span className="text-[12px] font-semibold text-rose-600 normal-case">
                     Scheduled: {new Date(audit.scheduledDate).toLocaleDateString()}
                   </span>
                 </div>
@@ -80,7 +80,7 @@ const AuditDashboard = ({ stats }) => {
             {(!stats?.overdue || stats.overdue.length === 0) && (
                <div className="text-center py-20 opacity-30">
                   <ClipboardCheck className="w-12 h-12 mx-auto mb-4" />
-                  <p className="text-xs font-black uppercase tracking-widest">No Overdue Audits</p>
+                  <p className="text-[13px] font-semibold normal-case tracking-normal">No Overdue Audits</p>
                </div>
             )}
           </div>

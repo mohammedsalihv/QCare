@@ -23,7 +23,9 @@ const {
 } = require('../controllers/kpiController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const multer = require('multer');
-const { previewImport, saveRule } = require('../controllers/indicatorImportController');
+const { previewImport, saveRule, waitingCatalog, installWaiting } = require('../controllers/indicatorImportController');
+router.get('/waiting-time/catalog', protect, waitingCatalog);
+router.post('/waiting-time/install', protect, authorize('SuperAdmin', 'QualityManager', 'admin'), installWaiting);
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024, files: 1, fields: 3, fieldSize: 1024 } }).single('file');
 router.post('/import/preview', protect, (req, res, next) => {
   upload(req, res, err => err ? res.status(400).json({ message: err.code === 'LIMIT_FILE_SIZE' ? 'Use a file smaller than 5 MB.' : 'Upload one CSV or XLSX file with the reporting details.' }) : next());

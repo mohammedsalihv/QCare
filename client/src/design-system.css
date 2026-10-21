@@ -1,0 +1,133 @@
+/*
+ * QCare visual foundation.
+ * Imported last by main.jsx so every module shares the same presentation.
+ * Status colors (success, warning, danger) remain local to their meaning.
+ */
+:root {
+  --qc-page-bg: #edf2f6;
+  --qc-surface: #fff;
+  --qc-surface-muted: #f5f8fa;
+  --qc-ink: #17324d;
+  --qc-muted: #5e7084;
+  --qc-brand: #0f766e;
+  --qc-brand-hover: #115e59;
+  --qc-brand-soft: #eaf6f3;
+  --qc-border: #dce5ed;
+  --qc-control-border: #d2dee6;
+  --qc-header-bg: #f2f6f8;
+  --qc-header-text: #42586e;
+  --qc-row-hover: #f3f9f7;
+  --qc-radius-card: 16px;
+  --qc-radius-control: 10px;
+  --qc-shadow-card: 0 3px 14px #17324d05;
+  --qc-shadow-dialog: 0 24px 80px #17324d26;
+}
+
+body { color: var(--qc-ink); font-size: 14px; line-height: 1.6; }
+button, input, select, textarea { font-family: inherit; }
+button:disabled { cursor: not-allowed; }
+.qc-app { color: var(--qc-ink); background: var(--qc-page-bg); }
+.qc-app .qc-main { padding: 28px 32px 24px; }
+.qc-main > * { max-width: 1500px; }
+.qc-main h1 { color: var(--qc-ink); font-size: 28px; line-height: 1.25; font-weight: 700; letter-spacing: -.035em; }
+.qc-main :is(h2, h3, h4) { letter-spacing: -.02em; line-height: 1.4; }
+.qc-main h2 { font-weight: 650; }
+.qc-main :is(label, legend) { font-size: 13px; font-weight: 600; line-height: 1.5; }
+.qc-main :is(button, a):focus-visible, .qc-app dialog :is(button, a):focus-visible {
+  outline: 2px solid var(--qc-brand);
+  outline-offset: 3px;
+}
+
+/* Legacy utility-based pages and newer named components share surfaces. */
+.qc-main :is(.bg-white.rounded-2xl, .bg-white.rounded-xl, .qd-panel, .qd-metric, .qi-picker, .qi-entry, .qi-reports):not([class*="border-red"]):not([class*="border-rose"]):not([class*="border-amber"]) {
+  border-color: var(--qc-border);
+  border-radius: var(--qc-radius-card);
+  box-shadow: var(--qc-shadow-card);
+}
+.qc-main .bg-white.border:is(.border-slate-100, .border-slate-200, .border-gray-200) { border-color: var(--qc-border); }
+.qc-main :is(.qd-metric h2, .qd-caption, .qi-heading p, .qi-entry-meta, .qi-entry-help, .qi-description) { color: var(--qc-muted); }
+.qc-main :is(.qi-entry-meta, .qi-entry-help, .qi-description) { font-size: 13px; }
+.qc-main .qi-entry h2 { color: var(--qc-ink); font-size: 20px; }
+.qc-main .qi-picker h2, .qc-main .qi-reports h2 { color: var(--qc-ink); font-size: 18px; }
+.qc-main :is(.qd-heading h1, .qi-heading h1) { font-size: 28px; }
+.qc-main :is(.qd-panel-heading h2, .qi-picker h3) { font-size: 17px; }
+
+/* Buttons: teal for primary actions, neutral outlines for secondary actions. */
+.qc-main button:not(.rounded-full):not(.qc-select-button):not(.qc-select-option) {
+  border-radius: var(--qc-radius-control);
+}
+.qc-main :is(button, a):is(.bg-primary, [class~="bg-[var(--color-primary)]"]) {
+  background-color: var(--qc-brand);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: none;
+}
+.qc-main :is(button, a):is(.bg-primary, [class~="bg-[var(--color-primary)]"]):hover {
+  background-color: var(--qc-brand-hover);
+}
+.qc-main button:disabled { opacity: .55; }
+.qc-main :is(button, a).border:is(.border-slate-100, .border-slate-200, .border-gray-200) { border-color: var(--qc-control-border); }
+
+/* Native fields keep their existing padding (including space for inline icons). */
+.qc-main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="hidden"]):not([type="file"]), textarea, select):not(.qc-select-native) {
+  color: var(--qc-ink);
+  font-size: 14px;
+  font-weight: 400;
+  border-radius: var(--qc-radius-control);
+}
+.qc-main :is(input, textarea, select).border:is(.border-slate-100, .border-slate-200, .border-gray-200) { border-color: var(--qc-control-border); }
+.qc-main :is(input, textarea)::placeholder { color: #718297; opacity: 1; font-weight: 400; }
+.qc-main :is(input, textarea, select):disabled { background: var(--qc-surface-muted); color: var(--qc-muted); }
+.qc-main :is(input[type="checkbox"], input[type="radio"]) { accent-color: var(--qc-brand); }
+.qc-main :is(.qi-search, .qc-select-search, .qc-custom-select) input { border-radius: 0; }
+
+/* Shared tables and dropdowns, including popovers rendered outside the layout. */
+.qc-table { border-radius: var(--qc-radius-card); color: var(--qc-ink); }
+.qc-table th { font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0 !important; }
+.qc-table td { font-size: 13px; color: var(--qc-ink) !important; border-color: #e7edf2 !important; line-height: 1.6; }
+.qc-table th, .qc-table td { vertical-align: middle; }
+.qc-custom-select, .qc-select-popup { color: var(--qc-ink); border-radius: var(--qc-radius-control); }
+.qc-select-button, .qc-select-option, .qc-select-search input { font-size: 13px; color: var(--qc-ink); }
+.qc-select-option.active { background: var(--qc-surface-muted); }
+.qc-select-option.selected { background: var(--qc-brand-soft); color: var(--qc-brand); }
+.qc-select-popup { box-shadow: var(--qc-shadow-dialog); }
+
+/* Module side navigation follows the same style as the main feature drawer. */
+.qc-module-sidebar { border: 1px solid var(--qc-border); border-radius: var(--qc-radius-card); background: var(--qc-surface); padding: 20px; box-shadow: var(--qc-shadow-card); }
+.qc-module-sidebar nav button { min-height: 42px; font-size: 13px; line-height: 1.5; font-weight: 600; box-shadow: none; transform: none; }
+.qc-module-sidebar nav button[aria-current="page"] { background: var(--qc-brand-soft); color: var(--qc-brand); box-shadow: inset 3px 0 var(--qc-brand); }
+.qc-module-sidebar nav button[aria-current="page"] svg { color: var(--qc-brand); }
+.qc-module-sidebar nav button:hover { background: var(--qc-brand-soft); }
+.qc-module-heading { margin-bottom: 24px; }
+.qc-module-heading p { color: var(--qc-muted); font-size: 13px; margin-top: 7px; }
+.qc-module-content { min-width: 0; flex: 1; width: 100%; }
+.qc-kpi-summary-label { color: var(--qc-muted); font-size: 12px; font-weight: 500; }
+.qc-feature-drawer { border-radius: 18px 0 0 18px; background: var(--qc-page-bg); }
+.qc-directory-section { border-color: var(--qc-border); border-radius: var(--qc-radius-card); }
+.qc-directory-links a { font-weight: 500; color: var(--qc-ink); border-color: var(--qc-border); border-radius: var(--qc-radius-control); }
+.qc-directory-links a.is-current { background: var(--qc-brand-soft); color: var(--qc-brand); border-color: #9dcac1; font-weight: 650; }
+.qc-directory-links a:hover { background: var(--qc-brand-soft); }
+.qc-directory-section-title h3 { color: var(--qc-ink); font-size: 15px; }
+.qc-directory-section-title p { color: var(--qc-muted); }
+.qc-directory-section-title > span { background: var(--qc-brand-soft); color: var(--qc-brand); }
+.qc-confirm-dialog { color: var(--qc-ink); border-color: var(--qc-border); border-radius: var(--qc-radius-card); box-shadow: var(--qc-shadow-dialog); }
+.qc-confirm-actions .primary { background: var(--qc-brand); border-color: var(--qc-brand); }
+.qc-main .qd-table thead { background: var(--qc-header-bg); }
+.qc-main .qd-table tbody :is(th, td) { font-size: 13px; color: var(--qc-ink); }
+.qc-main .recharts-cartesian-axis-tick-value { fill: var(--qc-muted); font-size: 12px; }
+.qc-main .recharts-legend-wrapper { font-family: inherit; font-size: 12px !important; font-weight: 500 !important; text-transform: none !important; }
+.qc-login { background: var(--qc-page-bg); }
+.qc-login-logo { padding: 3px 12px; background: var(--qc-surface); border-radius: 12px; }
+.qc-login-logo img { display: block; width: 150px; height: 50px; object-fit: contain; }
+.qc-login input { font-size: 14px; font-weight: 400; border-radius: var(--qc-radius-control); }
+.qc-login input::placeholder { color: #718297; }
+.qc-page-footer { margin-top: 28px; border-radius: var(--qc-radius-card); border-color: var(--qc-border); }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #b4c4ce; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #849baa; }
+
+@media (max-width: 750px) {
+  .qc-app .qc-main { padding: 20px 16px; }
+  .qc-main h1, .qc-main :is(.qd-heading h1, .qi-heading h1) { font-size: 24px; }
+  .qc-module-sidebar { position: static; padding: 16px; }
+}
+@media (max-width: 440px) { .qc-feature-drawer { border-radius: 0; } }

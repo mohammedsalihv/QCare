@@ -21,22 +21,22 @@ const IPCDashboard = ({ stats }) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card, idx) => (
-          <div key={idx} className="bg-white dark:bg-white p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+          <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 ">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${card.bg}`}>
                 <card.icon className={`w-6 h-6 ${card.color}`} />
               </div>
-              <span className="text-2xl font-black text-black font-bold dark:text-white">{card.value}</span>
+              <span className="text-2xl font-semibold text-slate-800 ">{card.value}</span>
             </div>
-            <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest">{card.label}</p>
+            <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">{card.label}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* HAI Rates Chart */}
-        <div className="bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-           <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8">Average HAI Rates (per 1,000 Patient Days)</h3>
+        <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
+           <h3 className="text-sm font-semibold text-slate-800 normal-case tracking-normal mb-8">Average HAI Rates (per 1,000 Patient Days)</h3>
            <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={surveillanceData}>
@@ -51,29 +51,29 @@ const IPCDashboard = ({ stats }) => {
         </div>
 
         {/* Alerts & Benchmark List */}
-        <div className="bg-white dark:bg-white p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-           <h3 className="text-sm font-black text-black font-bold dark:text-white uppercase tracking-widest mb-8">Infection Control Alerts</h3>
+        <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
+           <h3 className="text-sm font-semibold text-slate-800 normal-case tracking-normal mb-8">Infection Control Alerts</h3>
            <div className="space-y-4">
-              <div className="p-5 rounded-2xl bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/30 flex items-center justify-between">
+              <div className="p-5 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-between">
                  <div className="flex items-center gap-4">
                     <AlertTriangle className="w-5 h-5 text-rose-600" />
                     <div>
-                       <h4 className="text-sm font-bold text-black font-bold dark:text-white">SSI Rate Threshold Exceeded</h4>
-                       <p className="text-[10px] font-black text-black font-bold uppercase">Surgical Ward • April 2026</p>
+                       <h4 className="text-sm font-semibold text-slate-800 ">SSI Rate Threshold Exceeded</h4>
+                       <p className="text-[12px] font-semibold text-slate-800 normal-case">Surgical Ward • April 2026</p>
                     </div>
                  </div>
-                 <span className="text-[10px] font-black text-rose-600 bg-white px-3 py-1 rounded-full uppercase">Review</span>
+                 <span className="text-[12px] font-semibold text-rose-600 bg-white px-3 py-1 rounded-full normal-case">Review</span>
               </div>
 
-              <div className="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 flex items-center justify-between">
+              <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-between">
                  <div className="flex items-center gap-4">
                     <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                     <div>
-                       <h4 className="text-sm font-bold text-black font-bold dark:text-white">Hand Hygiene Target Reached</h4>
-                       <p className="text-[10px] font-black text-black font-bold uppercase">Medical Ward • 92% Compliance</p>
+                       <h4 className="text-sm font-semibold text-slate-800 ">Hand Hygiene Target Reached</h4>
+                       <p className="text-[12px] font-semibold text-slate-800 normal-case">Medical Ward • 92% Compliance</p>
                     </div>
                  </div>
-                 <span className="text-[10px] font-black text-emerald-600 bg-white px-3 py-1 rounded-full uppercase">Optimal</span>
+                 <span className="text-[12px] font-semibold text-emerald-600 bg-white px-3 py-1 rounded-full normal-case">Optimal</span>
               </div>
            </div>
         </div>

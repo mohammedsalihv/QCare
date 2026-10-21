@@ -170,8 +170,8 @@ const PatientFeedback = () => {
     switch (type) {
       case 'Compliment': return <Heart className="w-5 h-5 text-rose-500" />;
       case 'Complaint': return <AlertOctagon className="w-5 h-5 text-amber-500" />;
-      case 'Suggestion': return <Lightbulb className="w-5 h-5 text-[#040404]" />;
-      default: return <MessageSquare className="w-5 h-5 text-black font-bold" />;
+      case 'Suggestion': return <Lightbulb className="w-5 h-5 text-slate-800" />;
+      default: return <MessageSquare className="w-5 h-5 text-slate-800 font-semibold" />;
     }
   };
 
@@ -194,19 +194,19 @@ const PatientFeedback = () => {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-bold text-black font-bold uppercase tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[#b59662]">Quality Assurance</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[#b59662]">Patient Feedback</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-black font-bold tracking-tight">Patient Experience & Feedback</h1>
+            <h1 className="text-2xl font-semibold text-slate-800 tracking-tight">Patient Experience & Feedback</h1>
           </div>
           
           <button 
             onClick={handleAddClick}
-            className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
+            className="flex items-center justify-between gap-4 px-6 py-4 bg-primary hover:bg-primary text-white rounded-md font-semibold transition-all shadow-lg shadow-none active:scale-95 group text-sm"
           >
              <div className="flex items-center gap-3">
                 <Plus className="w-5 h-5" />
@@ -224,30 +224,30 @@ const PatientFeedback = () => {
              { label: 'Complaints', value: feedbacks.filter(f => f.type === 'Complaint').length, icon: AlertOctagon, color: 'text-amber-500', bg: 'bg-amber-50' },
              { label: 'Open Issues', value: feedbacks.filter(f => f.status !== 'Resolved' && f.status !== 'Closed').length, icon: Activity, color: 'text-[#040404]', bg: 'bg-slate-100' },
            ].map((stat, i) => (
-             <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-5 transition-all hover:shadow-md">
+             <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-5 transition-all hover:shadow-md">
                 <div className={`w-14 h-14 rounded-2xl ${stat.bg} flex items-center justify-center`}>
                    <stat.icon className={`w-7 h-7 ${stat.color}`} />
                 </div>
                 <div>
-                   <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest mb-1">{stat.label}</p>
-                   <span className="text-2xl font-black text-black font-bold tracking-tight">{stat.value}</span>
+                   <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">{stat.label}</p>
+                   <span className="text-2xl font-semibold text-slate-800 tracking-tight">{stat.value}</span>
                 </div>
              </div>
            ))}
         </div>
 
-        <div className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="p-6 border-b border-slate-100 bg-slate-50/20 flex flex-col lg:flex-row items-center justify-between gap-4">
             <div className="relative w-full lg:w-[400px]">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold" />
+               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold" />
                <input 
                  type="text" 
                  placeholder="Search feedback by patient name or content..."
-                 className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#b59662] transition-all text-xs font-semibold shadow-inner-sm"
+                 className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#b59662] transition-all text-[13px] font-semibold shadow-inner-sm"
                />
             </div>
             <div className="flex items-center gap-3">
-               <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-[10px] font-black text-black font-bold uppercase hover:bg-slate-50 transition-all active:scale-95">
+               <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-[12px] font-semibold text-slate-800 normal-case hover:bg-slate-50 transition-all active:scale-95">
                   <Filter className="w-3.5 h-3.5" />
                   Filter Results
                </button>
@@ -258,11 +258,11 @@ const PatientFeedback = () => {
             <Table className="w-full text-left border-collapse table-fixed min-w-[1200px]">
               <thead>
                 <tr className="bg-slate-100/50">
-                  <th className="w-1/4 px-8 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Patient & Type</th>
-                  <th className="w-1/3 px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Feedback Content</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Department</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Status</th>
-                  <th className="w-36 px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
+                  <th className="w-1/4 px-8 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Patient & Type</th>
+                  <th className="w-1/3 px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Feedback Content</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Department</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Status</th>
+                  <th className="w-36 px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -274,22 +274,22 @@ const PatientFeedback = () => {
                            {getTypeIcon(feedback.type)}
                         </div>
                         <div className="flex flex-col">
-                           <span className="text-sm font-medium text-black font-bold tracking-tight leading-tight">{feedback.patientName}</span>
-                           <span className="text-[11px] font-medium text-black font-bold tracking-widest mt-1">{feedback.type}</span>
+                           <span className="text-sm font-medium text-slate-800 font-semibold tracking-tight leading-tight">{feedback.patientName}</span>
+                           <span className="text-[12px] font-medium text-slate-800 font-semibold tracking-normal mt-1">{feedback.type}</span>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-6">
-                       <p className="text-xs font-medium text-black font-bold line-clamp-2 leading-relaxed">"{feedback.content}"</p>
+                       <p className="text-[13px] font-medium text-slate-800 font-semibold line-clamp-2 leading-relaxed">"{feedback.content}"</p>
                     </td>
                     <td className="px-6 py-6">
                        <div className="flex items-center gap-2">
-                          <Building2 className="w-3.5 h-3.5 text-black font-bold" />
-                          <span className="text-xs font-medium text-black font-bold">{feedback.department}</span>
+                          <Building2 className="w-3.5 h-3.5 text-slate-800 font-semibold" />
+                          <span className="text-[13px] font-medium text-slate-800 font-semibold">{feedback.department}</span>
                        </div>
                     </td>
                     <td className="px-6 py-6">
-                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-medium tracking-wider border ${getStatusColor(feedback.status)}`}>
+                       <span className={`px-2.5 py-1 rounded-full text-[12px] font-medium tracking-normal border ${getStatusColor(feedback.status)}`}>
                           {feedback.status}
                        </span>
                     </td>
@@ -297,13 +297,13 @@ const PatientFeedback = () => {
                        <div className="flex items-center justify-end gap-2.5">
                           <button 
                             onClick={() => handleEditClick(feedback)}
-                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-black font-bold flex items-center justify-center hover:bg-white hover:border-slate-900 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
+                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-800 font-semibold flex items-center justify-center hover:bg-white hover:border-slate-900 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
                           >
                              <FileEdit className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => handleDeleteClick(feedback)}
-                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-black font-bold flex items-center justify-center hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
+                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-800 font-semibold flex items-center justify-center hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
                           >
                              <Trash2 className="w-4 h-4" />
                           </button>
@@ -327,7 +327,7 @@ const PatientFeedback = () => {
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <div className="absolute inset-0 bg-white/40 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
-            <div className="bg-white rounded-[2.5rem] shadow-2xl relative w-full max-w-5xl overflow-hidden animate-in zoom-in-95 duration-300 my-8">
+            <div className="bg-white rounded-2xl shadow-2xl relative w-full max-w-5xl overflow-hidden animate-in zoom-in-95 duration-300 my-8">
               <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white relative shrink-0">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#b59662] to-transparent opacity-20"></div>
                 <div className="flex items-center gap-4">
@@ -335,13 +335,13 @@ const PatientFeedback = () => {
                       <MessageSquare className="w-7 h-7 text-[#b59662]" />
                    </div>
                    <div>
-                      <h3 className="text-xl font-black text-black font-bold tracking-tight uppercase">
+                      <h3 className="text-xl font-semibold text-slate-800 tracking-tight normal-case">
                         {isEditing ? 'Handle Feedback Record' : 'Log Patient Feedback'}
                       </h3>
-                      <p className="text-xs text-black font-bold font-medium tracking-tight uppercase tracking-widest opacity-60">Patient Experience Management</p>
+                      <p className="text-[13px] text-slate-800 font-semibold font-medium tracking-tight normal-case tracking-normal opacity-60">Patient Experience Management</p>
                    </div>
                 </div>
-                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-black font-bold hover:text-black font-bold transition-all border border-slate-100 shadow-sm active:scale-95">
+                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-slate-800 font-semibold hover:text-slate-800 transition-all border border-slate-100 shadow-sm active:scale-95">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -349,23 +349,23 @@ const PatientFeedback = () => {
               <form onSubmit={handleSubmit} className="p-10 space-y-8 bg-white max-h-[80vh] overflow-y-auto">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Patient Full Name</label>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Patient Full Name</label>
                     <div className="relative">
-                       <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold" />
-                       <input name="patientName" value={formData.patientName} onChange={handleInputChange} required placeholder="e.g. John Doe" className="w-full pl-12 pr-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-bold text-black font-bold shadow-inner-sm" />
+                       <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold" />
+                       <input name="patientName" value={formData.patientName} onChange={handleInputChange} required placeholder="e.g. John Doe" className="w-full pl-12 pr-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-semibold text-slate-800 shadow-inner-sm" />
                     </div>
                   </div>
                   
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Contact Details</label>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Contact Details</label>
                     <div className="relative">
-                       <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold" />
-                       <input name="contact" value={formData.contact} onChange={handleInputChange} placeholder="+971 50 XXXXXXX" className="w-full pl-12 pr-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-bold text-black font-bold shadow-inner-sm" />
+                       <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold" />
+                       <input name="contact" value={formData.contact} onChange={handleInputChange} placeholder="+971 50 XXXXXXX" className="w-full pl-12 pr-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-semibold text-slate-800 shadow-inner-sm" />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Assigned Department</label>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Assigned Department</label>
                     <Dropdown 
                       options={departments}
                       value={formData.department}
@@ -375,17 +375,17 @@ const PatientFeedback = () => {
                   </div>
 
                   <div className="md:col-span-3 space-y-2">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Feedback Type</label>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Feedback Type</label>
                     <div className="flex gap-4">
                        {types.map(t => (
                          <button
                            key={t}
                            type="button"
                            onClick={() => setFormData({...formData, type: t})}
-                           className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-tight border transition-all ${
+                           className={`flex-1 py-3 rounded-xl text-[12px] font-semibold normal-case tracking-tight border transition-all ${
                              formData.type === t 
-                             ? 'bg-[#040404] text-white border-transparent shadow-lg shadow-black/10' 
-                             : 'bg-white text-black font-bold border-slate-200 hover:border-slate-300'
+                             ? 'bg-primary text-white border-transparent shadow-lg shadow-black/10' 
+                             : 'bg-white text-slate-800 font-semibold border-slate-200 hover:border-slate-300'
                            }`}
                          >
                            {t}
@@ -395,14 +395,14 @@ const PatientFeedback = () => {
                   </div>
 
                   <div className="md:col-span-3 space-y-2">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Feedback Content</label>
-                    <textarea name="content" value={formData.content} onChange={handleInputChange} rows="3" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-bold text-black font-bold resize-none shadow-inner-sm" placeholder="Detailed feedback from the patient..."></textarea>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Feedback Content</label>
+                    <textarea name="content" value={formData.content} onChange={handleInputChange} rows="3" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-semibold text-slate-800 resize-none shadow-inner-sm" placeholder="Detailed feedback from the patient..."></textarea>
                   </div>
 
                   {isEditing && (
                     <>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Handling Status</label>
+                        <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Handling Status</label>
                         <Dropdown 
                           options={statuses.map(s => ({ label: s, value: s }))}
                           value={formData.status}
@@ -411,7 +411,7 @@ const PatientFeedback = () => {
                         />
                       </div>
                       <div className="md:col-span-2 space-y-2">
-                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Assign to Professional</label>
+                        <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Assign to Professional</label>
                         <Dropdown 
                           options={users}
                           value={formData.assignedTo}
@@ -420,18 +420,18 @@ const PatientFeedback = () => {
                         />
                       </div>
                       <div className="md:col-span-3 space-y-2">
-                        <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Resolution / Action Plan</label>
-                        <textarea name="resolution" value={formData.resolution} onChange={handleInputChange} rows="2" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-bold text-black font-bold resize-none shadow-inner-sm" placeholder="Steps taken to resolve the issue or address suggestion..."></textarea>
+                        <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Resolution / Action Plan</label>
+                        <textarea name="resolution" value={formData.resolution} onChange={handleInputChange} rows="2" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-semibold text-slate-800 resize-none shadow-inner-sm" placeholder="Steps taken to resolve the issue or address suggestion..."></textarea>
                       </div>
                     </>
                   )}
                 </div>
 
                 <div className="flex gap-6 pt-8 border-t border-slate-100">
-                   <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-black font-bold hover:bg-slate-50 hover:text-black font-bold rounded-2xl transition-all border border-slate-200 uppercase tracking-[0.2em] active:scale-95">
+                   <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[12px] font-semibold text-slate-800 hover:bg-slate-50 hover:text-slate-800 rounded-2xl transition-all border border-slate-200 normal-case tracking-normal active:scale-95">
                      Cancel
                    </button>
-                   <button type="submit" className="flex-[2] py-3 bg-[#040404] text-white text-sm font-bold rounded-md shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-[0.98]">
+                   <button type="submit" className="flex-[2] py-3 bg-primary text-white text-sm font-semibold rounded-md shadow-lg shadow-none hover:bg-primary transition-all active:scale-[0.98]">
                      {isEditing ? 'Confirm Updates' : 'Initialize Feedback Record'}
                    </button>
                 </div>
@@ -440,15 +440,15 @@ const PatientFeedback = () => {
           </div>
         )}
 
-        <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 py-8 border-t border-slate-200 text-black font-bold">
+        <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 py-8 border-t border-slate-200 text-slate-800 font-semibold">
            <div className="flex items-center gap-3">
               <div className="p-2 bg-[#b59662]/5 rounded-lg border border-[#b59662]/10">
                 <CheckCircle2 className="w-4 h-4 text-[#b59662]" />
               </div>
-              <span className="text-[10px] font-black tracking-[0.1em] text-black font-bold uppercase">QCare Patient Experience Engine</span>
+              <span className="text-[12px] font-semibold tracking-normal text-slate-800 normal-case">QCare Patient Experience Engine</span>
            </div>
            <div className="flex items-center gap-4">
-              <span className="text-[9px] font-black uppercase tracking-widest opacity-60">System Security: Verified</span>
+              <span className="text-[12px] font-semibold normal-case tracking-normal opacity-60">System Security: Verified</span>
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
            </div>
         </div>

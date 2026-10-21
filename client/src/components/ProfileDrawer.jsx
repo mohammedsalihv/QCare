@@ -121,10 +121,10 @@ const ProfileDrawer = ({ isOpen, onClose, user = { name: 'User', id: 'N/A', dept
         <div className="flex flex-col h-full overflow-y-auto">
           {/* Header */}
           <div className="p-6 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
-            <h2 className="text-xl font-extrabold text-black font-bold">User Profile</h2>
+            <h2 className="text-xl font-semibold text-slate-800">User Profile</h2>
             <button 
               onClick={handleClose}
-              className="p-2 rounded-xl hover:bg-white hover:shadow-sm text-black font-bold hover:text-black font-bold transition-all active:scale-95"
+              className="p-2 rounded-xl hover:bg-white hover:shadow-sm text-slate-800 font-semibold hover:text-slate-800 transition-all active:scale-95"
             >
               <X className="w-6 h-6" />
             </button>
@@ -140,7 +140,7 @@ const ProfileDrawer = ({ isOpen, onClose, user = { name: 'User', id: 'N/A', dept
                 className="hidden" 
                 accept="image/*"
               />
-              <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] p-1 shadow-xl shadow-[var(--color-primary)]/20 relative">
+              <div className="w-28 h-28 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] p-1 shadow-xl shadow-[var(--color-primary)]/20 relative">
                 <div className="w-full h-full rounded-[20px] bg-white p-1 overflow-hidden relative">
                    <img 
                       src={user?.photo ? `http://192.168.1.160:5000${user.photo}` : defaultProfile}
@@ -155,7 +155,7 @@ const ProfileDrawer = ({ isOpen, onClose, user = { name: 'User', id: 'N/A', dept
                       {uploading ? (
                         <div className="flex flex-col items-center gap-2">
                            <RefreshCcw className="w-6 h-6 text-white animate-spin" />
-                           <span className="text-[8px] font-black text-white uppercase tracking-widest">Uploading...</span>
+                           <span className="text-[12px] font-semibold text-white normal-case tracking-normal">Uploading...</span>
                         </div>
                       ) : (
                         <Camera className="w-6 h-6 text-white" />
@@ -163,8 +163,8 @@ const ProfileDrawer = ({ isOpen, onClose, user = { name: 'User', id: 'N/A', dept
                    </div>
                 </div>
               </div>
-              <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-xl bg-[var(--color-primary)] border-4 border-white flex items-center justify-center shadow-lg text-black font-bold">
-                 <Plus className="w-3.5 h-3.5 font-black" />
+              <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-xl bg-[var(--color-primary)] border-4 border-white flex items-center justify-center shadow-lg text-slate-800 font-semibold">
+                 <Plus className="w-3.5 h-3.5 font-semibold" />
               </div>
             </div>
 
@@ -172,15 +172,15 @@ const ProfileDrawer = ({ isOpen, onClose, user = { name: 'User', id: 'N/A', dept
               <button
                 onClick={handleRemovePhoto}
                 disabled={uploading}
-                className="mb-4 px-3 py-1.5 rounded-xl border border-red-200 text-red-500 hover:text-white hover:bg-red-500 transition-all font-bold text-xs flex items-center gap-1.5 hover:shadow-lg hover:shadow-red-500/10 active:scale-95 disabled:opacity-50"
+                className="mb-4 px-3 py-1.5 rounded-xl border border-red-200 text-red-500 hover:text-white hover:bg-red-500 transition-all font-semibold text-[13px] flex items-center gap-1.5 hover:shadow-lg hover:shadow-red-500/10 active:scale-95 disabled:opacity-50"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 Remove Photo
               </button>
             )}
             
-            <h3 className="text-2xl font-bold text-black font-bold tracking-tight">{user.name}</h3>
-            <p className="text-sm font-semibold text-[var(--color-primary)] tracking-[0.2em] mt-1 opacity-90">
+            <h3 className="text-2xl font-semibold text-slate-800 tracking-tight">{user.name}</h3>
+            <p className="text-sm font-semibold text-[var(--color-primary)] tracking-normal mt-1 opacity-90">
   {user.role.charAt(0).toUpperCase() + user.role.slice(1).toLowerCase()}
 </p>
             
@@ -189,7 +189,7 @@ const ProfileDrawer = ({ isOpen, onClose, user = { name: 'User', id: 'N/A', dept
           {/* Details Section */}
           <div className="px-8 pb-8 space-y-6">
             <div className="space-y-4">
-               <h4 className="text-[11px] font-bold text-black font-bold uppercase tracking-widest flex items-center gap-2">
+               <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal flex items-center gap-2">
                  Professional Information
                  <div className="flex-1 h-[1px] bg-slate-100"></div>
                </h4>
@@ -222,15 +222,15 @@ const ProfileDrawer = ({ isOpen, onClose, user = { name: 'User', id: 'N/A', dept
 
 const DetailItem = ({ label, value, icon: Icon, status }) => (
   <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 transition-all hover:bg-white hover:shadow-sm">
-    <div className="p-2.5 rounded-xl bg-white text-black font-bold shadow-inner-sm">
+    <div className="p-2.5 rounded-xl bg-white text-slate-800 font-semibold shadow-inner-sm">
       <Icon className="w-5 h-5" />
     </div>
     <div className="flex flex-col">
-      <span className="text-[10px] font-bold text-black font-bold uppercase tracking-wider leading-none mb-1">{label}</span>
+      <span className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal leading-none mb-1">{label}</span>
       <div className="flex items-center gap-2">
-        <span className="text-sm font-bold text-black font-bold">{value}</span>
+        <span className="text-sm font-semibold text-slate-800">{value}</span>
         {status && (
-          <span className="text-[10px] font-bold text-emerald-500 tracking-tighter">
+          <span className="text-[12px] font-semibold text-emerald-500 tracking-tighter">
             {status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()}
           </span>
         )}

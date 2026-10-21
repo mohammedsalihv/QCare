@@ -43,13 +43,13 @@ const HelpDesk = () => {
         {/* Header Section */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-black text-black font-bold tracking-tight uppercase">IT Help Desk</h1>
-            <p className="text-xs text-black font-bold font-bold uppercase tracking-widest mt-1 opacity-60">Technical Support & Contact Information</p>
+            <h1 className="text-xl font-semibold text-slate-800 tracking-tight normal-case">IT Help Desk</h1>
+            <p className="text-[13px] text-slate-800 font-semibold normal-case tracking-normal mt-1 opacity-60">Technical Support & Contact Information</p>
           </div>
         </div>
 
         {/* Hero Card */}
-        <div className="bg-white rounded-2xl p-8 relative overflow-hidden shadow-xl shadow-slate-900/10 mt-2">
+        <div className="bg-white rounded-2xl p-8 relative overflow-hidden shadow-xl shadow-none mt-2">
           {/* Decorative background shapes */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
           <div className="absolute bottom-0 right-32 w-32 h-32 bg-[#b59662]/20 rounded-full blur-2xl -mb-10"></div>
@@ -60,8 +60,8 @@ const HelpDesk = () => {
                 <LifeBuoy className="w-8 h-8 text-[#b59662]" />
               </div>
               <div>
-                <h2 className="text-2xl font-black text-white tracking-tight">Need Technical Assistance?</h2>
-                <p className="text-sm font-medium text-black font-bold mt-1 max-w-md">
+                <h2 className="text-2xl font-semibold text-white tracking-tight">Need Technical Assistance?</h2>
+                <p className="text-sm font-medium text-slate-800 font-semibold mt-1 max-w-md">
                   Our IT support team is available to help you resolve any technical issues, account access problems, or system errors.
                 </p>
               </div>
@@ -70,12 +70,12 @@ const HelpDesk = () => {
             <div className="flex flex-col gap-2 bg-slate-800/50 p-4 rounded-xl border border-slate-700 w-full md:w-auto">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-[#b59662]" />
-                <span className="text-xs font-bold text-white uppercase tracking-wider">Working Hours</span>
+                <span className="text-[13px] font-semibold text-white normal-case tracking-normal">Working Hours</span>
               </div>
-              <p className="text-sm font-medium text-black font-bold">Mon - Sun: 9:00 AM - 6:00 PM</p>
+              <p className="text-sm font-medium text-slate-800 font-semibold">Mon - Sun: 9:00 AM - 6:00 PM</p>
               <div className="flex items-center gap-2 mt-1">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">Currently Online</span>
+                <span className="text-[13px] font-semibold text-emerald-400 normal-case tracking-normal">Currently Online</span>
               </div>
             </div>
           </div>
@@ -83,7 +83,7 @@ const HelpDesk = () => {
 
         {/* Contact Information Grid */}
         <div className="mt-4">
-          <h3 className="text-xs font-black text-black font-bold uppercase tracking-[0.2em] mb-4 ml-1">Contact Details</h3>
+          <h3 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal mb-4 ml-1">Contact Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {contactInfo.map((info, idx) => {
               const Icon = info.icon;
@@ -95,15 +95,15 @@ const HelpDesk = () => {
                   <div className={`w-10 h-10 rounded-xl ${info.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                     <Icon className={`w-5 h-5 ${info.color}`} />
                   </div>
-                  <h4 className="text-[10px] font-black text-black font-bold uppercase tracking-widest mb-1">{info.label}</h4>
-                  <p className="text-sm font-bold text-black font-bold">{info.value}</p>
-                  {info.sub && <p className="text-[10px] text-slate-400 font-medium mt-0.5">{info.sub}</p>}
+                  <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">{info.label}</h4>
+                  <p className="text-sm font-semibold text-slate-800">{info.value}</p>
+                  {info.sub && <p className="text-[12px] text-slate-500 font-medium mt-0.5">{info.sub}</p>}
                   {info.link && (
                     <a
                       href={info.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-2 inline-flex items-center gap-1 text-[10px] font-black text-emerald-600 uppercase tracking-widest hover:text-emerald-800 transition-colors"
+                      className="mt-2 inline-flex items-center gap-1 text-[12px] font-semibold text-emerald-600 normal-case tracking-normal hover:text-emerald-800 transition-colors"
                     >
                       <MapPin className="w-3 h-3" /> View on Maps
                     </a>

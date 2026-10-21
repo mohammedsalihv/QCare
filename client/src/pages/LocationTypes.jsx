@@ -170,20 +170,20 @@ const LocationTypes = () => {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-bold text-black uppercase tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[#b59662]">Master Configuration</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[#b59662]">Location Master</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-black tracking-tight">Location Master</h1>
+            <h1 className="text-2xl font-semibold text-slate-800 tracking-tight">Location Master</h1>
           </div>
 
           {isAdmin && (
             <button 
               onClick={handleAddClick}
-              className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg active:scale-95 group text-sm"
+              className="flex items-center justify-between gap-4 px-6 py-4 bg-primary hover:bg-primary text-white rounded-md font-semibold transition-all shadow-lg active:scale-95 group text-sm"
             >
                <div className="flex items-center gap-3">
                   <Plus className="w-5 h-5 text-[var(--color-primary)]" />
@@ -194,16 +194,16 @@ const LocationTypes = () => {
           )}
         </div>
 
-        <div className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/20">
             <div className="relative w-full sm:w-[400px]">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
+               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800" />
                <input 
                  type="text" 
                  placeholder="Search locations by name or code..."
                  value={searchQuery}
                  onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                 className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-xs font-semibold"
+                 className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-[13px] font-semibold"
                />
             </div>
           </div>
@@ -212,38 +212,38 @@ const LocationTypes = () => {
             <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
 <thead>
                 <tr className="bg-slate-100/50">
-                  <th className="w-20 px-7 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">S.No</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Location Name</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Code</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Created By</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Updated At</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200">Status</th>
-                  <th className="w-36 px-6 py-5 text-[12px] font-bold text-black tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
+                  <th className="w-20 px-7 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">S.No</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Location Name</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Code</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Created By</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Updated At</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Status</th>
+                  <th className="w-36 px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {currentRecords.map((loc, index) => (
                   <tr key={loc._id} className="hover:bg-slate-50/20 transition-colors group">
-                    <td className="px-7 py-4 text-xs font-semibold text-slate-800">
+                    <td className="px-7 py-4 text-[13px] font-semibold text-slate-800">
                       {indexOfFirstRecord + index + 1}
                     </td>
-                    <td className="px-6 py-4 text-xs font-medium text-slate-700">
+                    <td className="px-6 py-4 text-[13px] font-medium text-slate-700">
                       {loc.name || 'Unnamed'}
                     </td>
-                    <td className="px-6 py-4 text-xs font-medium text-slate-700">
+                    <td className="px-6 py-4 text-[13px] font-medium text-slate-700">
                       {loc.code || '—'}
                     </td>
-                      <td className="px-6 py-4 text-xs text-slate-600">
+                      <td className="px-6 py-4 text-[13px] text-slate-600">
                         {loc.createdBy || '—'}
                       </td>
-                      <td className="px-6 py-4 text-xs text-slate-600">
+                      <td className="px-6 py-4 text-[13px] text-slate-600">
                         {loc.updatedAt ? new Date(loc.updatedAt).toLocaleString() : (loc.createdAt ? new Date(loc.createdAt).toLocaleString() : '—')}
                       </td>
-                    <td className="px-6 py-4 text-xs font-semibold">
+                    <td className="px-6 py-4 text-[13px] font-semibold">
                       {loc.isActive ? (
-                        <span className="px-1.5 py-0.5 text-[8px] font-bold bg-green-100 text-green-800 rounded-md">Active</span>
+                        <span className="px-1.5 py-0.5 text-[12px] font-semibold bg-green-100 text-green-800 rounded-md">Active</span>
                       ) : (
-                        <span className="px-1.5 py-0.5 text-[8px] font-bold bg-slate-100 text-slate-400 rounded-md">Inactive</span>
+                        <span className="px-1.5 py-0.5 text-[12px] font-semibold bg-slate-100 text-slate-500 rounded-md">Inactive</span>
                       )}
                     </td>
                     <td className="px-6 py-4 text-right pr-8">
@@ -264,7 +264,7 @@ const LocationTypes = () => {
                             </button>
                           </>
                         ) : (
-                          <span className="text-[10px] text-slate-450 font-bold uppercase tracking-wider">View Only</span>
+                          <span className="text-[12px] text-slate-450 font-semibold normal-case tracking-normal">View Only</span>
                         )}
                       </div>
                     </td>
@@ -275,7 +275,7 @@ const LocationTypes = () => {
                     <td colSpan="7" className="px-6 py-20 text-center">
                       <div className="flex flex-col items-center justify-center gap-3 opacity-30">
                         <Search className="w-10 h-10" />
-                        <span className="text-xs font-bold uppercase tracking-widest">
+                        <span className="text-[13px] font-semibold normal-case tracking-normal">
                           {loading ? 'Fetching locations...' : 'No locations registered'}
                         </span>
                       </div>
@@ -298,18 +298,18 @@ const LocationTypes = () => {
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-white/40 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
-            <div className="bg-white rounded-[2.5rem] shadow-2xl relative w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200">
-              <div className="p-8 border-b border-slate-150 flex items-center justify-between bg-white relative">
+            <div className="bg-white rounded-2xl shadow-2xl relative w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200">
+              <div className="p-8 border-b border-slate-200 flex items-center justify-between bg-white relative">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--color-primary)] to-transparent opacity-20"></div>
                 <div className="flex items-center gap-4">
                    <div className="w-14 h-14 rounded-2xl bg-[var(--color-primary)]/5 flex items-center justify-center border border-[var(--color-primary)]/10 shadow-inner">
                       <MapPin className="w-7 h-7 text-[var(--color-primary)]" />
                    </div>
                    <div>
-                      <h3 className="text-xl font-black text-black tracking-tight">
+                      <h3 className="text-xl font-semibold text-slate-800 tracking-tight">
                         {isEditing ? 'Modify Location Profile' : 'Register Structural Location'}
                       </h3>
-                      <p className="text-xs text-slate-500 font-medium tracking-tight">Setup building structure, department, and responsible headers</p>
+                      <p className="text-[13px] text-slate-500 font-medium tracking-tight">Setup building structure, department, and responsible headers</p>
                    </div>
                 </div>
                 <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-all border border-slate-100 shadow-sm active:scale-95">
@@ -320,15 +320,15 @@ const LocationTypes = () => {
               <form onSubmit={handleSubmit} className="p-8 pb-12 space-y-8 bg-white">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Zone / Room Name</label>
-                    <input name="name" value={formData.name} onChange={handleInputChange} required placeholder="e.g. Dental Suite Room B" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-semibold text-slate-800" />
+                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Zone / Room Name</label>
+                    <input name="name" value={formData.name} onChange={handleInputChange} required placeholder="e.g. Dental Suite Room B" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Location / Zone Code</label>
-                    <input name="code" value={formData.code} onChange={handleInputChange} required placeholder="e.g. DEN-SB" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-xs font-bold text-slate-800 font-mono" />
+                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Location / Zone Code</label>
+                    <input name="code" value={formData.code} onChange={handleInputChange} required placeholder="e.g. DEN-SB" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800 font-mono" />
                   </div>
                   <div className="space-y-1.5 col-span-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider ml-1">Status</label>
+                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Status</label>
                     <Dropdown
                       options={statusOptions}
                       value={formData.isActive ? 'true' : 'false'}
@@ -340,10 +340,10 @@ const LocationTypes = () => {
                 </div>
 
                 <div className="flex gap-4 pt-4 border-t border-slate-100">
-                   <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-slate-500 hover:bg-slate-50 hover:text-slate-800 rounded-xl transition-all border border-slate-200 uppercase tracking-[0.15em] active:scale-95">
+                   <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[12px] font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-800 rounded-xl transition-all border border-slate-200 normal-case tracking-normal active:scale-95">
                      Discard
                    </button>
-                   <button type="submit" className="flex-[2] py-3 bg-[#040404] text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all active:scale-[0.98]">
+                   <button type="submit" className="flex-[2] py-3 bg-primary text-white text-[13px] font-semibold normal-case tracking-normal rounded-xl hover:bg-primary transition-all active:scale-[0.98]">
                      {isEditing ? 'Save Location Details' : 'Publish Zone'}
                    </button>
                 </div>

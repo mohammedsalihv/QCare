@@ -199,19 +199,19 @@ const AuditManagement = () => {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-bold text-black font-bold uppercase tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">
               <span>Home</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[var(--color-primary)]">Administration</span>
               <ChevronRight className="w-2.5 h-2.5" />
               <span className="text-[var(--color-primary)]">Audit Management</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-black font-bold tracking-tight">Compliance & Quality Audits</h1>
+            <h1 className="text-2xl font-semibold text-slate-800 tracking-tight">Compliance & Quality Audits</h1>
           </div>
           
           <button 
             onClick={handleAddClick}
-            className="flex items-center justify-between gap-4 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-bold transition-all shadow-lg shadow-slate-900/20 active:scale-95 group text-sm"
+            className="flex items-center justify-between gap-4 px-6 py-4 bg-primary hover:bg-primary text-white rounded-md font-semibold transition-all shadow-lg shadow-none active:scale-95 group text-sm"
           >
              <div className="flex items-center gap-3">
                 <Plus className="w-5 h-5" />
@@ -223,31 +223,31 @@ const AuditManagement = () => {
 
         {/* Audit Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-           <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between overflow-hidden relative group">
+           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between overflow-hidden relative group">
               <div className="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-[#040404]/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
               <div className="flex items-center gap-5 relative z-10">
-                 <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-[#040404] shadow-inner">
+                 <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-800 shadow-inner">
                     <Calendar className="w-7 h-7" />
                  </div>
                  <div>
-                    <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest mb-1">Upcoming Audits</p>
-                    <span className="text-2xl font-black text-black font-bold">{audits.filter(a => a.status === 'Scheduled').length}</span>
+                    <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">Upcoming Audits</p>
+                    <span className="text-2xl font-semibold text-slate-800">{audits.filter(a => a.status === 'Scheduled').length}</span>
                  </div>
               </div>
-              <div className="p-2 rounded-lg bg-slate-50 border border-slate-100 group-hover:bg-[#040404] group-hover:text-white transition-colors">
+              <div className="p-2 rounded-lg bg-slate-50 border border-slate-100 group-hover:bg-primary group-hover:text-white transition-colors">
                  <ChevronRight className="w-4 h-4" />
               </div>
            </div>
 
-           <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between overflow-hidden relative group">
+           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between overflow-hidden relative group">
               <div className="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-emerald-500/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
               <div className="flex items-center gap-5 relative z-10">
                  <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 shadow-inner">
                     <FileCheck className="w-7 h-7" />
                  </div>
                  <div>
-                    <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest mb-1">Total Completed</p>
-                    <span className="text-2xl font-black text-black font-bold">{audits.filter(a => a.status === 'Completed').length}</span>
+                    <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">Total Completed</p>
+                    <span className="text-2xl font-semibold text-slate-800">{audits.filter(a => a.status === 'Completed').length}</span>
                  </div>
               </div>
               <div className="p-2 rounded-lg bg-slate-50 border border-slate-100 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
@@ -255,15 +255,15 @@ const AuditManagement = () => {
               </div>
            </div>
 
-           <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between overflow-hidden relative group">
+           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between overflow-hidden relative group">
               <div className="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-amber-500/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
               <div className="flex items-center gap-5 relative z-10">
                  <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 shadow-inner">
                     <Clock className="w-7 h-7" />
                  </div>
                  <div>
-                    <p className="text-[10px] font-black text-black font-bold uppercase tracking-widest mb-1">In Progress</p>
-                    <span className="text-2xl font-black text-black font-bold">{audits.filter(a => a.status === 'In Progress').length}</span>
+                    <p className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">In Progress</p>
+                    <span className="text-2xl font-semibold text-slate-800">{audits.filter(a => a.status === 'In Progress').length}</span>
                  </div>
               </div>
               <div className="p-2 rounded-lg bg-slate-50 border border-slate-100 group-hover:bg-amber-500 group-hover:text-white transition-colors">
@@ -272,14 +272,14 @@ const AuditManagement = () => {
            </div>
         </div>
 
-        <div className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="p-6 border-b border-slate-100 bg-slate-50/20 flex flex-col lg:flex-row items-center justify-between gap-4">
             <div className="relative w-full lg:w-[400px]">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold" />
+               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold" />
                <input 
                  type="text" 
                  placeholder="Search audits by title or auditor..."
-                 className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] transition-all text-xs font-semibold"
+                 className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold"
                />
             </div>
           </div>
@@ -288,12 +288,12 @@ const AuditManagement = () => {
             <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
                 <tr className="bg-slate-100/50">
-                  <th className="w-1/4 px-8 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Audit Scope & Title</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Unit / Dept</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Assigned Auditor</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Scheduled Date</th>
-                  <th className="px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200">Status</th>
-                  <th className="w-36 px-6 py-5 text-[12px] font-bold text-black font-bold tracking-wider border-b-2 border-slate-200 text-right pr-8">Actions</th>
+                  <th className="w-1/4 px-8 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Audit Scope & Title</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Unit / Dept</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Assigned Auditor</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Scheduled Date</th>
+                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Status</th>
+                  <th className="w-36 px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -301,34 +301,34 @@ const AuditManagement = () => {
                   <tr key={audit._id} className="hover:bg-slate-50/20 transition-colors group">
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-black font-bold group-hover:bg-[var(--color-primary)]/10 group-hover:text-[var(--color-primary)] transition-colors border border-slate-200/60 shadow-sm">
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-800 font-semibold group-hover:bg-[var(--color-primary)]/10 group-hover:text-[var(--color-primary)] transition-colors border border-slate-200/60 shadow-sm">
                            <FileText className="w-5 h-5" />
                         </div>
-                        <span className="text-sm font-medium text-black font-bold tracking-tight leading-tight">{audit.title}</span>
+                        <span className="text-sm font-medium text-slate-800 font-semibold tracking-tight leading-tight">{audit.title}</span>
                       </div>
                     </td>
                     <td className="px-6 py-6">
                        <div className="flex items-center gap-2">
-                          <Building2 className="w-3.5 h-3.5 text-black font-bold" />
-                          <span className="text-xs font-medium text-black font-bold">{audit.department}</span>
+                          <Building2 className="w-3.5 h-3.5 text-slate-800 font-semibold" />
+                          <span className="text-[13px] font-medium text-slate-800 font-semibold">{audit.department}</span>
                        </div>
                     </td>
                     <td className="px-6 py-6">
                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-sm font-medium text-black font-bold">
+                          <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-sm font-medium text-slate-800 font-semibold">
                              {audit.auditor?.employeeName?.charAt(0)}
                           </div>
-                          <span className="text-xs font-medium text-black font-bold">{audit.auditor?.employeeName}</span>
+                          <span className="text-[13px] font-medium text-slate-800 font-semibold">{audit.auditor?.employeeName}</span>
                        </div>
                     </td>
                     <td className="px-6 py-6">
-                       <div className="flex items-center gap-2 text-black font-bold">
+                       <div className="flex items-center gap-2 text-slate-800 font-semibold">
                           <Calendar className="w-3.5 h-3.5 text-[var(--color-primary)]/60" />
-                          <span className="text-xs font-medium">{new Date(audit.auditDate).toLocaleDateString()}</span>
+                          <span className="text-[13px] font-medium">{new Date(audit.auditDate).toLocaleDateString()}</span>
                        </div>
                     </td>
                     <td className="px-6 py-6">
-                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-medium tracking-wider border ${getStatusStyle(audit.status)}`}>
+                       <span className={`px-2.5 py-1 rounded-full text-[12px] font-medium tracking-normal border ${getStatusStyle(audit.status)}`}>
                           {audit.status}
                        </span>
                     </td>
@@ -336,13 +336,13 @@ const AuditManagement = () => {
                        <div className="flex items-center justify-end gap-2.5">
                           <button 
                             onClick={() => handleEditClick(audit)}
-                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-black font-bold flex items-center justify-center hover:bg-white hover:border-slate-900 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
+                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-800 font-semibold flex items-center justify-center hover:bg-white hover:border-slate-900 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
                           >
                              <FileEdit className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => handleDeleteClick(audit)}
-                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-black font-bold flex items-center justify-center hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
+                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-800 font-semibold flex items-center justify-center hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 shadow-sm active:scale-95"
                           >
                              <Trash2 className="w-4 h-4" />
                           </button>
@@ -366,7 +366,7 @@ const AuditManagement = () => {
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <div className="absolute inset-0 bg-white/40 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
-            <div className="bg-white rounded-[2.5rem] shadow-2xl relative w-full max-w-5xl overflow-hidden animate-in zoom-in-95 duration-300 my-8 flex flex-col">
+            <div className="bg-white rounded-2xl shadow-2xl relative w-full max-w-5xl overflow-hidden animate-in zoom-in-95 duration-300 my-8 flex flex-col">
               <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white relative shrink-0">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#b59662] to-transparent opacity-20"></div>
                 <div className="flex items-center gap-4">
@@ -374,13 +374,13 @@ const AuditManagement = () => {
                       <FileCheck className="w-7 h-7 text-[var(--color-primary)]" />
                    </div>
                    <div>
-                      <h3 className="text-xl font-black text-black font-bold tracking-tight uppercase">
+                      <h3 className="text-xl font-semibold text-slate-800 tracking-tight normal-case">
                         {isEditing ? 'Modify Audit Entry' : 'Schedule Audit Scope'}
                       </h3>
-                      <p className="text-xs text-black font-bold font-medium tracking-tight uppercase tracking-widest opacity-60">Compliance & Regulatory Master</p>
+                      <p className="text-[13px] text-slate-800 font-semibold font-medium tracking-tight normal-case tracking-normal opacity-60">Compliance & Regulatory Master</p>
                    </div>
                 </div>
-                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-black font-bold hover:text-black font-bold transition-all border border-slate-100 shadow-sm active:scale-95">
+                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-slate-800 font-semibold hover:text-slate-800 transition-all border border-slate-100 shadow-sm active:scale-95">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -388,12 +388,12 @@ const AuditManagement = () => {
               <form onSubmit={handleSubmit} className="p-10 space-y-8 overflow-y-auto bg-white flex-1 max-h-[80vh]">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6">
                   <div className="md:col-span-3 space-y-2">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Audit Title / Objective</label>
-                    <input name="title" value={formData.title} onChange={handleInputChange} required placeholder="e.g. Q4 Internal Quality Audit - Nursing Department" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm font-bold text-black font-bold shadow-inner-sm" />
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Audit Title / Objective</label>
+                    <input name="title" value={formData.title} onChange={handleInputChange} required placeholder="e.g. Q4 Internal Quality Audit - Nursing Department" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm font-semibold text-slate-800 shadow-inner-sm" />
                   </div>
                   
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Assigned Department</label>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Assigned Department</label>
                     <Dropdown 
                       options={departments}
                       value={formData.department}
@@ -403,7 +403,7 @@ const AuditManagement = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Lead Auditor</label>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Lead Auditor</label>
                     <Dropdown 
                       options={users}
                       value={formData.auditor}
@@ -413,16 +413,16 @@ const AuditManagement = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Scheduled Date</label>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Scheduled Date</label>
                     <div className="relative">
-                       <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black font-bold" />
-                       <input type="date" name="auditDate" value={formData.auditDate} onChange={handleInputChange} required className="w-full pl-12 pr-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-xs font-bold text-black font-bold" />
+                       <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold" />
+                       <input type="date" name="auditDate" value={formData.auditDate} onChange={handleInputChange} required className="w-full pl-12 pr-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-[13px] font-semibold text-slate-800" />
                     </div>
                   </div>
 
                   {isEditing && (
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Status</label>
+                      <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Status</label>
                       <Dropdown 
                         options={statuses.map(s => ({ label: s, value: s }))}
                         value={formData.status}
@@ -432,8 +432,8 @@ const AuditManagement = () => {
                     </div>
                   )}
 
-                  <div className="md:col-span-3 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 space-y-6">
-                    <h4 className="text-[11px] font-black text-black font-bold uppercase tracking-[0.2em] flex items-center gap-2">
+                  <div className="md:col-span-3 p-8 bg-slate-50 rounded-2xl border border-slate-100 space-y-6">
+                    <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal flex items-center gap-2">
                        <FileCheck className="w-4 h-4 text-[var(--color-primary)]" />
                        Audit Checklist & Compliance Verification
                     </h4>
@@ -442,13 +442,13 @@ const AuditManagement = () => {
                       {formData.checklist.map((item, idx) => (
                         <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col gap-4">
                           <div className="flex-1">
-                             <p className="text-xs font-bold text-black font-bold mb-1">{item.item}</p>
+                             <p className="text-[13px] font-semibold text-slate-800 mb-1">{item.item}</p>
                              <input 
                                type="text" 
                                value={item.observations} 
                                onChange={(e) => handleChecklistChange(idx, 'observations', e.target.value)}
                                placeholder="Add observations..." 
-                               className="w-full text-[10px] text-black font-bold font-medium bg-transparent border-b border-slate-100 focus:border-[#b59662] outline-none py-1"
+                               className="w-full text-[12px] text-slate-800 font-semibold font-medium bg-transparent border-b border-slate-100 focus:border-[#b59662] outline-none py-1"
                              />
                           </div>
                           <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
@@ -457,10 +457,10 @@ const AuditManagement = () => {
                                  key={s}
                                  type="button"
                                  onClick={() => handleChecklistChange(idx, 'status', s)}
-                                 className={`px-2 py-1.5 rounded-lg text-[7px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
+                                 className={`px-2 py-1.5 rounded-lg text-[7px] font-semibold normal-case tracking-normal transition-all whitespace-nowrap ${
                                    item.status === s 
-                                   ? (s === 'Compliant' ? 'bg-emerald-500 text-white' : s === 'Non-Compliant' ? 'bg-rose-500 text-white' : 'bg-[#040404] text-white')
-                                   : 'bg-slate-100 text-black font-bold hover:bg-slate-200'
+                                   ? (s === 'Compliant' ? 'bg-emerald-500 text-white' : s === 'Non-Compliant' ? 'bg-rose-500 text-white' : 'bg-primary text-white')
+                                   : 'bg-slate-100 text-slate-800 font-semibold hover:bg-slate-200'
                                  }`}
                                >
                                  {s}
@@ -473,21 +473,21 @@ const AuditManagement = () => {
                   </div>
 
                   <div className="md:col-span-3 space-y-2">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Summary of Findings</label>
-                    <textarea name="summary" value={formData.summary} onChange={handleInputChange} rows="2" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-bold text-black font-bold resize-none shadow-inner-sm" placeholder="Provide a high-level summary of the audit results..."></textarea>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Summary of Findings</label>
+                    <textarea name="summary" value={formData.summary} onChange={handleInputChange} rows="2" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-semibold text-slate-800 resize-none shadow-inner-sm" placeholder="Provide a high-level summary of the audit results..."></textarea>
                   </div>
 
                   <div className="md:col-span-3 space-y-2">
-                    <label className="text-[10px] font-black text-black font-bold uppercase tracking-[0.15em] ml-1">Recommendations & Next Steps</label>
-                    <textarea name="recommendations" value={formData.recommendations} onChange={handleInputChange} rows="2" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-bold text-black font-bold resize-none shadow-inner-sm" placeholder="Detail corrective actions or improvements..."></textarea>
+                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Recommendations & Next Steps</label>
+                    <textarea name="recommendations" value={formData.recommendations} onChange={handleInputChange} rows="2" className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-sm font-semibold text-slate-800 resize-none shadow-inner-sm" placeholder="Detail corrective actions or improvements..."></textarea>
                   </div>
                 </div>
 
                 <div className="flex gap-6 pt-8 border-t border-slate-100">
-                   <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[10px] font-black text-black font-bold hover:bg-slate-50 hover:text-black font-bold rounded-2xl transition-all border border-slate-200 uppercase tracking-[0.2em] active:scale-95">
+                   <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[12px] font-semibold text-slate-800 hover:bg-slate-50 hover:text-slate-800 rounded-2xl transition-all border border-slate-200 normal-case tracking-normal active:scale-95">
                      Discard
                    </button>
-                   <button type="submit" className="flex-[2] py-3 bg-[#040404] text-white text-sm font-bold rounded-md shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-[0.98]">
+                   <button type="submit" className="flex-[2] py-3 bg-primary text-white text-sm font-semibold rounded-md shadow-lg shadow-none hover:bg-primary transition-all active:scale-[0.98]">
                      {isEditing ? 'Confirm Audit Results' : 'Initialize Audit Schedule'}
                    </button>
                 </div>
@@ -496,15 +496,15 @@ const AuditManagement = () => {
           </div>
         )}
 
-        <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 py-8 border-t border-slate-200 text-black font-bold relative overflow-hidden">
+        <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 py-8 border-t border-slate-200 text-slate-800 font-semibold relative overflow-hidden">
            <div className="flex items-center gap-3 relative z-10">
               <div className="p-2 bg-[var(--color-primary)]/5 rounded-lg border border-[var(--color-primary)]/10">
                 <CheckCircle2 className="w-4 h-4 text-[var(--color-primary)]" />
               </div>
-              <span className="text-[10px] font-black tracking-[0.1em] text-black font-bold uppercase">QCare Regulatory Compliance Engine</span>
+              <span className="text-[12px] font-semibold tracking-normal text-slate-800 normal-case">QCare Regulatory Compliance Engine</span>
            </div>
            <div className="flex items-center gap-4 relative z-10">
-              <span className="text-[9px] font-black uppercase tracking-widest opacity-60">System Integrity: Verified</span>
+              <span className="text-[12px] font-semibold normal-case tracking-normal opacity-60">System Integrity: Verified</span>
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
            </div>
         </div>
