@@ -17,9 +17,9 @@ const getDepartments = async (req, res) => {
 // @access  Private/Admin
 const createDepartment = async (req, res) => {
   try {
-    const { name, code, head, location } = req.body;
+    const { name, head, location } = req.body;
 
-    const deptExists = await Department.findOne({ $or: [{ name }, { code }] });
+    const deptExists = await Department.findOne({ $or: [{ name }] });
 
     if (deptExists) {
       return res.status(400).json({ message: "Department name or code already exists" });
@@ -27,7 +27,6 @@ const createDepartment = async (req, res) => {
 
     const department = await Department.create({
       name,
-      code,
       head,
       location,
     });
@@ -50,7 +49,6 @@ const updateDepartment = async (req, res) => {
     }
 
     department.name = req.body.name || department.name;
-    department.code = req.body.code || department.code;
     department.head = req.body.head || department.head;
     department.location = req.body.location || department.location;
     department.isActive = req.body.isActive !== undefined ? req.body.isActive : department.isActive;

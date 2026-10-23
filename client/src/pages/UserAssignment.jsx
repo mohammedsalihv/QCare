@@ -1,3 +1,9 @@
+import { useMasterData } from '../hooks/useMasterData';
+import { invalidateMasterData } from '../utils/masterData';
+import { getAuthConfig } from '../utils/authConfig';
+import axios from 'axios';
+import { useNotification } from '../components/NotificationContext';
+import MasterSelect from '../components/MasterSelect';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
@@ -19,17 +25,11 @@ import {
 } from 'lucide-react';
 
 const UserAssignment = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: 'Dr. Sarah Wilson', email: 's.wilson@cmcholding.local', department: 'Emergency Medicine', role: 'DepartmentHead', designation: 'Chief of Emergency Services', status: 'Active' },
-    { id: 2, name: 'Mohammed Salih', email: 'm.salih@cmcholding.local', department: 'Quality Assurance', role: 'SuperAdmin', designation: 'Quality Lead Systems Architect', status: 'Active' },
-    { id: 3, name: 'Dr. Clara Thorne', email: 'c.thorne@cmcholding.local', department: 'Neurology', role: 'Staff', designation: 'Registrar in Neurology', status: 'Active' },
-    { id: 4, name: 'Dr. Aaron Patel', email: 'a.patel@cmcholding.local', department: 'Pediatric Care', role: 'DepartmentHead', designation: 'Head of Pediatrics Unit', status: 'Inactive' },
-    { id: 5, name: 'Yahiya Mannooparambil', email: 'yahiya.m@cmcholding.local', department: 'Information Technology', role: 'Staff', designation: 'Senior Clinical Support Specialist', status: 'Active' }
-  ]);
+  const { data: accounts, error: accountError } = useMasterData('accounts');
+  const { showNotification } = useNotification();
+  const users = accounts.map(user => ({ ...user, id: user._id, name: user.employeeName || '', username: user.username || user.employeeId || '', email: user.email || '', department: user.department || '', designation: user.designation || '', status: user.status === 'active' ? 'Active' : 'Inactive', lastChanged: user.updatedAt?.slice(0, 10) || '—' }));
 
-  const [departments] = useState([
-    'Emergency Medicine', 'Quality Assurance', 'Neurology', 'Pediatric Care', 'Information Technology', 'General Medicine', 'Pharmacy'
-  ]);
+
 
   const [roles] = useState([
     { value: 'SuperAdmin', label: 'SuperAdmin' },
@@ -71,14 +71,16 @@ const UserAssignment = () => {
     setShowModal(true);
   };
 
-  const toggleStatus = (id) => {
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, status: u.status === 'Active' ? 'Inactive' : 'Active' } : u));
+  const toggleStatus = async (id) => {
+    const user = users.find(item => item.id === id);
+    try { await axios.put('/api/users/' + id + '/toggle-status', { status: user.status === 'Active' ? 'inactive' : 'active' }, getAuthConfig()); invalidateMasterData(); }
+    catch (error) { showNotification(error.response?.data?.message || 'Unable to update user', 'error'); }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setUsers(prev => prev.map(u => u.id === currentUser.id ? { ...u, ...formData } : u));
-    setShowModal(false);
+    try { await axios.put('/api/users/' + currentUser.id, { department: formData.department, designation: formData.designation, role: formData.role }, getAuthConfig()); invalidateMasterData(); setShowModal(false); }
+    catch (error) { showNotification(error.response?.data?.message || 'Unable to update assignment', 'error'); }
   };
 
   const filteredUsers = users.filter(u => 
@@ -94,6 +96,7 @@ const UserAssignment = () => {
 
   return (
     <DashboardLayout>
+      {accountError && <p role="alert" className="text-red-700">{accountError}</p>}
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -250,11 +253,11 @@ const UserAssignment = () => {
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Staff Member Name</label>
-                    <input name="name" value={formData.name} readOnly disabled className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl outline-none text-[13px] font-semibold text-slate-500 cursor-not-allowed" />
+                    <input readOnly name="name" value={formData.name} readOnly disabled className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl outline-none text-[13px] font-semibold text-slate-500 cursor-not-allowed" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Email Address</label>
-                    <input name="email" value={formData.email} readOnly disabled className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl outline-none text-[13px] font-semibold text-slate-500 cursor-not-allowed" />
+                    <input readOnly name="email" value={formData.email} readOnly disabled className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl outline-none text-[13px] font-semibold text-slate-500 cursor-not-allowed" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">System Access Role</label>
@@ -266,15 +269,11 @@ const UserAssignment = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Hospital Department</label>
-                    <Select name="department" value={formData.department} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800">
-                      {departments.map((d) => (
-                        <option key={d} value={d}>{d}</option>
-                      ))}
-                    </Select>
+                    <MasterSelect resource="departments" valueKey="name" name="department" value={formData.department} onChange={handleInputChange} required className="w-full p-3 border rounded-xl" />
                   </div>
                   <div className="space-y-1.5 col-span-2">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Employee Designation / Job Title</label>
-                    <input name="designation" value={formData.designation} onChange={handleInputChange} required placeholder="e.g. Senior Nurse Auditor" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
+                    <MasterSelect resource="designations" valueKey="title" name="designation" value={formData.designation} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
                   </div>
                 </div>
 

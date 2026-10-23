@@ -20,12 +20,11 @@ const medicationAuditSchema = new mongoose.Schema({
   timestamps: true
 });
 
-medicationAuditSchema.pre('save', function(next) {
+medicationAuditSchema.pre('save', function() {
   if (this.findings && this.findings.length > 0) {
     const compliantCount = this.findings.filter(f => f.compliant).length;
     this.overallCompliance = parseFloat(((compliantCount / this.findings.length) * 100).toFixed(2));
   }
-  next();
 });
 
 module.exports = mongoose.model('MedicationAudit', medicationAuditSchema);

@@ -1,3 +1,4 @@
+import MasterSelect from '../components/MasterSelect';
 import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -305,12 +306,10 @@ const ChangeManagement = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block">Department</label>
-                      <input 
-                        type="text" 
+                      <MasterSelect resource="departments" valueKey="name" 
                         required
                         value={department}
                         onChange={(e) => setDepartment(e.target.value)}
-                        placeholder="Pharmacy"
                         className="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-900 text-[13px] font-semibold"
                       />
                     </div>

@@ -1,3 +1,7 @@
+import MasterSelect from '../components/MasterSelect';
+import { useMasterData } from '../hooks/useMasterData';
+import { saveMasterRecord, deleteMasterRecord } from '../utils/masterData';
+import { useNotification } from '../components/NotificationContext';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
@@ -22,13 +26,9 @@ import {
 } from 'lucide-react';
 
 const PhysicianDemography = () => {
-  const [physicians, setPhysicians] = useState([
-    { id: 1, name: 'Dr. Sarah Wilson', employeeId: 'EMP-0010', gender: 'Female', specialty: 'Cardiology', qualification: 'MD, FACC', licenseType: 'DOH', licenseNumber: 'DOH-LIC-98122', expiryDate: '2028-09-12', status: 'Active' },
-    { id: 2, name: 'Dr. Aaron Patel', employeeId: 'EMP-0015', gender: 'Male', specialty: 'Pediatrics', qualification: 'MD, FAAP', licenseType: 'DHA', licenseNumber: 'DHA-LIC-44510', expiryDate: '2026-11-20', status: 'Active' },
-    { id: 3, name: 'Dr. Clara Thorne', employeeId: 'EMP-0022', gender: 'Female', specialty: 'Neurology', qualification: 'MD, PhD', licenseType: 'DOH', licenseNumber: 'DOH-LIC-22104', expiryDate: '2027-04-18', status: 'Active' },
-    { id: 4, name: 'Dr. John Doe', employeeId: 'EMP-0005', gender: 'Male', specialty: 'Orthopedics', qualification: 'MBBS, MS', licenseType: 'MOHAP', licenseNumber: 'MOH-LIC-77612', expiryDate: '2026-03-01', status: 'Inactive' },
-    { id: 5, name: 'Dr. Elena Rostova', employeeId: 'EMP-0044', gender: 'Female', specialty: 'Dermatology', qualification: 'MD', licenseType: 'DHA', licenseNumber: 'DHA-LIC-99081', expiryDate: '2027-12-15', status: 'Active' }
-  ]);
+  const { data: masterRows, error: masterError } = useMasterData('physicianProfiles');
+  const physicians = masterRows.map(row => ({ ...row, id: row._id, staffId: row.staffId?._id || '', name: row.staffId?.employeeName || '', employeeId: row.staffId?.employeeId || '', licenseNumber: row.licenseNumber || '', specialty: row.specialty || '', expiryDate: row.expiryDate?.slice(0, 10) || '' }));
+  const { showNotification } = useNotification();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,6 +39,7 @@ const PhysicianDemography = () => {
   const [currentPhysician, setCurrentPhysician] = useState(null);
 
   const [formData, setFormData] = useState({
+    staffId: '',
     name: '',
     employeeId: '',
     gender: 'Female',
@@ -56,7 +57,8 @@ const PhysicianDemography = () => {
 
   const resetForm = () => {
     setFormData({
-      name: '',
+      staffId: '',
+    name: '',
       employeeId: '',
       gender: 'Female',
       specialty: '',
@@ -78,6 +80,7 @@ const PhysicianDemography = () => {
   const handleEditClick = (phys) => {
     setCurrentPhysician(phys);
     setFormData({
+      staffId: phys.staffId,
       name: phys.name,
       employeeId: phys.employeeId,
       gender: phys.gender,
@@ -92,27 +95,21 @@ const PhysicianDemography = () => {
     setShowModal(true);
   };
 
-  const handleDeleteClick = (id) => {
-    setPhysicians(prev => prev.filter(p => p.id !== id));
+  const handleDeleteClick = async (id) => {
+    try { await deleteMasterRecord('physicianProfiles', id); } catch (error) { showNotification(error.response?.data?.message || 'Unable to archive record', 'error'); }
   };
 
-  const toggleStatus = (id) => {
-    setPhysicians(prev => prev.map(p => p.id === id ? { ...p, status: p.status === 'Active' ? 'Inactive' : 'Active' } : p));
+  const toggleStatus = async (id) => {
+    const row = physicians.find(item => item.id === id);
+    try { await saveMasterRecord('physicianProfiles', { status: row.status === 'Active' ? 'Inactive' : 'Active' }, id); } catch (error) { showNotification(error.response?.data?.message || 'Unable to update status', 'error'); }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isEditing) {
-      setPhysicians(prev => prev.map(p => p.id === currentPhysician.id ? { ...p, ...formData } : p));
-    } else {
-      const newPhys = {
-        id: Date.now(),
-        ...formData
-      };
-      setPhysicians(prev => [newPhys, ...prev]);
-    }
-    setShowModal(false);
-    resetForm();
+    try {
+      await saveMasterRecord('physicianProfiles', formData, isEditing ? currentPhysician.id : undefined);
+      setShowModal(false); resetForm();
+    } catch (error) { showNotification(error.response?.data?.message || 'Unable to save record', 'error'); }
   };
 
   const filteredPhysicians = physicians.filter(p => 
@@ -128,6 +125,7 @@ const PhysicianDemography = () => {
 
   return (
     <DashboardLayout>
+      {masterError && <p role="alert" className="text-red-700">{masterError}</p>}
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -311,11 +309,11 @@ const PhysicianDemography = () => {
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Physician Name</label>
-                    <input name="name" value={formData.name} onChange={handleInputChange} required placeholder="e.g. Dr. Arthur Pendelton" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
+                    <MasterSelect resource="users" name="staffId" value={formData.staffId} onRecordChange={user => setFormData(previous => ({ ...previous, staffId: user?._id || '', name: user?.employeeName || '', employeeId: user?.employeeId || '' }))} required className="w-full p-3 border rounded-xl" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Employee ID</label>
-                    <input name="employeeId" value={formData.employeeId} onChange={handleInputChange} required placeholder="e.g. EMP-0091" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800 font-mono" />
+                    <input readOnly name="employeeId" value={formData.employeeId} onChange={handleInputChange} required placeholder="e.g. EMP-0091" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800 font-mono" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Gender</label>
@@ -326,7 +324,7 @@ const PhysicianDemography = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Clinical Specialty</label>
-                    <input name="specialty" value={formData.specialty} onChange={handleInputChange} required placeholder="e.g. Cardiology" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
+                    <MasterSelect resource="specialties" valueKey="name" name="specialty" value={formData.specialty} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Qualifications</label>

@@ -135,7 +135,7 @@ const getLevel = (score) => {
 };
 
 // Pre-save hook to calculate scores and levels
-riskSchema.pre('save', async function(next) {
+riskSchema.pre('save', async function() {
   // Generate riskId if not exists
   if (this.isNew) {
     const year = new Date().getFullYear();
@@ -158,7 +158,6 @@ riskSchema.pre('save', async function(next) {
     this.status = 'overdue';
   }
 
-  next();
 });
 
 module.exports = mongoose.model('Risk', riskSchema);

@@ -53,7 +53,7 @@ const staffLicenseSchema = new mongoose.Schema({
   timestamps: true
 });
 
-staffLicenseSchema.pre('save', function(next) {
+staffLicenseSchema.pre('save', function() {
   const today = new Date();
   const diffDays = Math.ceil((this.expiryDate - today) / (1000 * 60 * 60 * 24));
   
@@ -64,7 +64,6 @@ staffLicenseSchema.pre('save', function(next) {
   } else {
     this.status = 'active';
   }
-  next();
 });
 
 module.exports = mongoose.model('StaffLicense', staffLicenseSchema);

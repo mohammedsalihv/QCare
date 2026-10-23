@@ -1,3 +1,6 @@
+import { useMasterData } from '../hooks/useMasterData';
+import { saveMasterRecord } from '../utils/masterData';
+import { useNotification } from '../components/NotificationContext';
 import Table from '../components/Table.jsx';
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
@@ -17,12 +20,9 @@ import {
 } from 'lucide-react';
 
 const PhysicianDemographyVerification = () => {
-  const [queues, setQueues] = useState([
-    { id: 1, name: 'Dr. Sarah Wilson', employeeId: 'EMP-0010', specialty: 'Cardiology', licenseType: 'DOH', licenseNumber: 'DOH-LIC-98122', requestedDate: '2026-06-01', verificationStatus: 'pending', verifier: '', remarks: '' },
-    { id: 2, name: 'Dr. Clara Thorne', employeeId: 'EMP-0022', specialty: 'Neurology', licenseType: 'DOH', licenseNumber: 'DOH-LIC-22104', requestedDate: '2026-06-02', verificationStatus: 'pending', verifier: '', remarks: '' },
-    { id: 3, name: 'Dr. John Doe', employeeId: 'EMP-0005', specialty: 'Orthopedics', licenseType: 'MOHAP', licenseNumber: 'MOH-LIC-77612', requestedDate: '2026-05-25', verificationStatus: 'verified', verifier: 'Mohammed Salih', remarks: 'All credentials cleared.' },
-    { id: 4, name: 'Dr. Aaron Patel', employeeId: 'EMP-0015', specialty: 'Pediatrics', licenseType: 'DHA', licenseNumber: 'DHA-LIC-44510', requestedDate: '2026-05-28', verificationStatus: 'rejected', verifier: 'Mohammed Salih', remarks: 'License copy blurred, re-upload needed.' }
-  ]);
+  const { data: profiles, error: profileError } = useMasterData('physicianProfiles');
+  const { showNotification } = useNotification();
+  const queues = profiles.map(row => ({ ...row, id: row._id, name: row.staffId?.employeeName || '', employeeId: row.staffId?.employeeId || '', specialty: row.specialty || '', requestedDate: row.createdAt, verifier: row.verifier?.employeeName || '' }));
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,13 +34,9 @@ const PhysicianDemographyVerification = () => {
 
   const [activeTab, setActiveTab] = useState('pending');
 
-  const handleVerify = (id) => {
-    setQueues(prev => prev.map(q => q.id === id ? { 
-      ...q, 
-      verificationStatus: 'verified', 
-      verifier: 'Quality Manager',
-      remarks: 'Profile audited and verified.'
-    } : q));
+  const handleVerify = async (id) => {
+    try { await saveMasterRecord('physicianProfiles', { verificationStatus: 'verified', remarks: 'Profile audited and verified.' }, id); }
+    catch (error) { showNotification(error.response?.data?.message || 'Unable to verify profile', 'error'); }
   };
 
   const handleRejectClick = (id) => {
@@ -49,15 +45,10 @@ const PhysicianDemographyVerification = () => {
     setShowRejectModal(true);
   };
 
-  const handleRejectSubmit = (e) => {
+  const handleRejectSubmit = async (e) => {
     e.preventDefault();
-    setQueues(prev => prev.map(q => q.id === currentId ? { 
-      ...q, 
-      verificationStatus: 'rejected', 
-      verifier: 'Quality Manager',
-      remarks: rejectRemarks 
-    } : q));
-    setShowRejectModal(false);
+    try { await saveMasterRecord('physicianProfiles', { verificationStatus: 'rejected', remarks: rejectRemarks }, currentId); setShowRejectModal(false); }
+    catch (error) { showNotification(error.response?.data?.message || 'Unable to reject profile', 'error'); }
   };
 
   const filteredQueue = queues.filter(q => {
@@ -85,6 +76,7 @@ const PhysicianDemographyVerification = () => {
 
   return (
     <DashboardLayout>
+      {profileError && <p role="alert">{profileError}</p>}
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>

@@ -44,7 +44,7 @@ const CapaManagement = () => {
       
       const [capasRes, usersRes] = await Promise.all([
         axios.get('/api/qms/capa', config),
-        axios.get('/api/users', config)
+        axios.get('/api/users/directory', config)
       ]);
       
       setCapas(capasRes.data);

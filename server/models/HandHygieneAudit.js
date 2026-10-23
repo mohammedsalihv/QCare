@@ -22,11 +22,10 @@ const handHygieneAuditSchema = new mongoose.Schema({
   timestamps: true
 });
 
-handHygieneAuditSchema.pre('save', function(next) {
+handHygieneAuditSchema.pre('save', function() {
   if (this.totalOpportunities > 0) {
     this.complianceRate = parseFloat(((this.compliantCount / this.totalOpportunities) * 100).toFixed(2));
   }
-  next();
 });
 
 module.exports = mongoose.model('HandHygieneAudit', handHygieneAuditSchema);

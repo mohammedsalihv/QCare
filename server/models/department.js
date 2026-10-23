@@ -8,13 +8,6 @@ const departmentSchema = mongoose.Schema(
       unique: true,
       trim: true,
     },
-    code: {
-      type: String,
-      required: [true, "Please add a department code"],
-      unique: true,
-      trim: true,
-      uppercase: true,
-    },
     head: {
       type: String, // Can be a string name or a reference to User model
       default: "Not Assigned",
@@ -22,10 +15,6 @@ const departmentSchema = mongoose.Schema(
     location: {
       type: String,
       default: "Main Campus",
-    },
-    employeesCount: {
-      type: Number,
-      default: 0,
     },
     isActive: {
       type: Boolean,

@@ -38,7 +38,6 @@ const DepartmentMaster = () => {
 
   const [formData, setFormData] = useState({
     name: '',
-    code: '',
     head: '',
     location: ''
   });
@@ -75,7 +74,7 @@ const DepartmentMaster = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get('http://192.168.1.160:5000/api/users', getAuthConfig());
+      const { data } = await axios.get('http://192.168.1.160:5000/api/users/directory', getAuthConfig());
       // Map users to options for Dropdown
       const userOptions = data.map(u => ({
         label: u.employeeName,
@@ -113,7 +112,6 @@ const DepartmentMaster = () => {
   const resetForm = () => {
     setFormData({
       name: '',
-      code: '',
       head: '',
       location: ''
     });
@@ -130,7 +128,6 @@ const DepartmentMaster = () => {
     setCurrentDept(dept);
     setFormData({
       name: dept.name,
-      code: dept.code,
       head: dept.head,
       location: dept.location
     });
@@ -230,9 +227,7 @@ const DepartmentMaster = () => {
               <thead>
                 <tr className="bg-slate-100/50">
                   <th className="w-1/4 px-7 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Department Name</th>
-                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Dept Code</th>
                   <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Head of Department</th>
-                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Staff Count</th>
                   <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Location</th>
                   <th className="w-36 px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
@@ -248,16 +243,9 @@ const DepartmentMaster = () => {
                         <span className="text-[13px] font-medium text-slate-800 leading-snug">{dept.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-[13px] font-medium font-mono text-slate-800">{dept.code}</td>
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
                           <span className="text-[13px] font-medium text-slate-800">{dept.head}</span>
-                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                       <div className="flex items-center gap-2">
-                          <Users className="w-3.5 h-3.5 text-slate-800" />
-                          <span className="text-[13px] font-medium text-slate-800">{dept.employeesCount} Members</span>
                        </div>
                     </td>
                     <td className="px-6 py-4">
@@ -342,13 +330,6 @@ const DepartmentMaster = () => {
                     <div className="relative group">
                        <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold group-focus-within:text-[#b59662] transition-colors" />
                        <input name="name" value={formData.name} onChange={handleInputChange} required placeholder="e.g. Clinical Quality" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-[13px] font-semibold text-slate-800" />
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Dept Code</label>
-                    <div className="relative group">
-                       <Code2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold group-focus-within:text-[#b59662] transition-colors" />
-                       <input name="code" value={formData.code} onChange={handleInputChange} required placeholder="QUAL-OPS" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-[13px] font-semibold font-mono text-slate-800" />
                     </div>
                   </div>
                   <div className="space-y-1.5">

@@ -1,3 +1,8 @@
+import CreateRecordDialog from '../components/records/CreateRecordDialog';
+import { invalidateMasterData } from '../utils/masterData';
+import MasterSelect from '../components/MasterSelect';
+import { useMasterData } from '../hooks/useMasterData';
+import { saveMasterRecord, isActiveRecord } from '../utils/masterData';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
@@ -56,7 +61,7 @@ const ClinicalPrivileges = () => {
   ];
 
   // ---------------------------------------------------------------------------
-  // MOCK DATA & STATES
+  // MASTER DATA & STATES
   // ---------------------------------------------------------------------------
   
   // Procedures Master State
@@ -64,22 +69,14 @@ const ClinicalPrivileges = () => {
   const [procCategorySearch, setProcCategorySearch] = useState('');
   const [procSearch, setProcSearch] = useState('');
   
-  const [categories, setCategories] = useState([
-    { id: 1, name: 'Cardiology Procedures', addedBy: 'Dr. Sarah Connor', date: '2026-05-12' },
-    { id: 2, name: 'Orthopedic Surgery', addedBy: 'Admin User', date: '2026-06-01' },
-    { id: 3, name: 'General Anaesthesia', addedBy: 'Dr. John Doe', date: '2026-06-15' }
-  ]);
+  const { data: categoryRows, error: categoryError } = useMasterData('procedureCategories');
+  const categories = categoryRows.filter(isActiveRecord).map(row => ({ ...row, id: row._id, addedBy: row.createdBy?.employeeName || '' }));
 
-  const [procedures, setProcedures] = useState([
-    { id: 1, category: 'Cardiology Procedures', name: 'Diagnostic Cardiac Catheterization', req: 'ACLS, Logbook (50 cases)' },
-    { id: 2, category: 'Orthopedic Surgery', name: 'Total Knee Arthroplasty', req: 'Board Certification, Logbook (30 cases)' },
-    { id: 3, category: 'General Anaesthesia', name: 'Intubation & Airway Management', req: 'BLS, ACLS' }
-  ]);
+  const { data: procedureRows, error: procedureError } = useMasterData('procedures');
+  const procedures = procedureRows.filter(isActiveRecord).map(row => ({ ...row, id: row._id, category: row.categoryId?.name || '' }));
 
-  const [approvers, setApprovers] = useState([
-    { id: 1, name: 'Dr. Yahya Mannooparambil', dept: 'Cardiology / Medical Director' },
-    { id: 2, name: 'Dr. Robert Fischer', dept: 'Orthopedics / HOD' }
-  ]);
+  const { data: userRows } = useMasterData('users');
+  const approvers = userRows.filter(isActiveRecord).map(user => ({ id: user._id, name: user.employeeName, dept: user.department }));
 
   const [newCatName, setNewCatName] = useState('');
   const [newProcName, setNewProcName] = useState('');
@@ -91,7 +88,7 @@ const ClinicalPrivileges = () => {
 
   // Privilege SubMaster State
   const [submasterRole, setSubmasterRole] = useState('Consultant');
-  const [submasterSpecialty, setSubmasterSpecialty] = useState('Cardiology');
+  const [submasterSpecialty, setSubmasterSpecialty] = useState('');
   const [submasterReqs, setSubmasterReqs] = useState({
     bls: true,
     acls: true,
@@ -103,7 +100,7 @@ const ClinicalPrivileges = () => {
   // Notification Master State
   const [notifTrigger, setNotifTrigger] = useState('Application Received');
   const [notifCC, setNotifCC] = useState(true);
-  const [notifRules, setNotifRules] = useState([
+  const [notifRules] = useState([
     { id: 1, trigger: 'Application Received', cc: 'Yes', template: 'Dear HOD, a new application has been submitted...' },
     { id: 2, trigger: 'Expiring in 30 Days', cc: 'No', template: 'Dear Clinician, your privilege for [Procedure] is expiring soon...' }
   ]);
@@ -112,75 +109,41 @@ const ClinicalPrivileges = () => {
   const [searchClinician, setSearchClinician] = useState('');
   const [searchSpecialty, setSearchSpecialty] = useState('');
   const [searchStatus, setSearchStatus] = useState('All');
-  const [searchResults, setSearchResults] = useState([
-    { id: 1, name: 'Dr. James Smith', specialty: 'Cardiology', approvedCount: 12, expiry: '2027-02-14', status: 'Active' },
-    { id: 2, name: 'Dr. Emily Watson', specialty: 'Orthopedics', approvedCount: 8, expiry: '2026-08-30', status: 'Expiring Soon' },
-    { id: 3, name: 'Dr. Alistair Cook', specialty: 'Pediatrics', approvedCount: 5, expiry: '2026-05-10', status: 'Expired' }
-  ]);
+  const { data: privilegeRows, error: privilegeError } = useMasterData('privileges');
+  const searchResults = privilegeRows.map(row => ({ ...row, id: row._id, name: row.staffId?.employeeName || '', staffId: row.staffId?._id || '', approvedCount: row.procedures?.filter(procedure => procedure.approved).length || 0, expiry: row.expiryDate, status: row.status }));
 
   // Apply/Renew State
-  const [applyStep, setApplyStep] = useState(1);
-  const [applyClinician, setApplyClinician] = useState('Dr. James Smith');
-  const [applySpecialty, setApplySpecialty] = useState('Cardiology');
-  const [applyProcs, setApplyProcs] = useState([]);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [applyClinician, setApplyClinician] = useState('');
 
   // Approvals Queue State
-  const [approvals, setApprovals] = useState([
-    { id: 1, applicant: 'Dr. Emily Watson', specialty: 'Orthopedics', dateApplied: '2026-07-02', status: 'Pending HOD Approval' },
-    { id: 2, applicant: 'Dr. Alistair Cook', specialty: 'Pediatrics', dateApplied: '2026-07-04', status: 'Pending Committee Review' }
-  ]);
+  const [approvals, setApprovals] = useState([]);
 
   // Approval Workflow Master State
-  const [workflowLevels, setWorkflowLevels] = useState([
+  const [workflowLevels] = useState([
     { level: 1, role: 'Department Head (HOD)', mandate: 'Clinical verification of cases logbook' },
     { level: 2, role: 'Credentialing Committee Chair', mandate: 'Secondary source verification check' },
     { level: 3, role: 'Chief Medical Director', mandate: 'Final execution and registry stamp' }
   ]);
 
   // Expiry Monitor State
-  const [expiryDocs, setExpiryDocs] = useState([
-    { id: 1, doctor: 'Dr. Emily Watson', docName: 'BLS Certificate', daysLeft: 12, status: 'Critical' },
-    { id: 2, doctor: 'Dr. James Smith', docName: 'DOH Professional License', daysLeft: 45, status: 'Warning' },
-    { id: 3, doctor: 'Dr. Sarah Connor', docName: 'Medical Malpractice Insurance', daysLeft: 80, status: 'Healthy' }
-  ]);
+  const [expiryDocs] = useState([]);
 
   // ---------------------------------------------------------------------------
   // ACTION HANDLERS
   // ---------------------------------------------------------------------------
-  const handleAddCategory = () => {
-    if (!newCatName) return;
-    setCategories([
-      ...categories,
-      { id: Date.now(), name: newCatName, addedBy: 'Current User', date: new Date().toISOString().split('T')[0] }
-    ]);
-    setNewCatName('');
-    setShowAddCatModal(false);
+  const handleAddCategory = async () => {
+    if (!newCatName.trim()) return;
+    try { await saveMasterRecord('procedureCategories', { name: newCatName }); setNewCatName(''); setShowAddCatModal(false); }
+    catch (error) { showNotification(error.response?.data?.message || 'Unable to save category', 'error'); }
   };
 
-  const handleAddProcedure = () => {
-    if (!newProcName || !newProcCat) return;
-    setProcedures([
-      ...procedures,
-      { id: Date.now(), category: newProcCat, name: newProcName, req: newProcReq || 'None' }
-    ]);
-    setNewProcName('');
-    setNewProcReq('');
-    setShowAddProcModal(false);
+  const handleAddProcedure = async () => {
+    if (!newProcName.trim() || !newProcCat) return;
+    try { await saveMasterRecord('procedures', { name: newProcName, categoryId: newProcCat, req: newProcReq }); setNewProcName(''); setNewProcReq(''); setShowAddProcModal(false); }
+    catch (error) { showNotification(error.response?.data?.message || 'Unable to save procedure', 'error'); }
   };
 
-  const handleApplyProcToggle = (procName) => {
-    if (applyProcs.includes(procName)) {
-      setApplyProcs(applyProcs.filter(p => p !== procName));
-    } else {
-      setApplyProcs([...applyProcs, procName]);
-    }
-  };
 
-  const handleFileUpload = (e) => {
-    const files = Array.from(e.target.files);
-    setUploadedFiles([...uploadedFiles, ...files.map(f => ({ name: f.name, size: (f.size / 1024 / 1024).toFixed(2) }))]);
-  };
 
   // ---------------------------------------------------------------------------
   // TAB CONDITIONAL RENDERING
@@ -334,17 +297,18 @@ const ClinicalPrivileges = () => {
 
             {/* Approvers Table */}
             <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-              <h4 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">Approvers</h4>
+              <h4 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">User Directory</h4>
               <div className="overflow-x-auto">
                 <Table className="w-full text-left text-[13px]">
                   <thead>
                     <tr className="bg-slate-50 text-slate-500 font-semibold normal-case tracking-normal border-b border-slate-100">
                       <th className="p-3">S.No</th>
-                      <th className="p-3">Approver Name</th>
+                      <th className="p-3">Staff Name</th>
                       <th className="p-3">Department/Speciality</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
+                    {approvers.length === 0 && <tr><td colSpan={3} className="p-6 text-center text-slate-500">No approvers configured.</td></tr>}
                     {approvers.map((app, idx) => (
                       <tr key={app.id} className="hover:bg-slate-50/50">
                         <td className="p-3 font-semibold text-slate-500">{idx + 1}</td>
@@ -385,14 +349,11 @@ const ClinicalPrivileges = () => {
                   <h3 className="text-sm font-semibold text-slate-800 normal-case tracking-normal">Add New Procedure</h3>
                   <div>
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-1">Category</label>
-                    <Select 
+                    <MasterSelect resource="procedureCategories" valueKey="_id" 
                       value={newProcCat}
                       onChange={(e) => setNewProcCat(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
-                    >
-                      <option value="">Select Category</option>
-                      {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                    </Select>
+                     />
                   </div>
                   <div>
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-1">Procedure Name</label>
@@ -435,29 +396,19 @@ const ClinicalPrivileges = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Clinician Grade/Role</label>
-                <Select 
+                <MasterSelect resource="designations" valueKey="title" 
                   value={submasterRole}
                   onChange={(e) => setSubmasterRole(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
-                >
-                  <option value="Consultant">Consultant</option>
-                  <option value="Specialist">Specialist</option>
-                  <option value="Resident">Resident</option>
-                  <option value="Fellow">Fellow</option>
-                </Select>
+                 />
               </div>
               <div>
                 <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Specialty Specialty</label>
-                <Select 
+                <MasterSelect resource="specialties" valueKey="name" 
                   value={submasterSpecialty}
                   onChange={(e) => setSubmasterSpecialty(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
-                >
-                  <option value="Cardiology">Cardiology</option>
-                  <option value="Orthopedics">Orthopedics</option>
-                  <option value="Pediatrics">Pediatrics</option>
-                  <option value="Anaesthesia">Anaesthesia</option>
-                </Select>
+                 />
               </div>
             </div>
 
@@ -589,16 +540,11 @@ const ClinicalPrivileges = () => {
               </div>
               <div>
                 <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Specialty</label>
-                <Select 
+                <MasterSelect resource="specialties" valueKey="name" 
                   value={searchSpecialty}
                   onChange={(e) => setSearchSpecialty(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
-                >
-                  <option value="">All Specialties</option>
-                  <option value="Cardiology">Cardiology</option>
-                  <option value="Orthopedics">Orthopedics</option>
-                  <option value="Pediatrics">Pediatrics</option>
-                </Select>
+                 />
               </div>
               <div>
                 <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Status</label>
@@ -628,6 +574,7 @@ const ClinicalPrivileges = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
+                  {searchResults.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-slate-500">No clinician privileges available.</td></tr>}
                   {searchResults.filter(r => 
                     r.name.toLowerCase().includes(searchClinician.toLowerCase()) &&
                     (searchSpecialty === '' || r.specialty === searchSpecialty) &&
@@ -657,129 +604,8 @@ const ClinicalPrivileges = () => {
 
       // 5. APPLY/RENEW PRIVILEGE
       case 'apply-renew':
-        return (
-          <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Apply/Renew Privilege</h3>
-                <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Submit clinician privilege portfolio</p>
-              </div>
-              <div className="flex gap-1 items-center bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
-                {[1, 2, 3].map((step) => (
-                  <div key={step} className={`w-8 h-8 rounded-xl flex items-center justify-center text-[13px] font-semibold transition-all ${
-                    applyStep === step ? 'bg-[var(--color-primary)] text-white' : 'text-slate-500'
-                  }`}>{step}</div>
-                ))}
-              </div>
-            </div>
+        return <CreateRecordDialog kind="clinician" onClose={() => setActiveTab('privilege-search')} onCreated={() => { invalidateMasterData('privileges'); showNotification('Privilege request submitted', 'success'); }} />;
 
-            {applyStep === 1 && (
-              <div className="space-y-6">
-                <h4 className="text-[13px] font-semibold text-slate-700 normal-case tracking-normal">Step 1: Specialty & Clinician Details</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Select Clinician</label>
-                    <Select 
-                      value={applyClinician}
-                      onChange={(e) => setApplyClinician(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
-                    >
-                      <option value="Dr. James Smith">Dr. James Smith</option>
-                      <option value="Dr. Emily Watson">Dr. Emily Watson</option>
-                    </Select>
-                  </div>
-                  <div>
-                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Medical Specialty</label>
-                    <Select 
-                      value={applySpecialty}
-                      onChange={(e) => setApplySpecialty(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
-                    >
-                      <option value="Cardiology">Cardiology</option>
-                      <option value="Orthopedics">Orthopedics</option>
-                    </Select>
-                  </div>
-                </div>
-                <div className="flex justify-end">
-                  <button onClick={() => setApplyStep(2)} className="px-6 py-3 bg-primary text-white text-[12px] font-semibold normal-case tracking-normal rounded-xl hover:bg-primary transition-all flex items-center gap-2">
-                    Next <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {applyStep === 2 && (
-              <div className="space-y-6">
-                <h4 className="text-[13px] font-semibold text-slate-700 normal-case tracking-normal">Step 2: Request Procedures & Scope</h4>
-                <div className="space-y-3">
-                  {procedures.filter(p => p.category.includes(applySpecialty)).map(proc => (
-                    <label key={proc.id} className="flex items-start gap-4 p-4 bg-slate-50 border border-slate-200/50 rounded-2xl cursor-pointer hover:bg-slate-100/50 transition-all">
-                      <input 
-                        type="checkbox" 
-                        checked={applyProcs.includes(proc.name)}
-                        onChange={() => handleApplyProcToggle(proc.name)}
-                        className="mt-1 w-4.5 h-4.5 text-[var(--color-primary)] rounded border-slate-350"
-                      />
-                      <div className="flex-1">
-                        <span className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal block">{proc.name}</span>
-                        <span className="text-[12px] text-slate-500 font-semibold block mt-1">Requirement: {proc.req}</span>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-                <div className="flex justify-between">
-                  <button onClick={() => setApplyStep(1)} className="px-6 py-3 bg-slate-100 text-slate-700 text-[12px] font-semibold normal-case tracking-normal rounded-xl">Back</button>
-                  <button onClick={() => setApplyStep(3)} className="px-6 py-3 bg-primary text-white text-[12px] font-semibold normal-case tracking-normal rounded-xl hover:bg-primary transition-all flex items-center gap-2">
-                    Next <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {applyStep === 3 && (
-              <div className="space-y-6">
-                <h4 className="text-[13px] font-semibold text-slate-700 normal-case tracking-normal">Step 3: Upload Evidence Documents</h4>
-                <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center bg-slate-50 relative hover:bg-slate-100/50 transition-all">
-                  <input 
-                    type="file" 
-                    multiple 
-                    onChange={handleFileUpload}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                  />
-                  <UploadCloud className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                  <p className="text-[13px] font-semibold text-slate-700">Drag & Drop certificate files or click to browse</p>
-                  <p className="text-[12px] text-slate-500 mt-1">PDF, JPG, PNG formats up to 5MB</p>
-                </div>
-
-                {uploadedFiles.length > 0 && (
-                  <div className="space-y-2">
-                    <span className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block">Uploaded Portfolio Files ({uploadedFiles.length})</span>
-                    {uploadedFiles.map((file, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-3 bg-slate-50 border border-slate-200/50 rounded-2xl">
-                        <span className="text-[13px] font-semibold text-slate-700">{file.name}</span>
-                        <span className="text-[12px] text-slate-500 font-semibold">{file.size} MB</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="flex justify-between pt-4 border-t border-slate-100">
-                  <button onClick={() => setApplyStep(2)} className="px-6 py-3 bg-slate-100 text-slate-700 text-[12px] font-semibold normal-case tracking-normal rounded-xl">Back</button>
-                  <button onClick={() => {
-                    showNotification('Privilege request submitted successfully', 'success');
-                    setApplyStep(1);
-                    setApplyProcs([]);
-                    setUploadedFiles([]);
-                  }} className="px-6 py-3 bg-emerald-600 text-white text-[12px] font-semibold normal-case tracking-normal rounded-xl hover:bg-emerald-700 transition-all">
-                    Submit Application
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-
-      // 6. PRIVILEGE APPROVAL
       case 'privilege-approval':
         return (
           <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
@@ -799,6 +625,7 @@ const ClinicalPrivileges = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
+                  {approvals.length === 0 && <tr><td colSpan={5} className="p-6 text-center text-slate-500">No pending applications.</td></tr>}
                   {approvals.map((app) => (
                     <tr key={app.id}>
                       <td className="p-3 font-semibold text-slate-700">{app.applicant}</td>
@@ -891,18 +718,15 @@ const ClinicalPrivileges = () => {
             </div>
             <div>
               <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Select Doctor</label>
-              <Select className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800">
-                <option value="Dr. Alistair Cook">Dr. Alistair Cook (Expired)</option>
-                <option value="Dr. Emily Watson">Dr. Emily Watson (Active)</option>
-              </Select>
+              <MasterSelect resource="users" value={applyClinician} onChange={e => setApplyClinician(e.target.value)} className="w-full p-3 border rounded-xl" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <button onClick={() => showNotification('Privileges put on hold', 'warning')} className="p-6 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-2xl transition-all text-left">
+              <button disabled={!searchResults.length} onClick={() => showNotification('Privilege status changes must be completed in Medical Affairs.', 'info')} className="p-6 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-2xl transition-all text-left">
                 <AlertTriangle className="w-8 h-8 text-amber-500 mb-3" />
                 <h4 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">Place Privileges on Hold</h4>
                 <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Suspend status temporarily</p>
               </button>
-              <button onClick={() => showNotification('Privileges terminated', 'error')} className="p-6 bg-red-50 hover:bg-red-100 border border-red-200 rounded-2xl transition-all text-left">
+              <button disabled={!searchResults.length} onClick={() => showNotification('Privilege status changes must be completed in Medical Affairs.', 'info')} className="p-6 bg-red-50 hover:bg-red-100 border border-red-200 rounded-2xl transition-all text-left">
                 <UserX className="w-8 h-8 text-red-500 mb-3" />
                 <h4 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">Terminate Scope</h4>
                 <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Revoke clinical credential permanently</p>
@@ -931,20 +755,7 @@ const ClinicalPrivileges = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  <tr className="text-slate-500">
-                    <td className="p-3 font-semibold">#ARC-9021</td>
-                    <td className="p-3"><span className="px-2 py-0.5 bg-slate-100 rounded text-[12px] font-semibold normal-case">Terminated</span></td>
-                    <td className="p-3 font-semibold text-slate-700">Dr. Sarah Connor</td>
-                    <td className="p-3">Credentialing Committee</td>
-                    <td className="p-3 text-[12px]">2026-07-01 10:15</td>
-                  </tr>
-                  <tr className="text-slate-500">
-                    <td className="p-3 font-semibold">#ARC-9019</td>
-                    <td className="p-3"><span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[12px] font-semibold normal-case">Approved</span></td>
-                    <td className="p-3 font-semibold text-slate-700">Dr. James Smith</td>
-                    <td className="p-3">Dr. Yahya Mannooparambil</td>
-                    <td className="p-3 text-[12px]">2026-06-25 14:30</td>
-                  </tr>
+                  <tr><td colSpan={5} className="p-6 text-center text-slate-500">No archived privileges available.</td></tr>
                 </tbody>
               </Table>
             </div>
@@ -960,6 +771,7 @@ const ClinicalPrivileges = () => {
               <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Live tracking of clinician certificate validity</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {expiryDocs.length === 0 && <p className="text-slate-500">No credential documents available.</p>}
               {expiryDocs.map(doc => (
                 <div key={doc.id} className={`p-5 rounded-2xl border flex flex-col justify-between ${
                   doc.status === 'Critical' ? 'bg-red-50/50 border-red-200' :
@@ -994,7 +806,7 @@ const ClinicalPrivileges = () => {
                 </div>
                 <div>
                   <span className="text-[12px] font-semibold text-slate-450 normal-case tracking-normal block">My Active Privileges</span>
-                  <span className="text-xl font-semibold text-slate-800 block mt-1">12</span>
+                  <span className="text-xl font-semibold text-slate-800 block mt-1">—</span>
                 </div>
               </div>
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
@@ -1003,7 +815,7 @@ const ClinicalPrivileges = () => {
                 </div>
                 <div>
                   <span className="text-[12px] font-semibold text-slate-450 normal-case tracking-normal block">Pending Submissions</span>
-                  <span className="text-xl font-semibold text-slate-800 block mt-1">2</span>
+                  <span className="text-xl font-semibold text-slate-800 block mt-1">—</span>
                 </div>
               </div>
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
@@ -1012,7 +824,7 @@ const ClinicalPrivileges = () => {
                 </div>
                 <div>
                   <span className="text-[12px] font-semibold text-slate-450 normal-case tracking-normal block">Critical Expiries</span>
-                  <span className="text-xl font-semibold text-slate-800 block mt-1">1</span>
+                  <span className="text-xl font-semibold text-slate-800 block mt-1">—</span>
                 </div>
               </div>
             </div>
@@ -1046,11 +858,11 @@ const ClinicalPrivileges = () => {
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
                 <span className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block">Department Clinicians</span>
-                <span className="text-xl font-semibold text-slate-800 block mt-2">24</span>
+                <span className="text-xl font-semibold text-slate-800 block mt-2">—</span>
               </div>
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
                 <span className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block">Compliance Rate</span>
-                <span className="text-xl font-semibold text-emerald-600 block mt-2">91.6%</span>
+                <span className="text-xl font-semibold text-emerald-600 block mt-2">—</span>
               </div>
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
                 <span className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block">Pending HOD Signatures</span>
@@ -1058,7 +870,7 @@ const ClinicalPrivileges = () => {
               </div>
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
                 <span className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block">Expired Privileges</span>
-                <span className="text-xl font-semibold text-rose-600 block mt-2">2</span>
+                <span className="text-xl font-semibold text-rose-600 block mt-2">—</span>
               </div>
             </div>
 
@@ -1066,6 +878,7 @@ const ClinicalPrivileges = () => {
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                 <h4 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">HOD Action Desk</h4>
                 <div className="space-y-3">
+                  {approvals.length === 0 && <p className="text-slate-500">No pending applications.</p>}
                   {approvals.map(app => (
                     <div key={app.id} className="flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-2xl">
                       <div>
@@ -1086,10 +899,10 @@ const ClinicalPrivileges = () => {
                 <div className="space-y-2 pt-4">
                   <div className="flex justify-between text-[13px] font-semibold text-slate-600">
                     <span>Orthopedics Case Logs Verified</span>
-                    <span>88%</span>
+                    <span>—</span>
                   </div>
                   <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <div className="bg-[var(--color-primary)] h-full rounded-full" style={{ width: '88%' }}></div>
+                    <div className="bg-[var(--color-primary)] h-full rounded-full" style={{ width: '0%' }}></div>
                   </div>
                 </div>
               </div>
@@ -1104,6 +917,7 @@ const ClinicalPrivileges = () => {
 
   return (
     <DashboardLayout>
+      {(categoryError || procedureError || privilegeError) && <p role="alert" className="text-red-700">{categoryError || procedureError || privilegeError}</p>}
       <header className="qc-module-heading">
         <h1>Clinical privileges</h1>
         <p>Manage clinical eligibility, privilege requests and professional reviews.</p>

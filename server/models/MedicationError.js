@@ -42,7 +42,7 @@ const medicationErrorSchema = new mongoose.Schema({
   timestamps: true
 });
 
-medicationErrorSchema.pre('save', async function(next) {
+medicationErrorSchema.pre('save', async function() {
   if (!this.errorRef) {
     const year = new Date().getFullYear();
     const count = await this.constructor.countDocuments({
@@ -53,7 +53,6 @@ medicationErrorSchema.pre('save', async function(next) {
     });
     this.errorRef = `MERR-${year}-${(count + 1).toString().padStart(3, '0')}`;
   }
-  next();
 });
 
 module.exports = mongoose.model('MedicationError', medicationErrorSchema);

@@ -30,7 +30,7 @@ const outbreakAlertSchema = new mongoose.Schema({
   timestamps: true
 });
 
-outbreakAlertSchema.pre('save', async function(next) {
+outbreakAlertSchema.pre('save', async function() {
   if (!this.alertRef) {
     const year = new Date().getFullYear();
     const count = await this.constructor.countDocuments({
@@ -41,7 +41,6 @@ outbreakAlertSchema.pre('save', async function(next) {
     });
     this.alertRef = `OB-${year}-${(count + 1).toString().padStart(3, '0')}`;
   }
-  next();
 });
 
 module.exports = mongoose.model('OutbreakAlert', outbreakAlertSchema);

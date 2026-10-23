@@ -1,3 +1,4 @@
+import { invalidateMasterData, masterSources } from './utils/masterData';
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import axios from 'axios'
@@ -16,6 +17,15 @@ axios.interceptors.request.use((config) => {
   return config;
 }, (error) => {
   return Promise.reject(error);
+});
+
+// Refresh mounted selectors after a successful master mutation.
+axios.interceptors.response.use(response => {
+  if (['post', 'put', 'patch', 'delete'].includes(response.config.method?.toLowerCase())) {
+    const path = new URL(response.config.url, window.location.origin).pathname;
+    if (Object.values(masterSources).some(source => path === source.url || path.startsWith(source.url + '/'))) invalidateMasterData();
+  }
+  return response;
 });
 
 // Sync token from userInfo if it's missing in localStorage (active session migration)

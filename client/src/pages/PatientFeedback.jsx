@@ -75,7 +75,7 @@ const PatientFeedback = () => {
     try {
       const [feedbacksRes, usersRes, deptsRes] = await Promise.all([
         axios.get('http://192.168.1.160:5000/api/feedback', getAuthConfig()),
-        axios.get('http://192.168.1.160:5000/api/users', getAuthConfig()),
+        axios.get('http://192.168.1.160:5000/api/users/directory', getAuthConfig()),
         axios.get('http://192.168.1.160:5000/api/departments', getAuthConfig())
       ]);
       setFeedbacks(feedbacksRes.data);

@@ -65,6 +65,7 @@ exports.getAllPrivileges = async (req, res) => {
 
 exports.addCredential = async (req, res) => {
   try {
+    if (!req.body.staffId || !await User.exists({ _id: req.body.staffId })) return res.status(400).json({ message: 'Select a user from User Master' });
     const record = new CredentialingRecord({ ...req.body });
     await record.save();
     res.status(201).json(record);

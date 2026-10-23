@@ -1,3 +1,4 @@
+import MasterSelect from '../MasterSelect';
 import Select from '../Select.jsx';
 import React, { useState, useEffect } from 'react';
 import { X, AlertCircle, Save, Calculator } from 'lucide-react';
@@ -142,16 +143,17 @@ const RiskForm = ({ isOpen, onClose, onSave, initialData = null }) => {
              </div>
              <div className="space-y-2">
                 <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Department</label>
-                <input 
-                  type="text" required
+                <MasterSelect resource="departments" valueKey="name" 
+                   required
                   value={formData.department}
                   onChange={(e) => setFormData({...formData, department: e.target.value})}
                   className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-[#040404] transition-all font-semibold text-slate-800 "
-                  placeholder="e.g., Nursing, Radiology..."
+                  
                 />
              </div>
           </div>
 
+          <label className="block">Risk owner<MasterSelect resource="users" value={formData.owner} onChange={e => setFormData({ ...formData, owner: e.target.value })} required className="w-full p-3 border rounded-xl" /></label>
           <div className="flex gap-4 pt-10">
              <button 
                type="button" onClick={onClose}

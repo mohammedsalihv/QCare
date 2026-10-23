@@ -1,3 +1,5 @@
+import CreateRecordDialog from '../components/records/CreateRecordDialog';
+import { getAuthConfig } from '../utils/authConfig';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -18,6 +20,7 @@ import {
 
 const IPCManagementCenter = () => {
   const { showNotification } = useNotification();
+  const [createKind, setCreateKind] = useState(null);
   const [view, setView] = useState('dashboard'); // dashboard | surveillance | hygiene | outbreaks
   const [stats, setStats] = useState(null);
   const [hygieneTrend, setHygieneTrend] = useState([]);
@@ -27,8 +30,7 @@ const IPCManagementCenter = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = getAuthConfig();
 
       const [statsRes, hygieneRes, outbreaksRes] = await Promise.all([
         axios.get('/api/ipc/surveillance/dashboard', config),
@@ -77,7 +79,7 @@ const IPCManagementCenter = () => {
                 <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
                 DOH IPC Report
               </button>
-              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-xl shadow-slate-200 hover:bg-primary transition-all active:scale-95">
+              <button type="button" onClick={() => setCreateKind('surveillance')} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-xl shadow-slate-200 hover:bg-primary transition-all active:scale-95">
                 <Plus className="w-4 h-4" />
                 Log Monthly Data
               </button>
@@ -120,6 +122,7 @@ const IPCManagementCenter = () => {
           </div>
         )}
       </div>
+    {createKind && <CreateRecordDialog key={createKind} kind={createKind} onClose={() => setCreateKind(null)} onCreated={() => { showNotification('Record saved successfully', 'success'); fetchData(); }} />}
     </DashboardLayout>
   );
 };

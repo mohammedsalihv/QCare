@@ -1,3 +1,7 @@
+import MasterSelect from '../components/MasterSelect';
+import { useMasterData } from '../hooks/useMasterData';
+import { saveMasterRecord, deleteMasterRecord } from '../utils/masterData';
+import { useNotification } from '../components/NotificationContext';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
@@ -21,13 +25,9 @@ import {
 } from 'lucide-react';
 
 const MallCredential = () => {
-  const [credentials, setCredentials] = useState([
-    { id: 1, staffName: 'Dr. Sarah Wilson', type: 'ACLS', documentNumber: 'ACLS-2026-9081', issuingAuthority: 'American Heart Association', verificationStatus: 'verified', expiryDate: '2028-04-15' },
-    { id: 2, staffName: 'Mohammed Salih', type: 'BLS', documentNumber: 'BLS-2026-1102', issuingAuthority: 'European Resuscitation Council', verificationStatus: 'pending', expiryDate: '2026-09-30' },
-    { id: 3, staffName: 'Dr. Aaron Patel', type: 'Malpractice-Insurance', documentNumber: 'INS-MAL-88219', issuingAuthority: 'ADNIC Insurance Corp', verificationStatus: 'verified', expiryDate: '2027-01-01' },
-    { id: 4, staffName: 'Clara Thorne', type: 'Dataflow-Report', documentNumber: 'DF-VER-66721', issuingAuthority: 'Dataflow Group Dubai', verificationStatus: 'rejected', expiryDate: '2029-12-31' },
-    { id: 5, staffName: 'Dr. Arthur Pendelton', type: 'PALS', documentNumber: 'PALS-2025-0043', issuingAuthority: 'AHA International', verificationStatus: 'expired', expiryDate: '2026-05-10' }
-  ]);
+  const { data: credentialRows, error: credentialError } = useMasterData('credentials');
+  const { showNotification } = useNotification();
+  const credentials = credentialRows.map(row => ({ ...row, id: row._id, staffId: row.staffId?._id || '', staffName: row.staffId?.employeeName || '', type: row.documentType, documentNumber: row.documentNumber || '', expiryDate: row.expiryDate?.slice(0, 10) || '' }));
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,6 +38,7 @@ const MallCredential = () => {
   const [currentCredential, setCurrentCredential] = useState(null);
 
   const [formData, setFormData] = useState({
+    staffId: '',
     staffName: '',
     type: 'BLS',
     documentNumber: '',
@@ -52,7 +53,8 @@ const MallCredential = () => {
 
   const resetForm = () => {
     setFormData({
-      staffName: '',
+      staffId: '',
+    staffName: '',
       type: 'BLS',
       documentNumber: '',
       issuingAuthority: '',
@@ -71,6 +73,7 @@ const MallCredential = () => {
   const handleEditClick = (cred) => {
     setCurrentCredential(cred);
     setFormData({
+      staffId: cred.staffId,
       staffName: cred.staffName,
       type: cred.type,
       documentNumber: cred.documentNumber,
@@ -82,27 +85,16 @@ const MallCredential = () => {
     setShowModal(true);
   };
 
-  const handleDeleteClick = (id) => {
-    setCredentials(prev => prev.filter(c => c.id !== id));
+  const handleDeleteClick = async (id) => {
+    try { await deleteMasterRecord('credentials', id); } catch (error) { showNotification(error.response?.data?.message || 'Unable to delete credential', 'error'); }
   };
 
-  const setStatus = (id, status) => {
-    setCredentials(prev => prev.map(c => c.id === id ? { ...c, verificationStatus: status } : c));
-  };
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isEditing) {
-      setCredentials(prev => prev.map(c => c.id === currentCredential.id ? { ...c, ...formData } : c));
-    } else {
-      const newCred = {
-        id: Date.now(),
-        ...formData
-      };
-      setCredentials(prev => [newCred, ...prev]);
-    }
-    setShowModal(false);
-    resetForm();
+    try { await saveMasterRecord('credentials', { ...formData, documentType: formData.type }, isEditing ? currentCredential.id : undefined); setShowModal(false); resetForm(); }
+    catch (error) { showNotification(error.response?.data?.message || 'Unable to save credential', 'error'); }
   };
 
   const filteredCredentials = credentials.filter(c => 
@@ -130,6 +122,7 @@ const MallCredential = () => {
 
   return (
     <DashboardLayout>
+      {credentialError && <p role="alert">{credentialError}</p>}
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -280,7 +273,7 @@ const MallCredential = () => {
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Staff Member Name</label>
-                    <input name="staffName" value={formData.staffName} onChange={handleInputChange} required placeholder="e.g. Dr. Arthur Pendelton" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
+                    <MasterSelect resource="users" name="staffId" value={formData.staffId} onChange={handleInputChange} required className="w-full p-3 border rounded-xl" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Credential Type</label>

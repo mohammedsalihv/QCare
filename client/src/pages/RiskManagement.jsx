@@ -83,7 +83,7 @@ const RiskManagement = () => {
     try {
       const [risksRes, usersRes, deptsRes] = await Promise.all([
         axios.get('http://192.168.1.160:5000/api/risks', getAuthConfig()),
-        axios.get('http://192.168.1.160:5000/api/users', getAuthConfig()),
+        axios.get('http://192.168.1.160:5000/api/users/directory', getAuthConfig()),
         axios.get('http://192.168.1.160:5000/api/departments', getAuthConfig())
       ]);
       setRisks(risksRes.data);

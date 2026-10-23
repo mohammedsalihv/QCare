@@ -26,14 +26,13 @@ const ipcSurveillanceSchema = new mongoose.Schema({
   timestamps: true
 });
 
-ipcSurveillanceSchema.pre('save', function(next) {
+ipcSurveillanceSchema.pre('save', function() {
   if (this.casesCount !== undefined && this.patientDays > 0) {
     this.rate = parseFloat(((this.casesCount / this.patientDays) * 1000).toFixed(3));
     if (this.nationalBenchmark) {
       this.varianceFromBenchmark = parseFloat((this.rate - this.nationalBenchmark).toFixed(3));
     }
   }
-  next();
 });
 
 module.exports = mongoose.model('IPCSurveillance', ipcSurveillanceSchema);

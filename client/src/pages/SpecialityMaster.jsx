@@ -1,3 +1,7 @@
+import MasterSelect from '../components/MasterSelect';
+import { useMasterData } from '../hooks/useMasterData';
+import { saveMasterRecord, deleteMasterRecord } from '../utils/masterData';
+import { useNotification } from '../components/NotificationContext';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
@@ -21,13 +25,9 @@ import {
 } from 'lucide-react';
 
 const SpecialityMaster = () => {
-  const [specialties, setSpecialties] = useState([
-    { id: 1, name: 'Cardiology', code: 'CARD', department: 'Internal Medicine', head: 'Dr. Sarah Wilson', status: 'Active' },
-    { id: 2, name: 'Pediatrics & Neonatology', code: 'PEDS', department: 'Pediatric Care', head: 'Dr. Aaron Patel', status: 'Active' },
-    { id: 3, name: 'Neurology', code: 'NEUR', department: 'Neurosciences', head: 'Dr. Clara Thorne', status: 'Active' },
-    { id: 4, name: 'Orthopedic Surgery', code: 'ORTH', department: 'Surgical Services', head: 'Dr. John Doe', status: 'Inactive' },
-    { id: 5, name: 'Dermatology & Venereology', code: 'DERM', department: 'Outpatient Care', head: 'Dr. Elena Rostova', status: 'Active' }
-  ]);
+  const { data: masterRows, error: masterError } = useMasterData('specialties');
+  const specialties = masterRows.map(row => ({ ...row, id: row._id, head: row.head?._id || '', headName: row.head?.employeeName || '' }));
+  const { showNotification } = useNotification();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -79,34 +79,28 @@ const SpecialityMaster = () => {
     setShowModal(true);
   };
 
-  const handleDeleteClick = (id) => {
-    setSpecialties(prev => prev.filter(s => s.id !== id));
+  const handleDeleteClick = async (id) => {
+    try { await deleteMasterRecord('specialties', id); } catch (error) { showNotification(error.response?.data?.message || 'Unable to archive record', 'error'); }
   };
 
-  const toggleStatus = (id) => {
-    setSpecialties(prev => prev.map(s => s.id === id ? { ...s, status: s.status === 'Active' ? 'Inactive' : 'Active' } : s));
+  const toggleStatus = async (id) => {
+    const row = specialties.find(item => item.id === id);
+    try { await saveMasterRecord('specialties', { status: row.status === 'Active' ? 'Inactive' : 'Active' }, id); } catch (error) { showNotification(error.response?.data?.message || 'Unable to update status', 'error'); }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isEditing) {
-      setSpecialties(prev => prev.map(s => s.id === currentSpecialty.id ? { ...s, ...formData } : s));
-    } else {
-      const newSpec = {
-        id: Date.now(),
-        ...formData
-      };
-      setSpecialties(prev => [newSpec, ...prev]);
-    }
-    setShowModal(false);
-    resetForm();
+    try {
+      await saveMasterRecord('specialties', formData, isEditing ? currentSpecialty.id : undefined);
+      setShowModal(false); resetForm();
+    } catch (error) { showNotification(error.response?.data?.message || 'Unable to save record', 'error'); }
   };
 
   const filteredSpecialties = specialties.filter(s => 
     s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
     s.code.toLowerCase().includes(searchQuery.toLowerCase()) || 
     s.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.head.toLowerCase().includes(searchQuery.toLowerCase())
+    s.headName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const indexOfLastRecord = currentPage * recordsPerPage;
@@ -115,6 +109,7 @@ const SpecialityMaster = () => {
 
   return (
     <DashboardLayout>
+      {masterError && <p role="alert" className="text-red-700">{masterError}</p>}
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -192,7 +187,7 @@ const SpecialityMaster = () => {
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
                           <User className="w-3.5 h-3.5 text-slate-500" />
-                          <span className="text-[13px] font-medium text-slate-700">{spec.head}</span>
+                          <span className="text-[13px] font-medium text-slate-700">{spec.headName}</span>
                        </div>
                     </td>
                     <td className="px-6 py-4">
@@ -292,11 +287,11 @@ const SpecialityMaster = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Department Unit</label>
-                    <input name="department" value={formData.department} onChange={handleInputChange} required placeholder="e.g. Internal Medicine" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
+                    <MasterSelect resource="departments" valueKey="name" name="department" value={formData.department} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Specialty Lead (Head)</label>
-                    <input name="head" value={formData.head} onChange={handleInputChange} required placeholder="e.g. Dr. Arthur Pendelton" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
+                    <MasterSelect resource="users" name="head" value={formData.head} onChange={handleInputChange} required className="w-full p-3 border rounded-xl" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Status</label>
