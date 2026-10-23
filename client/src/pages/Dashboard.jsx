@@ -11,6 +11,17 @@ const sources = [['kpi', '/api/kpi/dashboard'], ['audit', '/api/audit/dashboard'
 const total = rows => rows.reduce((sum, row) => sum + row.count, 0);
 const display = value => value == null ? '—' : value.toLocaleString();
 
+function DashboardClock() {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return <span className="qd-date"><CalendarDays size={16} /><time dateTime={now.toISOString()}>{now.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })} · {now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</time></span>;
+}
+
 export default function Dashboard() {
   const user = JSON.parse(localStorage.getItem('userInfo') || '{}');
   const { feedNotifications } = useNotification();
@@ -58,7 +69,7 @@ export default function Dashboard() {
   const ready = !loading;
   const empty = (available, label) => <div className="qd-empty"><ChartNoAxesCombined size={30} /><strong>{loading ? 'Updating your overview' : available ? `No ${label} yet` : 'Data unavailable'}</strong><span>{loading ? 'Your latest data is on its way.' : available ? 'Statistics will appear as records are added.' : 'Try refreshing to reconnect this data source.'}</span></div>;
   return <DashboardLayout><div className="qd-dashboard" aria-busy={loading}>
-    <header className="qd-heading"><div><p className="qd-eyebrow">QCARE / ANALYTICS</p><h1>Organization overview<span>.</span></h1><p>A connected view of quality, safety and organizational readiness.</p></div><div className="qd-heading-actions"><span className="qd-date"><CalendarDays size={16} />{new Date().toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</span><button className="qd-refresh" type="button" disabled={loading} onClick={() => { setLoading(true); setRevision(value => value + 1); }}><RefreshCw size={16} className={loading ? 'qc-analytics-spinning' : ''} />{loading ? 'Updating' : 'Refresh'}</button></div></header>
+    <header className="qd-heading"><div><p className="qd-eyebrow">QCARE / ANALYTICS</p><h1>Organization overview<span>.</span></h1><p>A connected view of quality, safety and organizational readiness.</p></div><div className="qd-heading-actions"><DashboardClock /><button className="qd-refresh" type="button" disabled={loading} onClick={() => { setLoading(true); setRevision(value => value + 1); }}><RefreshCw size={16} className={loading ? 'qc-analytics-spinning' : ''} />{loading ? 'Updating' : 'Refresh'}</button></div></header>
     <section className="qd-hero"><div className="qd-hero-copy"><span className="qd-hero-tag"><span />YOUR ORGANIZATION, AT A GLANCE</span><h2>Good decisions start<br />with a clearer picture.</h2><p>Welcome back, {user.employeeName?.split(' ')[0] || 'colleague'}. Here is how your organization is performing across quality, safety and staff readiness.</p><div className="qd-hero-meta" role="status"><Activity size={15} />{loading ? 'Gathering the latest statistics' : unavailable ? `${sources.length - unavailable} of ${sources.length} analytics sources connected` : 'All analytics sources connected'}{!loading && updated && <span>Checked {updated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}</div></div><div className="qd-hero-score"><span className="qd-hero-orbit" aria-hidden="true" /><div className="qd-score-ring" style={{ '--score': `${ready && onTrack != null ? onTrack * 3.6 : 0}deg` }}><div><strong>{ready && onTrack != null ? `${onTrack}%` : '—'}</strong><span>on track</span></div></div><p>Approved indicator health</p><small>{ready && kpi ? `${kpi.stats.onTrack} of ${kpi.stats.total} records on track` : loading ? 'Loading indicator data' : 'Indicator data unavailable'}</small></div></section>
     <section className="qd-metrics" aria-label="Key statistics">{cards.map(({ label, value, detail, Icon }, index) => <article className={`qd-metric qd-tone-${index}`} key={label}><div className="qd-metric-top"><span className="qd-metric-icon">{createElement(Icon, { size: 21 })}</span><span className="qd-metric-scope">{index === 3 ? 'Staff readiness' : 'All records'}</span></div><h2>{label}</h2><strong>{loading ? '…' : display(value)}</strong><p>{ready && value == null ? 'Data unavailable' : detail}</p></article>)}</section>
     <div className="qd-chart-row">

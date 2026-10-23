@@ -1,0 +1,44 @@
+<div id="qcare-waiting-demo">
+  <div class="viz-row"><h2>QCare · Waiting-time upload</h2><span class="viz-badge">Practice demo · synthetic records</span></div>
+  <div class="viz-row"><span id="qwd-step" class="text-small">Step 1 of 5</span><span id="qwd-role" class="text-small">Quality Manager / administrator</span></div>
+  <hr>
+  <section id="qwd-screen" aria-live="polite"></section>
+  <hr>
+  <div class="viz-row"><button id="qwd-back" class="btn" type="button" disabled>Back</button><button id="qwd-next" class="btn btn-primary" type="button">Add selected KPI →</button></div>
+</div>
+<script>
+(() => {
+  const root = document.getElementById('qcare-waiting-demo');
+  const screen = root.querySelector('#qwd-screen');
+  const next = root.querySelector('#qwd-next');
+  const back = root.querySelector('#qwd-back');
+  let step = 0;
+  const actions = ['Add selected KPI →', 'Upload source data →', 'Analyze uploaded data →', 'Review and continue →', 'Restart demo'];
+  const screens = [
+    `<h3>Add DOH waiting-time KPIs · Guidance v9.1</h3><div class="viz-row"><span class="viz-badge">Q3 2026</span><span>Indicator workspace</span></div><hr><label class="form-check"><input class="form-check-input" type="checkbox" checked disabled><span class="form-check-label">WT008 · ED/UCC door to doctor</span></label><div class="text-small">Target: ≥90% seen within 30 minutes</div>`,
+    `<h3>Choose an indicator</h3><div class="card"><strong>WT008 · ED/UCC door to doctor</strong><div>Q3 2026 · Not yet submitted</div></div><hr><div class="viz-row"><span class="viz-badge">Upload source data</span><span>CSV or XLSX</span></div><div class="text-small">Template columns: record_id, reporting_date, population_eligible, exclusion_reason, registration_at, doctor_at</div>`,
+    `<h3>Upload source data</h3><div class="viz-row"><span class="viz-badge">Demo file selected</span><code>wt008-practice.csv</code></div><div class="table-responsive"><table class="table"><caption>5 synthetic records · 1 July 2026 · Abu Dhabi time</caption><thead><tr><th>Record</th><th>Registration</th><th>Doctor</th><th>Exclusion</th></tr></thead><tbody><tr><td>DEMO-01</td><td>09:00</td><td>09:10</td><td>none</td></tr><tr><td>DEMO-02</td><td>09:00</td><td>09:30</td><td>none</td></tr><tr><td>DEMO-03</td><td>09:00</td><td>09:45</td><td>none</td></tr><tr><td>DEMO-04</td><td>09:00</td><td>09:20</td><td>none</td></tr><tr><td>DEMO-05</td><td>09:00</td><td>—</td><td>lwbs</td></tr></tbody></table></div><div class="text-small">All five rows: population_eligible = yes · reporting_date = 2026-07-01</div>`,
+    `<h3>Review automatic analysis</h3><div class="viz-grid"><div class="card viz-stat"><span>Numerator</span><div class="viz-stat-value">3</div><span class="text-small">Seen within 30 minutes</span></div><div class="card viz-stat"><span>Denominator</span><div class="viz-stat-value">4</div><span class="text-small">Eligible encounters</span></div><div class="card viz-stat"><span>Performance</span><div class="viz-stat-value">75%</div><span class="text-small">Target 90% · Not met</span></div></div><hr><div>5 source rows · 1 excluded · 0 invalid</div><div class="table-responsive"><table class="table"><caption>Waiting-time statistics · minutes</caption><thead><tr><th>Mean</th><th>Median</th><th>Minimum</th><th>Maximum</th></tr></thead><tbody><tr><td>26.25</td><td>25</td><td>10</td><td>45</td></tr></tbody></table></div>`,
+    `<h3>Submit calculated report for validation</h3><div class="card"><div><strong>WT008 · Q3 2026</strong></div><div>Reviewed counts: 3 / 4 · 75%</div><hr><div class="viz-row"><span class="viz-badge">Pending Validation</span><span>→ Quality validation → Approval</span></div></div><hr><div class="text-small">Demo complete · Nothing uploaded or submitted to QCare or DOH</div>`
+  ];
+  function render() {
+    screen.innerHTML = screens[step];
+    root.querySelector('#qwd-step').textContent = `Step ${step + 1} of 5`;
+    root.querySelector('#qwd-role').textContent = step === 0 ? 'Quality Manager / administrator' : 'Department user';
+    next.textContent = actions[step];
+    back.disabled = step === 0;
+  }
+  function restore(state) {
+    const candidate = state?.privateContent?.step;
+    step = Number.isInteger(candidate) && candidate >= 0 && candidate < screens.length ? candidate : 0;
+    render();
+  }
+  function persist() {
+    if (window.openai?.setWidgetState) window.openai.setWidgetState({modelContent:{demo:'WT008 upload walkthrough',step:step+1},privateContent:{step}}).catch(() => {});
+  }
+  next.addEventListener('click', () => { step = (step + 1) % screens.length; render(); persist(); });
+  back.addEventListener('click', () => { step = Math.max(0,step-1); render(); persist(); });
+  window.addEventListener('openai:set_globals', event => { if (event.detail?.globals?.widgetState) restore(event.detail.globals.widgetState); });
+  restore(window.openai?.widgetState);
+})();
+</script>
