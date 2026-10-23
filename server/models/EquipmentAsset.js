@@ -36,7 +36,7 @@ const equipmentAssetSchema = new mongoose.Schema({
   timestamps: true
 });
 
-equipmentAssetSchema.pre('save', function(next) {
+equipmentAssetSchema.pre('save', function() {
   if (this.lastCalibrationDate && this.calibrationFrequencyMonths) {
     const nextDate = new Date(this.lastCalibrationDate);
     nextDate.setMonth(nextDate.getMonth() + this.calibrationFrequencyMonths);
@@ -47,7 +47,6 @@ equipmentAssetSchema.pre('save', function(next) {
     nextDate.setMonth(nextDate.getMonth() + this.ppmFrequencyMonths);
     this.nextPPMDate = nextDate;
   }
-  next();
 });
 
 module.exports = mongoose.model('EquipmentAsset', equipmentAssetSchema);

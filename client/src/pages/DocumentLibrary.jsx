@@ -1,3 +1,4 @@
+import MasterSelect from '../components/MasterSelect';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -594,7 +595,7 @@ const DocumentLibrary = () => {
                  </div>
                  <div className="space-y-1.5">
                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Department</label>
-                   <input type="text" name="department" value={formData.department} onChange={handleInputChange} required placeholder="e.g. IT" className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
+                   <MasterSelect resource="departments" valueKey="name" name="department" value={formData.department} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
                  </div>
                  <div className="space-y-1.5">
                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Ref No</label>

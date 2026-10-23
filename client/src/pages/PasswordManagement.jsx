@@ -1,3 +1,5 @@
+import { useMasterData } from '../hooks/useMasterData';
+import { useNotification } from '../components/NotificationContext';
 import Table from '../components/Table.jsx';
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
@@ -19,13 +21,9 @@ import {
 } from 'lucide-react';
 
 const PasswordManagement = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: 'Dr. Sarah Wilson', username: 's.wilson', email: 's.wilson@cmcholding.local', authSource: 'LDAP', forceReset: false, lastChanged: '2026-03-12' },
-    { id: 2, name: 'Mohammed Salih', username: 'm.salih', email: 'm.salih@cmcholding.local', authSource: 'Local', forceReset: false, lastChanged: '2026-05-20' },
-    { id: 3, name: 'Dr. Clara Thorne', username: 'c.thorne', email: 'c.thorne@cmcholding.local', authSource: 'LDAP', forceReset: true, lastChanged: '2026-01-10' },
-    { id: 4, name: 'Dr. Aaron Patel', username: 'a.patel', email: 'a.patel@cmcholding.local', authSource: 'Local', forceReset: false, lastChanged: '2026-02-15' },
-    { id: 5, name: 'Yahiya Mannooparambil', username: 'yahiyam', email: 'yahiya.m@cmcholding.local', authSource: 'Local', forceReset: false, lastChanged: '2026-06-06' }
-  ]);
+  const { data: accounts, error: accountError } = useMasterData('accounts');
+  const { showNotification } = useNotification();
+  const users = accounts.map(user => ({ ...user, id: user._id, name: user.employeeName || '', username: user.username || user.employeeId || '', email: user.email || '', department: user.department || '', designation: user.designation || '', status: user.status === 'active' ? 'Active' : 'Inactive', lastChanged: user.updatedAt?.slice(0, 10) || '—' }));
 
   const [policy, setPolicy] = useState({
     minLength: 12,
@@ -44,9 +42,7 @@ const PasswordManagement = () => {
   const [newPassword, setNewPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleToggleForceReset = (id) => {
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, forceReset: !u.forceReset } : u));
-  };
+  const handleToggleForceReset = () => { showNotification('Password resets are managed by your identity provider.', 'info'); };
 
   const handleResetClick = (user) => {
     setSelectedUser(user);
@@ -57,7 +53,7 @@ const PasswordManagement = () => {
 
   const handleResetSubmit = (e) => {
     e.preventDefault();
-    alert(`Password for user ${selectedUser.name} has been manually updated. The user will be notified.`);
+    showNotification('Password resets are managed by your identity provider.', 'info');
     setShowResetModal(false);
   };
 
@@ -83,6 +79,7 @@ const PasswordManagement = () => {
 
   return (
     <DashboardLayout>
+      {accountError && <p role="alert" className="text-red-700">{accountError}</p>}
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>

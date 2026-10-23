@@ -602,7 +602,7 @@ const UserManagement = () => {
                         <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Full Name <span className="text-rose-500">*</span></label>
                         <div className="relative group">
                           <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold group-focus-within:text-[var(--color-primary)] transition-colors" />
-                          <input name="employeeName" value={formData.employeeName} onChange={handleInputChange} placeholder="Dr. Jameel Ahmed" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-[13px] font-semibold text-slate-800 shadow-inner-sm" disabled title="Full name is managed via AD" readOnly />
+                          <input name="employeeName" value={formData.employeeName} onChange={handleInputChange} placeholder="Enter full name" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-[13px] font-semibold text-slate-800 shadow-inner-sm" disabled title="Full name is managed via AD" readOnly />
                         </div>
                       </div>
                       <div className="space-y-1.5 transition-colors">

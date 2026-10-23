@@ -46,7 +46,7 @@ const facilityLicenseSchema = new mongoose.Schema({
 });
 
 // Update status based on expiryDate
-facilityLicenseSchema.pre('save', function(next) {
+facilityLicenseSchema.pre('save', function() {
   const today = new Date();
   const diffDays = Math.ceil((this.expiryDate - today) / (1000 * 60 * 60 * 24));
   
@@ -57,7 +57,6 @@ facilityLicenseSchema.pre('save', function(next) {
   } else {
     this.status = 'active';
   }
-  next();
 });
 
 module.exports = mongoose.model('FacilityLicense', facilityLicenseSchema);

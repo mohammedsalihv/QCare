@@ -1,3 +1,5 @@
+import CreateRecordDialog from '../components/records/CreateRecordDialog';
+import { getAuthConfig } from '../utils/authConfig';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -17,6 +19,7 @@ import {
 
 const MedicalAffairsCenter = () => {
   const { showNotification } = useNotification();
+  const [createKind, setCreateKind] = useState(null);
   const [view, setView] = useState('dashboard'); // dashboard | privileges | credentials
   const [stats, setStats] = useState(null);
   const [privileges, setPrivileges] = useState([]);
@@ -25,8 +28,7 @@ const MedicalAffairsCenter = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = getAuthConfig();
 
       const [statsRes, privRes] = await Promise.all([
         axios.get('/api/cp/dashboard', config),
@@ -72,7 +74,7 @@ const MedicalAffairsCenter = () => {
                 <FileBadge className="w-4 h-4 text-emerald-600" />
                 DOH Dataflow Sync
               </button>
-              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-xl shadow-slate-200 hover:bg-primary transition-all active:scale-95">
+              <button type="button" onClick={() => setCreateKind('clinician')} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-xl shadow-slate-200 hover:bg-primary transition-all active:scale-95">
                 <UserPlus className="w-4 h-4" />
                 Add Clinician
               </button>
@@ -108,12 +110,13 @@ const MedicalAffairsCenter = () => {
                   <Activity className="w-16 h-16 text-slate-800 font-semibold mb-6" />
                   <h3 className="text-xl font-semibold text-slate-800 normal-case tracking-tight">Credential Verification Register</h3>
                   <p className="text-[13px] text-slate-800 font-semibold max-w-sm mt-2">Central log for BLS, ACLS, Malpractice Insurance, and Primary Source Verification (Dataflow).</p>
-                  <button className="mt-8 px-8 py-4 bg-slate-100 text-[12px] font-semibold normal-case tracking-normal rounded-2xl hover:bg-emerald-600 hover:text-white transition-all">Upload New Credential</button>
+                  <button type="button" onClick={() => setCreateKind('credential')} className="mt-8 px-8 py-4 bg-slate-100 text-[12px] font-semibold normal-case tracking-normal rounded-2xl hover:bg-emerald-600 hover:text-white transition-all">Upload New Credential</button>
                </div>
             )}
           </div>
         )}
       </div>
+    {createKind && <CreateRecordDialog key={createKind} kind={createKind} onClose={() => setCreateKind(null)} onCreated={() => { showNotification('Record saved successfully', 'success'); fetchData(); }} />}
     </DashboardLayout>
   );
 };

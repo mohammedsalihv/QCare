@@ -1,3 +1,5 @@
+import CreateRecordDialog from '../components/records/CreateRecordDialog';
+import { getAuthConfig } from '../utils/authConfig';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -18,6 +20,7 @@ import {
 
 const MedicationSafetyCenter = () => {
   const { showNotification } = useNotification();
+  const [createKind, setCreateKind] = useState(null);
   const [view, setView] = useState('dashboard'); // dashboard | formulary | waste | errors
   const [stats, setStats] = useState(null);
   const [medications, setMedications] = useState([]);
@@ -27,8 +30,7 @@ const MedicationSafetyCenter = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = getAuthConfig();
 
       const [statsRes, medsRes, wasteRes] = await Promise.all([
         axios.get('/api/medication/errors/dashboard', config),
@@ -52,9 +54,8 @@ const MedicationSafetyCenter = () => {
 
   const handleDownloadManifest = async (id) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.get(`/api/medication/waste/${id}/manifest/pdf`, {
-        headers: { Authorization: `Bearer ${token}` },
+        ...getAuthConfig(),
         responseType: 'blob'
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -95,7 +96,7 @@ const MedicationSafetyCenter = () => {
                 <ClipboardList className="w-4 h-4 text-rose-600" />
                 DOH Audit Log
               </button>
-              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-xl shadow-slate-200 hover:bg-primary transition-all active:scale-95">
+              <button type="button" onClick={() => setCreateKind('medication')} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-xl shadow-slate-200 hover:bg-primary transition-all active:scale-95">
                 <Plus className="w-4 h-4" />
                 Report Incident
               </button>
@@ -138,6 +139,7 @@ const MedicationSafetyCenter = () => {
           </div>
         )}
       </div>
+    {createKind && <CreateRecordDialog key={createKind} kind={createKind} onClose={() => setCreateKind(null)} onCreated={() => { showNotification('Record saved successfully', 'success'); fetchData(); }} />}
     </DashboardLayout>
   );
 };

@@ -1,3 +1,5 @@
+import CreateRecordDialog from '../components/records/CreateRecordDialog';
+import { getAuthConfig } from '../utils/authConfig';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -17,6 +19,7 @@ import {
 
 const FMSManagementCenter = () => {
   const { showNotification } = useNotification();
+  const [createKind, setCreateKind] = useState(null);
   const [view, setView] = useState('dashboard'); // dashboard | assets | drills
   const [stats, setStats] = useState(null);
   const [assets, setAssets] = useState([]);
@@ -26,8 +29,7 @@ const FMSManagementCenter = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = getAuthConfig();
 
       const [statsRes, assetsRes, drillsRes] = await Promise.all([
         axios.get('/api/fms/dashboard', config),
@@ -75,7 +77,7 @@ const FMSManagementCenter = () => {
                 <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
                 Audit Report
               </button>
-              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-xl shadow-slate-200 hover:bg-primary transition-all active:scale-95">
+              <button type="button" onClick={() => setCreateKind('asset')} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-xl shadow-slate-200 hover:bg-primary transition-all active:scale-95">
                 <Plus className="w-4 h-4" />
                 Add Asset
               </button>
@@ -130,7 +132,7 @@ const FMSManagementCenter = () => {
                       </div>
                    </div>
                  ))}
-                 <button className="bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-12 group hover:border-slate-900 transition-all">
+                 <button type="button" onClick={() => setCreateKind('drill')} className="bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-12 group hover:border-slate-900 transition-all">
                     <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                        <Plus className="w-6 h-6 text-slate-800 font-semibold group-hover:text-slate-800" />
                     </div>
@@ -141,6 +143,7 @@ const FMSManagementCenter = () => {
           </div>
         )}
       </div>
+    {createKind && <CreateRecordDialog key={createKind} kind={createKind} onClose={() => setCreateKind(null)} onCreated={() => { showNotification('Record saved successfully', 'success'); fetchData(); }} />}
     </DashboardLayout>
   );
 };

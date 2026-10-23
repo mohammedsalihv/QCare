@@ -42,14 +42,8 @@ const AuditLog = () => {
       const { data } = await axios.get('http://192.168.1.160:5000/api/settings/audit-logs', getAuthConfig());
       setLogs(data);
     } catch (err) {
-      console.error('Error fetching audit logs, falling back to mock data:', err);
-      // Fallback mock logs if database is empty or network fails
-      setLogs([
-        { _id: '1', action: 'document_uploaded', module: 'QMS Documents', ipAddress: '192.168.1.15', performedBy: { employeeName: 'Mohammed Salih', email: 'm.salih@cmcholding.local', employeeId: 'EMP-0002' }, details: { fileName: 'Infection_Control_SOP_v4.2.pdf', size: '2.4 MB' }, createdAt: new Date(Date.now() - 3600000).toISOString() },
-        { _id: '2', action: 'incident_reported', module: 'Incident Reporting', ipAddress: '192.168.1.42', performedBy: { employeeName: 'Dr. Sarah Wilson', email: 's.wilson@cmcholding.local', employeeId: 'EMP-0010' }, details: { referenceNo: 'INC-2026-0012', classification: 'Near Miss' }, createdAt: new Date(Date.now() - 7200000).toISOString() },
-        { _id: '3', action: 'privileges_approved', module: 'Clinical Privileges', ipAddress: '192.168.1.160', performedBy: { employeeName: 'Mohammed Salih', email: 'm.salih@cmcholding.local', employeeId: 'EMP-0002' }, details: { targetPhysician: 'Dr. Aaron Patel', privileges: ['Cardiology Consultations', 'ECG Review'] }, createdAt: new Date(Date.now() - 14400000).toISOString() },
-        { _id: '4', action: 'ldap_sync_triggered', module: 'Settings & Security', ipAddress: '127.0.0.1', performedBy: { employeeName: 'Yahiya Mannooparambil', email: 'yahiya.m@cmcholding.local', employeeId: 'EMP-0045' }, details: { syncedUsers: 48, duration: '12.4s' }, createdAt: new Date(Date.now() - 86400000).toISOString() }
-      ]);
+      console.error('Error fetching audit logs:', err);
+      setLogs([]);
     } finally {
       setLoading(false);
     }

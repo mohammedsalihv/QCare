@@ -1,3 +1,8 @@
+import axios from 'axios';
+import { getAuthConfig } from '../utils/authConfig';
+import { fetchMasterData } from '../utils/masterData';
+import { useNotification } from '../components/NotificationContext';
+import MasterSelect from '../components/MasterSelect';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
@@ -64,74 +69,68 @@ const reportTypes = [
   }
 ];
 
-const demoData = {
+const reportLayouts = {
   incident: {
     columns: ['Incident ID','Type','Department','Severity','Date','Status'],
-    rows: [
-      ['INC-2026-001','Patient Fall','Emergency','High','2026-05-01','Closed'],
-      ['INC-2026-002','Medication Error','Pharmacy','Critical','2026-05-03','Under Review'],
-      ['INC-2026-003','Equipment Fault','Radiology','Medium','2026-05-07','Resolved'],
-      ['INC-2026-004','Near Miss','ICU','Low','2026-05-12','Closed']
-    ]
+    rows: []
   },
   credential: {
     columns: ['Physician ID','Name','Speciality','Status','Approval Date','Expiry'],
-    rows: [
-      ['PHY-001','Dr. Sarah Wilson','Cardiology','Active','2025-01-10','2027-01-09'],
-      ['PHY-002','Dr. Aaron Patel','Neurology','Active','2024-11-15','2026-11-14'],
-      ['PHY-003','Dr. Clara Thorne','Oncology','Pending','—','—']
-    ]
+    rows: []
   },
   license: {
     columns: ['Staff ID','Name','License No.','Authority','Issue Date','Expiry','Days Left'],
-    rows: [
-      ['STF-101','Mohammed Salih','DOH-LIC-98122','DOH','2024-06-01','2026-06-01','0'],
-      ['STF-102','Yahiya Mannooparambil','HAAD-LIC-77432','HAAD','2023-08-15','2026-08-15','70'],
-      ['STF-103','Dr. John Doe','MOH-LIC-44321','MOH','2022-12-01','2026-12-01','178']
-    ]
+    rows: []
   },
   auditLog: {
     columns: ['Timestamp','User','Action','Module','IP Address','Result'],
-    rows: [
-      ['2026-06-06 09:12','m.salih','LOGIN','Auth',  '192.168.1.44','Success'],
-      ['2026-06-06 10:30','a.patel','UPDATE_RECORD','Credentialing','192.168.1.51','Success'],
-      ['2026-06-06 11:45','j.doe','FAILED_LOGIN','Auth','10.0.0.12','Failed']
-    ]
+    rows: []
   },
   userRole: {
     columns: ['User','Department','Role','Modules','Assigned On'],
-    rows: [
-      ['m.salih','ICT','Super Admin','All Modules','2024-01-01'],
-      ['y.mannooparambil','Quality','Quality Manager','QMS, Incidents, Documents','2024-03-05'],
-      ['dr.wilson','Cardiology','Physician','Clinical Privileges, CP Search','2025-01-10']
-    ]
+    rows: []
   },
   department: {
     columns: ['Dept. Code','Department','Head','Staff Count','Specialities'],
-    rows: [
-      ['DEPT-001','Emergency Medicine','Dr. Ahmed Karim','28','Emergency Medicine'],
-      ['DEPT-002','Cardiology','Dr. Sarah Wilson','14','Cardiology, Interventional'],
-      ['DEPT-003','Neurology','Dr. Aaron Patel','11','Neurology, Neurophysiology'],
-      ['DEPT-004','Pharmacy','—','9','Pharmacy, Clinical Pharmacy']
-    ]
+    rows: []
   }
 };
 
 const ReportGenerator = () => {
+  const { showNotification } = useNotification();
   const [selectedReport, setSelectedReport] = useState('');
-  const [dateFrom, setDateFrom] = useState('2026-01-01');
-  const [dateTo, setDateTo] = useState('2026-06-06');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [department, setDepartment] = useState('All');
   const [generatedReport, setGeneratedReport] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!selectedReport) return;
     setIsGenerating(true);
-    setTimeout(() => {
-      setGeneratedReport(demoData[selectedReport]);
-      setIsGenerating(false);
-    }, 1200);
+    const date = value => value ? new Date(value).toLocaleDateString() : '—';
+    const matchesDepartment = value => department === 'All' || !department || value === department;
+    const matchesDate = value => (!dateFrom || (value && new Date(value) >= new Date(dateFrom))) && (!dateTo || (value && new Date(value) < new Date(new Date(dateTo).getTime() + 86400000)));
+    try {
+      let rows = [];
+      if (selectedReport === 'userRole') {
+        const users = await fetchMasterData('accounts');
+        rows = users.filter(user => matchesDepartment(user.department)).map(user => [user.employeeName, user.department, user.role, '—', date(user.createdAt)]);
+      } else if (selectedReport === 'department') {
+        const [departments, users, specialties] = await Promise.all([fetchMasterData('departments'), fetchMasterData('users'), fetchMasterData('specialties')]);
+        rows = departments.filter(item => matchesDepartment(item.name)).map(item => [item.code, item.name, item.head, users.filter(user => user.department === item.name).length, specialties.filter(spec => spec.department === item.name).map(spec => spec.name).join(', ')]);
+      } else {
+        const urls = { credential: '/api/cp/privileges', license: '/api/compliance/licenses/staff', auditLog: '/api/settings/audit-logs', incident: '/api/incidents' };
+        const { data } = await axios.get(urls[selectedReport], getAuthConfig());
+        const source = data.filter(item => matchesDepartment(item.staffId?.department || item.performedBy?.department || item.reportedBy?.department || item.department) && matchesDate(item.dateOfIncident || item.createdAt));
+        if (selectedReport === 'credential') rows = source.map(item => [item.staffId?.employeeId || '—', item.staffId?.employeeName || '—', item.specialty, item.status, date(item.approvalDate), date(item.expiryDate)]);
+        if (selectedReport === 'license') rows = source.map(item => [item.staffId?.employeeId || '—', item.staffId?.employeeName || '—', item.licenseNumber, item.licenseType, date(item.issuedDate), date(item.expiryDate), Math.ceil((new Date(item.expiryDate) - new Date()) / 86400000)]);
+        if (selectedReport === 'auditLog') rows = source.map(item => [date(item.createdAt), item.performedBy?.employeeName || '—', item.action, item.module, item.ipAddress, '—']);
+        if (selectedReport === 'incident') rows = source.map(item => [item.incidentId, item.category, item.reportedBy?.department || '—', item.severity, date(item.dateOfIncident), item.status]);
+      }
+      setGeneratedReport({ ...reportLayouts[selectedReport], rows });
+    } catch (error) { setGeneratedReport(null); showNotification(error.response?.data?.message || 'Unable to load report records', 'error'); }
+    finally { setIsGenerating(false); }
   };
 
   const handlePrint = () => {
@@ -230,15 +229,7 @@ const ReportGenerator = () => {
             <div>
               <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-3">Department Filter</label>
               <div className="relative">
-                <Select value={department} onChange={e => setDepartment(e.target.value)}
-                  className="w-full appearance-none px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[13px] font-semibold outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all pr-8">
-                  <option value="All">All Departments</option>
-                  <option value="Emergency Medicine">Emergency Medicine</option>
-                  <option value="Cardiology">Cardiology</option>
-                  <option value="Neurology">Neurology</option>
-                  <option value="ICU">ICU</option>
-                  <option value="Pharmacy">Pharmacy</option>
-                </Select>
+                <MasterSelect resource="departments" valueKey="name" value={department} onChange={e => setDepartment(e.target.value)} className="w-full p-3 border rounded-xl"><option value="All">All Departments</option></MasterSelect>
                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
               </div>
             </div>

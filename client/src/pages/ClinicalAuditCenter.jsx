@@ -1,3 +1,5 @@
+import CreateRecordDialog from '../components/records/CreateRecordDialog';
+import { getAuthConfig } from '../utils/authConfig';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -10,19 +12,19 @@ import { Plus, ShieldCheck, ClipboardList, LayoutDashboard, Play, FileDown } fro
 
 const ClinicalAuditCenter = () => {
   const { showNotification } = useNotification();
+  const [createKind, setCreateKind] = useState(null);
   const [view, setView] = useState('dashboard'); // dashboard | audits | actions | conductor
   const [stats, setStats] = useState(null);
   const [audits, setAudits] = useState([]);
   const [activeAudit, setActiveAudit] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = getAuthConfig();
 
       const [statsRes, auditsRes] = await Promise.all([
         axios.get('/api/audit/dashboard', config),
@@ -44,11 +46,11 @@ const ClinicalAuditCenter = () => {
 
   const handleStartAudit = async (audit) => {
     try {
-      const token = localStorage.getItem('token');
       await axios.put(`/api/audit/${audit._id}/start`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+        ...getAuthConfig()
       });
-      setActiveAudit(audit);
+      const { data } = await axios.get(`/api/audit/${audit._id}`, getAuthConfig());
+      setActiveAudit(data);
       setView('conductor');
     } catch (error) {
       showNotification('Failed to start audit', 'error');
@@ -57,9 +59,8 @@ const ClinicalAuditCenter = () => {
 
   const handleSaveFindings = async (findings) => {
     try {
-      const token = localStorage.getItem('token');
       await axios.put(`/api/audit/${activeAudit._id}/findings`, { findings }, {
-        headers: { Authorization: `Bearer ${token}` }
+        ...getAuthConfig()
       });
       showNotification('Audit findings saved', 'success');
       fetchData();
@@ -70,12 +71,11 @@ const ClinicalAuditCenter = () => {
 
   const handleFinalizeAudit = async (findings) => {
     try {
-      const token = localStorage.getItem('token');
       await axios.put(`/api/audit/${activeAudit._id}/findings`, { findings }, {
-        headers: { Authorization: `Bearer ${token}` }
+        ...getAuthConfig()
       });
       await axios.put(`/api/audit/${activeAudit._id}/complete`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+        ...getAuthConfig()
       });
       showNotification('Audit finalized and closed', 'success');
       setView('dashboard');
@@ -87,9 +87,8 @@ const ClinicalAuditCenter = () => {
 
   const downloadReport = async (id) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.get(`/api/audit/${id}/report/pdf`, {
-        headers: { Authorization: `Bearer ${token}` },
+        ...getAuthConfig(),
         responseType: 'blob'
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -128,7 +127,7 @@ const ClinicalAuditCenter = () => {
                </button>
              ))}
            </div>
-           <button className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-lg shadow-[#040404]/20 hover:bg-primary transition-all">
+           <button type="button" onClick={() => setCreateKind('audit')} className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-lg shadow-[#040404]/20 hover:bg-primary transition-all">
              <Plus className="w-4 h-4" />
              Schedule New Audit
            </button>
@@ -229,6 +228,7 @@ const ClinicalAuditCenter = () => {
                    ← Back to Inventory
                  </button>
                  <AuditConductor 
+                   key={activeAudit._id}
                    audit={activeAudit}
                    onSaveFindings={handleSaveFindings}
                    onFinalize={handleFinalizeAudit}
@@ -238,6 +238,7 @@ const ClinicalAuditCenter = () => {
           </>
         )}
       </div>
+    {createKind && <CreateRecordDialog key={createKind} kind={createKind} onClose={() => setCreateKind(null)} onCreated={() => { showNotification('Audit scheduled successfully', 'success'); setView('audits'); fetchData(); }} />}
     </DashboardLayout>
   );
 };

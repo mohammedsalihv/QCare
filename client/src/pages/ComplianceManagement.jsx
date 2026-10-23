@@ -1,3 +1,5 @@
+import CreateRecordDialog from '../components/records/CreateRecordDialog';
+import { getAuthConfig } from '../utils/authConfig';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -9,6 +11,7 @@ import { Plus, ShieldCheck } from 'lucide-react';
 
 const ComplianceManagement = () => {
   const { showNotification } = useNotification();
+  const [createKind, setCreateKind] = useState(null);
   const [stats, setStats] = useState(null);
   const [facilityLicenses, setFacilityLicenses] = useState([]);
   const [staffLicenses, setStaffLicenses] = useState([]);
@@ -21,8 +24,7 @@ const ComplianceManagement = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = getAuthConfig();
 
       const [statsRes, fLicRes, sLicRes, circRes] = await Promise.all([
         axios.get('/api/compliance/dashboard', config),
@@ -48,9 +50,8 @@ const ComplianceManagement = () => {
 
   const handleAcknowledge = async (id) => {
     try {
-      const token = localStorage.getItem('token');
       await axios.post(`/api/compliance/circulars/${id}/acknowledge`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+        ...getAuthConfig()
       });
       showNotification('Circular acknowledged successfully', 'success');
       fetchData();
@@ -75,9 +76,10 @@ const ComplianceManagement = () => {
           </div>
           {isAdmin && (
             <div className="flex gap-3">
-              <button className="flex items-center gap-2 bg-primary hover:bg-primary text-white px-4 py-2 rounded-xl text-[13px] font-semibold normal-case tracking-normal transition-all">
+              {userInfo.role?.toLowerCase() === 'superadmin' && <button type="button" onClick={() => setCreateKind('staffLicense')} className="flex items-center gap-2 border px-4 py-2 rounded-xl"><Plus className="w-4 h-4" />Add Staff License</button>}
+              <button type="button" onClick={() => setCreateKind(userInfo.role?.toLowerCase() === 'superadmin' ? 'facilityLicense' : 'staffLicense')} className="flex items-center gap-2 bg-primary hover:bg-primary text-white px-4 py-2 rounded-xl text-[13px] font-semibold normal-case tracking-normal transition-all">
                 <Plus className="w-4 h-4" />
-                Add License
+                {userInfo.role?.toLowerCase() === 'superadmin' ? 'Add Facility License' : 'Add Staff License'}
               </button>
             </div>
           )}
@@ -105,6 +107,7 @@ const ComplianceManagement = () => {
           />
         </div>
       </div>
+    {createKind && <CreateRecordDialog key={createKind} kind={createKind} onClose={() => setCreateKind(null)} onCreated={() => { showNotification('License saved successfully', 'success'); fetchData(); }} />}
     </DashboardLayout>
   );
 };

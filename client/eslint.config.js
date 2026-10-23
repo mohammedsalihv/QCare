@@ -23,7 +23,9 @@ export default defineConfig([
       },
     },
     rules: {
+      'no-restricted-syntax': ['error', { selector: "JSXOpeningElement[name.name='select']", message: 'Use the shared Select or MasterSelect component.' }],
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
   },
+  { files: ['src/components/Select.jsx'], rules: { 'no-restricted-syntax': 'off' } },
 ])

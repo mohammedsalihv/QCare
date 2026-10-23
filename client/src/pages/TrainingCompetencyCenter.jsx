@@ -1,3 +1,5 @@
+import CreateRecordDialog from '../components/records/CreateRecordDialog';
+import { getAuthConfig } from '../utils/authConfig';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -18,6 +20,7 @@ import {
 
 const TrainingCompetencyCenter = () => {
   const { showNotification } = useNotification();
+  const [createKind, setCreateKind] = useState(null);
   const [view, setView] = useState('dashboard'); // dashboard | personal | matrix
   const [stats, setStats] = useState(null);
   const [records, setRecords] = useState([]);
@@ -31,14 +34,13 @@ const TrainingCompetencyCenter = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = getAuthConfig();
 
       const [statsRes, recordsRes, frameworkRes, staffRes, complianceRes] = await Promise.all([
         axios.get('/api/training/dashboard', config),
         axios.get('/api/training/records', config),
         axios.get('/api/training/framework', config),
-        axios.get('/api/users', config),
+        axios.get('/api/users/directory', config),
         axios.get(`/api/training/staff/${userInfo._id}/compliance`, config)
       ]);
 
@@ -60,9 +62,8 @@ const TrainingCompetencyCenter = () => {
 
   const handleExport = async () => {
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.get('/api/training/export/excel', {
-        headers: { Authorization: `Bearer ${token}` },
+        ...getAuthConfig(),
         responseType: 'blob'
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -107,7 +108,7 @@ const TrainingCompetencyCenter = () => {
                 <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
                 Export Register
               </button>
-              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-xl shadow-slate-200 hover:bg-primary transition-all active:scale-95">
+              <button type="button" onClick={() => setCreateKind('training')} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-xl shadow-slate-200 hover:bg-primary transition-all active:scale-95">
                 <Plus className="w-4 h-4" />
                 Log Training
               </button>
@@ -142,6 +143,7 @@ const TrainingCompetencyCenter = () => {
           </div>
         )}
       </div>
+    {createKind && <CreateRecordDialog key={createKind} kind={createKind} onClose={() => setCreateKind(null)} onCreated={() => { showNotification('Record saved successfully', 'success'); fetchData(); }} />}
     </DashboardLayout>
   );
 };

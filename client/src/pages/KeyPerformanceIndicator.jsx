@@ -1,3 +1,4 @@
+import MasterSelect from '../components/MasterSelect';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
@@ -96,7 +97,7 @@ const KeyPerformanceIndicator = () => {
   const [newKpiMainCat, setNewKpiMainCat] = useState('Ambulatory');
   const [newKpiSubCat, setNewKpiSubCat] = useState('Clinical');
   const [newKpiCrit, setNewKpiCrit] = useState('');
-  const [newKpiOwner, setNewKpiOwner] = useState(user.employeeName || 'Quality Team');
+  const [newKpiOwner, setNewKpiOwner] = useState(user.employeeName || '');
   const [newKpiFreq, setNewKpiFreq] = useState('Monthly');
   const [newKpiDesc, setNewKpiDesc] = useState('');
   const [newKpiRat, setNewKpiRat] = useState('');
@@ -966,9 +967,7 @@ const KeyPerformanceIndicator = () => {
                   </div>
                   <div>
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Indicator Owner</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. AQEEL SAFAR KAITHAKATH"
+                    <MasterSelect resource="users" valueKey="employeeName"
                       value={newKpiOwner}
                       onChange={(e) => setNewKpiOwner(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"

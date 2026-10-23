@@ -19,12 +19,11 @@ const ipcChecklistSubmissionSchema = new mongoose.Schema({
   timestamps: true
 });
 
-ipcChecklistSubmissionSchema.pre('save', function(next) {
+ipcChecklistSubmissionSchema.pre('save', function() {
   if (this.items && this.items.length > 0) {
     const compliantCount = this.items.filter(i => i.compliant).length;
     this.overallCompliance = parseFloat(((compliantCount / this.items.length) * 100).toFixed(2));
   }
-  next();
 });
 
 module.exports = mongoose.model('IPCChecklistSubmission', ipcChecklistSubmissionSchema);

@@ -79,6 +79,7 @@ io.on("connection", (socket) => {
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/masters", require("./routes/masterRoutes"));
 app.use("/api/departments", departmentRoutes);
 app.use("/api/locations", locationRoutes);
 app.use("/api/designations", designationRoutes);

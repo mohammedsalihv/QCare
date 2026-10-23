@@ -52,6 +52,15 @@ const router = express.Router();
 // Apply protection to all routes in this file
 router.use(protect);
 
+// Shared person selectors expose directory fields, never account credentials.
+router.get('/directory', async (req, res) => {
+  try {
+    const User = require('../models/users');
+    const users = await User.find({}).select('_id employeeId employeeName department designation status isActive').sort({ employeeName: 1 });
+    res.json(users);
+  } catch (error) { res.status(500).json({ message: 'Unable to load user directory' }); }
+});
+
 router.put("/profile", (req, res, next) => {
   upload.single("photo")(req, res, (err) => {
     if (err instanceof multer.MulterError) {

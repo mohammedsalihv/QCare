@@ -92,7 +92,7 @@ complaintSchema.virtual('acknowledgmentDays').get(function() {
   return Math.ceil((this.acknowledgmentDate - this.dateReceived) / (1000 * 60 * 60 * 24));
 });
 
-complaintSchema.pre('save', async function(next) {
+complaintSchema.pre('save', async function() {
   if (!this.complaintRef) {
     const year = new Date().getFullYear();
     const count = await this.constructor.countDocuments({
@@ -103,7 +103,6 @@ complaintSchema.pre('save', async function(next) {
     });
     this.complaintRef = `COMP-${year}-${(count + 1).toString().padStart(3, '0')}`;
   }
-  next();
 });
 
 module.exports = mongoose.model('Complaint', complaintSchema);

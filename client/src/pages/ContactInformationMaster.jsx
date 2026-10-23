@@ -1,3 +1,4 @@
+import MasterSelect from '../components/MasterSelect';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
@@ -303,11 +304,11 @@ const ContactInformationMaster = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Department</label>
-                    <input name="department" value={formData.department} onChange={handleInputChange} required placeholder="e.g. Clinical Pharmacy" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
+                    <MasterSelect resource="departments" valueKey="name" name="department" value={formData.department} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Designation</label>
-                    <input name="designation" value={formData.designation} onChange={handleInputChange} required placeholder="e.g. Senior Pharmacist" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
+                    <MasterSelect resource="designations" valueKey="title" name="designation" value={formData.designation} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Status</label>

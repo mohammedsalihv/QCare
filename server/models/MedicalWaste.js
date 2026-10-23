@@ -26,7 +26,7 @@ const medicalWasteSchema = new mongoose.Schema({
   timestamps: true
 });
 
-medicalWasteSchema.pre('save', async function(next) {
+medicalWasteSchema.pre('save', async function() {
   if (!this.wasteRef) {
     const year = new Date().getFullYear();
     const count = await this.constructor.countDocuments({
@@ -40,7 +40,6 @@ medicalWasteSchema.pre('save', async function(next) {
   if (!this.manifestNumber) {
     this.manifestNumber = `MAN-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
   }
-  next();
 });
 
 module.exports = mongoose.model('MedicalWaste', medicalWasteSchema);

@@ -1,3 +1,5 @@
+import CreateRecordDialog from '../components/records/CreateRecordDialog';
+import { getAuthConfig } from '../utils/authConfig';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -17,6 +19,7 @@ import {
 
 const PatientExperienceCenter = () => {
   const { showNotification } = useNotification();
+  const [createKind, setCreateKind] = useState(null);
   const [view, setView] = useState('dashboard'); // dashboard | list | surveys
   const [stats, setStats] = useState(null);
   const [complaints, setComplaints] = useState([]);
@@ -27,8 +30,7 @@ const PatientExperienceCenter = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = getAuthConfig();
 
       const [statsRes, complaintsRes] = await Promise.all([
         axios.get('/api/patient-experience/complaints/dashboard', config),
@@ -46,9 +48,8 @@ const PatientExperienceCenter = () => {
 
   const fetchComplaintDetails = async (id) => {
     try {
-      const token = localStorage.getItem('token');
       const res = await axios.get(`/api/patient-experience/complaints/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        ...getAuthConfig()
       });
       setSelectedComplaint(res.data);
     } catch (error) {
@@ -70,9 +71,8 @@ const PatientExperienceCenter = () => {
 
   const handleAction = async (endpoint, body = {}) => {
     try {
-      const token = localStorage.getItem('token');
       await axios.put(`/api/patient-experience/complaints/${selectedComplaintId}/${endpoint}`, body, {
-        headers: { Authorization: `Bearer ${token}` }
+        ...getAuthConfig()
       });
       showNotification('Action processed successfully', 'success');
       fetchComplaintDetails(selectedComplaintId);
@@ -108,7 +108,7 @@ const PatientExperienceCenter = () => {
                 <Search className="w-4 h-4" />
                 Find Patient
               </button>
-              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-xl shadow-slate-200 hover:bg-primary transition-all active:scale-95">
+              <button type="button" onClick={() => setCreateKind('complaint')} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-[12px] font-semibold normal-case tracking-normal shadow-xl shadow-slate-200 hover:bg-primary transition-all active:scale-95">
                 <Plus className="w-4 h-4" />
                 Log Complaint
               </button>
@@ -159,6 +159,7 @@ const PatientExperienceCenter = () => {
         onEscalate={() => handleAction('escalate', { escalationReason: 'Escalated per patient request' })}
         onAddAction={(note) => handleAction('update', { actionNote: note, status: 'investigating' })}
       />
+    {createKind && <CreateRecordDialog key={createKind} kind={createKind} onClose={() => setCreateKind(null)} onCreated={() => { showNotification('Record saved successfully', 'success'); fetchData(); }} />}
     </DashboardLayout>
   );
 };
