@@ -7,14 +7,33 @@ const KPINotificationRule = require('../models/KPINotificationRule');
 const { verifyPreview, ruleDigest, validateRule } = require('../utils/indicatorImport');
 const { getPreset } = require('../utils/waitingTime');
 
+const definitionFields = ['indicatorCode', 'indicatorName', 'indicatorName_ar', 'category', 'mainCategory', 'subCategory', 'owner', 'reportingFrequency', 'description', 'rationale', 'criteria', 'numeratorDesc', 'denominatorDesc', 'sampleSize', 'unit', 'target', 'dataSource', 'exclusions', 'reportingPeriod', 'reportingYear'];
+function definitionPayload(body) {
+  const payload = Object.fromEntries(definitionFields.filter(key => body[key] !== undefined).map(key => [key, body[key]]));
+  if (body.calculationRule) {
+    const { multiplier = 100, targetDirection = 'higher', warningTolerance = 10 } = body.calculationRule;
+    if (![1, 100, 1000, 10000].includes(multiplier) || !['higher', 'lower'].includes(targetDirection) || !Number.isFinite(warningTolerance) || warningTolerance < 0) throw new Error('Choose a valid calculation, target direction and non-negative warning tolerance.');
+    payload.calculationRule = { multiplier, targetDirection, warningTolerance };
+  }
+  if (payload.target !== undefined && (payload.target === null || String(payload.target).trim() === '' || !Number.isFinite(Number(payload.target)) || Number(payload.target) < 0)) throw new Error('Enter a non-negative target.');
+  if (payload.reportingPeriod !== undefined && !['Q1', 'Q2', 'Q3', 'Q4'].includes(payload.reportingPeriod)) throw new Error('Choose a reporting quarter.');
+  if (payload.reportingYear !== undefined && (!Number.isInteger(Number(payload.reportingYear)) || Number(payload.reportingYear) < 2000 || Number(payload.reportingYear) > 2100)) throw new Error('Enter a year from 2000 to 2100.');
+  return payload;
+}
+
 // @desc    Create new indicator
 // @route   POST /api/kpi
 // @access  Private (QualityManager/SuperAdmin)
 exports.createIndicator = async (req, res) => {
   try {
     if (getPreset(req.body.indicatorCode) || req.body.importRule?.preset) return res.status(400).json({ message: 'Add DOH waiting-time indicators using the guidance catalog in the indicator workspace.' });
+    const payload = definitionPayload(req.body);
+    if (await KPIIndicator.findOne({ indicatorCode: payload.indicatorCode })) return res.status(409).json({ message: 'This indicator code already exists. Enter period results from the data-entry screen, or use a new code.' });
     const kpi = new KPIIndicator({
-      ...req.body,
+      ...payload,
+      validationStatus: 'Draft',
+      numerator: 0,
+      denominator: 0,
       createdBy: req.user._id
     });
     const savedKpi = await kpi.save();
@@ -128,7 +147,8 @@ exports.updateIndicator = async (req, res) => {
     if (!kpi) return res.status(404).json({ message: 'KPI not found' });
 
     if (kpi.importRule?.preset || kpi.calculationRule?.preset || getPreset(req.body.indicatorCode) || req.body.importRule?.preset) return res.status(400).json({ message: 'Waiting-time definitions are version controlled. Submit corrections through the source upload workflow.' });
-    Object.assign(kpi, req.body);
+    if (kpi.submittedToDOH || kpi.validationStatus !== 'Draft' || kpi.submittedBy) return res.status(409).json({ message: 'Reported values and definitions are locked. Use the submission workflow for corrections.' });
+    Object.assign(kpi, definitionPayload(req.body));
     kpi.updatedBy = req.user._id;
     const updatedKpi = await kpi.save();
     res.json(updatedKpi);
@@ -173,7 +193,7 @@ exports.submitData = async (req, res) => {
       return res.status(409).json({ message: 'The indicator rule or target changed. Analyze the file again.' });
     }
     if (definition.importRule?.preset && (!imported || !imported.summary.canSubmit)) return res.status(400).json({ message: 'Waiting-time indicators require a validated source-data upload.' });
-    const calculationRule = definition.importRule?.preset || definition.importRule?.outcomeColumn || definition.importRule?.numeratorColumn ? validateRule(definition.importRule) : undefined;
+    const calculationRule = definition.importRule?.preset || definition.importRule?.outcomeColumn || definition.importRule?.numeratorColumn ? validateRule(definition.importRule) : definition.calculationRule;
 
     // Check if there is already a record for this period
     let record = await KPIIndicator.findOne({ indicatorCode, reportingPeriod, reportingYear });
@@ -214,6 +234,8 @@ exports.submitData = async (req, res) => {
         numeratorDesc: definition.numeratorDesc,
         denominatorDesc: definition.denominatorDesc,
         sampleSize: definition.sampleSize,
+        dataSource: definition.dataSource,
+        exclusions: definition.exclusions,
         unit: definition.unit,
         target: definition.target,
         reportingPeriod,
@@ -254,6 +276,7 @@ exports.validateIndicator = async (req, res) => {
       kpi.validatedDate = new Date();
       kpi.rejectionReason = undefined;
     } else if (action === 'reject') {
+      if (typeof rejectionReason !== 'string' || !rejectionReason.trim()) return res.status(400).json({ message: 'Explain what needs correcting before returning the report.' });
       kpi.validationStatus = 'Draft';
       kpi.rejectionReason = rejectionReason || 'Validation rejected by Quality team';
     } else {
@@ -299,6 +322,7 @@ exports.submitToDOH = async (req, res) => {
     const kpi = await KPIIndicator.findById(req.params.id);
     if (!kpi) return res.status(404).json({ message: 'KPI not found' });
 
+    if (kpi.validationStatus !== 'Approved' || kpi.submittedToDOH) return res.status(409).json({ message: 'Only approved reports that have not been marked submitted can be recorded as submitted.' });
     kpi.submittedToDOH = true;
     kpi.submissionDate = new Date();
     await kpi.save();
@@ -310,7 +334,7 @@ exports.submitToDOH = async (req, res) => {
       performedBy: req.user._id
     });
 
-    res.json({ message: 'Submitted to DOH successfully', kpi });
+    res.json({ message: 'External submission recorded. No data was transmitted to DOH by this application.', kpi });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -456,6 +480,9 @@ exports.exportToExcel = async (req, res) => {
       { header: 'Wait unit', key: 'waitUnit', width: 12 },
       { header: 'Variance', key: 'variance', width: 15 },
       { header: 'Status', key: 'status', width: 15 },
+      { header: 'Review status', key: 'validationStatus', width: 22 },
+      { header: 'Owner', key: 'owner', width: 24 },
+      { header: 'Open actions', key: 'openActions', width: 15 },
       { header: 'Submitted', key: 'submittedToDOH', width: 15 }
     ];
 
@@ -478,6 +505,9 @@ exports.exportToExcel = async (req, res) => {
         target: kpi.target,
         variance: kpi.variance,
         status: kpi.status,
+        validationStatus: kpi.validationStatus,
+        owner: kpi.owner,
+        openActions: (kpi.improvementActions || []).filter(action => action.status !== 'Completed').length,
         submittedToDOH: kpi.submittedToDOH ? 'Yes' : 'No'
       });
     });
@@ -496,4 +526,27 @@ exports.exportToExcel = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+
+// Improvement actions belong to a period report; only the quality team can change them.
+exports.saveImprovementAction = async (req, res) => {
+  try {
+    const { title, owner, dueDate, status = 'Open', notes = '' } = req.body;
+    const parsedDate = typeof dueDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dueDate) ? new Date(dueDate + 'T00:00:00Z') : null;
+    if (typeof title !== 'string' || !title.trim() || title.length > 300 || typeof owner !== 'string' || !owner.trim() || owner.length > 150 || !parsedDate || !Number.isFinite(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== dueDate || !['Open', 'In progress', 'Completed'].includes(status) || typeof notes !== 'string' || notes.length > 3000) return res.status(400).json({ message: 'Enter an action, responsible owner, valid due date and status.' });
+    if (status === 'Completed' && !notes.trim()) return res.status(400).json({ message: 'Add the outcome or evidence before completing an action.' });
+    const report = await KPIIndicator.findById(req.params.id);
+    if (!report) return res.status(404).json({ message: 'KPI report not found' });
+    const values = { title: title.trim(), owner: owner.trim(), dueDate, status, notes: notes.trim(), updatedBy: req.user._id, updatedAt: new Date() };
+    if (req.params.actionId) {
+      const action = report.improvementActions.id(req.params.actionId);
+      if (!action) return res.status(404).json({ message: 'Action not found' });
+      Object.assign(action, values, { completedAt: status === 'Completed' ? action.completedAt || new Date() : undefined });
+    } else {
+      report.improvementActions.push({ ...values, createdBy: req.user._id, completedAt: status === 'Completed' ? new Date() : undefined });
+    }
+    // Measurement hooks skip action-only updates.
+    await report.save({ validateModifiedOnly: true });
+    res.status(req.params.actionId ? 200 : 201).json(report);
+  } catch (error) { res.status(400).json({ message: error.message }); }
 };

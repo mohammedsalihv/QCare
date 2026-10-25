@@ -1,3 +1,4 @@
+import UserSelect from '../UserSelect';
 import Select from '../Select.jsx';
 import React, { useState, useEffect } from 'react';
 import { X, AlertCircle, Save, Calculator } from 'lucide-react';
@@ -152,6 +153,9 @@ const RiskForm = ({ isOpen, onClose, onSave, initialData = null }) => {
              </div>
           </div>
 
+          <label className="block text-sm font-semibold">Risk owner
+            <UserSelect aria-label="Risk owner" value={formData.owner} selectedLabel={initialData?.owner?.employeeName} onChange={event => setFormData({ ...formData, owner: event.target.value })} required className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl" />
+          </label>
           <div className="flex gap-4 pt-10">
              <button 
                type="button" onClick={onClose}

@@ -35,7 +35,6 @@ const PrivilegeMatrix = ({ privileges }) => {
                     </div>
                     <div>
                        <span className="text-[13px] font-semibold text-slate-800 normal-case tracking-tight">{priv.staffId?.employeeName}</span>
-                       <p className="text-[12px] font-semibold text-slate-800 normal-case">{priv.staffId?.employeeId}</p>
                     </div>
                  </div>
               </td>

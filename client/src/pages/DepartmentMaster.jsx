@@ -1,3 +1,4 @@
+import UserSelect from '../components/UserSelect';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -10,22 +11,20 @@ import {
   Plus, 
   Search, 
   ChevronRight,
-  ShieldCheck,
   Building2,
   FileEdit,
   Trash2,
-  Users,
   MapPin,
   X,
-  Code2,
-  User as UserIcon,
   ArrowUpRight
 } from 'lucide-react';
 
+const createDepartmentCode = () => 'DEPT-' + Array.from(crypto.getRandomValues(new Uint32Array(4)), value => value.toString(16).padStart(8, '0')).join('');
+
 const DepartmentMaster = () => {
   const [departments, setDepartments] = useState([]);
-  const [users, setUsers] = useState([]);
   const [locations, setLocations] = useState([]);
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -73,20 +72,6 @@ const DepartmentMaster = () => {
     }
   };
 
-  const fetchUsers = async () => {
-    try {
-      const { data } = await axios.get('http://192.168.1.160:5000/api/users', getAuthConfig());
-      // Map users to options for Dropdown
-      const userOptions = data.map(u => ({
-        label: u.employeeName,
-        value: u.employeeName
-      }));
-      setUsers(userOptions);
-    } catch (err) {
-      console.error('Error fetching users:', err);
-    }
-  };
-
   const fetchLocations = async () => {
     try {
       const { data } = await axios.get('http://192.168.1.160:5000/api/locations', getAuthConfig());
@@ -102,7 +87,6 @@ const DepartmentMaster = () => {
 
   useEffect(() => {
     fetchDepartments();
-    fetchUsers();
     fetchLocations();
   }, []);
 
@@ -113,7 +97,7 @@ const DepartmentMaster = () => {
   const resetForm = () => {
     setFormData({
       name: '',
-      code: '',
+      code: createDepartmentCode(),
       head: '',
       location: ''
     });
@@ -180,9 +164,11 @@ const DepartmentMaster = () => {
      }
    };
 
-  const indexOfLastRecord = currentPage * recordsPerPage;
+  const filteredDepartments = departments.filter(department => department.name.toLowerCase().includes(search.toLowerCase()));
+  const visiblePage = Math.min(currentPage, Math.max(1, Math.ceil(filteredDepartments.length / recordsPerPage)));
+  const indexOfLastRecord = visiblePage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = departments.slice(indexOfFirstRecord, indexOfLastRecord);
+  const currentRecords = filteredDepartments.slice(indexOfFirstRecord, indexOfLastRecord);
 
   return (
     <DashboardLayout>
@@ -219,20 +205,21 @@ const DepartmentMaster = () => {
                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800" />
                <input 
                  type="text" 
-                 placeholder="Search department by name or code..."
+                 placeholder="Search department by name..."
+                 aria-label="Search departments"
+                 value={search}
+                 onChange={event => { setSearch(event.target.value); setCurrentPage(1); }}
                  className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#b59662] focus:ring-4 focus:ring-[#b59662]/5 transition-all text-[13px] font-semibold"
                />
             </div>
           </div>
 
           <div className="overflow-x-auto">
-            <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
+            <Table className="w-full text-left border-collapse table-fixed min-w-[700px]">
               <thead>
                 <tr className="bg-slate-100/50">
                   <th className="w-1/4 px-7 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Department Name</th>
-                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Dept Code</th>
                   <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Head of Department</th>
-                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Staff Count</th>
                   <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Location</th>
                   <th className="w-36 px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
@@ -248,16 +235,9 @@ const DepartmentMaster = () => {
                         <span className="text-[13px] font-medium text-slate-800 leading-snug">{dept.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-[13px] font-medium font-mono text-slate-800">{dept.code}</td>
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
                           <span className="text-[13px] font-medium text-slate-800">{dept.head}</span>
-                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                       <div className="flex items-center gap-2">
-                          <Users className="w-3.5 h-3.5 text-slate-800" />
-                          <span className="text-[13px] font-medium text-slate-800">{dept.employeesCount} Members</span>
                        </div>
                     </td>
                     <td className="px-6 py-4">
@@ -290,12 +270,12 @@ const DepartmentMaster = () => {
                     </td>
                   </tr>
                 ))}
-                {currentRecords.length === 0 && (
+                {(loading || currentRecords.length === 0) && (
                   <tr>
-                    <td colSpan="6" className="px-6 py-20 text-center">
+                    <td colSpan="4" className="px-6 py-20 text-center">
                       <div className="flex flex-col items-center justify-center gap-3 opacity-30">
                         <Search className="w-10 h-10" />
-                        <span className="text-[13px] font-semibold normal-case tracking-normal">No departments found matching your criteria</span>
+                        <span className="text-[13px] font-semibold normal-case tracking-normal">{loading ? 'Loading departments…' : 'No departments found matching your criteria'}</span>
                       </div>
                     </td>
                   </tr>
@@ -305,9 +285,9 @@ const DepartmentMaster = () => {
           </div>
           
           <Pagination 
-            totalRecords={departments.length} 
+            totalRecords={filteredDepartments.length}
             recordsPerPage={recordsPerPage} 
-            currentPage={currentPage} 
+            currentPage={visiblePage}
             onPageChange={setCurrentPage} 
           />
         </div>
@@ -336,8 +316,8 @@ const DepartmentMaster = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="p-8 pb-12 space-y-8 bg-white">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-1.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-1.5 sm:col-span-2">
                     <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Department Name</label>
                     <div className="relative group">
                        <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold group-focus-within:text-[#b59662] transition-colors" />
@@ -345,22 +325,8 @@ const DepartmentMaster = () => {
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Dept Code</label>
-                    <div className="relative group">
-                       <Code2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold group-focus-within:text-[#b59662] transition-colors" />
-                       <input name="code" value={formData.code} onChange={handleInputChange} required placeholder="QUAL-OPS" className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[#b59662] transition-all text-[13px] font-semibold font-mono text-slate-800" />
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">In-Charge (Head) *</label>
-                    <Dropdown
-                      options={users}
-                      value={formData.head}
-                      onSelect={(val) => setFormData({ ...formData, head: val })}
-                      placeholder="Select Department Head"
-                      searchable
-                      fullWidth
-                    />
+                    <UserSelect aria-label="Department head" name="head" value={formData.head} valueField="employeeName" onChange={handleInputChange} placeholder="Select department head" required className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Location / Floor *</label>

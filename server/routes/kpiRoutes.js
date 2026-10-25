@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {
+  saveImprovementAction,
   createIndicator,
   getIndicators,
   getDashboardStats,
@@ -77,6 +78,9 @@ router.route('/:id')
 // Workflow state validation / approvals
 router.post('/:id/validate', protect, authorize('SuperAdmin', 'QualityManager', 'admin'), validateIndicator);
 router.post('/:id/approve', protect, authorize('SuperAdmin', 'QualityManager', 'admin'), approveIndicator);
+
+router.post('/:id/actions', protect, authorize('SuperAdmin', 'QualityManager', 'admin'), saveImprovementAction);
+router.put('/:id/actions/:actionId', protect, authorize('SuperAdmin', 'QualityManager', 'admin'), saveImprovementAction);
 
 // Submit to DOH
 router.post('/:id/submit', protect, authorize('SuperAdmin', 'QualityManager', 'admin'), submitToDOH);

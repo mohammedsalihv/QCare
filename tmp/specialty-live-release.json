@@ -1,0 +1,1 @@
+{"stageRoot":"/home/salih/.cache/qcare-specialty-releases/1792871046436-631982","files":["server/routes/specialtyRoutes.js","server/controllers/specialtyController.js","server/models/Specialty.js","server/index.js","server/routes/userRoutes.js","server/controllers/userController.js","server/middleware/authMiddleware.js"],"process":{"name":"QCare","id":1,"cwd":"/home/salih"}}

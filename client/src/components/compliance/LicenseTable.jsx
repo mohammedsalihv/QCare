@@ -102,7 +102,6 @@ const LicenseTable = ({ facilityLicenses, staffLicenses }) => {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-semibold text-slate-800">{lic.staffId?.employeeName}</span>
-                    <span className="text-[12px] text-slate-800 font-semibold">{lic.staffId?.employeeId}</span>
                   </div>
                 </div>
               </td>

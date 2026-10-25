@@ -1,3 +1,4 @@
+import { getAuthConfig } from '../utils/authConfig';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -30,8 +31,7 @@ const RiskManagementCenter = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = getAuthConfig();
 
       const [statsRes, matrixRes, risksRes] = await Promise.all([
         axios.get('/api/risks/dashboard', config),
@@ -68,10 +68,8 @@ const RiskManagementCenter = () => {
 
   const handleSaveRisk = async (formData) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.post('/api/risks', formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+
+      await axios.post('/api/risks', formData, getAuthConfig());
       showNotification('Risk registered successfully', 'success');
       setShowForm(false);
       fetchData();
@@ -82,9 +80,9 @@ const RiskManagementCenter = () => {
 
   const handleExport = async () => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.get('/api/risks/export/excel', {
-        headers: { Authorization: `Bearer ${token}` },
+        ...getAuthConfig(),
         responseType: 'blob'
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));

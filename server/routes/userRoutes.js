@@ -1,5 +1,6 @@
 const express = require("express");
 const { 
+  getUserDirectory,
   getUsers, 
   createUser, 
   updateUser, 
@@ -51,6 +52,7 @@ const router = express.Router();
 
 // Apply protection to all routes in this file
 router.use(protect);
+router.get("/directory", getUserDirectory);
 
 router.put("/profile", (req, res, next) => {
   upload.single("photo")(req, res, (err) => {

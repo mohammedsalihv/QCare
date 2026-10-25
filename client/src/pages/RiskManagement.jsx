@@ -1,3 +1,4 @@
+import UserSelect from '../components/UserSelect';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -30,7 +31,6 @@ import {
 
 const RiskManagement = () => {
   const [risks, setRisks] = useState([]);
-  const [users, setUsers] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -81,13 +81,11 @@ const RiskManagement = () => {
 
   const fetchData = async () => {
     try {
-      const [risksRes, usersRes, deptsRes] = await Promise.all([
+      const [risksRes, deptsRes] = await Promise.all([
         axios.get('http://192.168.1.160:5000/api/risks', getAuthConfig()),
-        axios.get('http://192.168.1.160:5000/api/users', getAuthConfig()),
         axios.get('http://192.168.1.160:5000/api/departments', getAuthConfig())
       ]);
       setRisks(risksRes.data);
-      setUsers(usersRes.data.map(u => ({ label: u.employeeName, value: u._id })));
       setDepartments(deptsRes.data.map(d => ({ label: d.name, value: d.name })));
     } catch (err) {
       showNotification('Error fetching risk data', 'error');
@@ -113,7 +111,7 @@ const RiskManagement = () => {
       probability: 3,
       impact: 3,
       mitigationStrategy: '',
-      owner: users[0]?.value || '',
+      owner: '',
       status: 'Identified',
       reviewDate: ''
     });
@@ -405,12 +403,7 @@ const RiskManagement = () => {
 
                   <div className="space-y-2">
                     <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Risk Owner (PIC)</label>
-                    <Dropdown 
-                      options={users}
-                      value={formData.owner}
-                      onSelect={(val) => setFormData({...formData, owner: val})}
-                      fullWidth
-                    />
+                    <UserSelect aria-label="Risk owner" value={formData.owner} selectedLabel={currentRisk?.owner?.employeeName} onChange={event => setFormData({ ...formData, owner: event.target.value })} required className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm" />
                   </div>
 
                   <div className="space-y-2">

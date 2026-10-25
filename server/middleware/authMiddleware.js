@@ -13,6 +13,8 @@ const protect = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET || "default_secret");
 
       req.user = await User.findById(decoded.id).select("-password");
+      if (!req.user) return res.status(401).json({ message: "Not authorized, user no longer exists" });
+      if (req.user.isActive === false || ['blocked', 'inactive'].includes(req.user.status)) return res.status(403).json({ message: "Your account is inactive or blocked" });
       next();
     } catch (error) {
       console.error(error);

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { Download } from 'lucide-react';
+import { getAuthConfig } from '../../utils/authConfig';
 import { useNotification } from '../NotificationContext';
 
 const KPIExportButton = ({ period, year }) => {
@@ -10,10 +11,9 @@ const KPIExportButton = ({ period, year }) => {
   const handleExport = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       const response = await axios.get(`/api/kpi/export/excel`, {
         params: { period, year },
-        headers: { Authorization: `Bearer ${token}` },
+        ...getAuthConfig(),
         responseType: 'blob'
       });
 
@@ -24,6 +24,7 @@ const KPIExportButton = ({ period, year }) => {
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.setTimeout(() => window.URL.revokeObjectURL(url), 1000);
       showNotification('Excel export started', 'success');
     } catch (error) {
       console.error('Export failed:', error);

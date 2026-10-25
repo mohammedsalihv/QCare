@@ -1,3 +1,4 @@
+import UserSelect from '../components/UserSelect';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -29,7 +30,6 @@ import {
 
 const PatientFeedback = () => {
   const [feedbacks, setFeedbacks] = useState([]);
-  const [users, setUsers] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -73,13 +73,11 @@ const PatientFeedback = () => {
 
   const fetchData = async () => {
     try {
-      const [feedbacksRes, usersRes, deptsRes] = await Promise.all([
+      const [feedbacksRes, deptsRes] = await Promise.all([
         axios.get('http://192.168.1.160:5000/api/feedback', getAuthConfig()),
-        axios.get('http://192.168.1.160:5000/api/users', getAuthConfig()),
         axios.get('http://192.168.1.160:5000/api/departments', getAuthConfig())
       ]);
       setFeedbacks(feedbacksRes.data);
-      setUsers(usersRes.data.map(u => ({ label: u.employeeName, value: u._id })));
       setDepartments(deptsRes.data.map(d => ({ label: d.name, value: d.name })));
     } catch (err) {
       showNotification('Error fetching feedback data', 'error');
@@ -412,12 +410,7 @@ const PatientFeedback = () => {
                       </div>
                       <div className="md:col-span-2 space-y-2">
                         <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Assign to Professional</label>
-                        <Dropdown 
-                          options={users}
-                          value={formData.assignedTo}
-                          onSelect={(val) => setFormData({...formData, assignedTo: val})}
-                          fullWidth
-                        />
+                        <UserSelect aria-label="Assigned professional" value={formData.assignedTo} selectedLabel={currentFeedback?.assignedTo?.employeeName} onChange={event => setFormData({ ...formData, assignedTo: event.target.value })} className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm" />
                       </div>
                       <div className="md:col-span-3 space-y-2">
                         <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Resolution / Action Plan</label>

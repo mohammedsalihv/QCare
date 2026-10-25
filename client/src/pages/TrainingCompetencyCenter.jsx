@@ -1,3 +1,4 @@
+import { getAuthConfig } from '../utils/authConfig';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -31,21 +32,20 @@ const TrainingCompetencyCenter = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = getAuthConfig();
 
       const [statsRes, recordsRes, frameworkRes, staffRes, complianceRes] = await Promise.all([
         axios.get('/api/training/dashboard', config),
         axios.get('/api/training/records', config),
         axios.get('/api/training/framework', config),
-        axios.get('/api/users', config),
+        axios.get('/api/users/directory', config),
         axios.get(`/api/training/staff/${userInfo._id}/compliance`, config)
       ]);
 
       setStats(statsRes.data);
       setRecords(recordsRes.data);
       setCompetencies(frameworkRes.data);
-      setStaff(staffRes.data.filter(u => u.role !== 'SuperAdmin'));
+      setStaff(staffRes.data);
       setCompliance(complianceRes.data);
     } catch (error) {
       showNotification(error.response?.data?.message || error.message, 'error');
@@ -60,9 +60,9 @@ const TrainingCompetencyCenter = () => {
 
   const handleExport = async () => {
     try {
-      const token = localStorage.getItem('token');
+
       const response = await axios.get('/api/training/export/excel', {
-        headers: { Authorization: `Bearer ${token}` },
+        ...getAuthConfig(),
         responseType: 'blob'
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));

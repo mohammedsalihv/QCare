@@ -34,7 +34,6 @@ const ComplianceMatrix = ({ staff, competencies, records }) => {
                       </div>
                       <div className="flex flex-col">
                          <span className="text-[13px] font-semibold text-slate-800 ">{member.employeeName}</span>
-                         <span className="text-[12px] font-semibold text-slate-800 normal-case tracking-tighter">{member.department}</span>
                       </div>
                    </div>
                 </td>

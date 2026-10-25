@@ -17,7 +17,7 @@ const icons = {
   'audit-log': Activity, 'mail-log': Mail, settings: Settings,
 };
 
-export default function WorkspaceSidebar({ user, drawerRef, onSignOut }) {
+export default function WorkspaceSidebar({ user, drawerRef, onSignOut, side = 'right' }) {
   const [query, setQuery] = useState('');
   const { pathname } = useLocation();
   const groups = availableWorkspaces(user?.role);
@@ -31,7 +31,7 @@ export default function WorkspaceSidebar({ user, drawerRef, onSignOut }) {
   }, [drawerRef]);
   const close = () => drawerRef.current?.close();
   const visible = groups.map(group => ({ ...group, links: group.links.filter(([label, slug]) => !query.trim() || matchesToolSearch(query, label, slug, `${group.name} ${group.description}`)) })).filter(group => group.links.length);
-  return <dialog ref={drawerRef} id="qc-navigation-drawer" className="qc-feature-drawer" aria-labelledby="qc-feature-drawer-title" onClose={() => setQuery('')} onClick={event => { if (event.target === event.currentTarget) close(); }}>
+  return <dialog ref={drawerRef} id="qc-navigation-drawer" className="qc-feature-drawer" data-side={side} aria-labelledby="qc-feature-drawer-title" onClose={() => setQuery('')} onClick={event => { if (event.target === event.currentTarget) close(); }}>
     <div className="qc-feature-drawer-shell">
       <header><div><span className="qc-directory-kicker">QCARE / WORKSPACE</span><h2 id="qc-feature-drawer-title">Modules & features</h2><p>Find the right tool for your next task.</p></div><button type="button" onClick={close} aria-label="Close feature directory"><X size={20} /></button></header>
       <label className="qc-directory-search"><Search size={20} /><input autoFocus type="search" aria-label="Search all features" placeholder="Search a feature or category..." value={query} onChange={event => setQuery(event.target.value)} />{query && <button type="button" onClick={() => setQuery('')} aria-label="Clear feature search"><X size={15} /></button>}</label>

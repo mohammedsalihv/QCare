@@ -1,3 +1,4 @@
+import UserSelect from '../components/UserSelect';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
@@ -120,7 +121,7 @@ const ClinicalPrivileges = () => {
 
   // Apply/Renew State
   const [applyStep, setApplyStep] = useState(1);
-  const [applyClinician, setApplyClinician] = useState('Dr. James Smith');
+  const [applyClinician, setApplyClinician] = useState('');
   const [applySpecialty, setApplySpecialty] = useState('Cardiology');
   const [applyProcs, setApplyProcs] = useState([]);
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -679,14 +680,7 @@ const ClinicalPrivileges = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Select Clinician</label>
-                    <Select 
-                      value={applyClinician}
-                      onChange={(e) => setApplyClinician(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
-                    >
-                      <option value="Dr. James Smith">Dr. James Smith</option>
-                      <option value="Dr. Emily Watson">Dr. Emily Watson</option>
-                    </Select>
+                    <UserSelect aria-label="Clinician" value={applyClinician} valueField="employeeName" onChange={event => setApplyClinician(event.target.value)} placeholder="Select clinician from users" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl" />
                   </div>
                   <div>
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Medical Specialty</label>
@@ -891,10 +885,7 @@ const ClinicalPrivileges = () => {
             </div>
             <div>
               <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Select Doctor</label>
-              <Select className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800">
-                <option value="Dr. Alistair Cook">Dr. Alistair Cook (Expired)</option>
-                <option value="Dr. Emily Watson">Dr. Emily Watson (Active)</option>
-              </Select>
+              <UserSelect aria-label="Doctor" value={applyClinician} valueField="employeeName" onChange={event => setApplyClinician(event.target.value)} placeholder="Select doctor from users" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button onClick={() => showNotification('Privileges put on hold', 'warning')} className="p-6 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-2xl transition-all text-left">

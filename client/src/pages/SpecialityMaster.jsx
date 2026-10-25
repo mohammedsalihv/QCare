@@ -1,335 +1,82 @@
-import Table from '../components/Table.jsx';
-import Select from '../components/Select.jsx';
-import React, { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import axios from 'axios';
+import { Plus, Search, FileEdit, Trash2, X } from 'lucide-react';
 import DashboardLayout from '../components/DashboardLayout';
+import Table from '../components/Table';
+import Select from '../components/Select';
+import UserSelect from '../components/UserSelect';
 import Pagination from '../components/Pagination';
-import { 
-  Plus, 
-  Search, 
-  ChevronRight, 
-  Stethoscope,
-  Building2, 
-  FileEdit, 
-  Trash2, 
-  X, 
-  ArrowUpRight, 
-  ShieldCheck,
-  CheckCircle2,
-  XCircle,
-  Hash,
-  User
-} from 'lucide-react';
+import { useNotification } from '../components/NotificationContext';
+import { getAuthConfig } from '../utils/authConfig';
 
-const SpecialityMaster = () => {
-  const [specialties, setSpecialties] = useState([
-    { id: 1, name: 'Cardiology', code: 'CARD', department: 'Internal Medicine', head: 'Dr. Sarah Wilson', status: 'Active' },
-    { id: 2, name: 'Pediatrics & Neonatology', code: 'PEDS', department: 'Pediatric Care', head: 'Dr. Aaron Patel', status: 'Active' },
-    { id: 3, name: 'Neurology', code: 'NEUR', department: 'Neurosciences', head: 'Dr. Clara Thorne', status: 'Active' },
-    { id: 4, name: 'Orthopedic Surgery', code: 'ORTH', department: 'Surgical Services', head: 'Dr. John Doe', status: 'Inactive' },
-    { id: 5, name: 'Dermatology & Venereology', code: 'DERM', department: 'Outpatient Care', head: 'Dr. Elena Rostova', status: 'Active' }
-  ]);
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 10;
-
-  const [showModal, setShowModal] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentSpecialty, setCurrentSpecialty] = useState(null);
-
-  const [formData, setFormData] = useState({
-    name: '',
-    code: '',
-    department: '',
-    head: '',
-    status: 'Active'
-  });
-
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+const emptyForm = { name: '', department: '', head: '', status: 'Active' };
+const fieldClass = 'w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm';
+export default function SpecialityMaster() {
+  const { showNotification, confirm } = useNotification();
+  const role = JSON.parse(localStorage.getItem('userInfo') || '{}').role?.toLowerCase();
+  const canManage = ['admin', 'superadmin'].includes(role);
+  const [specialties, setSpecialties] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [departmentError, setDepartmentError] = useState('');
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [editing, setEditing] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState('');
+  const load = useCallback(() => axios.get('/api/specialties', getAuthConfig()).then(({ data }) => {
+    if (!Array.isArray(data)) throw new Error('Unexpected specialty response');
+    setSpecialties(data); setError('');
+  }).catch(err => setError(err.response?.status === 404 ? 'The connected server needs the Specialty Master update before specialties can be loaded or saved.' : err.response?.data?.message || 'Could not load specialties. Please try again.')).finally(() => setLoading(false)), []);
+  const loadDepartments = useCallback(() => axios.get('/api/departments', getAuthConfig()).then(({ data }) => {
+    if (!Array.isArray(data)) throw new Error('Unexpected department response');
+    setDepartments(data); setDepartmentError('');
+  }).catch(err => setDepartmentError(err.response?.data?.message || 'Could not load departments. Please try again.')), []);
+  useEffect(() => { load(); }, [load]);
+  const edit = item => {
+    setEditing(item); setForm(item ? { name: item.name, department: item.department?._id || '', head: item.head?._id || '', status: item.status } : { ...emptyForm });
+    setFormError(''); setOpen(true); loadDepartments();
   };
-
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      code: '',
-      department: '',
-      head: '',
-      status: 'Active'
-    });
-    setIsEditing(false);
-    setCurrentSpecialty(null);
+  const update = event => setForm(previous => ({ ...previous, [event.target.name]: event.target.value }));
+  const save = async event => {
+    event.preventDefault(); if (saving) return;
+    setSaving(true); setFormError('');
+    try {
+      const url = '/api/specialties' + (editing ? '/' + editing._id : '');
+      const { data } = await axios[editing ? 'put' : 'post'](url, form, getAuthConfig());
+      setSpecialties(previous => editing ? previous.map(item => item._id === data._id ? data : item) : [data, ...previous]);
+      setOpen(false); setPage(1); showNotification('Specialty saved to the database.', 'success');
+    } catch (err) { setFormError(err.response?.status === 404 ? 'The connected server needs the Specialty Master update. This specialty has not been saved.' : err.response?.data?.message || 'Save failed. Your changes have not been saved.'); }
+    finally { setSaving(false); }
   };
-
-  const handleAddClick = () => {
-    resetForm();
-    setShowModal(true);
+  const remove = item => confirm({ title: 'Delete specialty', message: 'Delete ' + item.name + ' from the specialty master?', type: 'danger', onConfirm: async () => {
+    setSaving(true);
+    try {
+      await axios.delete('/api/specialties/' + item._id, getAuthConfig());
+      setSpecialties(previous => previous.filter(row => row._id !== item._id));
+      showNotification('Specialty deleted from the database.', 'success');
+    } catch (err) { showNotification(err.response?.data?.message || 'Delete failed. The specialty has not been removed.', 'error'); }
+    finally { setSaving(false); }
+  } });
+  const toggle = async item => {
+    if (saving) return; setSaving(true);
+    try {
+      const { data } = await axios.put('/api/specialties/' + item._id, { status: item.status === 'Active' ? 'Inactive' : 'Active' }, getAuthConfig());
+      setSpecialties(previous => previous.map(row => row._id === item._id ? data : row));
+    } catch (err) { showNotification(err.response?.data?.message || 'Could not update specialty status.', 'error'); }
+    finally { setSaving(false); }
   };
-
-  const handleEditClick = (spec) => {
-    setCurrentSpecialty(spec);
-    setFormData({
-      name: spec.name,
-      code: spec.code,
-      department: spec.department,
-      head: spec.head,
-      status: spec.status
-    });
-    setIsEditing(true);
-    setShowModal(true);
-  };
-
-  const handleDeleteClick = (id) => {
-    setSpecialties(prev => prev.filter(s => s.id !== id));
-  };
-
-  const toggleStatus = (id) => {
-    setSpecialties(prev => prev.map(s => s.id === id ? { ...s, status: s.status === 'Active' ? 'Inactive' : 'Active' } : s));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (isEditing) {
-      setSpecialties(prev => prev.map(s => s.id === currentSpecialty.id ? { ...s, ...formData } : s));
-    } else {
-      const newSpec = {
-        id: Date.now(),
-        ...formData
-      };
-      setSpecialties(prev => [newSpec, ...prev]);
-    }
-    setShowModal(false);
-    resetForm();
-  };
-
-  const filteredSpecialties = specialties.filter(s => 
-    s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    s.code.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    s.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.head.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const indexOfLastRecord = currentPage * recordsPerPage;
-  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = filteredSpecialties.slice(indexOfFirstRecord, indexOfLastRecord);
-
-  return (
-    <DashboardLayout>
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">
-              <span>Home</span>
-              <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#b59662]">Master Configuration</span>
-              <ChevronRight className="w-2.5 h-2.5" />
-              <span className="text-[#b59662]">Speciality Master</span>
-            </div>
-            <h1 className="text-2xl font-semibold text-slate-800 tracking-tight">Speciality Master</h1>
-          </div>
-
-          <button 
-            onClick={handleAddClick}
-            className="flex items-center justify-between gap-4 px-6 py-4 bg-primary hover:bg-primary text-white rounded-md font-semibold transition-all shadow-lg active:scale-95 group text-sm"
-          >
-             <div className="flex items-center gap-3">
-                <Plus className="w-5 h-5 text-[var(--color-primary)]" />
-                <span>Establish Specialty</span>
-             </div>
-             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </button>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/20">
-            <div className="relative w-full sm:w-[400px]">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold" />
-               <input 
-                 type="text" 
-                 placeholder="Search specialties by name, code, lead..."
-                 value={searchQuery}
-                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                 className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-[13px] font-semibold"
-               />
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
-              <thead>
-                <tr className="bg-slate-100/50">
-                  <th className="w-1/4 px-7 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Specialty Name</th>
-                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Specialty Code</th>
-                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Department Unit</th>
-                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Specialty Lead (Head)</th>
-                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Status</th>
-                  <th className="w-36 px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-right pr-8">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {currentRecords.map((spec) => (
-                  <tr key={spec.id} className="hover:bg-slate-50/20 transition-colors group">
-                    <td className="px-7 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center font-medium text-slate-800 font-semibold text-[12px]">
-                          <Stethoscope className="w-4 h-4 text-[var(--color-primary)]" />
-                        </div>
-                        <span className="text-[13px] font-semibold text-slate-800 leading-snug">{spec.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                       <div className="flex items-center gap-2">
-                          <Hash className="w-3.5 h-3.5 text-slate-500" />
-                          <span className="text-[13px] font-semibold text-[var(--color-primary)] font-mono">{spec.code}</span>
-                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                       <div className="flex items-center gap-2">
-                          <Building2 className="w-3.5 h-3.5 text-slate-500" />
-                          <span className="text-[13px] font-medium text-slate-700">{spec.department}</span>
-                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                       <div className="flex items-center gap-2">
-                          <User className="w-3.5 h-3.5 text-slate-500" />
-                          <span className="text-[13px] font-medium text-slate-700">{spec.head}</span>
-                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                       <button 
-                         onClick={() => toggleStatus(spec.id)}
-                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[12px] font-semibold normal-case tracking-normal transition-colors ${
-                           spec.status === 'Active' 
-                           ? 'bg-emerald-50/50 border-emerald-200 text-emerald-600 hover:bg-emerald-100/50' 
-                           : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'
-                         }`}
-                       >
-                          {spec.status === 'Active' ? (
-                            <>
-                              <CheckCircle2 className="w-3 h-3" />
-                              <span>Active</span>
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="w-3 h-3" />
-                              <span>Inactive</span>
-                            </>
-                          )}
-                       </button>
-                    </td>
-                    <td className="px-6 py-4 text-right pr-8">
-                       <div className="flex items-center justify-end gap-2.5">
-                          <button 
-                            onClick={() => handleEditClick(spec)}
-                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-600 flex items-center justify-center hover:border-slate-800 hover:text-slate-800 transition-all duration-300 active:scale-95 shadow-sm"
-                          >
-                             <FileEdit className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleDeleteClick(spec.id)}
-                            className="w-9 h-9 rounded-md border border-slate-200 bg-white text-rose-500 flex items-center justify-center hover:bg-rose-50 hover:border-rose-200 transition-all duration-300 active:scale-95 shadow-sm"
-                          >
-                             <Trash2 className="w-4 h-4" />
-                          </button>
-                       </div>
-                    </td>
-                  </tr>
-                ))}
-                {currentRecords.length === 0 && (
-                  <tr>
-                    <td colSpan="6" className="px-6 py-20 text-center">
-                      <div className="flex flex-col items-center justify-center gap-3 opacity-30">
-                        <Search className="w-10 h-10" />
-                        <span className="text-[13px] font-semibold normal-case tracking-normal">No clinical specialties registered</span>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </Table>
-          </div>
-          
-          <Pagination 
-            totalRecords={filteredSpecialties.length} 
-            recordsPerPage={recordsPerPage} 
-            currentPage={currentPage} 
-            onPageChange={setCurrentPage} 
-          />
-        </div>
-
-        {/* Modal */}
-        {showModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-white/40 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
-            <div className="bg-white rounded-2xl shadow-2xl relative w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200">
-              <div className="p-8 border-b border-slate-200 flex items-center justify-between bg-white relative">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--color-primary)] to-transparent opacity-20"></div>
-                <div className="flex items-center gap-4">
-                   <div className="w-14 h-14 rounded-2xl bg-[var(--color-primary)]/5 flex items-center justify-center border border-[var(--color-primary)]/10 shadow-inner">
-                      <Stethoscope className="w-7 h-7 text-[var(--color-primary)]" />
-                   </div>
-                   <div>
-                      <h3 className="text-xl font-semibold text-slate-800 tracking-tight">
-                        {isEditing ? 'Modify Clinical Specialty' : 'Establish Clinical Specialty'}
-                      </h3>
-                      <p className="text-[13px] text-slate-500 font-medium tracking-tight">Configure medical expertise categories</p>
-                   </div>
-                </div>
-                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-all border border-slate-100 shadow-sm active:scale-95">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmit} className="p-8 pb-12 space-y-8 bg-white">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-1.5">
-                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Specialty Name</label>
-                    <input name="name" value={formData.name} onChange={handleInputChange} required placeholder="e.g. Nephrology" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Specialty Code</label>
-                    <input name="code" value={formData.code} onChange={handleInputChange} required placeholder="e.g. NEPH" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800 font-mono" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Department Unit</label>
-                    <input name="department" value={formData.department} onChange={handleInputChange} required placeholder="e.g. Internal Medicine" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Specialty Lead (Head)</label>
-                    <input name="head" value={formData.head} onChange={handleInputChange} required placeholder="e.g. Dr. Arthur Pendelton" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Status</label>
-                    <Select name="status" value={formData.status} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800">
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="flex gap-4 pt-4 border-t border-slate-100">
-                   <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 text-[12px] font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-800 rounded-xl transition-all border border-slate-200 normal-case tracking-normal active:scale-95">
-                     Discard
-                   </button>
-                   <button type="submit" className="flex-[2] py-3 bg-primary text-white text-[13px] font-semibold normal-case tracking-normal rounded-xl hover:bg-primary transition-all active:scale-[0.98]">
-                     {isEditing ? 'Save Specialty' : 'Publish Specialty'}
-                   </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 py-6 border-t border-slate-200 text-slate-800 font-semibold">
-           <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[var(--color-primary)]" />
-              <span className="text-[12px] font-semibold tracking-tight text-slate-800 normal-case">QCare Medical Specialty Registry</span>
-           </div>
-           <span className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal">Enterprise Clinical Master</span>
-        </div>
-      </div>
-    </DashboardLayout>
-  );
-};
-
-export default SpecialityMaster;
+  const filtered = specialties.filter(item => [item.name, item.department?.name, item.head?.employeeName].some(value => value?.toLowerCase().includes(search.toLowerCase()))).sort((a, b) => a.name.localeCompare(b.name));
+  const currentPage = Math.min(page, Math.max(1, Math.ceil(filtered.length / 10)));
+  return <DashboardLayout><div className="space-y-6">
+    <header className="flex flex-wrap items-center justify-between gap-4"><div><h1 className="text-2xl font-semibold text-slate-800">Specialty Master</h1><p className="text-sm text-slate-600 mt-2">Manage specialties, their departments and responsible leads.</p></div>{canManage && <button className="bg-primary text-white px-5 py-3 rounded-xl flex items-center gap-2" disabled={saving} onClick={() => edit(null)}><Plus size={17} />Add specialty</button>}</header>
+    {error && <div role="alert" className="p-4 bg-red-50 text-red-700 rounded-xl">{error} <button className="underline" onClick={load}>Retry</button></div>}
+    <section className="bg-white border border-slate-200 rounded-2xl overflow-hidden"><div className="p-5 flex items-center gap-3"><Search size={18} /><input aria-label="Search specialties" placeholder="Search specialty, department or lead" value={search} onChange={event => { setSearch(event.target.value); setPage(1); }} className={fieldClass} /></div>
+    <div className="overflow-x-auto"><Table className="w-full text-left min-w-[750px]"><thead className="bg-slate-50"><tr>{['Specialty', 'Department', 'Specialty lead', 'Status', 'Actions'].map(title => <th key={title} className="px-5 py-4 text-sm font-semibold">{title}</th>)}</tr></thead><tbody>{!loading && !error && filtered.slice((currentPage - 1) * 10, currentPage * 10).map(item => <tr key={item._id} className="border-t border-slate-100"><td className="px-5 py-4 font-medium">{item.name}</td><td className="px-5 py-4">{item.department?.name || 'Department unavailable'}</td><td className="px-5 py-4">{item.head?.employeeName || 'Not assigned'}</td><td className="px-5 py-4"><button aria-label={'Change status for ' + item.name} disabled={!canManage || saving} onClick={() => toggle(item)} className={'px-3 py-1 rounded-full text-sm ' + (item.status === 'Active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600')}>{item.status}</button></td><td className="px-5 py-4">{canManage && <div className="flex gap-3"><button aria-label={'Edit ' + item.name} disabled={saving} onClick={() => edit(item)}><FileEdit size={18} /></button><button aria-label={'Delete ' + item.name} disabled={saving} className="text-red-600" onClick={() => remove(item)}><Trash2 size={18} /></button></div>}</td></tr>)}{(loading || !filtered.length || error) && <tr><td colSpan="5" className="p-10 text-center text-slate-600">{loading ? 'Loading specialties…' : error ? 'Specialties could not be loaded.' : search ? 'No specialties match your search.' : 'No specialties saved yet.'}</td></tr>}</tbody></Table></div>
+    <Pagination totalRecords={filtered.length} recordsPerPage={10} currentPage={currentPage} onPageChange={setPage} /></section>
+    {open && <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30"><section role="dialog" aria-modal="true" aria-labelledby="specialty-form-title" className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6"><header className="flex justify-between items-center gap-4"><h2 id="specialty-form-title" className="text-xl font-semibold">{editing ? 'Edit specialty' : 'Add specialty'}</h2><button aria-label="Close specialty form" disabled={saving} onClick={() => setOpen(false)}><X /></button></header><form onSubmit={save} className="mt-6 space-y-5"><fieldset disabled={saving} className="space-y-5"><label className="block text-sm font-medium">Specialty name<input autoFocus name="name" required maxLength="150" value={form.name} onChange={update} className={fieldClass} placeholder="For example, Cardiology" /></label><label className="block text-sm font-medium">Department<Select aria-label="Department" name="department" value={form.department} onChange={update} required className={fieldClass}><option value="">Select a department</option>{departments.map(department => <option key={department._id} value={department._id}>{department.name}</option>)}</Select></label>{departmentError && <p role="alert" className="text-sm text-red-700">{departmentError} <button type="button" onClick={loadDepartments} className="underline">Retry departments</button></p>}{!departmentError && !departments.length && <p className="text-sm text-slate-600">No departments loaded. Add a department in Department Master if the list is empty.</p>}<label className="block text-sm font-medium">Specialty lead (optional)<UserSelect aria-label="Specialty lead" name="head" value={form.head} selectedLabel={editing?.head?.employeeName} onChange={update} disabled={saving} placeholder="Select a lead from users" className={fieldClass} /></label><p className="text-xs text-slate-600">Select a name from the active users list.</p><label className="block text-sm font-medium">Status<Select aria-label="Specialty status" name="status" value={form.status} onChange={update} className={fieldClass}><option>Active</option><option>Inactive</option></Select></label></fieldset>{formError && <p role="alert" className="p-3 bg-red-50 text-red-700 rounded-lg">{formError}</p>}<div className="flex justify-end gap-3"><button type="button" disabled={saving} onClick={() => setOpen(false)} className="px-5 py-3 border rounded-xl">Cancel</button><button type="submit" disabled={saving || Boolean(departmentError)} className="bg-primary text-white px-5 py-3 rounded-xl">{saving ? 'Saving…' : 'Save specialty'}</button></div></form></section></div>}
+  </div></DashboardLayout>;
+}

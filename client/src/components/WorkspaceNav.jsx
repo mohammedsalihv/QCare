@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowUpRight, Bell, ChevronDown, PanelRightOpen, Pause, Play, Search } from 'lucide-react';
 import WorkspaceSidebar from './WorkspaceSidebar';
+import useFloatingWorkspaceLauncher from '../hooks/useFloatingWorkspaceLauncher';
 import { availableWorkspaces, workspacePath, matchesToolSearch } from '../utils/workspaces';
 import { useNotification } from './NotificationContext';
 import qcareLogo from '../assets/qcare-brand-logo.png';
@@ -44,6 +45,7 @@ export default function WorkspaceNav({ user, openProfileDrawer }) {
   const unread = feedNotifications.filter(item => !item.isRead).length;
   const open = () => { setSearchOpen(false); if (!navigationDrawer.current?.open) navigationDrawer.current?.showModal(); };
   const close = () => navigationDrawer.current?.close();
+  const launcher = useFloatingWorkspaceLauncher(user?._id, open);
   useEffect(() => {
     const handleKey = event => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
@@ -110,7 +112,8 @@ export default function WorkspaceNav({ user, openProfileDrawer }) {
       <Link to="/notifications" className="qc-icon-button" aria-label={`${unread} unread notifications`}><Bell size={20} />{unread > 0 && <span className="qc-notification-dot" />}</Link>
       <button className="qc-navbar-profile" onClick={openProfileDrawer} aria-label="Open my profile"><span className="qc-avatar">{user?.name?.slice(0, 1) || 'Q'}</span><ChevronDown size={14} /></button>
     </header>
-    <button type="button" className="qc-drawer-launcher" onClick={open} aria-label="Open workspace tools" aria-haspopup="dialog" aria-controls="qc-navigation-drawer"><span className="qc-launcher-icon" aria-hidden="true"><PanelRightOpen size={27} /></span><span className="qc-drawer-launcher-hint">Explore your workspace</span></button>
-    <WorkspaceSidebar user={user} drawerRef={navigationDrawer} onSignOut={logout} />
+    <button type="button" {...launcher.buttonProps} className={'qc-drawer-launcher is-positionable' + (launcher.dragging ? ' is-dragging' : '')} aria-label="Open workspace tools" aria-describedby="qc-launcher-move-help" title="Tap to open. Drag to move to either side." aria-haspopup="dialog" aria-controls="qc-navigation-drawer"><span className="qc-launcher-icon" aria-hidden="true"><PanelRightOpen size={27} /></span><span className="qc-drawer-launcher-hint">Tap to open · Drag to move</span></button>
+    <span id="qc-launcher-move-help" className="qc-quote-accessible">Drag to either side and move up or down. With keyboard focus, use arrow keys to move, Home for the top, End for the bottom, and Enter to open.</span>
+    <WorkspaceSidebar user={user} side={launcher.side} drawerRef={navigationDrawer} onSignOut={logout} />
   </>;
 }

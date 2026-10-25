@@ -92,3 +92,22 @@
 @media (max-width: 1100px) { .qd-heading { align-items: flex-start; } .qd-heading-actions { flex-direction: column; align-items: stretch; gap: 8px; } .qd-hero { padding: 30px; grid-template-columns: 1fr 230px; } .qd-metrics { gap: 12px; } .qd-metric { padding: 18px; } .qd-metric-scope { display: none; } .qd-chart-row { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); } .qd-panel { padding: 20px; } }
 @media (max-width: 800px) { .qd-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } .qd-metric-scope { display: inline; } .qd-chart-row, .qd-chart-row.qd-equal { grid-template-columns: 1fr; } .qd-hero { grid-template-columns: 1fr 190px; padding: 26px; } .qd-hero h2 { font-size: 29px; } .qd-score-ring { width: 135px; height: 135px; } .qd-hero-score > small { text-align: center; } .qd-hero-orbit { width: 220px; height: 220px; } }
 @media (max-width: 520px) { .qd-dashboard { gap: 18px; } .qd-heading { flex-direction: column; gap: 16px; } .qd-heading-actions { flex-direction: row; width: 100%; justify-content: space-between; } .qd-hero { grid-template-columns: 1fr; gap: 30px; padding: 25px; } .qd-hero-score { padding: 4px 0 12px; } .qd-hero h2 { font-size: 30px; } .qd-hero-copy > p { font-size: 12px; } .qd-hero-meta > span { padding-left: 0; border: 0; margin-left: 0; } .qd-metric { padding: 16px; } .qd-metric > strong { font-size: 29px; } .qd-metric-scope { display: none; } .qd-panel-heading h2 { font-size: 16px; } .qd-panel { padding: 18px; } .qd-eyebrow { font-size: 9px; } .qd-panel-heading select { max-width: 125px; } }
+/* Organization and module totals use the same live data as their source records. */
+.qd-organization { display: grid; gap: 20px; min-width: 0; }
+.qd-section-heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.qd-section-heading h2 { font-size: 21px; font-weight: 700; letter-spacing: -.025em; }
+.qd-section-heading > span { font-size: 11px; color: #64748b; }
+.qd-organization-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.qd-metric-link { font-size: 11px; font-weight: 600; color: #0d8276; }
+.qd-metric-link:hover { text-decoration: underline; }
+.qd-workforce-chart { height: 275px; }
+.qd-module-chart { height: 325px; }
+.qd-data-notice { padding: 13px 16px; border-radius: 10px; color: #8a5a14; background: #fff6e6; font-size: 12px; line-height: 1.7; }
+.qd-module-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.qd-module-groups h2 { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+.qd-module-groups dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; border-top: 1px solid #edf1f6; padding: 13px 0; }
+.qd-module-groups dt { font-size: 12px; line-height: 1.6; color: #56657d; }
+.qd-module-groups a:hover { color: #0d8276; text-decoration: underline; }
+.qd-module-groups dd { font-size: 17px; font-weight: 700; color: #25334b; }
+@media (max-width: 1000px) { .qd-module-groups { grid-template-columns: 1fr; } }
+@media (max-width: 650px) { .qd-organization-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } .qd-organization-metrics .qd-metric { padding: 17px; } .qd-organization-metrics .qd-metric-top { margin-bottom: 14px; } .qd-organization-metrics .qd-metric > strong { font-size: 30px; } .qd-section-heading h2 { font-size: 19px; } }

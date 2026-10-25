@@ -55,6 +55,20 @@ const kpiIndicatorSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  dataSource: { type: String, trim: true },
+  exclusions: { type: String, trim: true },
+  improvementActions: [{
+    title: { type: String, required: true, trim: true, maxlength: 300 },
+    owner: { type: String, required: true, trim: true, maxlength: 150 },
+    dueDate: { type: String, required: true },
+    status: { type: String, enum: ['Open', 'In progress', 'Completed'], default: 'Open' },
+    notes: { type: String, trim: true, maxlength: 3000 },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+    completedAt: Date
+  }],
   sampleSize: {
     type: String,
     default: 'All'
@@ -177,6 +191,7 @@ kpiIndicatorSchema.index({ indicatorCode: 1, reportingPeriod: 1, reportingYear: 
 
 // Pre-save hook to compute calculatedValue, variance, and status
 kpiIndicatorSchema.pre('save', function() {
+  if (!this.isNew && !['numerator', 'denominator', 'target', 'calculationRule', 'validationStatus', 'submittedBy'].some(field => this.isModified(field))) return;
   const { getPreset } = require('../utils/waitingTime');
   const preset = getPreset(this.calculationRule?.preset || this.importRule?.preset);
   if (preset) {
@@ -189,27 +204,8 @@ kpiIndicatorSchema.pre('save', function() {
       (preset.targetDirection === 'lower' ? (preset.targetStrict ? raw < preset.target : raw <= preset.target) : raw >= preset.target) ? 'on-track' : 'breached';
     return;
   }
-  // Calculate value: (numerator / denominator) * 100
-  if (this.denominator && this.denominator !== 0) {
-    this.calculatedValue = parseFloat(((this.numerator / this.denominator) * (this.calculationRule?.multiplier || 100)).toFixed(2));
-  } else {
-    this.calculatedValue = 0;
-  }
-
-  // Calculate variance: calculatedValue - target
-  this.variance = parseFloat((this.calculatedValue - this.target).toFixed(2));
-
-  // Determine status from variance
-  const achievement = this.calculationRule?.targetDirection === 'lower' ? -this.variance : this.variance;
-  if (achievement >= 0) {
-    this.status = 'on-track';
-  } else if (achievement >= -10) {
-    this.status = 'at-risk';
-  } else {
-    this.status = 'breached';
-  }
-
+  const { assessMeasurement } = require('../utils/kpiMeasurement');
+  Object.assign(this, assessMeasurement(this));
 });
 
 module.exports = mongoose.model('KPIIndicator', kpiIndicatorSchema);
-

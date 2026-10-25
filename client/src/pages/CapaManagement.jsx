@@ -1,4 +1,5 @@
-import Select from '../components/Select.jsx';
+import { getAuthConfig } from '../utils/authConfig';
+import UserSelect from '../components/UserSelect';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -20,7 +21,6 @@ import {
 const CapaManagement = () => {
   const { showNotification } = useNotification();
   const [capas, setCapas] = useState([]);
-  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
@@ -39,16 +39,11 @@ const CapaManagement = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = getAuthConfig();
       
-      const [capasRes, usersRes] = await Promise.all([
-        axios.get('/api/qms/capa', config),
-        axios.get('/api/users', config)
-      ]);
+      const capasRes = await axios.get('/api/qms/capa', config);
       
       setCapas(capasRes.data);
-      setUsers(Array.isArray(usersRes.data) ? usersRes.data : []);
     } catch (error) {
       showNotification('Failed to load CAPA data', 'error');
     } finally {
@@ -63,8 +58,7 @@ const CapaManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = getAuthConfig();
       const body = {
         source,
         description,
@@ -95,8 +89,7 @@ const CapaManagement = () => {
 
   const handleStatusChange = async (id, status) => {
     try {
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = getAuthConfig();
       await axios.put(`/api/qms/capa/${id}`, { status }, config);
       showNotification(`CAPA set to ${status}`, 'success');
       fetchData();
@@ -315,16 +308,7 @@ const CapaManagement = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block">Assign Actionee</label>
-                      <Select 
-                        value={assignedTo}
-                        onChange={(e) => setAssignedTo(e.target.value)}
-                        className="w-full p-4 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-900 text-[13px] font-semibold bg-white"
-                      >
-                        <option value="">Select Staff User</option>
-                        {users.map(u => (
-                          <option key={u._id} value={u._id}>{u.employeeName} ({u.department})</option>
-                        ))}
-                      </Select>
+                      <UserSelect aria-label="Action owner" value={assignedTo} onChange={event => setAssignedTo(event.target.value)} className="w-full p-4 rounded-xl border border-slate-200 text-sm bg-white" />
                     </div>
 
                     <div className="space-y-2">

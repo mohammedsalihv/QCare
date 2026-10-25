@@ -199,6 +199,16 @@ const getUsers = async (req, res) => {
   }
 };
 
+// Minimal directory for authenticated staff selectors, separate from user administration.
+const getUserDirectory = async (req, res) => {
+  try {
+    const users = await User.find({ isActive: { $ne: false }, status: { $nin: ['blocked', 'inactive'] } })
+      .select('_id employeeId employeeName department designation status isActive')
+      .sort({ employeeName: 1, employeeId: 1 });
+    res.json(users);
+  } catch { res.status(500).json({ message: 'Could not load the staff directory. Please try again.' }); }
+};
+
 // @desc    Create new user
 // @route   POST /api/users
 // @access  Private/Admin
@@ -394,6 +404,7 @@ const deleteUser = async (req, res) => {
 module.exports = {
   loginUser,
   getUsers,
+  getUserDirectory,
   createUser,
   updateUser,
   toggleUserStatus,
