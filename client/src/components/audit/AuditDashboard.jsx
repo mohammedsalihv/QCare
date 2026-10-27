@@ -5,7 +5,7 @@ import { ClipboardCheck, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 const AuditDashboard = ({ stats }) => {
   const pillarData = stats?.pillarStats?.map(p => ({
     pillar: p._id.replace('-', ' '),
-    score: parseFloat(p.avgScore.toFixed(2)),
+    score: p.avgScore == null ? 0 : Number(p.avgScore.toFixed(2)),
     fullMark: 100
   })) || [];
 

@@ -125,6 +125,7 @@ const kpiIndicatorSchema = new mongoose.Schema({
     targetDirection: { type: String, enum: ['higher', 'lower'] }
   },
   importSummary: { type: mongoose.Schema.Types.Mixed },
+  automaticRule: { type: mongoose.Schema.Types.Mixed },
   calculationRule: { type: mongoose.Schema.Types.Mixed },
   variance: {
     type: Number,

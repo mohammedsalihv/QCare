@@ -16,7 +16,7 @@ import JawdaASD from "./pages/JawdaASD";
 import JawdaBN from "./pages/JawdaBN";
 import JawdaDF from "./pages/JawdaDF";
 import ComplianceManagement from "./pages/ComplianceManagement";
-import ClinicalAuditCenter from "./pages/ClinicalAuditCenter";
+import ClinicalAuditCenter from "./pages/ClinicalAuditWorkspace";
 import RiskManagementCenter from "./pages/RiskManagementCenter";
 import TrainingCompetencyCenter from "./pages/TrainingCompetencyCenter";
 import PatientExperienceCenter from "./pages/PatientExperienceCenter";

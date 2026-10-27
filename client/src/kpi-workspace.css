@@ -1,4 +1,15 @@
 .ki-stack { display: grid; gap: 22px; }
+.ki-automatic { margin-top: 22px; }
+.ki-auto-intro { background: #edf7f1; border-left: 3px solid #397351; padding: 18px; border-radius: 8px; margin-bottom: 20px; }
+.ki-auto-intro p, .ki-automatic fieldset > p, .ki-auto-analysis > p { font-size: 13px; line-height: 1.8; color: #456653; margin-top: 8px; }
+.ki-case-list { display: grid; gap: 16px; margin: 18px 0; }
+.ki-case-card { border: 1px solid #dce6df; border-radius: 10px; padding: 18px; }
+.ki-case-card .ki-section-head { margin-bottom: 18px; align-items: center; }
+.ki-auto-analysis { margin-top: 24px; border-top: 1px solid #dce6df; padding-top: 24px; }
+.ki-auto-reasons, .ki-auto-suggestions { padding: 18px; background: #f7faf8; border: 1px solid #dce6df; border-radius: 10px; margin: 18px 0; font-size: 13px; line-height: 1.8; }
+.ki-auto-suggestions h3, .ki-auto-reasons h3 { font-weight: 600; margin-bottom: 8px; }
+.ki-auto-suggestions ul { list-style: disc; padding-left: 20px; margin-top: 12px; }
+.ki-auto-analysis caption { text-align: left; font-weight: 600; padding: 10px; }
 .ki-intro, .ki-panel { background: #fff; border: 1px solid #dce6df; border-radius: 14px; padding: 26px; min-width: 0; }
 .ki-intro { display: flex; align-items: center; justify-content: space-between; gap: 24px; background: #eff7f2; }
 .ki-intro h2, .ki-panel h2 { font-size: 21px; font-weight: 600; color: #203f34; margin-bottom: 8px; }

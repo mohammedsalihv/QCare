@@ -38,11 +38,14 @@ app.use((req, res, next) => {
 
 // Middleware
 app.use(cors());
+// Source observations and signed calculated previews can exceed the default 100 KB.
+app.use('/api/kpi/automatic/preview', express.json({ limit: '1mb' }));
+app.use('/api/kpi/submit-data', express.json({ limit: '2mb' }));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect Database
-connectDB();
+const databaseReady = connectDB();
 
 // Initialize Cron Jobs
 const cron = require("node-cron");
@@ -110,6 +113,8 @@ app.get("/", (req, res) => {
   res.send("API with Socket.io running");
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+databaseReady.then(() => {
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 });

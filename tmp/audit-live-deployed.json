@@ -1,0 +1,17 @@
+{
+  "deployed": true,
+  "backup": "/home/salih/QCare_deploy_backups/audit-1793043504234",
+  "process": "QCare",
+  "status": "online",
+  "workflow": "3",
+  "files": [
+    "server/routes/clinicalAuditRoutes.js",
+    "server/controllers/clinicalAuditController.js",
+    "server/controllers/clinicalAuditWorkflow.js",
+    "server/models/ClinicalAudit.js",
+    "server/models/AuditTemplate.js",
+    "server/utils/clinicalAuditScoring.js",
+    "server/utils/clinicalAuditSchedule.js"
+  ],
+  "health": "API healthy; audit and staff endpoints still require authentication"
+}

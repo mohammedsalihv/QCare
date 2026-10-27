@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
+      // Shared contact address; the database migration maintains a non-unique index.
       lowercase: true,
       trim: true,
     },

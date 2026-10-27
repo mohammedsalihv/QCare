@@ -14,13 +14,14 @@ const auditTemplateSchema = new mongoose.Schema({
   standard: {
     type: String,
     required: true,
-    enum: ['DOH', 'JCI', 'internal', 'ISO']
+    trim: true,
+    maxlength: 100
   },
   criteria: [{
     criterionId: { type: String, required: true },
     text: { type: String, required: true },
     text_ar: { type: String },
-    weight: { type: Number, default: 1 }
+    weight: { type: Number, default: 1, min: 0.01 }
   }],
   isActive: {
     type: Boolean,

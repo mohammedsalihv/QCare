@@ -1,0 +1,28 @@
+{
+  "liveRoot": "/home/salih/QCare",
+  "stageRoot": "/home/salih/.cache/qcare-audit-releases/1793043431329",
+  "files": [
+    "server/routes/clinicalAuditRoutes.js",
+    "server/controllers/clinicalAuditController.js",
+    "server/controllers/clinicalAuditWorkflow.js",
+    "server/models/ClinicalAudit.js",
+    "server/models/AuditTemplate.js",
+    "server/utils/clinicalAuditScoring.js",
+    "server/utils/clinicalAuditSchedule.js"
+  ],
+  "expected": {
+    "server/routes/clinicalAuditRoutes.js": "0eb539abb541a76f212a8bf4662ba4db6dfc520a2d3fe9baef13242d9d617492",
+    "server/controllers/clinicalAuditController.js": "2f1ab0c4f3fb670a4a5f8c5b2d6c5b2fc27c523c8107d7ebaeb7bf558be89e9c",
+    "server/controllers/clinicalAuditWorkflow.js": null,
+    "server/models/ClinicalAudit.js": "9593ba262c7f6e64474a7f43fe9edea9cee8ba6d5816109615c5d1330bd7042c",
+    "server/models/AuditTemplate.js": "08a59863dced22bc9e6913f9f7ce5f6400e0af4c95faf39890e2d5c152764033",
+    "server/utils/clinicalAuditScoring.js": null,
+    "server/utils/clinicalAuditSchedule.js": null
+  },
+  "prepared": "2026-10-26T19:37:15.035Z",
+  "process": {
+    "name": "QCare",
+    "id": 1,
+    "cwd": "/home/salih"
+  }
+}

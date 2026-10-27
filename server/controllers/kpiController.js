@@ -6,6 +6,7 @@ const KPIIndicatorType = require('../models/KPIIndicatorType');
 const KPINotificationRule = require('../models/KPINotificationRule');
 const { verifyPreview, ruleDigest, validateRule } = require('../utils/indicatorImport');
 const { getPreset } = require('../utils/waitingTime');
+const { automaticDigest } = require('../utils/kpiAutomatic');
 
 const definitionFields = ['indicatorCode', 'indicatorName', 'indicatorName_ar', 'category', 'mainCategory', 'subCategory', 'owner', 'reportingFrequency', 'description', 'rationale', 'criteria', 'numeratorDesc', 'denominatorDesc', 'sampleSize', 'unit', 'target', 'dataSource', 'exclusions', 'reportingPeriod', 'reportingYear'];
 function definitionPayload(body) {
@@ -189,11 +190,12 @@ exports.submitData = async (req, res) => {
     if (!definition) {
       return res.status(404).json({ message: 'KPI definition not found' });
     }
-    if (imported && imported.ruleDigest !== ruleDigest(definition)) {
+    if (imported && imported.ruleDigest !== (imported.sourceKind === 'automatic' ? automaticDigest(definition) : ruleDigest(definition))) {
       return res.status(409).json({ message: 'The indicator rule or target changed. Analyze the file again.' });
     }
     if (definition.importRule?.preset && (!imported || !imported.summary.canSubmit)) return res.status(400).json({ message: 'Waiting-time indicators require a validated source-data upload.' });
-    const calculationRule = definition.importRule?.preset || definition.importRule?.outcomeColumn || definition.importRule?.numeratorColumn ? validateRule(definition.importRule) : definition.calculationRule;
+    if (definition.automaticRule?.source && (!imported || imported.sourceKind !== 'automatic' || !imported.summary.canSubmit)) return res.status(400).json({ message: 'Calculate this indicator from its configured source before submitting.' });
+    const calculationRule = imported?.sourceKind === 'automatic' ? imported.calculationRule : definition.importRule?.preset || definition.importRule?.outcomeColumn || definition.importRule?.numeratorColumn ? validateRule(definition.importRule) : definition.calculationRule;
 
     // Check if there is already a record for this period
     let record = await KPIIndicator.findOne({ indicatorCode, reportingPeriod, reportingYear });

@@ -1,0 +1,39 @@
+import React, { useState } from 'react';
+import { CalendarDays, Clock3, X } from 'lucide-react';
+import { dubaiDay } from './auditSchedule';
+import { datesBetween } from './auditDatePlan';
+const field = 'w-full min-w-0 rounded-lg border border-slate-200 p-2 bg-white text-sm';
+const formatDay = date => new Date(`${date}T12:00:00+04:00`).toLocaleDateString('en-GB', { timeZone: 'Asia/Dubai', day: 'numeric', month: 'short' });
+
+function TimeWindows({ windows, onChange, name, disabled }) {
+  return <div className="space-y-2">{windows.map((w, i) => <div key={i} className="flex items-end gap-2"><label className="flex-1 min-w-0 text-xs text-slate-600">From<input disabled={disabled} required type="time" aria-label={`${name} start ${i + 1}`} className={field} value={w.start} onChange={e => onChange(windows.map((v, index) => index === i ? { ...v, start: e.target.value } : v))} /></label><label className="flex-1 min-w-0 text-xs text-slate-600">To<input disabled={disabled} required type="time" aria-label={`${name} end ${i + 1}`} className={field} value={w.end} onChange={e => onChange(windows.map((v, index) => index === i ? { ...v, end: e.target.value } : v))} /></label>{windows.length > 1 && <button type="button" disabled={disabled} aria-label={`Remove ${name} time ${i + 1}`} className="p-2 text-rose-700" onClick={() => onChange(windows.filter((_, index) => index !== i))}><X size={15} /></button>}</div>)}<button type="button" disabled={disabled || windows.length >= 10} onClick={() => onChange([...windows, { start: '13:00', end: '14:00' }])} className="text-xs text-teal-700 font-semibold py-1">+ Another time window</button></div>;
+}
+export default function AuditDatePlanner({ value, onChange, disabled }) {
+  const [month, setMonth] = useState(() => (value.dates[0] || dubaiDay(new Date())).slice(0, 7));
+  const [pickMode, setPickMode] = useState('dates'), [rangeStart, setRangeStart] = useState(''), [error, setError] = useState('');
+  const [year, number] = month.split('-').map(Number), first = new Date(Date.UTC(year, number - 1, 1)).getUTCDay(), days = new Date(Date.UTC(year, number, 0)).getUTCDate();
+  const changeMonth = amount => { const d = new Date(Date.UTC(year, number - 1 + amount, 1)); setMonth(`${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`); };
+  const selectDay = date => {
+    setError('');
+    if (pickMode === 'range') {
+      if (!rangeStart) { setRangeStart(date); onChange({ ...value, dates: [date] }); }
+      else { try { onChange({ ...value, dates: datesBetween(rangeStart, date) }); setRangeStart(''); } catch (err) { setError(err.message); } }
+    } else if (value.dates.includes(date)) onChange({ ...value, dates: value.dates.filter(d => d !== date) });
+    else if (value.dates.length < 100) onChange({ ...value, dates: [...value.dates, date].sort() });
+    else setError('Select up to 100 dates.');
+  };
+  const updateWindows = (date, windows) => onChange(date ? { ...value, dateWindows: { ...value.dateWindows, [date]: windows } } : { ...value, windows });
+  return <section className="space-y-4" aria-label="Audit date and time planner">
+    <div className="flex items-center gap-2"><CalendarDays size={19} className="text-teal-700" /><h3 className="font-semibold">Dates & timing</h3><span className="ml-auto text-xs rounded-full bg-teal-50 text-teal-800 px-2 py-1">{value.dates.length} dates</span></div>
+    <div className="grid grid-cols-2 rounded-xl bg-slate-100 p-1 gap-1">{[['dates', 'Choose dates'], ['range', 'Date range']].map(([id, label]) => <button type="button" key={id} disabled={disabled} aria-pressed={pickMode === id} onClick={() => { setPickMode(id); setRangeStart(''); }} className={`rounded-lg py-2 text-sm ${pickMode === id ? 'bg-white shadow-sm font-semibold text-teal-800' : 'text-slate-600'}`}>{label}</button>)}</div>
+    <div className="rounded-2xl border border-slate-200 p-3 sm:p-4 bg-white space-y-3"><div className="flex justify-between items-center"><button type="button" disabled={disabled} aria-label="Planner previous month" className="rounded-lg border p-2" onClick={() => changeMonth(-1)}>←</button><h4 className="font-semibold">{new Date(Date.UTC(year, number - 1, 1)).toLocaleDateString('en-GB', { timeZone: 'UTC', month: 'long', year: 'numeric' })}</h4><button type="button" disabled={disabled} aria-label="Planner next month" className="rounded-lg border p-2" onClick={() => changeMonth(1)}>→</button></div>
+      <p className="text-xs text-slate-500">{pickMode === 'range' ? rangeStart ? 'Now choose the last date.' : 'Choose the first and last date of your audit.' : 'Select any dates. Select a date again to remove it.'}</p>
+      <div className="grid grid-cols-7 gap-1 text-center">{['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((d, i) => <span key={i} className="text-xs text-slate-500 py-1">{d}</span>)}{Array.from({ length: first }, (_, i) => <span key={`empty-${i}`} />)}{Array.from({ length: days }, (_, i) => { const date = `${month}-${String(i + 1).padStart(2, '0')}`; return <button type="button" key={date} disabled={disabled} aria-label={`Select audit date ${date}`} aria-pressed={value.dates.includes(date)} className={`min-h-9 rounded-lg text-sm ${value.dates.includes(date) ? 'bg-primary text-white font-semibold' : 'hover:bg-teal-50 border border-slate-100'}`} onClick={() => selectDay(date)}>{i + 1}</button>; })}</div>
+      {value.dates.length > 0 && <div className="flex flex-wrap gap-1 pt-2 border-t">{value.dates.slice(0, 8).map(date => <button key={date} type="button" disabled={disabled} aria-label={`Remove date ${date}`} className="text-xs bg-teal-50 text-teal-800 px-2 py-1 rounded-md flex items-center gap-1" onClick={() => onChange({ ...value, dates: value.dates.filter(d => d !== date) })}>{formatDay(date)}<X size={11} /></button>)}{value.dates.length > 8 && <span className="text-xs p-1">+{value.dates.length - 8} more</span>}<button type="button" disabled={disabled} className="text-xs text-slate-500 px-2" onClick={() => { onChange({ ...value, dates: [] }); setRangeStart(''); }}>Clear dates</button></div>}
+    </div>
+    {error && <p role="alert" className="text-sm text-rose-700">{error}</p>}
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-3"><div className="flex items-center gap-2"><Clock3 size={17} /><h4 className="text-sm font-semibold">Time windows</h4><span className="ml-auto text-xs text-slate-500">Dubai · UTC+04:00</span></div><div className="flex flex-wrap gap-2">{[['shared', 'Same times for all dates'], ['individual', 'Customize by date']].map(([id, label]) => <button type="button" key={id} disabled={disabled} aria-pressed={value.mode === id} onClick={() => onChange({ ...value, mode: id })} className={`text-xs rounded-lg px-3 py-2 border ${value.mode === id ? 'border-teal-600 bg-teal-50 text-teal-800' : 'border-slate-200 bg-white'}`}>{label}</button>)}</div>
+      {value.mode === 'shared' ? <><div className="flex flex-wrap gap-2">{[['Morning', '09:00', '12:00'], ['Afternoon', '13:00', '16:00'], ['Full day', '09:00', '17:00']].map(([label, start, end]) => <button type="button" key={label} disabled={disabled} className="text-xs rounded-full bg-white border px-3 py-1" onClick={() => onChange({ ...value, windows: [{ start, end }] })}>{label}</button>)}</div><TimeWindows name="Shared" windows={value.windows} disabled={disabled} onChange={windows => updateWindows(null, windows)} /></> : <div className="space-y-3 max-h-64 overflow-y-auto">{!value.dates.length && <p className="text-sm text-slate-500">Choose audit dates to set their times.</p>}{value.dates.map(date => <div key={date} className="bg-white border rounded-xl p-3 space-y-2"><h5 className="text-sm font-semibold">{formatDay(date)}</h5><TimeWindows name={date} windows={value.dateWindows[date] || value.windows} disabled={disabled} onChange={windows => updateWindows(date, windows)} /></div>)}</div>}
+    </div>
+  </section>;
+}

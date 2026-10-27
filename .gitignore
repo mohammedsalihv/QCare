@@ -16,3 +16,4 @@ client/dist/
 Thumbs.db
 
 server/uploads/
+server/private/clinical-audit/

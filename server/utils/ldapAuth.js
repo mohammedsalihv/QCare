@@ -93,6 +93,7 @@ const authenticateLDAP = (username, password) => {
                 }
 
                 let userFound = null;
+                let matchCount = 0;
 
                 response.on('searchEntry', (entry) => {
                   // ldapjs 3.x uses entry.pojo.attributes instead of entry.object
@@ -104,6 +105,7 @@ const authenticateLDAP = (username, password) => {
                     // Preserve the DN for user-bind authentication
                     adUser.dn = entry.dn ? entry.dn.toString() : (entry.pojo.objectName || '');
                     userFound = adUser;
+                    matchCount++;
                   }
                 });
 
@@ -113,6 +115,10 @@ const authenticateLDAP = (username, password) => {
                 });
 
                 response.on('end', () => {
+                  if (matchCount > 1) {
+                    client.unbind();
+                    return rej(new Error('Multiple LDAP users match. Sign in with your unique employee ID or username.'));
+                  }
                   if (!userFound) {
                     client.unbind();
                     return rej(new Error('User not found in LDAP'));

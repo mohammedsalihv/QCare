@@ -1,0 +1,10 @@
+const fs = require('node:fs');
+const cp = require('node:child_process');
+const files = ['server/routes/clinicalAuditRoutes.js', 'server/controllers/clinicalAuditController.js', 'server/controllers/clinicalAuditWorkflow.js', 'server/models/ClinicalAudit.js', 'server/models/AuditTemplate.js', 'server/utils/clinicalAuditScoring.js', 'server/utils/clinicalAuditSchedule.js'];
+const testFiles = ['server/tests/clinicalAudit.test.js', 'server/tests/clinicalAuditPersistence.test.js', 'client/src/components/audit/auditDatePlan.js'];
+const payload = { files: Object.fromEntries(files.map(f => [f, fs.readFileSync(f, 'utf8')])), testFiles: { ...Object.fromEntries(testFiles.map(f => [f, fs.readFileSync(f, 'utf8')])), 'client/package.json': '{"type":"module"}' } };
+const output = cp.execFileSync('ssh', ['-o', 'BatchMode=yes', '-o', 'ConnectTimeout=8', '192.168.1.160', 'node -'], { input: `const payload = ${JSON.stringify(payload)};\n` + fs.readFileSync('tmp/prepare-audit-live.cjs', 'utf8'), encoding: 'utf8', windowsHide: true, timeout: 150000, maxBuffer: 3000000 });
+process.stdout.write(output);
+const manifest = output.split('\n').find(line => line.startsWith('AUDIT_PREPARED '));
+if (!manifest) throw new Error('Staged release manifest missing');
+fs.writeFileSync('tmp/audit-live-release.json', JSON.stringify(JSON.parse(manifest.slice('AUDIT_PREPARED '.length)), null, 2));

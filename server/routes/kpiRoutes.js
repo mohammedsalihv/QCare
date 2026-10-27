@@ -24,6 +24,10 @@ const {
 } = require('../controllers/kpiController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const multer = require('multer');
+const { automaticSources, saveAutomaticRule, previewAutomatic } = require('../controllers/kpiAutomaticController');
+router.get('/automatic/sources', protect, automaticSources);
+router.put('/automatic/rule/:code', protect, authorize('SuperAdmin', 'QualityManager', 'admin'), saveAutomaticRule);
+router.post('/automatic/preview', protect, previewAutomatic);
 const { previewImport, saveRule, waitingCatalog, installWaiting } = require('../controllers/indicatorImportController');
 router.get('/waiting-time/catalog', protect, waitingCatalog);
 router.post('/waiting-time/install', protect, authorize('SuperAdmin', 'QualityManager', 'admin'), installWaiting);

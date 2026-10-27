@@ -27,13 +27,7 @@ const loginUser = async (req, res) => {
           const canonicalEmail = ldapUser.email;
           console.log("canonicalEmployeeId:", canonicalEmployeeId, "canonicalEmail:", canonicalEmail);
 
-          let userDoc = null;
-          if (canonicalEmail) {
-            userDoc = await User.findOne({ email: canonicalEmail.toLowerCase() });
-          }
-          if (!userDoc && canonicalEmployeeId) {
-            userDoc = await User.findOne({ employeeId: canonicalEmployeeId });
-          }
+          let userDoc = await User.findOne({ employeeId: canonicalEmployeeId });
           console.log("Found userDoc:", userDoc ? userDoc._id : "null");
 
           const fullName = ldapUser.name ||
@@ -56,13 +50,8 @@ const loginUser = async (req, res) => {
             let updated = false;
             if (fullName && userDoc.employeeName !== fullName) { userDoc.employeeName = fullName; updated = true; }
             if (canonicalEmail && userDoc.email !== canonicalEmail) {
-              const emailInUse = await User.findOne({ email: canonicalEmail.toLowerCase(), _id: { $ne: userDoc._id } });
-              if (!emailInUse) {
-                userDoc.email = canonicalEmail;
-                updated = true;
-              } else {
-                console.warn(`LDAP sync email update skipped: ${canonicalEmail} is already in use by user ${emailInUse._id}`);
-              }
+              userDoc.email = canonicalEmail;
+              updated = true;
             }
             if (ldapUser.department && userDoc.department !== ldapUser.department) { userDoc.department = ldapUser.department; updated = true; }
             if (ldapUser.designation && userDoc.designation !== ldapUser.designation) { userDoc.designation = ldapUser.designation; updated = true; }
@@ -112,13 +101,19 @@ const loginUser = async (req, res) => {
     }
 
     // Local authentication fallback
-    const user = await User.findOne({
+    let user = await User.findOne({
       $or: [
         { employeeId: loginIdentifier },
-        { username: loginIdentifier },
-        { email: loginIdentifier.toLowerCase() }
+        { username: loginIdentifier }
       ]
     });
+    if (!user) {
+      const emailMatches = await User.find({ email: loginIdentifier.toLowerCase() }).limit(2);
+      if (emailMatches.length > 1) {
+        return res.status(400).json({ message: "This email is shared. Please sign in with your employee ID or username." });
+      }
+      user = emailMatches[0];
+    }
 
     if (user && (await user.matchPassword(password))) {
       // Check if user account is blocked or inactive

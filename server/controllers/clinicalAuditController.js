@@ -1,20 +1,8 @@
 const ClinicalAudit = require('../models/ClinicalAudit');
 const AuditTemplate = require('../models/AuditTemplate');
-const AuditSchedule = require('../models/AuditSchedule');
-const Notification = require('../models/Notification');
 const PDFDocument = require('pdfkit');
 
 // --- Templates ---
-
-exports.createTemplate = async (req, res) => {
-  try {
-    const template = new AuditTemplate({ ...req.body, createdBy: req.user._id });
-    await template.save();
-    res.status(201).json(template);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
 
 exports.getTemplates = async (req, res) => {
   try {
@@ -27,16 +15,6 @@ exports.getTemplates = async (req, res) => {
 
 // --- Audits ---
 
-exports.scheduleAudit = async (req, res) => {
-  try {
-    const audit = new ClinicalAudit(req.body);
-    await audit.save();
-    res.status(201).json(audit);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
 exports.getAudits = async (req, res) => {
   try {
     const { department, status, pillar } = req.query;
@@ -47,7 +25,11 @@ exports.getAudits = async (req, res) => {
 
     const audits = await ClinicalAudit.find(query)
       .populate('auditor', 'employeeName employeeId')
-      .populate('templateId', 'templateName')
+      .populate('templateId', 'templateName criteria')
+      .populate('improvementActions.owner', 'employeeName')
+      .populate('location', 'name code')
+      .populate('concernedDepartments', 'name')
+      .populate('concernedPersons', 'employeeName employeeId')
       .sort({ scheduledDate: -1 });
     res.json(audits);
   } catch (error) {
@@ -60,6 +42,9 @@ exports.getAuditById = async (req, res) => {
     const audit = await ClinicalAudit.findById(req.params.id)
       .populate('auditor', 'employeeName')
       .populate('templateId')
+      .populate('location', 'name code')
+      .populate('concernedDepartments', 'name')
+      .populate('concernedPersons', 'employeeName employeeId')
       .populate('improvementActions.owner', 'employeeName email');
     if (!audit) return res.status(404).json({ message: 'Audit not found' });
     res.json(audit);
@@ -68,91 +53,20 @@ exports.getAuditById = async (req, res) => {
   }
 };
 
-exports.startAudit = async (req, res) => {
-  try {
-    const audit = await ClinicalAudit.findByIdAndUpdate(req.params.id, { 
-      status: 'in-progress',
-      conductedDate: new Date()
-    }, { new: true });
-    res.json(audit);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-exports.updateFindings = async (req, res) => {
-  try {
-    const { findings } = req.body;
-    const audit = await ClinicalAudit.findById(req.params.id);
-    if (!audit) return res.status(404).json({ message: 'Audit not found' });
-
-    // Auto-calculate score
-    let totalScore = 0;
-    let nonCompliant = 0;
-    let partial = 0;
-    
-    findings.forEach(f => {
-      if (f.complianceStatus === 'compliant') totalScore += 100;
-      else if (f.complianceStatus === 'partial') {
-        totalScore += 50;
-        partial++;
-      } else {
-        nonCompliant++;
-      }
-    });
-
-    const avgScore = findings.length > 0 ? (totalScore / findings.length).toFixed(2) : 0;
-
-    audit.findings = findings;
-    audit.overallScore = avgScore;
-    audit.nonCompliantCount = nonCompliant;
-    audit.partialCount = partial;
-    
-    await audit.save();
-    res.json(audit);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-exports.completeAudit = async (req, res) => {
-  try {
-    const audit = await ClinicalAudit.findById(req.params.id);
-    if (!audit) return res.status(404).json({ message: 'Audit not found' });
-
-    audit.status = 'completed';
-    await audit.save();
-
-    // Trigger notifications for action owners
-    if (audit.improvementActions && audit.improvementActions.length > 0) {
-      for (const action of audit.improvementActions) {
-        await Notification.create({
-          type: 'system_alert',
-          message: `New improvement action assigned to you from Audit: ${audit.auditTitle}. Due: ${new Date(action.dueDate).toLocaleDateString()}`,
-          user: 'Audit System',
-          userId: req.user._id,
-          recipientId: action.owner,
-          actionLink: '/dashboard/audit/actions'
-        });
-      }
-    }
-
-    res.json({ message: 'Audit finalized and notifications sent', audit });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
 exports.getDashboardStats = async (req, res) => {
   try {
-    const overdue = await ClinicalAudit.find({ status: 'scheduled', scheduledDate: { $lt: new Date() } });
+    const now = new Date();
+    const overdue = await ClinicalAudit.find({ status: { $in: ['scheduled', 'in-progress', 'overdue'] }, $or: [
+      { scheduledUntil: { $lt: now } },
+      { scheduledUntil: null, scheduledDate: { $lt: now } }
+    ] });
     const counts = await ClinicalAudit.aggregate([
       { $group: { _id: "$status", count: { $sum: 1 } } }
     ]);
 
     // Avg score by pillar (last 12 months)
     const pillarStats = await ClinicalAudit.aggregate([
-      { $match: { status: 'completed', createdAt: { $gt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) } } },
+      { $match: { status: 'completed', overallScore: { $ne: null }, createdAt: { $gt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) } } },
       { $group: { _id: "$governancePillar", avgScore: { $avg: "$overallScore" } } }
     ]);
 
@@ -164,12 +78,12 @@ exports.getDashboardStats = async (req, res) => {
 
 exports.generatePDFReport = async (req, res) => {
   try {
-    const audit = await ClinicalAudit.findById(req.params.id).populate('auditor').populate('templateId');
+    const audit = await ClinicalAudit.findById(req.params.id).populate('auditor').populate('templateId').populate('location', 'name').populate('concernedDepartments', 'name').populate('concernedPersons', 'employeeName');
     if (!audit) return res.status(404).json({ message: 'Audit not found' });
 
     const doc = new PDFDocument();
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=AuditReport_${audit.auditTitle}.pdf`);
+    res.setHeader('Content-Disposition', `attachment; filename=AuditReport_${audit._id}.pdf`);
 
     doc.pipe(res);
 
@@ -177,16 +91,29 @@ exports.generatePDFReport = async (req, res) => {
     doc.fontSize(20).text('CLINICAL AUDIT REPORT', { align: 'center' });
     doc.moveDown();
     doc.fontSize(12).text(`Title: ${audit.auditTitle}`);
-    doc.text(`Department: ${audit.department}`);
-    doc.text(`Auditor: ${audit.auditor?.employeeName}`);
+    doc.text(`Location: ${audit.location?.name || 'Not specified (legacy audit)'}`);
+    doc.text(`Concerned departments: ${audit.concernedDepartments?.map(d => d.name).join(', ') || audit.department || 'Not specified'}`);
+    doc.text(`Concerned persons: ${audit.concernedPersons?.map(p => p.employeeName).join(', ') || 'Not specified'}`);
+    doc.text(`Auditor: ${audit.auditorName || audit.auditor?.employeeName || 'Not specified'}`);
+    if (audit.sessions?.length) {
+      doc.text('Audit sessions (Asia/Dubai):');
+      for (const session of audit.sessions) {
+        const format = date => new Date(date).toLocaleString('en-GB', { timeZone: 'Asia/Dubai', dateStyle: 'medium', timeStyle: 'short' });
+        doc.text(`${format(session.startAt)} - ${format(session.endAt)}`);
+      }
+    }
     doc.text(`Standard: ${audit.standard}`);
-    doc.text(`Overall Score: ${audit.overallScore}%`);
+    doc.text(`Status: ${audit.status}`);
+    doc.text(`Overall Score: ${audit.overallScore == null ? 'N/A' : `${audit.overallScore}%`}`);
+    doc.text(`Assessment coverage: ${audit.coverage ?? 0}%`);
+    doc.text(`Review comment: ${audit.reviewComment || 'None'}`);
     doc.moveDown();
 
     doc.text('Findings Summary:', { underline: true });
     audit.findings.forEach((f, index) => {
       doc.text(`${index + 1}. Criterion: ${f.criterionId} - Status: ${f.complianceStatus.toUpperCase()}`);
       doc.fontSize(10).text(`Evidence: ${f.evidence || 'N/A'}`, { indent: 20 });
+      if (f.exclusionReason) doc.text(`Exclusion reason: ${f.exclusionReason}`, { indent: 20 });
       doc.fontSize(12).moveDown(0.5);
     });
 
