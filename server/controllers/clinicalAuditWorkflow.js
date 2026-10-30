@@ -27,7 +27,7 @@ const wrap = fn => async (req, res) => {
 const fail = (message, status = 400) => { const error = new Error(message); error.status = status; throw error; };
 async function load(req) {
   const audit = await ClinicalAudit.findById(req.params.id).populate([
-    { path: 'templateId' }, { path: 'location', select: 'name code' },
+    { path: 'history.actor', select: 'employeeName' }, { path: 'templateId' }, { path: 'location', select: 'name code' },
     { path: 'concernedDepartments', select: 'name' }, { path: 'concernedPersons', select: 'employeeName employeeId' }
   ]);
   if (!audit) fail('Audit not found', 404);
@@ -153,7 +153,7 @@ exports.startAudit = wrap(async (req, res) => {
   if (audit.status !== 'in-progress') {
     audit.status = 'in-progress'; audit.conductedDate ||= new Date(); record(audit, req, 'started'); await audit.save();
   } else if (snapshotAdded) await audit.save();
-  res.json(audit);
+  res.json(await load(req));
 });
 function templateInput(body) {
   const { templateName, governancePillar, standard, criteria: items } = body;
@@ -207,14 +207,14 @@ exports.updateFindings = wrap(async (req, res) => {
     if (f.attachments && (!Array.isArray(f.attachments) || f.attachments.some(id => !existing.get(f.criterionId)?.has(id)))) fail('Upload evidence before attaching it.');
   }
   Object.assign(audit, scoreFindings(criteria(audit), req.body.findings));
-  record(audit, req, 'findings-saved'); await audit.save(); res.json(audit);
+  record(audit, req, 'findings-saved'); await audit.save(); res.json(await load(req));
 });
 exports.completeAudit = wrap(async (req, res) => {
   const audit = await load(req); editable(req, audit);
   if (audit.status !== 'in-progress') fail('Only an audit in progress can be submitted.');
   Object.assign(audit, scoreFindings(criteria(audit), audit.findings, true));
   audit.status = 'pending-review'; audit.submittedBy = req.user._id; audit.submittedAt = new Date();
-  record(audit, req, 'submitted'); await audit.save(); await auditEvent(req, audit, 'Awaiting review'); res.json(audit);
+  record(audit, req, 'submitted'); await audit.save(); await auditEvent(req, audit, 'Awaiting review'); res.json(await load(req));
 });
 exports.reviewAudit = wrap(async (req, res) => {
   const audit = await load(req);
@@ -227,7 +227,7 @@ exports.reviewAudit = wrap(async (req, res) => {
   audit.reviewComment = comment?.trim() || ''; audit.reviewedBy = req.user._id; audit.reviewedAt = new Date();
   audit.status = decision === 'approve' ? 'completed' : 'in-progress';
   record(audit, req, decision === 'approve' ? 'approved' : 'returned', audit.reviewComment);
-  await audit.save(); await auditEvent(req, audit, decision === 'approve' ? 'Approved' : 'Returned for changes', audit.reviewComment); res.json(audit);
+  await audit.save(); await auditEvent(req, audit, decision === 'approve' ? 'Approved' : 'Returned for changes', audit.reviewComment); res.json(await load(req));
 });
 exports.addAction = wrap(async (req, res) => {
   const audit = await load(req);
@@ -255,7 +255,7 @@ exports.updateAction = wrap(async (req, res) => {
     if (!isManager(req.user) || same(action.owner, req.user._id)) fail('A quality manager other than the action owner must verify this action.', 403);
     if (status === 'completed') { action.verifiedBy = req.user._id; action.verifiedAt = new Date(); }
   }
-  action.status = status; record(audit, req, 'action-updated', `${action._id}: ${status}`); await audit.save(); await auditEvent(req, audit, 'Action ' + status, action.actionText, [action.owner]); res.json(audit);
+  action.status = status; record(audit, req, 'action-updated', `${action._id}: ${status}`); await audit.save(); await auditEvent(req, audit, 'Action ' + status, action.actionText, [action.owner]); res.json(await load(req));
 });
 // Keep clinical evidence outside the public uploads directory.
 const evidenceDir = path.join(__dirname, '../private/clinical-audit');

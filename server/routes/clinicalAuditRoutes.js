@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 // A version marker lets deployment checks identify the API serving the new audit form.
-router.use((req, res, next) => { res.setHeader('X-QCare-Audit-Workflow', '12'); next(); });
+router.use((req, res, next) => { res.setHeader('X-QCare-Audit-Workflow', '13'); next(); });
 const {
   getTemplates,
   getAudits,

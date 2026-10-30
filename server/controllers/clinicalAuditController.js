@@ -41,6 +41,7 @@ exports.getAudits = async (req, res) => {
 exports.getAuditById = async (req, res) => {
   try {
     const audit = await ClinicalAudit.findById(req.params.id)
+      .populate('history.actor', 'employeeName')
       .populate('auditor', 'employeeName')
       .populate('templateId')
       .populate('location', 'name code')

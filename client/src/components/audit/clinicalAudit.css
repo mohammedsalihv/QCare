@@ -263,3 +263,10 @@
  .ca-calendar-readable .ca-calendar-mobile-status { display:flex; justify-content:center; flex-wrap:wrap; gap:3px; }
  .ca-calendar-readable .ca-calendar-explainer { padding:13px; }
 }
+
+/* Keep approval decisions visible while the request history scrolls. */
+.ca-schedule-approval[open] { display:flex; flex-direction:column; overflow:hidden; }
+.ca-schedule-approval > header,.ca-schedule-approval > footer { flex-shrink:0; }
+.ca-schedule-approval .ca-approval-body { min-height:0; overflow-y:auto; }
+.ca-schedule-approval .ca-timeline { padding:16px 4px 4px; }
+.ca-timeline small { display:block; margin-top:5px; line-height:1.5; }

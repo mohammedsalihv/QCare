@@ -64,7 +64,7 @@ test('the actual form payload persists through real HTTP routes and MongoDB', { 
     await Template.deleteMany({ templateName: { $in: seeded.map(t => t.name) } });
     const payload = { auditTitle: 'CMCDL Jawda', templateId: String(template._id), auditType: 'planned', location: String(location._id), auditorName: '', concernedDepartments: [], concernedPersons: [], sessions: [21, 22, 23, 24].map(day => ({ startAt: `2026-11-${day}T09:00:00+04:00`, endAt: `2026-11-${day}T10:00:00+04:00` })) };
     const anonymous = await request('/dashboard', 'GET', undefined, null);
-    assert.equal(anonymous.status, 401); assert.equal(anonymous.workflow, '12');
+    assert.equal(anonymous.status, 401); assert.equal(anonymous.workflow, '13');
     assert.equal((await request('', 'POST', payload, staff)).status, 403);
     assert.equal((await request('', 'POST', { ...payload, location: '' })).status, 400);
     assert.equal(quality.role, 'QualityManager'); assert.equal(staff.role, 'user');
@@ -79,13 +79,14 @@ test('the actual form payload persists through real HTTP routes and MongoDB', { 
     assert.equal(directEdit.body.status, 'scheduled'); assert(directEdit.body.scheduleApprovedAt);
     assert.equal((await request('/' + direct.body._id, 'DELETE', { expectedVersion: 1 })).status, 200);
     const created = await request('', 'POST', payload);
-    assert.equal(created.status, 201, JSON.stringify(created.body)); assert.equal(created.workflow, '12');
+    assert.equal(created.status, 201, JSON.stringify(created.body)); assert.equal(created.workflow, '13');
     assert.equal(created.body.standard, 'Jawda'); assert.equal(created.body.governancePillar, 'clinical-audit');
     assert.equal(created.body.auditor, undefined); assert.deepEqual(created.body.concernedDepartments, []);
     assert.equal(created.body.sessions.length, 4); assert.equal(created.body.scheduledDate, '2026-11-21T05:00:00.000Z');
     let stored = await Audit.findById(created.body._id);
     assert(stored); assert.equal(stored.sessions.length, 4); assert.equal(String(stored.location), String(location._id));
     const read = await request('/' + created.body._id);
+    assert.equal(read.body.history[0].actor.employeeName, officer.employeeName); assert(!('password' in read.body.history[0].actor));
     assert.equal(read.body.location.name, 'Test clinic'); assert.equal(read.body.templateId.standard, 'Jawda');
     const selected = await request('', 'POST', { ...payload, auditTitle: 'Concerned teams audit', concernedDepartments: [String(department._id)], concernedPersons: [String(staff._id), String(reviewer._id)] });
     assert.equal(selected.status, 201, JSON.stringify(selected.body));

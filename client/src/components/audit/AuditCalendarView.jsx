@@ -24,7 +24,7 @@ export default function AuditCalendarView({ audits, onOpen, onSchedule, onDownlo
   const monthEvents = events.filter(e => e.day.startsWith(month));
   const visibleEvents = events.filter(e => filter === 'all' || category(e) === filter);
   const selectedEvents = visibleEvents.filter(e => e.day === selected);
-  const nextVisit = visibleEvents.find(e => e.day >= today && !['completed', 'pending-review'].includes(e.audit.status));
+  const nextVisit = visibleEvents.find(e => e.day >= today && (!e.endAt || new Date(e.endAt) >= new Date()) && !['completed', 'pending-review', 'overdue'].includes(auditStatus(e.audit)));
   const selectNext = () => { if (nextVisit) { setSelected(nextVisit.day); setMonth(nextVisit.day.slice(0, 7)); } };
   const moveMonth = amount => {
     const date = new Date(Date.UTC(year, number - 1 + amount, 1));
