@@ -77,7 +77,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
 
   const markAsRead = async (id) => {
     try {
-      await axios.patch(`http://192.168.1.160:5000/api/notifications/${id}/read`, {}, getAuthConfig());
+      await axios.patch(`/api/notifications/${id}/read`, {}, getAuthConfig());
       setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
     } catch (error) {
       console.error('Error marking as read:', error);
@@ -89,24 +89,14 @@ const Navbar = ({ openProfileDrawer, user }) => {
     if (unreadIds.length === 0) return;
 
     try {
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
       await Promise.all(unreadIds.map(id => 
-        axios.patch(`http://192.168.1.160:5000/api/notifications/${id}/read`, {}, getAuthConfig())
+        axios.patch(`/api/notifications/${id}/read`, {}, getAuthConfig())
       ));
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     } catch (error) {
+      fetchNotifications();
       console.error('Error marking all as read:', error);
     }
-  };
-
-  useEffect(() => {
-    if (showNotifications && notifications.some(n => !n.isRead)) {
-      markAllAsRead();
-    }
-  }, [showNotifications]);
-
-  const clearAll = async () => {
-    if (!notifications || notifications.length === 0) return;
-    await clearFeed();
   };
 
   const profileOptions = [
@@ -371,7 +361,7 @@ const Navbar = ({ openProfileDrawer, user }) => {
 
           <div className="relative">
             <button 
-              onClick={() => setShowNotifications(!showNotifications)}
+              aria-label="Notifications" aria-expanded={showNotifications} onClick={() => setShowNotifications(!showNotifications)}
               className="relative p-2.5 bg-white text-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 rounded-xl transition-all duration-300 active:scale-95 border border-slate-300/40 shadow-sm"
             >
               <Bell className="w-5 h-5" />
@@ -382,70 +372,12 @@ const Navbar = ({ openProfileDrawer, user }) => {
               )}
             </button>
 
-            {/* Notifications Panel */}
-            {showNotifications && (
-              <div className="absolute right-[-60px] sm:right-0 mt-4 w-[320px] sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                  <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Notifications</h4>
-                  {notifications.length > 0 && (
-                    <button 
-                      onClick={clearAll}
-                      className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal hover:underline"
-                    >
-                      Clear All
-                    </button>
-                  )}
-                </div>
-                <div className="max-h-[350px] overflow-y-auto scrollbar-thin">
-                  {notifications.length > 0 ? (
-                    notifications.map((n, idx) => (
-                      <div 
-                        key={idx} 
-                        onClick={() => markAsRead(n._id)}
-                        className={`p-4 border-b border-slate-50 hover:bg-slate-50 transition-all cursor-pointer ${!n.isRead ? 'bg-slate-50/40' : ''}`}
-                      >
-                        <div className="flex gap-3">
-                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border border-slate-100 ${
-                            n.type === 'incident_report' ? 'bg-rose-50 text-rose-500' :
-                            n.type === 'document_upload' ? 'bg-teal-50 text-slate-800' : 
-                            n.type === 'document_like' ? 'bg-amber-50 text-amber-500' : 
-                            n.type === 'license-expiry' ? 'bg-rose-100 text-rose-600' : 'bg-emerald-50 text-emerald-500'
-                          }`}>
-                            {n.type === 'incident_report' ? <AlertTriangle className="w-4.5 h-4.5" /> : 
-                             n.type === 'document_upload' ? <Monitor className="w-4.5 h-4.5" /> : 
-                             n.type === 'document_like' ? <ThumbsUp className="w-4.5 h-4.5" /> : 
-                             n.type === 'license-expiry' ? <ShieldAlert className="w-4.5 h-4.5" /> : <Shield className="w-4.5 h-4.5" />}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[12px] font-semibold text-slate-800 leading-snug break-words">{n.message}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal">{n.user}</span>
-                              <span className="w-1 h-1 rounded-full bg-slate-200"></span>
-                              <span className="text-[12px] text-slate-500 font-medium">
-                                {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="py-12 text-center opacity-30 flex flex-col items-center gap-2">
-                      <Bell className="w-8 h-8 text-slate-500" />
-                      <p className="text-[12px] font-semibold normal-case tracking-normal">No Notifications</p>
-                    </div>
-                  )}
-                </div>
-                {notifications.length > 0 && (
-                  <button 
-                    onClick={() => { setShowNotifications(false); navigate('/notifications'); }}
-                    className="w-full py-4 text-[12px] font-semibold text-slate-600 hover:bg-slate-50 border-t border-slate-100 transition-all normal-case tracking-normal text-center"
-                  >
-                    View All
-                  </button>
-                )}
-              </div>
-            )}
+            {showNotifications && <section aria-label="Notification dropdown" className="absolute right-[-60px] sm:right-0 mt-3 w-[min(380px,calc(100vw-24px))] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50">
+              <div className="px-5 py-4 bg-gradient-to-r from-teal-800 to-teal-700 text-white"><div className="flex justify-between items-start gap-3"><div><p className="text-xs uppercase tracking-widest text-teal-100">Your updates</p><h2 className="text-lg font-bold mt-1">Notifications</h2><p className="text-xs text-teal-100 mt-1">{notifications.filter(n => !n.isRead).length} unread</p></div><Bell size={21}/></div></div>
+              <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100"><span className="text-xs font-semibold text-slate-600">Recent activity</span><button onClick={markAllAsRead} disabled={!notifications.some(n => !n.isRead)} className="text-xs font-semibold text-teal-700 disabled:text-slate-400">Mark all read</button></div>
+              <div className="max-h-[min(420px,55vh)] overflow-y-auto">{notifications.length ? notifications.slice(0, 15).map(n => <button key={n._id} onClick={async () => { if (!n.isRead) await markAsRead(n._id); if (n.actionLink) { setShowNotifications(false); navigate(n.actionLink); } }} className={`w-full text-left flex gap-3 px-5 py-4 border-b border-slate-100 hover:bg-teal-50 transition-colors ${!n.isRead ? 'bg-teal-50/60' : 'bg-white'}`}><span className="w-9 h-9 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center shrink-0"><Bell size={17}/></span><span className="flex-1 min-w-0"><span className="flex justify-between gap-2"><strong className="text-xs text-teal-800">{n.workflow?.module || 'QCare update'}</strong>{!n.isRead && <span className="text-xs font-bold text-teal-700">New</span>}</span><span className="block mt-1 text-sm font-medium leading-snug text-slate-800 break-words">{n.message}</span><span className="block mt-2 text-xs text-slate-500">{n.workflow?.actor?.name || n.user || 'QCare'} · {n.createdAt ? new Date(n.createdAt).toLocaleString('en-GB', { timeZone:'Asia/Dubai', dateStyle:'medium', timeStyle:'short' }) : 'Time unavailable'} · Dubai</span></span></button>) : <div className="py-12 px-6 text-center text-slate-500"><Bell className="mx-auto mb-3 text-teal-600" size={28}/><strong className="block text-slate-700">You're all caught up</strong><p className="text-xs mt-1">New updates will appear here.</p></div>}</div>
+              <button onClick={() => { setShowNotifications(false); navigate('/notifications'); }} className="w-full py-4 text-sm font-bold text-teal-700 hover:bg-teal-50 border-t border-slate-100">Open notification center →</button>
+            </section>}
           </div>
 
           <div className="h-8 w-px bg-slate-300"></div>
