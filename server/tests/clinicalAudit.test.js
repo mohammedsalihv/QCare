@@ -48,7 +48,7 @@ test('scheduling derives standard and immutable criteria from the template and i
   const create = t.mock.method(ClinicalAudit, 'create', async body => body);
   const res = response();
   await workflow.scheduleAudit(request(reviewer, 'QualityManager', { auditTitle: 'Audit', templateId: reviewer, auditor, location, department: 'Clinic', scheduledDate: '2026-10-26', auditType: 'planned', status: 'completed', standard: 'JCI', overallScore: 100 }), res);
-  assert.equal(res.statusCode, 201); assert.equal(res.data.standard, 'internal'); assert.equal(res.data.status, undefined);
+  assert.equal(res.statusCode, 201); assert.equal(res.data.standard, 'internal'); assert.equal(res.data.status, 'pending-approval');
   assert.equal(create.mock.calls[0].arguments[0].criteriaSnapshot[0].weight, 3);
 });
 test('only the assigned auditor and quality managers can start audits', async t => {
@@ -111,6 +111,17 @@ test('review and scheduling routes keep manager role gates', () => {
     const handlers = route.stack.filter(layer => layer.method === method);
     const denied = response(); handlers[1].handle({ user: { role: 'Staff' } }, denied, () => assert.fail('Staff cannot manage audits'));
     assert.equal(denied.statusCode, 403);
+  }
+});
+
+test('template edit and delete require authentication and manager privileges', () => {
+  const route = routes.stack.find(layer => layer.route?.path === '/templates/:templateId').route;
+  for (const method of ['put', 'delete']) {
+    const handlers = route.stack.filter(layer => layer.method === method);
+    assert.equal(handlers[0].handle.name, 'protect');
+    const res = response();
+    handlers[1].handle({ user: { role: 'Staff' } }, res, () => assert.fail('Staff cannot change templates'));
+    assert.equal(res.statusCode, 403);
   }
 });
 test('uploaded evidence persists privately and only authorized users can download it', async t => {

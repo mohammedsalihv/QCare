@@ -1,8 +1,16 @@
+import AuditScheduleApproval from '../components/audit/AuditScheduleApproval';
+import { dubaiDay } from '../components/audit/auditSchedule';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Select from '../components/Select';
 import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
-import AuditDashboard from '../components/audit/AuditDashboard';
+import AuditOverview from '../components/audit/AuditOverview';
+import AuditRegister from '../components/audit/AuditRegister';
+import { StatusBadge } from '../components/audit/AuditBadges';
+import { auditStatus, displayLabel } from '../components/audit/auditPresentation';
+import { AlertCircle, ArrowLeft, CalendarDays, CheckCircle2, ClipboardList, History, Layers3, LayoutDashboard, ListChecks, Plus, ShieldCheck } from 'lucide-react';
+import '../components/audit/clinicalAudit.css';
 import AuditWorkspace from '../components/audit/AuditWorkspace';
 import CorrectiveActionBoard from '../components/audit/CorrectiveActionBoard';
 import AuditTemplateBuilder from '../components/audit/AuditTemplateBuilder';
@@ -12,13 +20,15 @@ import AuditCalendar, { AuditSessionSummary } from '../components/audit/AuditCal
 import { useNotification } from '../components/NotificationContext';
 
 const config = () => ({ headers: { Authorization: `Bearer ${localStorage.getItem('token') || JSON.parse(localStorage.getItem('userInfo') || '{}').token || ''}` } });
-const input = 'w-full border border-slate-200 rounded-xl p-3 bg-white';
-const button = 'px-4 py-2 rounded-xl border border-slate-200 disabled:opacity-40';
 const initialAction = { actionText: '', owner: '', dueDate: '', priority: 'medium', criterionId: '', rootCause: '' };
 
 export default function ClinicalAuditWorkspace() {
-  const { showNotification } = useNotification();
+  const routeLocation = useLocation(), navigate = useNavigate();
+  const { showNotification, confirm, fetchFeed } = useNotification();
+  const [currentRole, setCurrentRole] = useState(null);
   const [view, setView] = useState('dashboard');
+  const [approvalAudit, setApprovalAudit] = useState(null);
+  const [calendarFocusDate, setCalendarFocusDate] = useState('');
   const [audits, setAudits] = useState([]);
   const [stats, setStats] = useState(null);
   const [templates, setTemplates] = useState([]);
@@ -28,6 +38,7 @@ export default function ClinicalAuditWorkspace() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [modal, setModal] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState(null);
   const [initialSessionDate, setInitialSessionDate] = useState('');
   const [action, setAction] = useState(initialAction);
   const [comment, setComment] = useState('');
@@ -35,13 +46,14 @@ export default function ClinicalAuditWorkspace() {
   const [status, setStatus] = useState('');
   const user = JSON.parse(localStorage.getItem('userInfo') || '{}');
   const userId = user._id || user.id;
-  const isManager = ['qualitymanager', 'superadmin'].includes(user.role?.toLowerCase());
+  const isManager = ['quality', 'qualitymanager', 'superadmin'].includes((currentRole || user.role)?.toLowerCase());
   const canEdit = audit => isManager || String(audit.auditor?._id || audit.auditor) === String(userId);
   const refresh = useCallback(async () => {
     const [list, dashboard] = await Promise.all([axios.get('/api/audit', config()), axios.get('/api/audit/dashboard', config())]);
     setAudits(list.data); setStats(dashboard.data);
   }, []);
   useEffect(() => {
+    axios.get('/api/audit/permissions', config()).then(({ data }) => setCurrentRole(data.role)).catch(() => {});
     Promise.all([axios.get('/api/audit', config()), axios.get('/api/audit/dashboard', config()), axios.get('/api/audit/templates', config())])
       .then(([a, d, t]) => { setAudits(a.data); setStats(d.data); setTemplates(t.data); })
       .catch(err => setError(err.response?.data?.message || 'Unable to load audit workspace.'))
@@ -55,10 +67,26 @@ export default function ClinicalAuditWorkspace() {
     finally { setBusy(false); }
   };
   const openAudit = audit => run(async () => {
+    if (audit.status === 'pending-approval') {
+      const { data } = await axios.get(`/api/audit/${audit._id}`, config());
+      setApprovalAudit(data); return;
+    }
     const editable = canEdit(audit) && !['pending-review', 'completed'].includes(audit.status);
     const response = editable ? await axios.put(`/api/audit/${audit._id}/start`, {}, config()) : await axios.get(`/api/audit/${audit._id}`, config());
-    setActive(response.data); setComment(''); setAction(initialAction); setView('detail');
+    setActive(response.data); setComment(''); setAction(initialAction); setView('detail'); window.scrollTo({ top: 0, behavior: 'instant' });
   });
+  useEffect(() => {
+    const id = new URLSearchParams(routeLocation.search).get('approval');
+    if (!id || loading) return;
+    let mounted = true;
+    axios.get(`/api/audit/${encodeURIComponent(id)}`, config()).then(({ data }) => {
+      if (!mounted) return;
+      setView('audits'); setStatus(data.status === 'pending-approval' ? 'pending-approval' : '');
+      if (data.status === 'pending-approval') setApprovalAudit(data);
+      navigate(routeLocation.pathname, { replace: true });
+    }).catch(() => { if (mounted) setError('This audit request is no longer available.'); });
+    return () => { mounted = false; };
+  }, [loading, routeLocation.search, routeLocation.pathname, navigate]);
   const save = async findings => {
     await axios.put(`/api/audit/${active._id}/findings`, { findings }, config());
     showNotification('Audit progress saved', 'success');
@@ -80,41 +108,82 @@ export default function ClinicalAuditWorkspace() {
     });
   };
   const download = audit => run(async () => {
-    const response = await axios.get(`/api/audit/${audit._id}/report/pdf`, { ...config(), responseType: 'blob' });
-    const url = URL.createObjectURL(response.data), a = document.createElement('a');
-    a.href = url; a.download = `AuditReport_${audit._id}.pdf`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    let response;
+    try { response = await axios.get(`/api/audit/${audit._id}/report/pdf`, { ...config(), responseType: 'blob' }); }
+    catch (error) {
+      if (error.response?.data instanceof Blob) {
+        const body = await error.response.data.text();
+        try { throw new Error(JSON.parse(body).message || 'Unable to download the audit report.'); }
+        catch (parsed) { if (parsed instanceof SyntaxError) throw new Error('Unable to download the audit report.'); throw parsed; }
+      }
+      throw error;
+    }
+    if (!(await response.data.slice(0, 5).text()).startsWith('%PDF-')) throw new Error('The server did not return a valid PDF report. Please try again.');
+    const url = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' })), a = document.createElement('a');
+    const title = (audit.auditTitle || 'Clinical-Audit').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 80);
+    const serverFilename = /filename="([^"]+)"/i.exec(response.headers['content-disposition'] || '')?.[1];
+    const day = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dubai', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    a.href = url; a.download = serverFilename?.replace(/[\\/]/g, '_') || `CMC_Clinical_Audit_${title}_${day}.pdf`;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 30000);
   });
+  const deleteAudit = audit => confirm({ title: 'Delete audit?', type: 'danger', confirmLabel: 'Delete audit',
+    message: `Delete “${audit.auditTitle}” from the audit list and calendar? Its findings, actions and history will be retained in the deleted record.`,
+    onConfirm: () => run(async () => {
+      await axios.delete(`/api/audit/${audit._id}`, { ...config(), data: { expectedVersion: audit.__v || 0 } });
+      setAudits(previous => previous.filter(item => item._id !== audit._id));
+      await refresh(); showNotification('Audit deleted', 'success');
+    }) });
+  const editSchedule = audit => run(async () => {
+    const { data } = await axios.get(`/api/audit/${audit._id}`, config());
+    setEditingSchedule(data); setInitialSessionDate(''); setModal(true);
+  });
+  const approveSchedule = async (audit, comment) => {
+    const { data } = await axios.put(`/api/audit/${audit._id}/schedule-approval`, { expectedVersion: audit.__v || 0, comment }, config());
+    setApprovalAudit(null); setCalendarFocusDate(dubaiDay(data.scheduledDate)); setView('calendar');
+    await refresh(); await fetchFeed(); showNotification('Schedule approved and published to the calendar', 'success');
+  };
   const scheduleAudit = async details => {
+    if (editingSchedule) {
+      await axios.put(`/api/audit/${editingSchedule._id}`, { ...details, expectedVersion: editingSchedule.__v || 0 }, config());
+      await refresh(); await fetchFeed(); setModal(false); setEditingSchedule(null); setView('audits'); setStatus('pending-approval'); setSearch(''); showNotification('Schedule changes submitted for QM approval', 'success'); return;
+    }
     await axios.post('/api/audit', details, config());
-    await refresh(); setModal(false); setView('calendar'); showNotification('Audit scheduled', 'success');
+    await refresh(); await fetchFeed(); setModal(false); setView('audits'); setStatus('pending-approval'); setSearch(''); window.scrollTo({ top: 0, behavior: 'instant' }); showNotification('Audit submitted for QM approval', 'success');
   };
   const actions = audits.flatMap(a => (a.improvementActions || []).map(item => ({ ...item, auditId: a._id, auditTitle: a.auditTitle, auditorId: a.auditor?._id || a.auditor })));
-  const filtered = audits.filter(a => (!status || a.status === status) && `${a.auditTitle} ${a.department || ''} ${a.location?.name || ''} ${(a.concernedPersons || []).map(p => p.employeeName).join(' ')}`.toLowerCase().includes(search.toLowerCase()));
+  const filtered = audits.filter(a => (!status || auditStatus(a) === status) && `${a.auditTitle} ${a.department || ''} ${a.location?.name || ''} ${(a.concernedPersons || []).map(p => p.employeeName).join(' ')}`.toLowerCase().includes(search.toLowerCase()));
   const criteria = active?.criteriaSnapshot?.length ? active.criteriaSnapshot : active?.templateId?.criteria || [];
-  const pending = audits.filter(a => a.status === 'pending-review').length;
-  const overdueActions = actions.filter(a => a.status !== 'completed' && new Date(a.dueDate) < new Date(new Date().toDateString())).length;
   const canReview = active && isManager && String(active.auditor?._id || active.auditor) !== String(userId) && String(active.submittedBy) !== String(userId);
-  return <DashboardLayout title="Clinical Audit & Governance"><div className="space-y-6 pb-12">
-    <div className="flex flex-wrap items-center justify-between gap-4"><div><h1 className="text-2xl font-semibold">Clinic audit workspace</h1><p className="text-slate-600">Track evidence, review findings, and verify improvement.</p></div>{isManager && <button onClick={() => { setError(''); setInitialSessionDate(''); setModal(true); }} className={`${button} bg-primary text-white`}>+ Schedule new audit</button>}</div>
-    <nav className="flex flex-wrap gap-2" aria-label="Audit sections">{[['dashboard', 'Overview'], ['audits', 'Audits'], ['calendar', 'Calendar'], ['actions', 'Findings & actions'], ['templates', 'Templates']].map(([id, label]) => <button key={id} onClick={() => { setView(id); refresh().catch(() => setError('Unable to refresh audits.')); }} className={`${button} ${view === id ? 'bg-primary text-white' : 'bg-white'}`}>{label}</button>)}</nav>
-    {error && <div role="alert" className="p-4 bg-rose-50 text-rose-700 rounded-xl">{error}</div>}
-    {loading ? <p role="status">Loading clinic audits…</p> : <>
-      {view === 'calendar' && <AuditCalendar audits={audits} onOpen={openAudit} canSchedule={isManager} busy={busy} onSchedule={date => { setInitialSessionDate(date); setModal(true); }} />}
-      {view === 'templates' && <AuditTemplateBuilder templates={templates} canManage={isManager} onCreate={async body => { const result = await axios.post('/api/audit/templates', body, config()); setTemplates(prev => [...prev, result.data]); showNotification('Checklist template created', 'success'); }} />}
-      {view === 'dashboard' && <><div className="grid sm:grid-cols-3 gap-4">{[['Awaiting review', pending], ['Overdue actions', overdueActions], ['Verified actions', actions.filter(a => a.status === 'completed').length]].map(([label, count]) => <div key={label} className="p-5 bg-white rounded-2xl border"><p className="text-2xl font-semibold">{count}</p><p>{label}</p></div>)}</div><AuditDashboard stats={stats} /></>}
-      {view === 'audits' && <section className="space-y-4"><div className="flex flex-wrap gap-3"><input aria-label="Search audits" className={`${input} flex-1`} placeholder="Search audits, locations, departments or people" value={search} onChange={e => setSearch(e.target.value)} /><Select aria-label="Filter audit status" className="border rounded-xl p-3" value={status} onChange={e => setStatus(e.target.value)}><option value="">All statuses</option>{['scheduled', 'in-progress', 'pending-review', 'completed', 'overdue'].map(s => <option key={s}>{s}</option>)}</Select></div>
-        {!filtered.length && <p className="p-8 bg-white rounded-2xl text-center">No audits match. Schedule an audit to get started.</p>}
-        <div className="grid lg:grid-cols-2 gap-4">{filtered.map(a => <article key={a._id} className="bg-white border rounded-2xl p-5 space-y-4"><div className="flex justify-between gap-3"><h2 className="font-semibold text-lg">{a.auditTitle}</h2><span className="text-xs rounded-full bg-slate-100 p-2 self-start">{a.status.replaceAll('-', ' ')}</span></div><AuditScopeSummary audit={a} /><p className="text-sm">Auditor: {a.auditorName || a.auditor?.employeeName || 'Not specified'}</p><AuditSessionSummary audit={a} /><p className="text-sm">{a.standard}</p><p>Compliance: {a.overallScore == null || ['scheduled', 'overdue'].includes(a.status) ? 'N/A' : `${a.overallScore}%`} · Coverage: {a.coverage || 0}%</p><div className="flex gap-3"><button disabled={busy} onClick={() => openAudit(a)} className={`${button} bg-primary text-white`}>{a.status === 'pending-review' ? 'Review audit' : a.status === 'completed' || !canEdit(a) ? 'View audit' : 'Start / continue'}</button><button disabled={busy} onClick={() => download(a)} className={button}>PDF report</button></div></article>)}</div>
-      </section>}
+  const openSchedule = () => { setError(''); setEditingSchedule(null); setInitialSessionDate(''); setModal(true); };
+  const sections = [
+    ['dashboard', 'Overview', LayoutDashboard, null], ['audits', 'Audits', ClipboardList, audits.length],
+    ['calendar', 'Calendar', CalendarDays, null], ['actions', 'Findings & actions', ListChecks, actions.filter(a => a.status !== 'completed').length],
+    ['templates', 'Templates', Layers3, templates.length]
+  ];
+  return <DashboardLayout title="Clinical Audit & Governance"><div className="ca-workspace">
+    <header className="ca-page-header"><div className="ca-page-heading"><span className="ca-module-icon"><ShieldCheck size={27} /></span><div><p className="ca-eyebrow">Quality & governance</p><h1>Clinical audit</h1><p>Plan audits, review evidence and track clinical improvement.</p></div></div>{isManager && <button aria-label="+ Schedule new audit" onClick={openSchedule} className="ca-button ca-primary"><Plus size={18} />Schedule new audit</button>}</header>
+    <nav className="ca-tabs" aria-label="Audit sections">{sections.map(([id, label, Icon, count]) => <button key={id} aria-label={label} aria-current={view === id || (view === 'detail' && id === 'audits') ? 'page' : undefined} onClick={() => { setView(id); window.scrollTo({ top: 0, behavior: 'instant' }); refresh().catch(() => setError('Unable to refresh audits.')); }}>{React.createElement(Icon, { size: 17 })}<span>{label}</span>{count != null && <span className="ca-tab-count" aria-hidden="true">{count}</span>}</button>)}</nav>
+    {error && <div role="alert" className="ca-alert"><AlertCircle size={19} />{error}</div>}
+    {loading ? <div className="ca-loading" role="status"><span />Loading clinic audits…</div> : <>
+      {audits.some(a => a.status === 'pending-approval') && <div className="ca-approval-banner"><ShieldCheck size={23} /><div><strong>{audits.filter(a => a.status === 'pending-approval').length} schedule requests awaiting QM approval</strong><p>Proposed visits appear in the calendar only after approval.</p></div><button className="ca-button ca-secondary" onClick={() => { setStatus('pending-approval'); setSearch(''); setView('audits'); }}>Review requests</button></div>}
+      {view === 'dashboard' && <AuditOverview audits={audits} actions={actions} stats={stats} onOpen={openAudit} onView={(next, filter) => { setStatus(filter); setView(next); }} />}
+      {view === 'audits' && <AuditRegister audits={filtered} search={search} status={status} setSearch={setSearch} setStatus={setStatus} onOpen={openAudit} onDownload={download} onDelete={deleteAudit} onEditSchedule={editSchedule} canEdit={canEdit} busy={busy} onSchedule={openSchedule} canManage={isManager} />}
+      {view === 'calendar' && <AuditCalendar initialDate={calendarFocusDate} audits={audits} onOpen={openAudit} onDownload={download} onDelete={deleteAudit} onEditSchedule={editSchedule} canSchedule={isManager} busy={busy} onSchedule={date => { setEditingSchedule(null); setInitialSessionDate(date); setModal(true); }} />}
+      {view === 'templates' && <AuditTemplateBuilder templates={templates} canManage={isManager}
+        onCreate={async body => { const result = await axios.post('/api/audit/templates', body, config()); setTemplates(prev => [...prev, result.data]); showNotification('Checklist template created', 'success'); }}
+        onUpdate={async (id, body) => { const result = await axios.put('/api/audit/templates/' + id, body, config()); setTemplates(prev => prev.map(t => t._id === id ? result.data : t)); showNotification('Checklist template updated', 'success'); }}
+        onDelete={async template => { await axios.delete('/api/audit/templates/' + template._id, { ...config(), data: { expectedVersion: template.__v || 0 } }); setTemplates(prev => prev.filter(t => t._id !== template._id)); showNotification('Checklist template deleted', 'success'); }} />}
       {view === 'actions' && <CorrectiveActionBoard actions={actions} currentUser={userId} isManager={isManager} onUpdateStatus={async (auditId, actionId, nextStatus, completionEvidence) => { await axios.put(`/api/audit/${auditId}/actions/${actionId}`, { status: nextStatus, completionEvidence }, config()); await refresh(); }} />}
-      {view === 'detail' && active && <div className="space-y-5"><button className={button} disabled={busy} onClick={() => { setView('audits'); refresh().catch(() => setError('Unable to refresh audits.')); }}>← Back to audits</button>
-        <section className="p-5 bg-white border rounded-2xl space-y-2"><AuditScopeSummary audit={active} /><p className="font-semibold">Auditor: {active.auditorName || active.auditor?.employeeName || 'Not specified'}</p><AuditSessionSummary audit={active} /></section>
+      {view === 'detail' && active && <div className="ca-stack">
+        <div className="ca-detail-nav"><button className="ca-text-button" disabled={busy} onClick={() => { setView('audits'); window.scrollTo({ top: 0, behavior: 'instant' }); refresh().catch(() => setError('Unable to refresh audits.')); }}><ArrowLeft size={16} />Back to audits</button><StatusBadge status={active.status} /></div>
+        <section className="ca-panel ca-audit-context"><div><p className="ca-eyebrow">Audit scope</p><AuditScopeSummary audit={active} /><p className="ca-small">Auditor: <strong>{active.auditorName || active.auditor?.employeeName || 'Not specified'}</strong></p></div><div><p className="ca-eyebrow">Scheduled dates · Dubai time</p><AuditSessionSummary audit={active} /></div></section>
         <AuditWorkspace key={`${active._id}-${active.status}`} audit={active} onSaveFindings={save} onFinalize={submit} readOnly={!canEdit(active) || ['completed', 'pending-review'].includes(active.status)} />
-        {active.status === 'pending-review' && isManager && <section className="p-6 bg-white border rounded-2xl space-y-3"><h2 className="font-semibold">Independent review</h2><p className="text-sm text-slate-600">The assigned auditor and submitter cannot approve their own audit.</p><label className="block">Reviewer comment<textarea className={input} value={comment} onChange={e => setComment(e.target.value)} /></label><div className="flex gap-3"><button disabled={busy || !canReview} className={`${button} bg-emerald-700 text-white`} onClick={() => review('approve')}>Approve audit</button><button disabled={busy || !canReview || !comment.trim()} className={button} onClick={() => review('return')}>Return for changes</button></div></section>}
-        {canEdit(active) && <form onSubmit={addAction} className="p-6 bg-white border rounded-2xl space-y-4"><h2 className="font-semibold">Assign a corrective action</h2><label className="block">Action required<textarea required className={input} value={action.actionText} onChange={e => setAction({ ...action, actionText: e.target.value })} /></label><div className="grid md:grid-cols-2 gap-4"><label>Owner<Select aria-label="Owner" required className={input} value={action.owner} onChange={e => setAction({ ...action, owner: e.target.value })}><option value="">Select staff</option>{users.map(u => <option key={u._id} value={u._id}>{u.employeeName}</option>)}</Select></label><label>Due date<input required type="date" className={input} value={action.dueDate} onChange={e => setAction({ ...action, dueDate: e.target.value })} /></label><label>Priority<Select aria-label="Priority" className={input} value={action.priority} onChange={e => setAction({ ...action, priority: e.target.value })}>{['high', 'medium', 'low'].map(p => <option key={p}>{p}</option>)}</Select></label><label>Linked criterion<Select aria-label="Linked criterion" className={input} value={action.criterionId} onChange={e => setAction({ ...action, criterionId: e.target.value })}><option value="">General action</option>{criteria.map(c => <option key={c.criterionId} value={c.criterionId}>{c.text}</option>)}</Select></label></div><label className="block">Root cause<textarea className={input} value={action.rootCause} onChange={e => setAction({ ...action, rootCause: e.target.value })} /></label><button disabled={busy} className={`${button} bg-primary text-white`}>Assign action</button></form>}
-        <section className="p-6 bg-white border rounded-2xl space-y-3"><h2 className="font-semibold">Audit history</h2>{active.history?.length ? active.history.map((h, i) => <p key={h._id || i} className="text-sm">{new Date(h.at).toLocaleString()} · {h.event.replaceAll('-', ' ')} {h.detail && `· ${h.detail}`}</p>) : <p className="text-sm text-slate-500">No recorded events for this legacy audit.</p>}</section>
+        {active.status === 'pending-review' && isManager && <section className="ca-panel ca-review-panel"><div className="ca-panel-heading"><div><p className="ca-eyebrow">Quality assurance</p><h2>Independent review</h2><p>A different quality manager must review and approve this assessment.</p></div><ShieldCheck size={24} /></div><div className="ca-panel-body ca-form"><label>Reviewer comment<textarea className="ca-input" value={comment} onChange={event => setComment(event.target.value)} placeholder="Record your review or the changes required…" /></label><div className="ca-button-row"><button disabled={busy || !canReview} className="ca-button ca-primary" onClick={() => review('approve')}><CheckCircle2 size={16} />Approve audit</button><button disabled={busy || !canReview || !comment.trim()} className="ca-button ca-secondary" onClick={() => review('return')}>Return for changes</button></div></div></section>}
+        {canEdit(active) && <form onSubmit={addAction} className="ca-panel"><div className="ca-panel-heading"><div><p className="ca-eyebrow">Continuous improvement</p><h2>Assign a corrective action</h2><p>Define the improvement, select an owner and agree a due date.</p></div><ListChecks size={23} /></div><div className="ca-panel-body ca-form"><label>Action required<textarea required className="ca-input" value={action.actionText} onChange={event => setAction({ ...action, actionText: event.target.value })} placeholder="Describe what needs to change…" /></label><div className="ca-form-grid"><label>Owner<Select aria-label="Owner" required className="ca-input" value={action.owner} onChange={event => setAction({ ...action, owner: event.target.value })}><option value="">Select staff</option>{users.map(u => <option key={u._id} value={u._id}>{u.employeeName}</option>)}</Select></label><label>Due date<input required type="date" className="ca-input" value={action.dueDate} onChange={event => setAction({ ...action, dueDate: event.target.value })} /></label><label>Priority<Select aria-label="Priority" className="ca-input" value={action.priority} onChange={event => setAction({ ...action, priority: event.target.value })}>{['high', 'medium', 'low'].map(p => <option key={p} value={p}>{displayLabel(p)}</option>)}</Select></label><label>Linked criterion<Select aria-label="Linked criterion" className="ca-input" value={action.criterionId} onChange={event => setAction({ ...action, criterionId: event.target.value })}><option value="">General action</option>{criteria.map(c => <option key={c.criterionId} value={c.criterionId}>{c.text}</option>)}</Select></label></div><label>Root cause<textarea className="ca-input" value={action.rootCause} onChange={event => setAction({ ...action, rootCause: event.target.value })} placeholder="What contributed to this finding?" /></label></div><div className="ca-form-footer"><p className="ca-small">Actions are tracked separately until verified.</p><button disabled={busy} className="ca-button ca-primary"><Plus size={16} />Assign action</button></div></form>}
+        <section className="ca-panel"><div className="ca-panel-heading"><div><p className="ca-eyebrow">Activity trail</p><h2>Audit history</h2></div><History size={22} /></div>{active.history?.length ? <ol className="ca-timeline">{active.history.map((event, index) => <li key={event._id || index}><span className="ca-timeline-dot" /><div><p><strong>{displayLabel(event.event)}</strong><time>{new Date(event.at).toLocaleString('en-GB', { timeZone: 'Asia/Dubai', dateStyle: 'medium', timeStyle: 'short' })}</time></p>{event.detail && <small>{event.detail}</small>}</div></li>)}</ol> : <div className="ca-panel-body ca-small">No recorded events for this legacy audit.</div>}</section>
       </div>}
     </>}
-    {modal && <AuditScheduleDialog templates={templates} initialDate={initialSessionDate} onSchedule={scheduleAudit} onClose={() => { setModal(false); setError(''); }} />}
+    {approvalAudit && <AuditScheduleApproval audit={approvalAudit} canApprove={isManager} onApprove={approveSchedule} onClose={() => setApprovalAudit(null)} />}
+    {modal && <AuditScheduleDialog audit={editingSchedule} templates={templates} initialDate={initialSessionDate} onSchedule={scheduleAudit} onClose={() => { setModal(false); setEditingSchedule(null); setError(''); }} />}
   </div></DashboardLayout>;
 }

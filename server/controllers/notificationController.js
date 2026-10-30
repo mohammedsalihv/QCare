@@ -1,3 +1,5 @@
+const visibility = require('../utils/notificationVisibility');
+const auditNotifications = require('../utils/clinicalAuditNotifications');
 const Notification = require("../models/Notification");
 
 // @desc    Get all notifications for current user
@@ -5,27 +7,8 @@ const Notification = require("../models/Notification");
 // @access  Private
 const getNotifications = async (req, res) => {
   try {
-    const roleLower = req.user.role?.toLowerCase();
-    if (roleLower === 'superadmin') {
-      roleQuery = {
-        $or: [
-          { recipientRole: "all" },
-          { recipientRole: "admin" },
-          { recipientRole: "superadmin" },
-          { recipientId: req.user._id }
-        ]
-      };
-    } else if (roleLower === 'admin') {
-      roleQuery = {
-        $or: [
-          { recipientRole: "all" },
-          { recipientRole: "admin" },
-          { recipientId: req.user._id }
-        ]
-      };
-    } else {
-      roleQuery = { recipientId: req.user._id };
-    }
+    if (auditNotifications.isQuality(req.user)) await auditNotifications.syncPending();
+    const roleQuery = visibility(req.user);
 
     // Filter out notifications deleted by this specific user
     const query = {
@@ -54,7 +37,7 @@ const getNotifications = async (req, res) => {
 // @access  Private
 const markAsRead = async (req, res) => {
   try {
-    const notification = await Notification.findById(req.params.id);
+    const notification = await Notification.findOne({ _id: req.params.id, ...visibility(req.user), deletedBy: { $ne: req.user._id } });
     
     if (!notification) {
       return res.status(404).json({ message: "Notification not found" });
@@ -77,7 +60,7 @@ const markAsRead = async (req, res) => {
 // @access  Private
 const deleteNotification = async (req, res) => {
   try {
-    const notification = await Notification.findById(req.params.id);
+    const notification = await Notification.findOne({ _id: req.params.id, ...visibility(req.user), deletedBy: { $ne: req.user._id } });
     
     if (!notification) {
       return res.status(404).json({ message: "Notification not found" });
@@ -100,19 +83,7 @@ const deleteNotification = async (req, res) => {
 // @access  Private
 const clearAllNotifications = async (req, res) => {
   try {
-    let roleQuery;
-    const roleLower = req.user.role?.toLowerCase();
-    if (roleLower === 'admin' || roleLower === 'superadmin') {
-      roleQuery = {
-        $or: [
-          { recipientRole: "all" },
-          { recipientRole: roleLower === "superadmin" ? "superadmin" : "admin" },
-          { recipientId: req.user._id }
-        ]
-      };
-    } else {
-      roleQuery = { recipientId: req.user._id };
-    }
+    const roleQuery = visibility(req.user);
 
     // Add current user to deletedBy for all notifications matching the role query
     await Notification.updateMany(

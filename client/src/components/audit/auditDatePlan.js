@@ -1,3 +1,4 @@
+import { dubaiDay, sessionTime } from './auditSchedule.js';
 export const initialDatePlan = (date = '') => ({ dates: date ? [date] : [], mode: 'shared', windows: [{ start: '09:00', end: '10:00' }], dateWindows: {} });
 export function datesBetween(first, last) {
   const [start, end] = [first, last].sort(), values = [];
@@ -17,4 +18,14 @@ export function buildAuditDates(plan) {
   if (sessions.some(s => !Number.isFinite(new Date(s.startAt).getTime()) || !Number.isFinite(new Date(s.endAt).getTime()) || new Date(s.endAt) <= new Date(s.startAt))) throw new Error('Each time window must end after its start time.');
   if (sessions.some((s, i) => i > 0 && new Date(s.startAt) < new Date(sessions[i - 1].endAt))) throw new Error('Time windows cannot overlap on the same date.');
   return sessions;
+}
+
+export function datePlanFromAudit(audit) {
+  if (!audit?.sessions?.length) return initialDatePlan(audit?.scheduledDate ? dubaiDay(audit.scheduledDate) : '');
+  const dateWindows = {};
+  for (const slot of [...audit.sessions].sort((a, b) => new Date(a.startAt) - new Date(b.startAt))) {
+    const day = dubaiDay(slot.startAt);
+    (dateWindows[day] ||= []).push({ start: sessionTime(slot.startAt), end: sessionTime(slot.endAt) });
+  }
+  return { dates: Object.keys(dateWindows).sort(), mode: 'individual', windows: initialDatePlan().windows, dateWindows };
 }

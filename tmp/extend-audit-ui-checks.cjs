@@ -1,0 +1,38 @@
+const fs = require('node:fs');
+const edit = (p, fn) => fs.writeFileSync(p, fn(fs.readFileSync(p, 'utf8')));
+edit('client/src/components/audit/auditPresentation.js', s => s + `\nexport const canDeleteScheduledAudit = audit => ['scheduled', 'overdue'].includes(audit.status) && !audit.conductedDate && !audit.findings?.length && !audit.improvementActions?.length;\n`);
+edit('client/src/components/audit/AuditRegister.jsx', s => s.replace('auditStatus, dateLabel', 'auditStatus, canDeleteScheduledAudit, dateLabel').replace("['scheduled', 'overdue'].includes(audit.status) && !audit.conductedDate", 'canDeleteScheduledAudit(audit)'));
+edit('client/src/components/audit/AuditCalendarView.jsx', s => s.replace('Clock3, MapPin', 'Clock3, FileDown, Trash2, MapPin').replace('auditStatus, dateLabel', 'auditStatus, canDeleteScheduledAudit, dateLabel').replace('audits, onOpen, onSchedule, canSchedule, busy', 'audits, onOpen, onSchedule, onDownload, onDelete, canSchedule, busy').replace('<button className="ca-button ca-secondary ca-compact" disabled={busy}', '<div className="ca-button-row"><button className="ca-button ca-secondary ca-compact" disabled={busy}').replace('Open audit<ArrowRight size={14} /></button></article>', 'Open audit<ArrowRight size={14} /></button><button className="ca-icon-button" disabled={busy} aria-label={`Download PDF for ${event.audit.auditTitle}`} title="PDF report" onClick={() => onDownload(event.audit)}><FileDown size={17} /></button>{canSchedule && canDeleteScheduledAudit(event.audit) && <button className="ca-icon-button ca-delete-audit" disabled={busy} aria-label={`Delete scheduled audit ${event.audit.auditTitle}`} title="Delete scheduled audit" onClick={() => onDelete(event.audit)}><Trash2 size={17} /></button>}</div></article>'));
+edit('client/src/pages/ClinicalAuditWorkspace.jsx', s => s.replace('<AuditCalendar audits={audits} onOpen={openAudit}', '<AuditCalendar audits={audits} onOpen={openAudit} onDownload={download} onDelete={deleteAudit}'));
+edit('client/src/components/audit/AuditOverview.jsx', s => s.replace(" · {a.standard}</small></span>", " · {a.standard}</small>{a.concernedPersons?.length > 0 && <small>Concerned: {a.concernedPersons.map(person => person.employeeName || person.employeeId || 'User no longer available').join(', ')}</small>}</span>"));
+edit('server/tests/helpers/clinicalAuditBrowser.cjs', s => s.replace('failTemplateDelete = false;', 'failTemplateDelete = false, failAuditDelete = false;').replace("      const audit = audits[0];", `      if (p.endsWith('/report/pdf')) return route.fulfill({ contentType: 'application/pdf', body: await fs.readFile(path.join(root, 'output/pdf/cmc-clinical-audit-sample.pdf')) });
+      if (req.method() === 'DELETE' && /^\\/api\\/audit\\/[^/]+$/.test(p)) {
+        if (failAuditDelete) return route.fulfill({ status: 409, json: { message: 'This audit changed. Refresh the list.' } });
+        audits = audits.filter(a => a._id !== p.split('/').at(-1)); return send({ message: 'Scheduled audit deleted' });
+      }
+      const audit = audits[0];`).replace("    // Rich, entirely synthetic fixtures", `    await page.getByRole('button', { name: 'Audits', exact: true }).click();
+    const completedRow = page.locator('.ca-audit-table tbody tr').filter({ hasText: 'October clinic safety' });
+    assert.equal(await completedRow.locator('.ca-concerned-people li').count(), 2);
+    assert.equal(await completedRow.getByRole('button', { name: /^Delete scheduled audit/ }).count(), 0);
+    const pdfEvent = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download PDF for October clinic safety', exact: true }).click();
+    const download = await pdfEvent;
+    assert.match(download.suggestedFilename(), /^CMC-Audit-.*\\.pdf$/);
+    const downloaded = await fs.readFile(await download.path()); assert.equal(downloaded.subarray(0, 5).toString(), '%PDF-');
+    const deleteButton = page.getByRole('button', { name: 'Delete scheduled audit Auditor not yet known', exact: true });
+    await deleteButton.click(); await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+    assert.equal(audits.length, 2);
+    failAuditDelete = true; await deleteButton.click(); await page.getByRole('button', { name: 'Delete audit', exact: true }).click();
+    await page.getByRole('alert').filter({ hasText: 'This audit changed.' }).waitFor(); assert.equal(audits.length, 2);
+    failAuditDelete = false;
+    await page.evaluate(() => { const user = JSON.parse(localStorage.getItem('userInfo')); user.role = 'Staff'; localStorage.setItem('userInfo', JSON.stringify(user)); });
+    await page.reload(); await page.getByRole('button', { name: 'Audits', exact: true }).click();
+    assert.equal(await page.getByRole('button', { name: /^Delete scheduled audit/ }).count(), 0);
+    await page.evaluate(() => { const user = JSON.parse(localStorage.getItem('userInfo')); user.role = 'SuperAdmin'; localStorage.setItem('userInfo', JSON.stringify(user)); });
+    await page.reload(); await page.getByRole('button', { name: 'Audits', exact: true }).click();
+    await deleteButton.click(); await page.getByRole('button', { name: 'Delete audit', exact: true }).click();
+    await page.getByText('Scheduled audit deleted', { exact: true }).waitFor(); assert.equal(audits.length, 1);
+    await page.reload(); await page.getByRole('button', { name: 'Audits', exact: true }).click();
+    assert.equal(await page.locator('.ca-audit-table tbody tr').count(), 1);
+    // Rich, entirely synthetic fixtures`));
+console.log('Added calendar actions, staff names, and browser permission/download checks.');

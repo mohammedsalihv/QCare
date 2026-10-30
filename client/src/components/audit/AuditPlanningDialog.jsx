@@ -4,7 +4,7 @@ import { MapPin, Maximize2, X } from 'lucide-react';
 import Select from '../Select';
 import AuditMultiSelect from './AuditMultiSelect';
 import AuditDatePlanner from './AuditDatePlanner';
-import { buildAuditDates, initialDatePlan } from './auditDatePlan';
+import { buildAuditDates, datePlanFromAudit, initialDatePlan } from './auditDatePlan';
 import './auditPlanning.css';
 
 const input = 'w-full min-w-0 border border-slate-200 rounded-xl p-3 bg-white text-sm';
@@ -16,9 +16,9 @@ async function directories() {
   return { locations: Array.isArray(list(0)) ? list(0).filter(l => l.isActive !== false) : [], departments: Array.isArray(list(1)) ? list(1).filter(d => d.isActive !== false) : [], persons: Array.isArray(list(2)) ? list(2).filter(p => p.isActive !== false && !['blocked', 'inactive'].includes(p.status)) : [], failures: results.map(r => r.status === 'rejected') };
 }
 
-export default function AuditPlanningDialog({ templates, onSchedule, onClose, initialDate = '' }) {
-  const [details, setDetails] = useState({ auditTitle: '', templateId: '', auditType: 'planned', location: '', concernedDepartments: [], concernedPersons: [], auditorName: '' });
-  const [plan, setPlan] = useState(() => initialDatePlan(initialDate));
+export default function AuditPlanningDialog({ templates, onSchedule, onClose, initialDate = '', audit = null }) {
+  const [details, setDetails] = useState(() => audit ? { auditTitle: audit.auditTitle, templateId: audit.templateId?._id || audit.templateId || '', auditType: audit.auditType, location: audit.location?._id || audit.location || '', concernedDepartments: (audit.concernedDepartments || []).map(d => d._id || d), concernedPersons: (audit.concernedPersons || []).map(p => p._id || p), auditorName: audit.auditorName || '' } : { auditTitle: '', templateId: '', auditType: 'planned', location: '', concernedDepartments: [], concernedPersons: [], auditorName: '' });
+  const [plan, setPlan] = useState(() => audit ? datePlanFromAudit(audit) : initialDatePlan(initialDate));
   const [lists, setLists] = useState({ locations: [], departments: [], persons: [], failures: [] });
   const [loading, setLoading] = useState(true), [busy, setBusy] = useState(false), [error, setError] = useState('');
   const [expanded, setExpanded] = useState(false);
@@ -29,6 +29,7 @@ export default function AuditPlanningDialog({ templates, onSchedule, onClose, in
     setExpanded(previous => !previous);
   };
   const available = templates.filter(t => t.criteria?.length);
+  if (audit?.templateId?._id && !available.some(t => t._id === audit.templateId._id)) available.push({ ...audit.templateId, standard: audit.standard });
   useEffect(() => { let active = true; directories().then(data => { if (active) { setLists(data); setLoading(false); } }); return () => { active = false; }; }, []);
   const retry = async () => { setLoading(true); setLists(await directories()); setLoading(false); };
   const update = (field, value) => { setDetails(prev => ({ ...prev, [field]: value })); setError(''); };
@@ -43,7 +44,7 @@ export default function AuditPlanningDialog({ templates, onSchedule, onClose, in
   return <div className="audit-planning-backdrop" onKeyDown={event => { if (event.key === 'Escape' && !busy) onClose(); }}>
     <section ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="schedule-title" className={`audit-planning-dialog ${expanded ? 'audit-planning-expanded' : ''}`}>
       <form onSubmit={submit} className="audit-planning-form">
-        <header className="audit-planning-header"><div><p className="text-xs font-semibold uppercase tracking-wider text-teal-700 mb-1">Clinic audit</p><h2 id="schedule-title" className="text-xl font-semibold">Schedule clinic audit</h2><p className="text-sm text-slate-500 mt-1">Choose the location, people and dates for your audit.</p></div><div className="flex gap-2"><button type="button" className="audit-planning-icon hidden sm:flex" aria-label={expanded ? 'Restore form size' : 'Expand audit form'} aria-pressed={expanded} onClick={toggleSize}><Maximize2 size={17} /></button><button type="button" className="audit-planning-icon" disabled={busy} aria-label="Close scheduling" onClick={onClose}><X size={18} /></button></div></header>
+        <header className="audit-planning-header"><div><p className="text-xs font-semibold uppercase tracking-wider text-teal-700 mb-1">Clinic audit</p><h2 id="schedule-title" className="text-xl font-semibold">{audit ? 'Edit scheduled audit' : 'Schedule clinic audit'}</h2><p className="text-sm text-slate-500 mt-1">Choose the location, people and proposed dates. QM approval is required before calendar publication.</p></div><div className="flex gap-2"><button type="button" className="audit-planning-icon hidden sm:flex" aria-label={expanded ? 'Restore form size' : 'Expand audit form'} aria-pressed={expanded} onClick={toggleSize}><Maximize2 size={17} /></button><button type="button" className="audit-planning-icon" disabled={busy} aria-label="Close scheduling" onClick={onClose}><X size={18} /></button></div></header>
         <div className="audit-planning-body">
           {error && <p role="alert" className="p-3 rounded-xl bg-rose-50 text-rose-700 text-sm mb-4">{error}</p>}
           <div className="audit-planning-columns">
@@ -64,7 +65,7 @@ export default function AuditPlanningDialog({ templates, onSchedule, onClose, in
             <div className="rounded-2xl border border-slate-200 p-4 sm:p-5 min-w-0"><AuditDatePlanner value={plan} onChange={value => { setPlan(value); setError(''); }} disabled={busy} /></div>
           </div>
         </div>
-        <footer className="audit-planning-footer"><div className="min-w-0 text-xs text-slate-500"><p className="flex items-center gap-1 text-slate-700"><MapPin size={13} /><span className="truncate">{lists.locations.find(l => l._id === details.location)?.name || 'Location required'}</span><span className="shrink-0">· {plan.dates.length} dates</span></p><p className="hidden sm:block mt-1">Drag the lower-right corner to resize the form.</p></div><div className="flex gap-2 shrink-0"><button type="button" disabled={busy} onClick={onClose} className="px-4 py-2 rounded-xl border border-slate-200 text-sm">Cancel</button><button disabled={busy || loading || !available.length || !lists.locations.length} className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold disabled:opacity-40">{busy ? 'Scheduling…' : 'Schedule audit'}</button></div></footer>
+        <footer className="audit-planning-footer"><div className="min-w-0 text-xs text-slate-500"><p className="flex items-center gap-1 text-slate-700"><MapPin size={13} /><span className="truncate">{lists.locations.find(l => l._id === details.location)?.name || 'Location required'}</span><span className="shrink-0">· {plan.dates.length} date{plan.dates.length !== 1 ? 's' : ''}</span></p><p className="hidden sm:block mt-1">Drag the lower-right corner to resize the form.</p></div><div className="flex gap-2 shrink-0"><button type="button" disabled={busy} onClick={onClose} className="px-4 py-2 rounded-xl border border-slate-200 text-sm">Cancel</button><button disabled={busy || loading || !available.length || !lists.locations.length} className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold disabled:opacity-40">{busy ? 'Saving…' : audit ? 'Submit changes for approval' : 'Submit for approval'}</button></div></footer>
       </form>
     </section>
   </div>;

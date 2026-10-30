@@ -1,6 +1,6 @@
 const ClinicalAudit = require('../models/ClinicalAudit');
 const AuditTemplate = require('../models/AuditTemplate');
-const PDFDocument = require('pdfkit');
+const clinicalAuditReport = require('../utils/clinicalAuditReport');
 
 // --- Templates ---
 
@@ -21,6 +21,7 @@ exports.getAudits = async (req, res) => {
     let query = {};
     if (department) query.department = department;
     if (status) query.status = status;
+    if (req.query.scope === 'calendar') query.status = { $in: ['scheduled', 'in-progress', 'pending-review', 'completed', 'overdue'] };
     if (pillar) query.governancePillar = pillar;
 
     const audits = await ClinicalAudit.find(query)
@@ -78,55 +79,20 @@ exports.getDashboardStats = async (req, res) => {
 
 exports.generatePDFReport = async (req, res) => {
   try {
-    const audit = await ClinicalAudit.findById(req.params.id).populate('auditor').populate('templateId').populate('location', 'name').populate('concernedDepartments', 'name').populate('concernedPersons', 'employeeName');
+    const audit = await ClinicalAudit.findById(req.params.id)
+      .populate('auditor', 'employeeName').populate('templateId')
+      .populate('location', 'name code').populate('concernedDepartments', 'name')
+      .populate('concernedPersons', 'employeeName').populate('improvementActions.owner', 'employeeName')
+      .populate('improvementActions.verifiedBy', 'employeeName').populate('submittedBy', 'employeeName')
+      .populate('reviewedBy', 'employeeName').populate('history.actor', 'employeeName');
     if (!audit) return res.status(404).json({ message: 'Audit not found' });
-
-    const doc = new PDFDocument();
+    const pdf = await clinicalAuditReport(audit);
+    const filename = clinicalAuditReport.filename(audit);
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=AuditReport_${audit._id}.pdf`);
-
-    doc.pipe(res);
-
-    // Header
-    doc.fontSize(20).text('CLINICAL AUDIT REPORT', { align: 'center' });
-    doc.moveDown();
-    doc.fontSize(12).text(`Title: ${audit.auditTitle}`);
-    doc.text(`Location: ${audit.location?.name || 'Not specified (legacy audit)'}`);
-    doc.text(`Concerned departments: ${audit.concernedDepartments?.map(d => d.name).join(', ') || audit.department || 'Not specified'}`);
-    doc.text(`Concerned persons: ${audit.concernedPersons?.map(p => p.employeeName).join(', ') || 'Not specified'}`);
-    doc.text(`Auditor: ${audit.auditorName || audit.auditor?.employeeName || 'Not specified'}`);
-    if (audit.sessions?.length) {
-      doc.text('Audit sessions (Asia/Dubai):');
-      for (const session of audit.sessions) {
-        const format = date => new Date(date).toLocaleString('en-GB', { timeZone: 'Asia/Dubai', dateStyle: 'medium', timeStyle: 'short' });
-        doc.text(`${format(session.startAt)} - ${format(session.endAt)}`);
-      }
-    }
-    doc.text(`Standard: ${audit.standard}`);
-    doc.text(`Status: ${audit.status}`);
-    doc.text(`Overall Score: ${audit.overallScore == null ? 'N/A' : `${audit.overallScore}%`}`);
-    doc.text(`Assessment coverage: ${audit.coverage ?? 0}%`);
-    doc.text(`Review comment: ${audit.reviewComment || 'None'}`);
-    doc.moveDown();
-
-    doc.text('Findings Summary:', { underline: true });
-    audit.findings.forEach((f, index) => {
-      doc.text(`${index + 1}. Criterion: ${f.criterionId} - Status: ${f.complianceStatus.toUpperCase()}`);
-      doc.fontSize(10).text(`Evidence: ${f.evidence || 'N/A'}`, { indent: 20 });
-      if (f.exclusionReason) doc.text(`Exclusion reason: ${f.exclusionReason}`, { indent: 20 });
-      doc.fontSize(12).moveDown(0.5);
-    });
-
-    doc.moveDown();
-    doc.text('Improvement Action Plan:', { underline: true });
-    audit.improvementActions.forEach((action, index) => {
-      doc.text(`${index + 1}. ${action.actionText} (Owner ID: ${action.owner})`);
-      doc.fontSize(10).text(`Priority: ${action.priority} | Due: ${new Date(action.dueDate).toLocaleDateString()}`, { indent: 20 });
-      doc.fontSize(12).moveDown(0.5);
-    });
-
-    doc.end();
+    res.setHeader('Content-Disposition', 'attachment; filename="' + filename + '"');
+    res.setHeader('Cache-Control', 'private, no-store');
+    res.send(pdf);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(error.name === 'CastError' ? 400 : 500).json({ message: error.name === 'CastError' ? 'Invalid audit ID.' : 'Unable to generate the audit report. Please try again.' });
   }
 };

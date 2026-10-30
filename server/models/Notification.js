@@ -33,9 +33,11 @@ const notificationSchema = new mongoose.Schema(
     }],
     recipientRole: {
       type: String,
-      enum: ["admin", "superadmin", "all", "user"],
+      enum: ["admin", "superadmin", "qualitymanager", "all", "user"],
       default: "admin",
     },
+    sourceKey: { type: String, unique: true, sparse: true },
+    resolvedAt: Date,
     recipientId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

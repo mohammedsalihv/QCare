@@ -49,8 +49,8 @@ const clinicalAuditSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['scheduled', 'in-progress', 'pending-review', 'completed', 'overdue'],
-    default: 'scheduled'
+    enum: ['pending-approval', 'scheduled', 'in-progress', 'pending-review', 'completed', 'overdue'],
+    default: 'pending-approval'
   },
   findings: [{
     criterionId: String,
@@ -94,6 +94,13 @@ const clinicalAuditSchema = new mongoose.Schema({
   reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   reviewedAt: Date,
   reviewComment: String,
+  scheduleRequestedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  scheduleRequestedAt: Date,
+  scheduleApprovedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  scheduleApprovedAt: Date,
+  scheduleApprovalComment: String,
+  deletedAt: Date,
+  deletedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   history: [{ event: String, actor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, at: { type: Date, default: Date.now }, detail: String }],
   nextAuditDate: {
     type: Date
@@ -110,5 +117,10 @@ const clinicalAuditSchema = new mongoose.Schema({
   timestamps: true,
   optimisticConcurrency: true
 });
+
+// Retain clinical evidence and the deletion actor, but hide deleted audits from all active workflows.
+clinicalAuditSchema.pre(/^find/, function () { this.where({ deletedAt: null }); });
+clinicalAuditSchema.pre('countDocuments', function () { this.where({ deletedAt: null }); });
+clinicalAuditSchema.pre('aggregate', function () { this.pipeline().unshift({ $match: { deletedAt: null } }); });
 
 module.exports = mongoose.model('ClinicalAudit', clinicalAuditSchema);

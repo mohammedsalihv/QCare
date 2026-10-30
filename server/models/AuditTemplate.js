@@ -23,6 +23,8 @@ const auditTemplateSchema = new mongoose.Schema({
     text_ar: { type: String },
     weight: { type: Number, default: 1, min: 0.01 }
   }],
+  guidance: String,
+  sourceUrl: String,
   isActive: {
     type: Boolean,
     default: true
@@ -32,7 +34,8 @@ const auditTemplateSchema = new mongoose.Schema({
     ref: 'User'
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  optimisticConcurrency: true
 });
 
 module.exports = mongoose.model('AuditTemplate', auditTemplateSchema);

@@ -3,7 +3,7 @@ const path = require('node:path');
 const cp = require('node:child_process');
 const crypto = require('node:crypto');
 const liveRoot = '/home/salih/QCare';
-const folders = ['routes', 'controllers', 'models', 'utils', 'tests'];
+const folders = ['routes', 'controllers', 'models', 'utils', 'tests', 'assets', 'assets/clinical-audit'];
 for (const filename of ['/AGENTS.md', '/home/AGENTS.md', '/home/salih/AGENTS.md', liveRoot + '/AGENTS.md', liveRoot + '/server/AGENTS.md', ...folders.map(folder => `${liveRoot}/server/${folder}/AGENTS.md`)]) {
   if (fs.existsSync(filename)) throw new Error('Review applicable instructions before staging: ' + filename + '\n' + fs.readFileSync(filename, 'utf8'));
 }
@@ -25,7 +25,7 @@ fs.symlinkSync(liveRoot + '/server/node_modules', stageRoot + '/server/node_modu
 for (const [relative, contents] of Object.entries({ ...payload.files, ...payload.testFiles })) {
   const target = path.join(stageRoot, relative);
   fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.writeFileSync(target, contents);
+  fs.writeFileSync(target, Object.hasOwn(payload.files, relative) ? Buffer.from(contents, 'base64') : contents);
   if (target.endsWith('.js')) cp.execFileSync(process.execPath, ['--check', target], { encoding: 'utf8' });
 }
 const fromStage = require('node:module').createRequire(stageRoot + '/server/package.json');

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import Pagination from '../components/Pagination';
 import axios from 'axios';
@@ -23,6 +24,7 @@ import {
 import { useNotification } from '../components/NotificationContext';
 
 const Notifications = () => {
+  const navigate = useNavigate();
   const { 
     feedNotifications: notifications, 
     setFeedNotifications: setNotifications, 
@@ -44,23 +46,23 @@ const Notifications = () => {
       setLoading(false);
     };
     loadData();
-  }, []);
+  }, [fetchNotifications]);
 
   const markAsRead = async (id) => {
     try {
-      await axios.patch(`http://192.168.1.160:5000/api/notifications/${id}/read`, {}, getAuthConfig());
+      await axios.patch(`/api/notifications/${id}/read`, {}, getAuthConfig());
       setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
-    } catch (error) {
+    } catch {
       showNotification('Error updating notification', 'error');
     }
   };
 
   const deleteNotification = async (id) => {
     try {
-      await axios.delete(`http://192.168.1.160:5000/api/notifications/${id}`, getAuthConfig());
+      await axios.delete(`/api/notifications/${id}`, getAuthConfig());
       setNotifications(prev => prev.filter(n => n._id !== id));
       showNotification('Notification removed', 'success');
-    } catch (error) {
+    } catch {
       showNotification('Error deleting notification', 'error');
     }
   };
@@ -79,7 +81,7 @@ const Notifications = () => {
         try {
           await clearFeed();
           showNotification('All notifications cleared', 'success');
-        } catch (error) {
+        } catch {
           showNotification('Error clearing notifications', 'error');
         }
       }

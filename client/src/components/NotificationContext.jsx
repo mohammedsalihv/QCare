@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import Notification from './Notification';
 import ConfirmationDialog from './ConfirmationDialog';
 import axios from 'axios';
@@ -6,6 +6,8 @@ import { getAuthConfig } from '../utils/authConfig';
 
 const NotificationContext = createContext(null);
 
+// The provider and its consumer hook deliberately share this module.
+// eslint-disable-next-line react-refresh/only-export-components
 export const useNotification = () => {
     const context = useContext(NotificationContext);
     if (!context) {
@@ -39,16 +41,23 @@ export const NotificationProvider = ({ children }) => {
 
     const fetchFeed = useCallback(async () => {
         try {
-            const { data } = await axios.get('http://192.168.1.160:5000/api/notifications', getAuthConfig());
+            const { data } = await axios.get('/api/notifications', getAuthConfig());
             setFeedNotifications(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Error fetching notification feed:', error);
         }
     }, []);
 
+    useEffect(() => {
+        const refresh = () => { if (localStorage.getItem('token') || JSON.parse(localStorage.getItem('userInfo') || '{}').token) fetchFeed(); };
+        refresh();
+        const timer = setInterval(refresh, 30000);
+        window.addEventListener('focus', refresh);
+        return () => { clearInterval(timer); window.removeEventListener('focus', refresh); };
+    }, [fetchFeed]);
     const clearFeed = useCallback(async () => {
         try {
-            await axios.delete('http://192.168.1.160:5000/api/notifications/clear-all', getAuthConfig());
+            await axios.delete('/api/notifications/clear-all', getAuthConfig());
             setFeedNotifications([]);
         } catch (error) {
             console.error('Error clearing notification feed:', error);
