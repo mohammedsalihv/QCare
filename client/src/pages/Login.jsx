@@ -19,6 +19,21 @@ function Login() {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotError, setForgotError] = useState('');
   const forgotInputRef = useRef(null);
+  const usernameInputRef = useRef(null);
+  const passwordInputRef = useRef(null);
+  const usernameFocusTimer = useRef(null);
+  const usernameComposing = useRef(false);
+  const cancelPasswordFocus = () => clearTimeout(usernameFocusTimer.current);
+  const schedulePasswordFocus = value => {
+    cancelPasswordFocus();
+    if (!value.trim() || usernameComposing.current) return;
+    usernameFocusTimer.current = setTimeout(() => {
+      if (document.activeElement === usernameInputRef.current && !document.hidden && !passwordInputRef.current?.disabled) {
+        passwordInputRef.current?.focus();
+      }
+    }, 1200);
+  };
+  useEffect(() => () => clearTimeout(usernameFocusTimer.current), []);
   
   const navigate = useNavigate();
   const { showNotification } = useNotification();
@@ -230,12 +245,17 @@ function Login() {
                       </div>
                       <input
                         id="username"
+                        ref={usernameInputRef}
                         autoFocus
                         autoComplete="username"
                         type="text"
                         required
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={(e) => { setUsername(e.target.value); schedulePasswordFocus(e.target.value); }}
+                        onBlur={cancelPasswordFocus}
+                        onKeyDown={cancelPasswordFocus}
+                        onCompositionStart={() => { usernameComposing.current = true; cancelPasswordFocus(); }}
+                        onCompositionEnd={e => { usernameComposing.current = false; schedulePasswordFocus(e.currentTarget.value); }}
                         disabled={loading}
                         className="w-full pl-12 pr-4 py-3.5 border border-teal-200 rounded-xl bg-slate-50 text-slate-800 font-semibold focus:outline-none focus:ring-4 focus:ring-teal-500/15 focus:bg-white focus:border-teal-600 transition-all duration-200"
                         placeholder="••••••••"
@@ -262,6 +282,7 @@ function Login() {
                       </div>
                       <input
                         id="password"
+                        ref={passwordInputRef}
                         type={showPassword ? 'text' : 'password'}
                         autoComplete="current-password"
                         required
