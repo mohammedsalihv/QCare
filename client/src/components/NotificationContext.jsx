@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { playNotificationSound, unlockNotificationSound, cancelPendingSound } from '../utils/notificationSound';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import Notification from './Notification';
 import ConfirmationDialog from './ConfirmationDialog';
 import axios from 'axios';
@@ -19,6 +20,15 @@ export const useNotification = () => {
 export const NotificationProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([]); // Toast notifications
     const [feedNotifications, setFeedNotifications] = useState([]); // Database notifications (feed)
+    const [soundEnabled, setSoundEnabled] = useState(() => localStorage.getItem('notificationSound') !== 'off');
+    const seen = useRef(null), account = useRef(null), fetching = useRef(false);
+    const toggleSound = () => setSoundEnabled(previous => { const next = !previous; localStorage.setItem('notificationSound', next ? 'on' : 'off'); if (next) unlockNotificationSound(); else cancelPendingSound(); return next; });
+    useEffect(() => {
+      if (!soundEnabled) return;
+      const unlock = () => unlockNotificationSound();
+      window.addEventListener('pointerdown', unlock); window.addEventListener('keydown', unlock);
+      return () => { window.removeEventListener('pointerdown', unlock); window.removeEventListener('keydown', unlock); };
+    }, [soundEnabled]);
     const [confirmState, setConfirmState] = useState(null);
 
     const showNotification = useCallback((message, type = 'info', duration = 5000) => {
@@ -40,18 +50,27 @@ export const NotificationProvider = ({ children }) => {
     }, []);
 
     const fetchFeed = useCallback(async () => {
+        if (fetching.current) return;
+        fetching.current = true;
         try {
+            const user = JSON.parse(localStorage.getItem('userInfo') || '{}');
+            const identity = user._id || user.id || localStorage.getItem('token');
+            if (account.current !== identity) { account.current = identity; seen.current = null; cancelPendingSound(); }
             const { data } = await axios.get('/api/notifications', getAuthConfig());
-            setFeedNotifications(Array.isArray(data) ? data : []);
-        } catch (error) {
-            console.error('Error fetching notification feed:', error);
-        }
-    }, []);
+            const feed = Array.isArray(data) ? data : [];
+            const incoming = seen.current ? feed.filter(n => n._id && !n.isRead && !seen.current.has(n._id)) : [];
+            if (!seen.current) seen.current = new Set();
+            feed.forEach(n => { if(n._id) seen.current.add(n._id); });
+            setFeedNotifications(feed);
+            if (incoming.length) { if (soundEnabled) playNotificationSound(); showNotification(incoming.length === 1 ? incoming[0].message : incoming.length + ' new notifications', 'info'); }
+        } catch (error) { console.error('Error fetching notification feed:', error); }
+        finally { fetching.current = false; }
+    }, [soundEnabled, showNotification]);
 
     useEffect(() => {
         const refresh = () => { if (localStorage.getItem('token') || JSON.parse(localStorage.getItem('userInfo') || '{}').token) fetchFeed(); };
         refresh();
-        const timer = setInterval(refresh, 30000);
+        const timer = setInterval(refresh, 10000);
         window.addEventListener('focus', refresh);
         return () => { clearInterval(timer); window.removeEventListener('focus', refresh); };
     }, [fetchFeed]);
@@ -76,16 +95,16 @@ export const NotificationProvider = ({ children }) => {
     };
 
     return (
-        <NotificationContext.Provider value={{ 
-            showNotification, 
-            confirm, 
-            feedNotifications, 
-            setFeedNotifications, 
-            fetchFeed, 
-            clearFeed 
+        <NotificationContext.Provider value={{
+            showNotification,
+            confirm,
+            feedNotifications,
+            setFeedNotifications,
+            fetchFeed,
+            clearFeed, soundEnabled, toggleSound
         }}>
             {children}
-            
+
             {/* Notifications Container */}
             <div className="fixed top-6 right-6 z-[9999] flex flex-col gap-4 max-w-sm w-full pointer-events-none">
                 {notifications.map((notification) => (

@@ -17,7 +17,7 @@ router.route('/framework')
   .get(protect, getFramework);
 
 router.route('/records')
-  .post(protect, authorize('QualityManager', 'DepartmentHead', 'SuperAdmin'), logTraining)
+  .post(protect, authorize('QualityManager', 'QualityOfficer', 'SuperAdmin'), logTraining)
   .get(protect, getRecords);
 
 router.put('/records/:id/verify', protect, authorize('QualityManager', 'SuperAdmin'), verifyRecord);

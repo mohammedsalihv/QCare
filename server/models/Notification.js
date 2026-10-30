@@ -36,6 +36,11 @@ const notificationSchema = new mongoose.Schema(
       enum: ["admin", "superadmin", "qualitymanager", "all", "user"],
       default: "admin",
     },
+    recipientIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    recipientRoles: [String],
+    workflow: { module: String, recordId: String, title: String, status: String, reason: String,
+      actor: { id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, name: String },
+      requester: { id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, name: String }, occurredAt: Date },
     sourceKey: { type: String, unique: true, sparse: true },
     resolvedAt: Date,
     recipientId: {

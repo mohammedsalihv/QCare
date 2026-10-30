@@ -27,7 +27,7 @@ router.route('/complaints/:id')
   .get(protect, getComplaintById)
   .put(protect, updateComplaint);
 
-router.put('/complaints/:id/acknowledge', protect, authorize('QualityManager', 'SuperAdmin', 'DepartmentHead'), acknowledgeComplaint);
+router.put('/complaints/:id/acknowledge', protect, authorize('QualityManager', 'SuperAdmin', 'QualityOfficer'), acknowledgeComplaint);
 router.put('/complaints/:id/resolve', protect, authorize('QualityManager', 'SuperAdmin'), resolveComplaint);
 router.put('/complaints/:id/escalate', protect, authorize('QualityManager', 'SuperAdmin'), escalateComplaint);
 

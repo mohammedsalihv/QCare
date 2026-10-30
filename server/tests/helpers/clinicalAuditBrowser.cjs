@@ -5,11 +5,11 @@ const fs = require('node:fs/promises');
 const { spawn } = require('node:child_process');
 const { chromium } = require(process.env.QCARE_TEST_PLAYWRIGHT || 'C:/Users/salih/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 const root = path.resolve(__dirname, '../../..');
-const staff = { _id: '507f1f77bcf86cd799439011', employeeName: 'Clinic Auditor', role: 'Quality', department: 'Clinic', token: 'fixture-token' };
+const staff = { _id: '507f1f77bcf86cd799439011', employeeName: 'Clinic Auditor', role: 'SuperAdmin', department: 'Clinic', token: 'fixture-token' };
 const reviewer = { ...staff, _id: '507f1f77bcf86cd799439012', employeeName: 'Independent Reviewer' };
 const location = { _id: '507f1f77bcf86cd799439013', name: 'Main clinic', code: 'MC', isActive: true };
 const departments = [{ _id: '507f1f77bcf86cd799439014', name: 'Nursing', code: 'NUR', isActive: true }, { _id: '507f1f77bcf86cd799439015', name: 'Quality', code: 'QUA', isActive: true }];
-let failAuditEdit = false, serverRole = 'Quality';
+let failAuditEdit = false, serverRole = 'SuperAdmin';
 let templates = [], audits = [], actionSequence = 0, failTemplateDelete = false, failAuditDelete = false;
 const copy = value => JSON.parse(JSON.stringify(value));
 
@@ -62,7 +62,7 @@ const copy = value => JSON.parse(JSON.stringify(value));
       if (p === '/api/audit') {
         if (req.method() === 'POST') {
           const data = body(), template = templates.find(t => t._id === data.templateId);
-          const audit = { ...data, location, concernedDepartments: departments.filter(d => data.concernedDepartments.includes(d._id)), concernedPersons: [staff, reviewer].filter(p => data.concernedPersons.includes(p._id)), department: departments.filter(d => data.concernedDepartments.includes(d._id)).map(d => d.name).join(', '), scheduledDate: data.sessions[0].startAt, _id: `audit-${audits.length + 1}`, templateId: template, criteriaSnapshot: template.criteria, standard: template.standard, governancePillar: template.governancePillar, status: 'pending-approval', findings: [], improvementActions: [], history: [], coverage: 0, overallScore: null };
+          const audit = { ...data, location, concernedDepartments: departments.filter(d => data.concernedDepartments.includes(d._id)), concernedPersons: [staff, reviewer].filter(p => data.concernedPersons.includes(p._id)), department: departments.filter(d => data.concernedDepartments.includes(d._id)).map(d => d.name).join(', '), scheduledDate: data.sessions[0].startAt, _id: `audit-${audits.length + 1}`, templateId: template, criteriaSnapshot: template.criteria, standard: template.standard, governancePillar: template.governancePillar, status: serverRole === 'QualityManager' ? 'scheduled' : 'pending-approval', findings: [], improvementActions: [], history: [], coverage: 0, overallScore: null };
           audits.push(audit); return send(audit);
         }
         return send(audits);
@@ -77,10 +77,10 @@ const copy = value => JSON.parse(JSON.stringify(value));
         if (failAuditEdit) return route.fulfill({ status: 409, json: { message: 'Schedule changed elsewhere. Reopen it.' } });
         const data = body();
         assert.equal(data.expectedVersion, audit.__v || 0);
-        Object.assign(audit, data, { status: 'pending-approval', __v: (audit.__v || 0) + 1, location, templateId: templates.find(t => t._id === data.templateId), concernedDepartments: departments.filter(d => data.concernedDepartments.includes(d._id)), concernedPersons: [staff, reviewer].filter(p => data.concernedPersons.includes(p._id)), scheduledDate: data.sessions[0].startAt, scheduledUntil: data.sessions.at(-1).endAt });
+        Object.assign(audit, data, { status: serverRole === 'QualityManager' ? 'scheduled' : 'pending-approval', __v: (audit.__v || 0) + 1, location, templateId: templates.find(t => t._id === data.templateId), concernedDepartments: departments.filter(d => data.concernedDepartments.includes(d._id)), concernedPersons: [staff, reviewer].filter(p => data.concernedPersons.includes(p._id)), scheduledDate: data.sessions[0].startAt, scheduledUntil: data.sessions.at(-1).endAt });
         return send(audit);
       }
-      if (p.endsWith('/schedule-approval')) { assert.equal(body().expectedVersion, audit.__v || 0); audit.status = 'scheduled'; audit.__v = (audit.__v || 0) + 1; return send(audit); }
+      if (p.endsWith('/schedule-approval')) { assert.equal(body().expectedVersion, audit.__v || 0); audit.status = body().decision === 'reject' ? 'schedule-rejected' : 'scheduled'; if (body().decision === 'reject') audit.scheduleRejectionReason = body().comment; audit.__v = (audit.__v || 0) + 1; return send(audit); }
       if (p.endsWith('/start')) { audit.status = 'in-progress'; return send(audit); }
       if (p.endsWith('/findings')) { audit.findings = body().findings; return send(audit); }
       if (p.includes('/evidence/')) {
@@ -168,6 +168,8 @@ const copy = value => JSON.parse(JSON.stringify(value));
     await page.getByRole('button', { name: 'Review schedule', exact: true }).click();
     await page.getByRole('dialog', { name: 'Review audit schedule' }).waitFor();
     await page.screenshot({ path: path.join(root, 'output/clinical-audit-verification/schedule-approval-desktop.png'), fullPage: true });
+    await page.getByRole('button', {name:'Reject schedule',exact:true}).click();
+    await page.getByRole('alert').filter({hasText:'A rejection reason is required.'}).waitFor();
     await page.getByRole('button', { name: 'Approve schedule', exact: true }).click();
     await page.getByRole('button', { name: 'View audits on 2026-10-26', exact: true }).click();
     assert.equal(await page.locator('.ca-calendar-day.has-visits').count(), 2);
@@ -407,6 +409,21 @@ const copy = value => JSON.parse(JSON.stringify(value));
     assert.equal(audits.some(a => a.auditTitle === 'Information security readiness'), false);
     await page.reload(); await page.getByRole('button', { name: 'Audits', exact: true }).click();
     assert.equal(await page.locator('.ca-audit-table tbody tr').count(), 4);
+    serverRole = 'QualityManager';
+    await page.reload(); await page.getByRole('button', { name: '+ Schedule new audit', exact: true }).click();
+    await page.getByText('Choose the location, people and dates. Your schedule will publish immediately as Quality Manager.', { exact: true }).waitFor();
+    await page.getByLabel('Audit title', { exact: true }).fill('Direct manager publication');
+    await choose('Checklist template', 'Jawda clinical quality · Jawda'); await choose('Location', 'Main clinic · MC');
+    await page.getByRole('button', { name: 'Select audit date ' + fixtureDate, exact: true }).click();
+    await page.getByRole('button', { name: 'Schedule audit', exact: true }).click();
+    await page.getByText('Audit scheduled and published to the calendar', { exact: true }).waitFor();
+    assert.equal(audits.at(-1).status, 'scheduled'); await page.locator('.ca-calendar-readable').waitFor();
+    serverRole = 'QualityOfficer'; await page.reload();
+    await page.getByRole('button', { name: '+ Schedule new audit', exact: true }).click();
+    await page.getByRole('button', { name: 'Submit for approval', exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Close scheduling', exact: true }).click();
+    await page.getByRole('button', { name: 'Audits', exact: true }).click();
+    assert.equal(await page.getByRole('button', { name: /^Delete audit / }).count(), 0);
     assert.deepEqual(errors, []);
     console.log('Browser smoke passed: template edit/save/reload, cancel editing, delete confirmation/cancel, failed deletion retention, successful deletion/reload, preserved audit checklists, audit planner, evidence, approval, actions, and mobile layouts. API responses used in-memory fixtures.');
   } finally { if (browser) await browser.close(); vite.kill(); }

@@ -1,3 +1,4 @@
+const { ROLES, normalizeRole } = require('../utils/roles');
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
@@ -48,8 +49,9 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["SuperAdmin", "superadmin", "QualityManager", "DepartmentHead", "Staff", "admin", "Quality", "user", "Director"],
-      default: "Staff",
+      enum: ROLES,
+      set: normalizeRole,
+      default: "user",
     },
 
     department: {

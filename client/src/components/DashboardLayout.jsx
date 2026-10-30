@@ -7,7 +7,7 @@ import { useNotification } from './NotificationContext';
 
 const DashboardLayout = ({ children }) => {
   const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState(false);
-  const { showNotification, setFeedNotifications: setNotifications, fetchFeed } = useNotification();
+  const { fetchFeed } = useNotification();
 
   // Get user info from localStorage
   const userInfoStr = localStorage.getItem('userInfo');
@@ -43,15 +43,12 @@ const DashboardLayout = ({ children }) => {
     }
 
     // Listen for notifications
-    socket.on('new-notification', (data) => {
-      setNotifications(prev => [data, ...prev]);
-      showNotification(data.message, 'success'); // Also show a toast
-    });
+    socket.on('new-notification', () => { fetchFeed(); });
 
     return () => {
       socket.disconnect();
     };
-  }, [user?._id, user?.role]);
+  }, [user?._id, user?.role, fetchFeed]);
 
   const openProfileDrawer = () => setIsProfileDrawerOpen(true);
   const closeProfileDrawer = () => setIsProfileDrawerOpen(false);

@@ -1,3 +1,5 @@
+const event = require('../utils/workflowNotifications');
+const notifyPrivilege = (req, privilege) => event({module:'Clinical privileges', recordId:privilege._id, title:privilege.specialty + ' privileges', status:privilege.status, actor:req.user, requester:privilege.requestedBy || privilege.staffId, participants:[privilege.staffId], reason:privilege.reviewNotes || '', actionLink:'/dashboard/cp', recipientRoles:['qualitymanager']});
 const ClinicalPrivilege = require('../models/ClinicalPrivilege');
 const CredentialingRecord = require('../models/CredentialingRecord');
 const User = require('../models/users');
@@ -7,8 +9,8 @@ const AuditLog = require('../models/AuditLog');
 
 exports.requestPrivileges = async (req, res) => {
   try {
-    const privilege = new ClinicalPrivilege({ ...req.body, status: 'pending-approval' });
-    await privilege.save();
+    const privilege = new ClinicalPrivilege({ ...req.body, requestedBy:req.user._id, status: 'pending-approval' });
+    await privilege.save(); await notifyPrivilege(req, privilege);
     res.status(201).json(privilege);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -17,15 +19,20 @@ exports.requestPrivileges = async (req, res) => {
 
 exports.approvePrivileges = async (req, res) => {
   try {
-    const privilege = await ClinicalPrivilege.findByIdAndUpdate(req.params.id, {
-      ...req.body,
-      status: 'approved',
-      approvedBy: req.user._id,
-      approvalDate: new Date()
-    }, { new: true });
+    const privilege = await ClinicalPrivilege.findById(req.params.id);
+    if (!privilege) return res.status(404).json({message:'Privilege request not found'});
+    if (privilege.status !== 'pending-approval') return res.status(409).json({message:'Only pending requests can be reviewed.'});
+    const decision = req.body.decision || 'approve';
+    if (!['approve','reject'].includes(decision)) return res.status(400).json({message:'Choose approve or reject.'});
+    if (decision === 'reject' && !req.body.reviewNotes?.trim()) return res.status(400).json({message:'Provide a rejection reason.'});
+    privilege.status = decision === 'approve' ? 'approved' : 'rejected';
+    privilege.reviewedBy = req.user._id; privilege.reviewedAt = new Date();
+    privilege.approvedBy = decision === 'approve' ? req.user._id : undefined; privilege.approvalDate = decision === 'approve' ? new Date() : undefined; privilege.reviewNotes = req.body.reviewNotes || '';
+    if (decision === 'approve' && req.body.procedures) privilege.procedures = req.body.procedures;
+    await privilege.save(); await notifyPrivilege(req, privilege);
 
     await AuditLog.create({
-      action: 'PRIVILEGES_APPROVED',
+      action: decision === 'approve' ? 'PRIVILEGES_APPROVED' : 'PRIVILEGES_REJECTED',
       module: 'MedicalAffairs',
       details: `Clinical privileges approved for staff ID: ${privilege.staffId}`,
       user: req.user.employeeName,

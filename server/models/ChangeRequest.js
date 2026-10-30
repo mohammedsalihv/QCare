@@ -18,6 +18,7 @@ const changeRequestSchema = new mongoose.Schema({
     default: 'Pending Approval' 
   },
   requestedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  rejectionReason: String, decisionAt: Date, decisionBy: {type: mongoose.Schema.Types.ObjectId, ref:'User'},
   approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });
 

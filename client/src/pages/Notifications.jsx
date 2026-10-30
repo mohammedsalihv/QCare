@@ -1,3 +1,4 @@
+import WorkflowNotificationDetail from '../components/WorkflowNotificationDetail';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
@@ -5,6 +6,7 @@ import Pagination from '../components/Pagination';
 import axios from 'axios';
 import { getAuthConfig } from '../utils/authConfig';
 import { 
+  Volume2, VolumeX,
   Bell, 
   Trash2, 
   CheckCircle2, 
@@ -29,7 +31,7 @@ const Notifications = () => {
     feedNotifications: notifications, 
     setFeedNotifications: setNotifications, 
     fetchFeed: fetchNotifications,
-    clearFeed,
+    clearFeed, soundEnabled, toggleSound,
     showNotification, 
     confirm 
   } = useNotification();
@@ -75,7 +77,7 @@ const Notifications = () => {
 
     confirm({
       title: 'Clear Notifications',
-      message: 'Are you sure you want to permanently clear all notifications? This action cannot be undone.',
+      message: 'Dismiss all notifications from your feed? Process history remains available to authorised participants.',
       type: 'danger',
       onConfirm: async () => {
         try {
@@ -92,7 +94,9 @@ const Notifications = () => {
     ? notifications.filter(n => {
         const matchesSearch = n.message.toLowerCase().includes(searchTerm.toLowerCase()) || 
                               n.user.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesFilter = activeFilter === 'all' || (activeFilter === 'unread' && !n.isRead);
+        const state = (n.workflow?.status || '').toLowerCase();
+        const newer = n.workflow?.recordId && notifications.some(other => other.workflow?.recordId === n.workflow.recordId && other.workflow?.module === n.workflow.module && (new Date(other.workflow.occurredAt || other.createdAt) > new Date(n.workflow.occurredAt || n.createdAt) || ((other.workflow.occurredAt || other.createdAt) === (n.workflow.occurredAt || n.createdAt) && other._id > n._id)));
+        const matchesFilter = activeFilter === 'all' || (activeFilter === 'unread' && !n.isRead) || (activeFilter === 'pending' && !n.resolvedAt && !newer && /pending|awaiting|under review/.test(state)) || (activeFilter === 'approved' && state === 'approved') || (activeFilter === 'rejected' && /rejected|returned/.test(state));
         return matchesSearch && matchesFilter;
       })
     : [];
@@ -113,6 +117,7 @@ const Notifications = () => {
 
   return (
     <DashboardLayout>
+      <div className="flex justify-end mb-4"><button onClick={toggleSound} aria-pressed={soundEnabled} className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">{soundEnabled ? <Volume2 size={17}/> : <VolumeX size={17}/>}Notification sound {soundEnabled ? 'on' : 'off'}</button></div>
       <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
@@ -137,6 +142,9 @@ const Notifications = () => {
                     {[
                       { id: 'all', label: 'All Activities', icon: Bell },
                       { id: 'unread', label: 'Unread Only', icon: Clock },
+                      { id: 'pending', label: 'Awaiting action', icon: Clock },
+                      { id: 'approved', label: 'Approved', icon: CheckCircle2 },
+                      { id: 'rejected', label: 'Rejected / returned', icon: AlertTriangle },
                     ].map(filter => (
                       <button
                         key={filter.id}
@@ -163,7 +171,7 @@ const Notifications = () => {
                  <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
                  <Shield className="w-8 h-8 mb-4 opacity-50" />
                  <h5 className="font-semibold text-sm normal-case tracking-normal mb-2">Notification Guard</h5>
-                 <p className="text-[12px] text-slate-800 font-bold/80 font-medium leading-relaxed">Notifications are retained for 30 days. Please ensure critical alerts are reviewed regularly.</p>
+                 <p className="text-[12px] text-slate-800 font-bold/80 font-medium leading-relaxed">Review pending requests and decisions here. Dismissing an alert preserves the recorded process history.</p>
               </div>
            </div>
 
@@ -216,10 +224,10 @@ const Notifications = () => {
                                  <span className="text-[12px] font-semibold text-[var(--color-secondary)] normal-case tracking-normal">{n.type.replace('_', ' ')}</span>
                                  <div className="flex items-center gap-2 text-slate-800 font-semibold text-[12px] normal-case tracking-normal">
                                     <Clock className="w-3 h-3" />
-                                    {new Date(n.createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                    {new Date(n.createdAt).toLocaleString('en-GB', { timeZone: 'Asia/Dubai', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                  </div>
                               </div>
-                              <h4 className="text-sm md:text-base font-semibold text-slate-800 mb-2 leading-snug">{n.message}</h4>
+                              <h4 className="text-sm md:text-base font-semibold text-slate-800 mb-2 leading-snug">{n.message}</h4><WorkflowNotificationDetail notification={n} notifications={notifications} />
                               
                               <div className="flex flex-wrap items-center gap-6 mt-4">
                                  <div className="flex items-center gap-2">
@@ -237,7 +245,7 @@ const Notifications = () => {
                               </div>
                            </div>
 
-                           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                           <div className="flex items-center gap-2 opacity-100 transition-opacity shrink-0">
                               {!n.isRead && (
                                 <button 
                                   onClick={() => markAsRead(n._id)}
@@ -257,7 +265,7 @@ const Notifications = () => {
                               {n.actionLink && (
                                 <button 
                                   onClick={() => navigate(n.actionLink)}
-                                  className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-800 font-semibold hover:bg-white hover:text-white flex items-center justify-center transition-all shadow-sm"
+                                  className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-800 font-semibold hover:bg-teal-700 hover:text-white flex items-center justify-center transition-all shadow-sm"
                                   title="View target"
                                 >
                                    <ExternalLink className="w-4 h-4" />

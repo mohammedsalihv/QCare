@@ -48,7 +48,7 @@ test('scheduling derives standard and immutable criteria from the template and i
   const create = t.mock.method(ClinicalAudit, 'create', async body => body);
   const res = response();
   await workflow.scheduleAudit(request(reviewer, 'QualityManager', { auditTitle: 'Audit', templateId: reviewer, auditor, location, department: 'Clinic', scheduledDate: '2026-10-26', auditType: 'planned', status: 'completed', standard: 'JCI', overallScore: 100 }), res);
-  assert.equal(res.statusCode, 201); assert.equal(res.data.standard, 'internal'); assert.equal(res.data.status, 'pending-approval');
+  assert.equal(res.statusCode, 201); assert.equal(res.data.standard, 'internal'); assert.equal(res.data.status, 'scheduled'); assert.equal(String(res.data.scheduleApprovedBy), reviewer); assert(res.data.scheduleApprovedAt);
   assert.equal(create.mock.calls[0].arguments[0].criteriaSnapshot[0].weight, 3);
 });
 test('only the assigned auditor and quality managers can start audits', async t => {

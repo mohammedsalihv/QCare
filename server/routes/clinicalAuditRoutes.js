@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 // A version marker lets deployment checks identify the API serving the new audit form.
-router.use((req, res, next) => { res.setHeader('X-QCare-Audit-Workflow', '10'); next(); });
+router.use((req, res, next) => { res.setHeader('X-QCare-Audit-Workflow', '12'); next(); });
 const {
   getTemplates,
   getAudits,
@@ -17,30 +17,30 @@ router.get('/permissions', protect, (req, res) => res.json({ role: req.user.role
 
 // Templates
 router.route('/templates')
-  .post(protect, authorize('Quality', 'QualityManager', 'SuperAdmin'), workflow.createTemplate)
+  .post(protect, authorize('QualityManager', 'SuperAdmin'), workflow.createTemplate)
   .get(protect, getTemplates);
 
 router.route('/templates/:templateId')
-  .put(protect, authorize('Quality', 'QualityManager', 'SuperAdmin'), workflow.updateTemplate)
-  .delete(protect, authorize('Quality', 'QualityManager', 'SuperAdmin'), workflow.deleteTemplate);
+  .put(protect, authorize('QualityManager', 'SuperAdmin'), workflow.updateTemplate)
+  .delete(protect, authorize('QualityManager', 'SuperAdmin'), workflow.deleteTemplate);
 
 // Audits
 router.route('/')
-  .post(protect, authorize('Quality', 'QualityManager', 'SuperAdmin'), workflow.scheduleAudit)
+  .post(protect, authorize('QualityManager', 'QualityOfficer', 'SuperAdmin'), workflow.scheduleAudit)
   .get(protect, getAudits);
 
 router.get('/dashboard', protect, getDashboardStats);
 
 router.route('/:id')
-  .put(protect, authorize('Quality', 'QualityManager', 'SuperAdmin'), workflow.updateScheduledAudit)
-  .delete(protect, authorize('Quality', 'QualityManager', 'SuperAdmin'), workflow.deleteAudit)
+  .put(protect, authorize('QualityManager', 'QualityOfficer', 'SuperAdmin'), workflow.updateScheduledAudit)
+  .delete(protect, authorize('QualityManager', 'SuperAdmin'), workflow.deleteAudit)
   .get(protect, getAuditById);
 
-router.put('/:id/schedule-approval', protect, authorize('Quality', 'QualityManager', 'SuperAdmin'), workflow.approveSchedule);
+router.put('/:id/schedule-approval', protect, authorize('QualityManager', 'SuperAdmin'), workflow.approveSchedule);
 router.put('/:id/start', protect, workflow.startAudit);
 router.put('/:id/findings', protect, workflow.updateFindings);
 router.put('/:id/complete', protect, workflow.completeAudit);
-router.put('/:id/review', protect, authorize('Quality', 'QualityManager', 'SuperAdmin'), workflow.reviewAudit);
+router.put('/:id/review', protect, authorize('QualityManager', 'SuperAdmin'), workflow.reviewAudit);
 router.post('/:id/actions', protect, workflow.addAction);
 router.put('/:id/actions/:actionId', protect, workflow.updateAction);
 router.post('/:id/evidence/:criterionId', protect, (req, res, next) => {

@@ -1,3 +1,5 @@
+const event = require('../utils/workflowNotifications');
+const notifyChange = (req, change, status = change.status) => event({module: 'Change request', recordId: change._id, title: change.title, status, actor: req.user, requester: change.requestedBy, reason: change.rejectionReason || '', actionLink: '/dashboard/change-management'});
 const ChangeRequest = require('../models/ChangeRequest');
 const Deviation = require('../models/Deviation');
 const Capa = require('../models/Capa');
@@ -31,7 +33,7 @@ exports.getChangeRequests = async (req, res) => {
             financial: 'Within EMR annual licensing budget.'
           },
           status: 'Pending Approval',
-          requestedBy: req.user._id
+          requestedBy: req.user._id, status: 'Pending Approval', approvedBy: undefined, decisionBy: undefined, decisionAt: undefined
         },
         {
           changeId: 'MOC-1021',
@@ -46,7 +48,7 @@ exports.getChangeRequests = async (req, res) => {
             financial: 'Allocated in annual facility safety capital budget.'
           },
           status: 'Approved',
-          requestedBy: req.user._id
+          requestedBy: req.user._id, status: 'Pending Approval', approvedBy: undefined, decisionBy: undefined, decisionAt: undefined
         }
       ];
       await ChangeRequest.insertMany(demoData);
@@ -67,7 +69,7 @@ exports.createChangeRequest = async (req, res) => {
       changeId,
       requestedBy: req.user._id
     });
-    await change.save();
+    await change.save(); await notifyChange(req, change);
     
     await AuditLog.create({
       action: 'CHANGE_REQUEST_CREATED',
@@ -90,13 +92,20 @@ exports.updateChangeRequest = async (req, res) => {
       return res.status(404).json({ message: 'Change request not found' });
     }
     
+    const previousStatus = change.status;
+    if (req.body.status && req.body.status !== change.status && !['quality', 'qualitymanager', 'superadmin', 'admin'].includes(req.user.role?.toLowerCase()) && !(String(change.requestedBy) === String(req.user._id) && ['Rejected','Draft'].includes(change.status) && req.body.status === 'Pending Approval')) return res.status(403).json({ message: 'Only quality managers and administrators can change request status.' });
+    if (req.body.status === 'Rejected' && !req.body.rejectionReason?.trim()) return res.status(400).json({message: 'Provide a rejection reason.'});
     // If status is updated to Approved/Rejected, track who approved it
     if (req.body.status && ['Approved', 'Rejected'].includes(req.body.status)) {
-      change.approvedBy = req.user._id;
+      change.approvedBy = req.body.status === 'Approved' ? req.user._id : undefined;
     }
     
-    Object.assign(change, req.body);
-    await change.save();
+    const {requestedBy, approvedBy, decisionAt, decisionBy, ...values} = req.body;
+    void requestedBy; void approvedBy; void decisionAt; void decisionBy;
+    Object.assign(change, values);
+    if (change.status !== previousStatus) { change.decisionBy = req.user._id; change.decisionAt = new Date(); }
+    if (change.status !== 'Rejected') change.rejectionReason = undefined;
+    await change.save(); await notifyChange(req, change, change.status === previousStatus ? 'Updated · ' + change.status : change.status);
 
     await AuditLog.create({
       action: 'CHANGE_REQUEST_UPDATED',

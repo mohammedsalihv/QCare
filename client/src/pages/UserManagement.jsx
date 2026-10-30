@@ -1,3 +1,4 @@
+import { roleOptions, roleLabel } from '../utils/roles';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -68,15 +69,6 @@ const UserManagement = () => {
     department: '',
     designation: ''
   });
-
-  const roleOptions = [
-    { label: 'Super Admin', value: 'superadmin', icon: Crown },
-    { label: 'System Admin', value: 'admin', icon: Users },
-    { label: 'Quality Control', value: 'Quality', icon: Shield },
-    { label: 'MRD Department', value: 'MRD', icon: Briefcase },
-    { label: 'User', value: 'user', icon: User },
-    { label: 'Medical Director', value: 'Director', icon: ShieldCheck },
-  ];
 
   const statusFilterOptions = [
     { label: 'All Statuses', value: '' },
@@ -475,7 +467,7 @@ const UserManagement = () => {
                         <span className={`inline-flex px-2 py-0.5 rounded-md text-[12px] font-semibold tracking-wide ${user.role?.toLowerCase() === 'superadmin' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
                           user.role?.toLowerCase() === 'admin' ? 'bg-purple-50 text-purple-600 border border-purple-100' : 'bg-slate-100 text-slate-800 border border-blue-100'
                           }`}>
-                          {user.role}
+                          {roleLabel(user.role)}
                         </span>
                       </td>
                       <td className="px-6 py-4">

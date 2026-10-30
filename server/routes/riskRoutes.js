@@ -14,7 +14,7 @@ const {
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.route('/')
-  .post(protect, authorize('QualityManager', 'DepartmentHead', 'SuperAdmin'), createRisk)
+  .post(protect, authorize('QualityManager', 'QualityOfficer', 'SuperAdmin'), createRisk)
   .get(protect, getRisks);
 
 router.get('/dashboard', protect, getDashboardStats);

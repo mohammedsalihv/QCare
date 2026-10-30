@@ -1,3 +1,5 @@
+const event = require('../utils/workflowNotifications');
+const notifyKPI = (req, report, status, reason = '') => event({ module: 'KPI report', recordId: report._id, title: report.indicatorName || report.indicatorCode, status, reason, actor: req.user, requester: report.submittedBy || report.createdBy, actionLink: '/dashboard/kpi' });
 const KPIIndicator = require('../models/KPIIndicator');
 const AuditLog = require('../models/AuditLog');
 const ExcelJS = require('exceljs');
@@ -218,7 +220,7 @@ exports.submitData = async (req, res) => {
       record.importSummary = imported ? { ...imported.summary, importedAt: new Date() } : undefined;
       record.submittedBy = req.user._id;
       record.rejectionReason = undefined;
-      const saved = await record.save();
+      const saved = await record.save(); await notifyKPI(req, saved, 'Awaiting validation');
       return res.json(saved);
     } else {
       const newSub = new KPIIndicator({
@@ -250,7 +252,7 @@ exports.submitData = async (req, res) => {
         submittedBy: req.user._id,
         createdBy: req.user._id
       });
-      const saved = await newSub.save();
+      const saved = await newSub.save(); await notifyKPI(req, saved, 'Awaiting validation');
       return res.status(201).json(saved);
     }
   } catch (error) {
@@ -285,7 +287,7 @@ exports.validateIndicator = async (req, res) => {
       return res.status(400).json({ message: 'Invalid validation action' });
     }
 
-    const updated = await kpi.save();
+    const updated = await kpi.save(); await notifyKPI(req, updated, action === 'approve' ? 'Validated · awaiting approval' : 'Rejected', kpi.rejectionReason || '');
     res.json(updated);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -309,7 +311,7 @@ exports.approveIndicator = async (req, res) => {
     kpi.approvedDate = new Date();
     kpi.rejectionReason = undefined;
 
-    const updated = await kpi.save();
+    const updated = await kpi.save(); await notifyKPI(req, updated, 'Approved');
     res.json(updated);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -327,7 +329,7 @@ exports.submitToDOH = async (req, res) => {
     if (kpi.validationStatus !== 'Approved' || kpi.submittedToDOH) return res.status(409).json({ message: 'Only approved reports that have not been marked submitted can be recorded as submitted.' });
     kpi.submittedToDOH = true;
     kpi.submissionDate = new Date();
-    await kpi.save();
+    await kpi.save(); await notifyKPI(req, kpi, 'External submission recorded');
 
     await AuditLog.create({
       action: 'SUBMIT_TO_DOH',
@@ -549,6 +551,7 @@ exports.saveImprovementAction = async (req, res) => {
     }
     // Measurement hooks skip action-only updates.
     await report.save({ validateModifiedOnly: true });
+    await notifyKPI(req, report, 'Action ' + status, title.trim() + (notes.trim() ? ' — ' + notes.trim() : ''));
     res.status(req.params.actionId ? 200 : 201).json(report);
   } catch (error) { res.status(400).json({ message: error.message }); }
 };

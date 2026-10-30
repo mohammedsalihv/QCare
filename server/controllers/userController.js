@@ -1,3 +1,4 @@
+const { ROLES, normalizeRole } = require('../utils/roles');
 const User = require("../models/users");
 const Settings = require("../models/Settings");
 const { authenticateLDAP } = require("../utils/ldapAuth");
@@ -210,6 +211,7 @@ const getUserDirectory = async (req, res) => {
 const createUser = async (req, res) => {
   try {
     const { employeeId, employeeName, email, password, role, department, designation } = req.body;
+    if (role !== undefined && !ROLES.includes(normalizeRole(role))) return res.status(400).json({ message: 'Select one of the five application roles.' });
 
     // Validation
     const requiredFields = { employeeId, employeeName, email, password, department, designation };
@@ -263,6 +265,7 @@ const updateUser = async (req, res) => {
     const user = await User.findById(req.params.id);
 
       if (user) {
+        if (req.body.role !== undefined && !ROLES.includes(normalizeRole(req.body.role))) return res.status(400).json({ message: 'Select one of the five application roles.' });
         // Only allow safe fields to be updated; AD-managed fields are immutable
         const allowedUpdates = ['department', 'designation', 'role'];
         allowedUpdates.forEach(field => {

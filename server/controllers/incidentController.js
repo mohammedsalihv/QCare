@@ -113,7 +113,7 @@ const updateIncident = async (req, res) => {
     await Notification.create({
       type: "system_alert",
       message: `Your incident report ${incident.incidentId} has been updated to: ${incident.status}`,
-      user: "System Admin",
+      user: req.user.employeeName || req.user.username || "Administrator",
       userId: req.user._id, // Admin who updated it
       actionLink: "/dashboard/incidents",
       recipientRole: "user",
@@ -125,7 +125,7 @@ const updateIncident = async (req, res) => {
       req.io.to(incident.reportedBy.toString()).emit("new-notification", {
         type: "system_alert",
         message: `Your incident report ${incident.incidentId} has been updated to: ${incident.status}`,
-        user: "System Admin",
+        user: req.user.employeeName || req.user.username || "Administrator",
         time: new Date()
       });
     }

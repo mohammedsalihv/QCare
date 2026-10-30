@@ -1,3 +1,6 @@
+const { normalizeRole } = require('../utils/roles');
+const event = require('../utils/workflowNotifications');
+const auditEvent = (req, audit, status, reason = '', participants = []) => event({ module: 'Audit assessment', recordId: audit._id, title: audit.auditTitle, status, reason, actor: req.user, requester: audit.submittedBy || audit.scheduleRequestedBy, participants, actionLink: '/dashboard/audit', recipientRoles: ['qualitymanager'] });
 const auditNotifications = require('../utils/clinicalAuditNotifications');
 const ClinicalAudit = require('../models/ClinicalAudit');
 const AuditTemplate = require('../models/AuditTemplate');
@@ -12,7 +15,8 @@ const path = require('node:path');
 const { randomUUID } = require('node:crypto');
 const isManager = auditNotifications.isQuality;
 const same = (a, b) => String(a?._id || a) === String(b?._id || b);
-const canEdit = (user, audit) => isManager(user) || same(audit.auditor, user._id);
+const canEdit = (user, audit) => isManager(user) || same(audit.auditor, user._id) || (normalizeRole(user.role) === 'QualityOfficer' && same(audit.scheduleRequestedBy, user._id));
+const directSchedule = user => normalizeRole(user.role) === 'QualityManager';
 const record = (audit, req, event, detail = '') => audit.history.push({ event, actor: req.user._id, detail });
 const wrap = fn => async (req, res) => {
   try { await fn(req, res); } catch (error) {
@@ -32,7 +36,7 @@ async function load(req) {
 function criteria(audit) { return audit.criteriaSnapshot?.length ? audit.criteriaSnapshot : audit.templateId?.criteria || []; }
 function editable(req, audit) {
   if (!canEdit(req.user, audit)) fail('Only the assigned auditor or quality manager can edit this audit.', 403);
-  if (audit.status === 'pending-approval') fail('QM approval is required before this audit can start or be assessed.', 409);
+  if (['pending-approval', 'schedule-rejected'].includes(audit.status)) fail('QM approval is required before this audit can start or be assessed.', 409);
   if (['pending-review', 'completed'].includes(audit.status)) fail('This audit is locked. A reviewer must return it before findings can change.');
 }
 async function validOwner(id) {
@@ -53,7 +57,7 @@ exports.deleteAudit = wrap(async (req, res) => {
     if (!await ClinicalAudit.exists({ _id: req.params.id })) fail('Audit not found.', 404);
     fail('This audit changed elsewhere. Refresh the list before deleting it.', 409);
   }
-  await auditNotifications.resolve(deleted, 'deleted').catch(error => console.error('Audit notification:', error.message));
+  await auditNotifications.resolve(deleted, 'deleted', req.user).catch(error => console.error('Audit notification:', error.message));
   res.json({ message: 'Audit deleted.', id: String(deleted._id) });
 });
 async function scheduleValues(body, existing = null) {
@@ -86,25 +90,35 @@ async function scheduleValues(body, existing = null) {
     criteriaSnapshot: checklist.map(c => ({ criterionId: c.criterionId, text: c.text, text_ar: c.text_ar, weight: c.weight })) };
 }
 exports.scheduleAudit = wrap(async (req, res) => {
-  const audit = await ClinicalAudit.create({ ...await scheduleValues(req.body), status: 'pending-approval', scheduleRequestedBy: req.user._id, scheduleRequestedAt: new Date(), history: [{ event: 'schedule-requested', actor: req.user._id, detail: 'Awaiting QM approval before calendar publication.' }] });
-  await auditNotifications.requestApproval(audit).catch(error => console.error('Audit notification:', error.message));
+  const direct = directSchedule(req.user), at = new Date();
+  const audit = await ClinicalAudit.create({ ...await scheduleValues(req.body), status: direct ? 'scheduled' : 'pending-approval', scheduleRequestedBy: req.user._id, scheduleRequestedAt: at,
+    ...(direct ? { scheduleApprovedBy: req.user._id, scheduleApprovedAt: at, scheduleApprovalComment: 'Published directly by Quality Manager.' } : {}),
+    history: [{ event: 'schedule-requested', actor: req.user._id, at, detail: direct ? 'Scheduled by Quality Manager.' : 'Awaiting QM approval before calendar publication.' }, ...(direct ? [{ event: 'schedule-approved', actor: req.user._id, at, detail: 'Published directly by Quality Manager.' }] : [])] });
+  if (direct) await auditNotifications.resolve(audit, 'approved', req.user);
+  else await auditNotifications.requestApproval(audit).catch(error => console.error('Audit notification:', error.message));
   res.status(201).json(audit);
 });
 exports.updateScheduledAudit = wrap(async (req, res) => {
-  if (!isManager(req.user)) fail('Only a quality manager or super admin can edit scheduled audits.', 403);
+
   if (!isValidObjectId(req.params.id)) fail('Invalid audit ID.');
   const audit = await ClinicalAudit.findById(req.params.id);
   if (!audit) fail('Audit not found.', 404);
-  if (!['pending-approval', 'scheduled', 'overdue'].includes(audit.status) || audit.conductedDate || audit.findings.length || audit.improvementActions.length) fail('Only unstarted audit requests or schedules can be edited.', 409);
+  if (!isManager(req.user) && !(normalizeRole(req.user.role) === 'QualityOfficer' && same(audit.scheduleRequestedBy, req.user._id))) fail('Only a manager or the requesting quality officer can edit this schedule.', 403);
+  if (!['schedule-rejected', 'pending-approval', 'scheduled', 'overdue'].includes(audit.status) || audit.conductedDate || audit.findings.length || audit.improvementActions.length) fail('Only unstarted audit requests or schedules can be edited.', 409);
   if (!Number.isInteger(req.body.expectedVersion) || req.body.expectedVersion !== (audit.__v || 0)) fail('This audit changed elsewhere. Refresh the list before editing again.', 409);
   audit.set(await scheduleValues(req.body, audit));
-  audit.status = 'pending-approval';
+  const direct = directSchedule(req.user);
+  audit.status = direct ? 'scheduled' : 'pending-approval';
   audit.scheduleRequestedBy = req.user._id; audit.scheduleRequestedAt = new Date();
+  audit.scheduleRejectedBy = undefined; audit.scheduleRejectedAt = undefined; audit.scheduleRejectionReason = undefined;
   audit.scheduleApprovedBy = undefined; audit.scheduleApprovedAt = undefined; audit.scheduleApprovalComment = undefined;
-  record(audit, req, 'schedule-updated', 'Updated schedule submitted for QM approval; removed from the calendar until approved.');
+  if (direct) { audit.scheduleApprovedBy = req.user._id; audit.scheduleApprovedAt = new Date(); audit.scheduleApprovalComment = 'Updated and published directly by Quality Manager.'; }
+  record(audit, req, 'schedule-updated', direct ? 'Updated and published directly by Quality Manager.' : 'Updated schedule submitted for QM approval; removed from the calendar until approved.');
+  if (direct) record(audit, req, 'schedule-approved', audit.scheduleApprovalComment);
   // Optimistic concurrency prevents overwriting a simultaneous start, edit or deletion.
   await audit.save();
-  await auditNotifications.requestApproval(audit).catch(error => console.error('Audit notification:', error.message));
+  if (direct) await auditNotifications.resolve(audit, 'approved', req.user);
+  else await auditNotifications.requestApproval(audit).catch(error => console.error('Audit notification:', error.message));
   res.json(await load(req));
 });
 exports.approveSchedule = wrap(async (req, res) => {
@@ -114,11 +128,19 @@ exports.approveSchedule = wrap(async (req, res) => {
   if (audit.status !== 'pending-approval') fail('Only pending audit schedules can be approved.', 409);
   if (!Number.isInteger(req.body.expectedVersion) || req.body.expectedVersion !== (audit.__v || 0)) fail('This request changed. Reopen it and review the latest dates before approving.', 409);
   if (req.body.comment != null && (typeof req.body.comment !== 'string' || req.body.comment.length > 2000)) fail('Approval comments must be text up to 2,000 characters.');
+  const decision = req.body.decision || 'approve';
+  if (!['approve', 'reject'].includes(decision)) fail('Choose approve or reject.');
+  if (decision === 'reject' && !req.body.comment?.trim()) fail('A rejection reason is required.');
+  if (decision === 'reject') {
+   audit.status = 'schedule-rejected'; audit.scheduleRejectedBy = req.user._id; audit.scheduleRejectedAt = new Date(); audit.scheduleRejectionReason = req.body.comment.trim();
+   record(audit, req, 'schedule-rejected', audit.scheduleRejectionReason); await audit.save();
+   await auditNotifications.resolve(audit, 'rejected', req.user); return res.json(await load(req));
+  }
   audit.status = 'scheduled'; audit.scheduleApprovedBy = req.user._id; audit.scheduleApprovedAt = new Date();
   audit.scheduleApprovalComment = req.body.comment?.trim() || '';
   record(audit, req, 'schedule-approved', 'QM approved the proposed dates and times for calendar publication.' + (audit.scheduleApprovalComment ? ' ' + audit.scheduleApprovalComment : ''));
   await audit.save();
-  await auditNotifications.resolve(audit, 'approved').catch(error => console.error('Audit notification:', error.message));
+  await auditNotifications.resolve(audit, 'approved', req.user).catch(error => console.error('Audit notification:', error.message));
   res.json(await load(req));
 });
 exports.startAudit = wrap(async (req, res) => {
@@ -192,7 +214,7 @@ exports.completeAudit = wrap(async (req, res) => {
   if (audit.status !== 'in-progress') fail('Only an audit in progress can be submitted.');
   Object.assign(audit, scoreFindings(criteria(audit), audit.findings, true));
   audit.status = 'pending-review'; audit.submittedBy = req.user._id; audit.submittedAt = new Date();
-  record(audit, req, 'submitted'); await audit.save(); res.json(audit);
+  record(audit, req, 'submitted'); await audit.save(); await auditEvent(req, audit, 'Awaiting review'); res.json(audit);
 });
 exports.reviewAudit = wrap(async (req, res) => {
   const audit = await load(req);
@@ -205,21 +227,21 @@ exports.reviewAudit = wrap(async (req, res) => {
   audit.reviewComment = comment?.trim() || ''; audit.reviewedBy = req.user._id; audit.reviewedAt = new Date();
   audit.status = decision === 'approve' ? 'completed' : 'in-progress';
   record(audit, req, decision === 'approve' ? 'approved' : 'returned', audit.reviewComment);
-  await audit.save(); res.json(audit);
+  await audit.save(); await auditEvent(req, audit, decision === 'approve' ? 'Approved' : 'Returned for changes', audit.reviewComment); res.json(audit);
 });
 exports.addAction = wrap(async (req, res) => {
   const audit = await load(req);
   if (!canEdit(req.user, audit)) fail('Only the auditor or quality manager can assign actions.', 403);
-  if (audit.status === 'pending-approval') fail('QM approval is required before assigning actions.', 409);
+  if (['pending-approval', 'schedule-rejected'].includes(audit.status)) fail('QM approval is required before assigning actions.', 409);
   const { actionText, owner, dueDate, priority, criterionId, rootCause } = req.body;
   await validOwner(owner);
   if (criterionId && !criteria(audit).some(c => c.criterionId === criterionId)) fail('Unknown criterion.');
   audit.improvementActions.push({ actionText, owner, dueDate, priority, criterionId, rootCause });
-  record(audit, req, 'action-created', actionText); await audit.save(); res.status(201).json(audit);
+  record(audit, req, 'action-created', actionText); await audit.save(); await auditEvent(req, audit, 'Action assigned', actionText, [owner]); res.status(201).json(audit);
 });
 exports.updateAction = wrap(async (req, res) => {
   const audit = await load(req), action = audit.improvementActions.id(req.params.actionId);
-  if (audit.status === 'pending-approval') fail('QM approval is required before updating actions.', 409);
+  if (['pending-approval', 'schedule-rejected'].includes(audit.status)) fail('QM approval is required before updating actions.', 409);
   if (!action) fail('Action not found', 404);
   if (!canEdit(req.user, audit) && !same(action.owner, req.user._id)) fail('You cannot update this action.', 403);
   const { status, completionEvidence } = req.body;
@@ -233,7 +255,7 @@ exports.updateAction = wrap(async (req, res) => {
     if (!isManager(req.user) || same(action.owner, req.user._id)) fail('A quality manager other than the action owner must verify this action.', 403);
     if (status === 'completed') { action.verifiedBy = req.user._id; action.verifiedAt = new Date(); }
   }
-  action.status = status; record(audit, req, 'action-updated', `${action._id}: ${status}`); await audit.save(); res.json(audit);
+  action.status = status; record(audit, req, 'action-updated', `${action._id}: ${status}`); await audit.save(); await auditEvent(req, audit, 'Action ' + status, action.actionText, [action.owner]); res.json(audit);
 });
 // Keep clinical evidence outside the public uploads directory.
 const evidenceDir = path.join(__dirname, '../private/clinical-audit');

@@ -17,11 +17,13 @@ const clinicalPrivilegeSchema = new mongoose.Schema({
   }],
   issuedDate: { type: Date, default: Date.now },
   expiryDate: { type: Date, required: true },
+  requestedBy: {type:mongoose.Schema.Types.ObjectId,ref:'User'},
   approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Medical Director
   approvalDate: Date,
+  reviewedBy: {type:mongoose.Schema.Types.ObjectId,ref:'User'}, reviewedAt: Date,
   status: {
     type: String,
-    enum: ['draft', 'pending-approval', 'approved', 'expired', 'suspended'],
+    enum: ['draft', 'pending-approval', 'rejected', 'approved', 'expired', 'suspended'],
     default: 'draft'
   },
   attachments: [String], // Signed Privilege Form

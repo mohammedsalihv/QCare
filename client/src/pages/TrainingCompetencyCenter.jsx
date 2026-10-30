@@ -79,7 +79,7 @@ const TrainingCompetencyCenter = () => {
   const navItems = [
     { id: 'dashboard', label: 'Compliance Dashboard', icon: LayoutDashboard },
     { id: 'personal', label: 'My Competencies', icon: Award },
-    { id: 'matrix', label: 'Organization Matrix', icon: Grid3X3, roles: ['QualityManager', 'SuperAdmin', 'DepartmentHead'] },
+    { id: 'matrix', label: 'Organization Matrix', icon: Grid3X3, roles: ['QualityManager', 'SuperAdmin', 'QualityOfficer'] },
   ];
 
   const filteredNav = navItems.filter(item => !item.roles || item.roles.includes(userInfo.role));

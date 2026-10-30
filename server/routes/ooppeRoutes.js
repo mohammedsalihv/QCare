@@ -11,12 +11,12 @@ const {
 
 router
   .route('/')
-  .get(protect, authorize('SuperAdmin', 'QualityManager', 'Staff'), getOoppes)
+  .get(protect, authorize('SuperAdmin', 'QualityManager', 'user'), getOoppes)
   .post(protect, authorize('SuperAdmin', 'QualityManager'), createOoppe);
 
 router
   .route('/:id')
-  .get(protect, authorize('SuperAdmin', 'QualityManager', 'Staff'), getOoppeById)
+  .get(protect, authorize('SuperAdmin', 'QualityManager', 'user'), getOoppeById)
   .put(protect, authorize('SuperAdmin', 'QualityManager'), updateOoppe)
   .delete(protect, authorize('SuperAdmin'), deleteOoppe);
 

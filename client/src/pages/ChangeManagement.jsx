@@ -21,6 +21,7 @@ const ChangeManagement = () => {
   const { showNotification } = useNotification();
   const [changeRequests, setChangeRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [rejectId, setRejectId] = useState(null), [rejectionReason, setRejectionReason] = useState('');
   const [showModal, setShowModal] = useState(false);
   
   // Form State
@@ -34,7 +35,7 @@ const ChangeManagement = () => {
   const [financialImpact, setFinancialImpact] = useState('');
   
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-  const isApprover = ['SuperAdmin', 'QualityManager', 'admin'].includes(userInfo.role);
+  const isApprover = ['Quality', 'SuperAdmin', 'QualityManager', 'admin'].includes(userInfo.role);
 
   const fetchData = async () => {
     try {
@@ -91,12 +92,13 @@ const ChangeManagement = () => {
     }
   };
 
-  const handleStatusChange = async (id, status) => {
+  const handleStatusChange = async (id, status, reason = '') => {
+    if (status === 'Rejected' && !reason.trim()) { setRejectId(id); return; }
     try {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.put(`/api/qms/change-requests/${id}`, { status }, config);
-      showNotification(`Change Request set to ${status}`, 'success');
+      await axios.put(`/api/qms/change-requests/${id}`, { status, rejectionReason: reason }, config);
+      setRejectId(null); setRejectionReason(''); showNotification(`Change Request set to ${status}`, 'success');
       fetchData();
     } catch (error) {
       showNotification('Failed to update status', 'error');

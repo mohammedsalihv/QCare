@@ -47,7 +47,9 @@ export default function ClinicalAuditWorkspace() {
   const user = JSON.parse(localStorage.getItem('userInfo') || '{}');
   const userId = user._id || user.id;
   const isManager = ['quality', 'qualitymanager', 'superadmin'].includes((currentRole || user.role)?.toLowerCase());
-  const canEdit = audit => isManager || String(audit.auditor?._id || audit.auditor) === String(userId);
+  const canSchedule = isManager || (currentRole || user.role) === 'QualityOfficer';
+  const ownsSchedule = audit => (currentRole || user.role) === 'QualityOfficer' && String(audit.scheduleRequestedBy?._id || audit.scheduleRequestedBy) === String(userId);
+  const canEdit = audit => isManager || ownsSchedule(audit) || String(audit.auditor?._id || audit.auditor) === String(userId);
   const refresh = useCallback(async () => {
     const [list, dashboard] = await Promise.all([axios.get('/api/audit', config()), axios.get('/api/audit/dashboard', config())]);
     setAudits(list.data); setStats(dashboard.data);
@@ -67,7 +69,7 @@ export default function ClinicalAuditWorkspace() {
     finally { setBusy(false); }
   };
   const openAudit = audit => run(async () => {
-    if (audit.status === 'pending-approval') {
+    if (['pending-approval', 'schedule-rejected'].includes(audit.status)) {
       const { data } = await axios.get(`/api/audit/${audit._id}`, config());
       setApprovalAudit(data); return;
     }
@@ -82,7 +84,7 @@ export default function ClinicalAuditWorkspace() {
     axios.get(`/api/audit/${encodeURIComponent(id)}`, config()).then(({ data }) => {
       if (!mounted) return;
       setView('audits'); setStatus(data.status === 'pending-approval' ? 'pending-approval' : '');
-      if (data.status === 'pending-approval') setApprovalAudit(data);
+      if (['pending-approval', 'schedule-rejected'].includes(data.status)) setApprovalAudit(data);
       navigate(routeLocation.pathname, { replace: true });
     }).catch(() => { if (mounted) setError('This audit request is no longer available.'); });
     return () => { mounted = false; };
@@ -137,19 +139,23 @@ export default function ClinicalAuditWorkspace() {
     const { data } = await axios.get(`/api/audit/${audit._id}`, config());
     setEditingSchedule(data); setInitialSessionDate(''); setModal(true);
   });
-  const approveSchedule = async (audit, comment) => {
-    const { data } = await axios.put(`/api/audit/${audit._id}/schedule-approval`, { expectedVersion: audit.__v || 0, comment }, config());
-    setApprovalAudit(null); setCalendarFocusDate(dubaiDay(data.scheduledDate)); setView('calendar');
-    await refresh(); await fetchFeed(); showNotification('Schedule approved and published to the calendar', 'success');
+  const approveSchedule = async (audit, comment, decision = 'approve') => {
+    const { data } = await axios.put(`/api/audit/${audit._id}/schedule-approval`, { expectedVersion: audit.__v || 0, comment, decision }, config());
+    setApprovalAudit(null); setCalendarFocusDate(dubaiDay(data.scheduledDate)); setView(decision === 'reject' ? 'audits' : 'calendar'); setStatus(decision === 'reject' ? 'schedule-rejected' : '');
+    await refresh(); await fetchFeed(); showNotification(decision === 'reject' ? 'Schedule rejected with reason' : 'Schedule approved and published to the calendar', 'success');
   };
   const scheduleAudit = async details => {
-    if (editingSchedule) {
-      await axios.put(`/api/audit/${editingSchedule._id}`, { ...details, expectedVersion: editingSchedule.__v || 0 }, config());
-      await refresh(); await fetchFeed(); setModal(false); setEditingSchedule(null); setView('audits'); setStatus('pending-approval'); setSearch(''); showNotification('Schedule changes submitted for QM approval', 'success'); return;
-    }
-    await axios.post('/api/audit', details, config());
-    await refresh(); await fetchFeed(); setModal(false); setView('audits'); setStatus('pending-approval'); setSearch(''); window.scrollTo({ top: 0, behavior: 'instant' }); showNotification('Audit submitted for QM approval', 'success');
+    const { data } = editingSchedule
+      ? await axios.put(`/api/audit/${editingSchedule._id}`, { ...details, expectedVersion: editingSchedule.__v || 0 }, config())
+      : await axios.post('/api/audit', details, config());
+    const published = data.status === 'scheduled';
+    await refresh(); await fetchFeed(); setModal(false); setEditingSchedule(null); setSearch('');
+    setStatus(published ? '' : 'pending-approval'); setView(published ? 'calendar' : 'audits');
+    if (published) setCalendarFocusDate(dubaiDay(data.scheduledDate));
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    showNotification(published ? 'Audit scheduled and published to the calendar' : 'Audit submitted for QM approval', 'success');
   };
+
   const actions = audits.flatMap(a => (a.improvementActions || []).map(item => ({ ...item, auditId: a._id, auditTitle: a.auditTitle, auditorId: a.auditor?._id || a.auditor })));
   const filtered = audits.filter(a => (!status || auditStatus(a) === status) && `${a.auditTitle} ${a.department || ''} ${a.location?.name || ''} ${(a.concernedPersons || []).map(p => p.employeeName).join(' ')}`.toLowerCase().includes(search.toLowerCase()));
   const criteria = active?.criteriaSnapshot?.length ? active.criteriaSnapshot : active?.templateId?.criteria || [];
@@ -161,14 +167,14 @@ export default function ClinicalAuditWorkspace() {
     ['templates', 'Templates', Layers3, templates.length]
   ];
   return <DashboardLayout title="Clinical Audit & Governance"><div className="ca-workspace">
-    <header className="ca-page-header"><div className="ca-page-heading"><span className="ca-module-icon"><ShieldCheck size={27} /></span><div><p className="ca-eyebrow">Quality & governance</p><h1>Clinical audit</h1><p>Plan audits, review evidence and track clinical improvement.</p></div></div>{isManager && <button aria-label="+ Schedule new audit" onClick={openSchedule} className="ca-button ca-primary"><Plus size={18} />Schedule new audit</button>}</header>
+    <header className="ca-page-header"><div className="ca-page-heading"><span className="ca-module-icon"><ShieldCheck size={27} /></span><div><p className="ca-eyebrow">Quality & governance</p><h1>Clinical audit</h1><p>Plan audits, review evidence and track clinical improvement.</p></div></div>{canSchedule && <button aria-label="+ Schedule new audit" onClick={openSchedule} className="ca-button ca-primary"><Plus size={18} />Schedule new audit</button>}</header>
     <nav className="ca-tabs" aria-label="Audit sections">{sections.map(([id, label, Icon, count]) => <button key={id} aria-label={label} aria-current={view === id || (view === 'detail' && id === 'audits') ? 'page' : undefined} onClick={() => { setView(id); window.scrollTo({ top: 0, behavior: 'instant' }); refresh().catch(() => setError('Unable to refresh audits.')); }}>{React.createElement(Icon, { size: 17 })}<span>{label}</span>{count != null && <span className="ca-tab-count" aria-hidden="true">{count}</span>}</button>)}</nav>
     {error && <div role="alert" className="ca-alert"><AlertCircle size={19} />{error}</div>}
     {loading ? <div className="ca-loading" role="status"><span />Loading clinic audits…</div> : <>
       {audits.some(a => a.status === 'pending-approval') && <div className="ca-approval-banner"><ShieldCheck size={23} /><div><strong>{audits.filter(a => a.status === 'pending-approval').length} schedule requests awaiting QM approval</strong><p>Proposed visits appear in the calendar only after approval.</p></div><button className="ca-button ca-secondary" onClick={() => { setStatus('pending-approval'); setSearch(''); setView('audits'); }}>Review requests</button></div>}
       {view === 'dashboard' && <AuditOverview audits={audits} actions={actions} stats={stats} onOpen={openAudit} onView={(next, filter) => { setStatus(filter); setView(next); }} />}
-      {view === 'audits' && <AuditRegister audits={filtered} search={search} status={status} setSearch={setSearch} setStatus={setStatus} onOpen={openAudit} onDownload={download} onDelete={deleteAudit} onEditSchedule={editSchedule} canEdit={canEdit} busy={busy} onSchedule={openSchedule} canManage={isManager} />}
-      {view === 'calendar' && <AuditCalendar initialDate={calendarFocusDate} audits={audits} onOpen={openAudit} onDownload={download} onDelete={deleteAudit} onEditSchedule={editSchedule} canSchedule={isManager} busy={busy} onSchedule={date => { setEditingSchedule(null); setInitialSessionDate(date); setModal(true); }} />}
+      {view === 'audits' && <AuditRegister audits={filtered} search={search} status={status} setSearch={setSearch} setStatus={setStatus} onOpen={openAudit} onDownload={download} onDelete={deleteAudit} onEditSchedule={editSchedule} canUpdateSchedule={audit => isManager || ownsSchedule(audit)} canEdit={canEdit} busy={busy} onSchedule={openSchedule} canManage={isManager} />}
+      {view === 'calendar' && <AuditCalendar initialDate={calendarFocusDate} audits={audits} onOpen={openAudit} onDownload={download} onDelete={deleteAudit} onEditSchedule={editSchedule} canUpdateSchedule={audit => isManager || ownsSchedule(audit)} canSchedule={canSchedule} canManage={isManager} busy={busy} onSchedule={date => { setEditingSchedule(null); setInitialSessionDate(date); setModal(true); }} />}
       {view === 'templates' && <AuditTemplateBuilder templates={templates} canManage={isManager}
         onCreate={async body => { const result = await axios.post('/api/audit/templates', body, config()); setTemplates(prev => [...prev, result.data]); showNotification('Checklist template created', 'success'); }}
         onUpdate={async (id, body) => { const result = await axios.put('/api/audit/templates/' + id, body, config()); setTemplates(prev => prev.map(t => t._id === id ? result.data : t)); showNotification('Checklist template updated', 'success'); }}
@@ -184,6 +190,6 @@ export default function ClinicalAuditWorkspace() {
       </div>}
     </>}
     {approvalAudit && <AuditScheduleApproval audit={approvalAudit} canApprove={isManager} onApprove={approveSchedule} onClose={() => setApprovalAudit(null)} />}
-    {modal && <AuditScheduleDialog audit={editingSchedule} templates={templates} initialDate={initialSessionDate} onSchedule={scheduleAudit} onClose={() => { setModal(false); setEditingSchedule(null); setError(''); }} />}
+    {modal && <AuditScheduleDialog directPublish={['quality', 'qualitymanager'].includes((currentRole || user.role)?.toLowerCase())} audit={editingSchedule} templates={templates} initialDate={initialSessionDate} onSchedule={scheduleAudit} onClose={() => { setModal(false); setEditingSchedule(null); setError(''); }} />}
   </div></DashboardLayout>;
 }

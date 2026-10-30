@@ -8,17 +8,19 @@ const Notification = require("../models/Notification");
 const getNotifications = async (req, res) => {
   try {
     if (auditNotifications.isQuality(req.user)) await auditNotifications.syncPending();
+    if (auditNotifications.isQuality(req.user) || req.user.role?.toLowerCase() === 'admin') await require('../utils/syncWorkflowNotifications')();
     const roleQuery = visibility(req.user);
 
     // Filter out notifications deleted by this specific user
+    const history = typeof req.query.recordId === 'string' && typeof req.query.module === 'string';
     const query = {
       ...roleQuery,
-      deletedBy: { $ne: req.user._id }
+      ...(history ? { 'workflow.recordId': req.query.recordId, 'workflow.module': req.query.module } : { deletedBy: { $ne: req.user._id } })
     };
 
     const notifications = await Notification.find(query)
       .sort({ createdAt: -1 })
-      .limit(100);
+      .limit(history ? 500 : 100);
 
     // Format the notifications for the frontend (add isRead based on readBy array)
     const formattedNotifications = notifications.map(n => ({

@@ -17,3 +17,11 @@ Thumbs.db
 
 server/uploads/
 server/private/clinical-audit/
+
+# Local task artifacts (existing tracked files are left intact)
+/tmp/
+/output/
+**/*.log
+**/.env.*
+!**/.env.example
+!**/.env.sample

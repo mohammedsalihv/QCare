@@ -210,3 +210,56 @@
  .ca-approval-body { padding:16px; }
  .ca-schedule-approval .ca-form-footer { flex-wrap:wrap; }
 }
+.ca-status[data-status="schedule-rejected"] { color:#a9233d; background:#fff0f3; border:1px solid #efb8c4; }
+/* Calendar status colors belong to visits; selection belongs to the date. */
+.ca-calendar-readable { grid-template-columns:minmax(0,1.8fr) minmax(300px,1fr); }
+.ca-calendar-readable [data-category] { --event-color:#2563a6; --event-bg:#edf5ff; }
+.ca-calendar-readable [data-category="today"] { --event-color:#0e756b; --event-bg:#e2f5f0; }
+.ca-calendar-readable [data-category="overdue"] { --event-color:#b42340; --event-bg:#fff0f2; }
+.ca-calendar-readable [data-category="in-progress"] { --event-color:#7541b0; --event-bg:#f4edff; }
+.ca-calendar-readable [data-category="pending-review"] { --event-color:#946000; --event-bg:#fff5db; }
+.ca-calendar-readable [data-category="completed"] { --event-color:#237344; --event-bg:#eaf7ed; }
+.ca-calendar-explainer { display:flex; flex-wrap:wrap; gap:8px 18px; padding:16px 22px; background:#f5f8fc; color:#526779; font-size:12px; border-bottom:1px solid #dde6ef; }
+.ca-calendar-explainer strong { color:#18364e; }
+.ca-calendar-filters { display:flex; flex-wrap:wrap; gap:8px; padding:18px 22px 0; }
+.qc-main .ca-workspace .ca-calendar-filter { display:flex; gap:7px; align-items:center; border:1px solid #d7e1eb; border-radius:8px; background:white; padding:8px 10px; color:#324c62; font-size:12px; font-weight:600; }
+.qc-main .ca-workspace .ca-calendar-filter[aria-pressed="true"] { border-color:var(--event-color); background:var(--event-bg); color:var(--event-color); box-shadow:0 0 0 1px var(--event-color); }
+.ca-calendar-filter i,.ca-calendar-mobile-status i { display:block; width:8px; height:8px; border-radius:50%; background:var(--event-color); flex-shrink:0; }
+.ca-calendar-filter b { background:#eaf0f5; border-radius:5px; padding:1px 5px; color:#344c60; }
+.ca-calendar-readable .ca-calendar-week span { font-size:12px; color:#50657a; font-weight:700; }
+.qc-main .ca-workspace .ca-calendar-readable .ca-calendar-day { min-height:142px; padding:8px; gap:7px; border:1px solid #dce5ed; background:#fff; color:#29445c; border-radius:9px; box-shadow:none; align-items:stretch; }
+.qc-main .ca-workspace .ca-calendar-readable .ca-calendar-day.has-visits { background:#f8fafc; border-color:#bdcede; box-shadow:none; }
+.qc-main .ca-workspace .ca-calendar-readable .ca-calendar-day[aria-pressed="true"] { background:#edf4ff; border:2px solid #24599a; padding:7px; box-shadow:0 0 0 2px #24599a18; }
+.ca-day-number { display:flex; align-items:center; justify-content:space-between; gap:3px; }
+.qc-main .ca-workspace .ca-calendar-readable .ca-day-number strong { color:#213d55; font-size:17px; }
+.qc-main .ca-workspace .ca-calendar-readable .is-today .ca-day-number strong { margin:0; background:#0c756d; color:#fff; width:27px; height:27px; border-radius:50%; display:grid; place-items:center; }
+.ca-day-number em { font-size:9px; font-style:normal; font-weight:700; color:#086c64; }
+.qc-main .ca-workspace .ca-calendar-readable .ca-visit-count { background:transparent; color:#52697f; padding:0; font-size:10px; text-align:left; }
+.ca-calendar-readable .ca-day-previews { display:grid; gap:5px; }
+.ca-calendar-readable .ca-day-previews > .ca-calendar-event { border-left:3px solid var(--event-color); background:var(--event-bg); color:var(--event-color); padding:5px; border-radius:4px; display:grid; gap:3px; white-space:normal; font-size:10px; }
+.ca-calendar-event b { font-size:9px; line-height:1.4; }
+.ca-calendar-event > span { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-weight:600; }
+.ca-calendar-mobile-status { display:none; }
+.ca-calendar-key { display:flex; flex-wrap:wrap; gap:12px; padding:15px 22px; border-top:1px solid #e2e9f0; font-size:11px; color:#526779; }
+.ca-calendar-key span { display:flex; align-items:center; gap:6px; }
+.ca-calendar-key i { width:12px; height:12px; display:inline-block; }
+.ca-today-key { background:#0c756d; border-radius:50%; }.ca-selected-key { border:2px solid #24599a; border-radius:3px; }
+.ca-calendar-readable .ca-agenda-card { border-left:4px solid var(--event-color); }
+.ca-calendar-readable .ca-agenda-date { display:grid; gap:9px; background:#f2f6fa; }
+.ca-calendar-readable .ca-agenda-date p { margin:0; }
+.ca-calendar-readable .ca-agenda-date .ca-button { justify-self:start; }
+.ca-calendar-readable button:focus-visible { outline:3px solid #207bbd; outline-offset:3px; }
+@media(max-width:1100px) { .ca-calendar-readable { grid-template-columns:minmax(0,1fr); } }
+@media(max-width:600px) {
+ .ca-calendar-readable .ca-calendar-month { padding:12px; }
+ .ca-calendar-readable .ca-calendar-filters { padding:14px 12px 0; gap:7px; }
+ .qc-main .ca-workspace .ca-calendar-readable .ca-calendar-filter { font-size:11px; padding:7px; }
+ .qc-main .ca-workspace .ca-calendar-readable .ca-calendar-day { min-height:87px; padding:5px 3px; }
+ .qc-main .ca-workspace .ca-calendar-readable .ca-calendar-day[aria-pressed="true"] { padding:4px 2px; }
+ .ca-calendar-readable .ca-day-number { flex-direction:column; gap:2px; }
+ .ca-calendar-readable .ca-day-number em { font-size:8px; }
+ .ca-calendar-readable .ca-day-previews { display:none; }
+ .qc-main .ca-workspace .ca-calendar-readable .ca-visit-count { font-size:9px; text-align:center; }
+ .ca-calendar-readable .ca-calendar-mobile-status { display:flex; justify-content:center; flex-wrap:wrap; gap:3px; }
+ .ca-calendar-readable .ca-calendar-explainer { padding:13px; }
+}

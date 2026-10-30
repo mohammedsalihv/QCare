@@ -1,3 +1,4 @@
+const { normalizeRole } = require('../utils/roles');
 const jwt = require("jsonwebtoken");
 const User = require("../models/users");
 
@@ -15,6 +16,7 @@ const protect = async (req, res, next) => {
       req.user = await User.findById(decoded.id).select("-password");
       if (!req.user) return res.status(401).json({ message: "Not authorized, user no longer exists" });
       if (req.user.isActive === false || ['blocked', 'inactive'].includes(req.user.status)) return res.status(403).json({ message: "Your account is inactive or blocked" });
+      req.user.role = normalizeRole(req.user.role);
       next();
     } catch (error) {
       console.error(error);
@@ -29,7 +31,7 @@ const protect = async (req, res, next) => {
 
 const authorize = (...roles) => {
   return (req, res, next) => {
-    if (!req.user || !roles.some(role => role.toLowerCase() === req.user.role?.toLowerCase())) {
+    if (!req.user || !roles.some(role => normalizeRole(role) === normalizeRole(req.user.role))) {
       return res.status(403).json({
         message: `User role ${req.user.role} is not authorized to access this route`
       });

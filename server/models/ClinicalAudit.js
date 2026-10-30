@@ -49,7 +49,7 @@ const clinicalAuditSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending-approval', 'scheduled', 'in-progress', 'pending-review', 'completed', 'overdue'],
+    enum: ['pending-approval', 'schedule-rejected', 'scheduled', 'in-progress', 'pending-review', 'completed', 'overdue'],
     default: 'pending-approval'
   },
   findings: [{
@@ -98,6 +98,7 @@ const clinicalAuditSchema = new mongoose.Schema({
   scheduleRequestedAt: Date,
   scheduleApprovedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   scheduleApprovedAt: Date,
+  scheduleRejectedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}, scheduleRejectedAt: Date, scheduleRejectionReason: String,
   scheduleApprovalComment: String,
   deletedAt: Date,
   deletedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
