@@ -1,6 +1,6 @@
 import { playNotificationSound, unlockNotificationSound, cancelPendingSound } from '../utils/notificationSound';
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
-import Notification from './Notification';
+import UserMessage from './feedback/UserMessage';
 import ConfirmationDialog from './ConfirmationDialog';
 import axios from 'axios';
 import { getAuthConfig } from '../utils/authConfig';
@@ -106,9 +106,9 @@ export const NotificationProvider = ({ children }) => {
             {children}
 
             {/* Notifications Container */}
-            <div className="fixed top-6 right-6 z-[9999] flex flex-col gap-4 max-w-sm w-full pointer-events-none">
+            <div className="qc-message-stack">
                 {notifications.map((notification) => (
-                    <Notification
+                    <UserMessage
                         key={notification.id}
                         {...notification}
                         onClose={() => removeNotification(notification.id)}
