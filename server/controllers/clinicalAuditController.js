@@ -25,6 +25,7 @@ exports.getAudits = async (req, res) => {
     if (pillar) query.governancePillar = pillar;
 
     const audits = await ClinicalAudit.find(query)
+      .populate('scheduleRequestedBy', 'employeeName')
       .populate('auditor', 'employeeName employeeId')
       .populate('templateId', 'templateName criteria')
       .populate('improvementActions.owner', 'employeeName')

@@ -48,7 +48,7 @@ export default function UserMessage({ message, type = 'info', title, duration = 
     onFocusCapture={() => { focused.current = true; }} onBlurCapture={e => { if (!e.currentTarget.contains(e.relatedTarget)) focused.current = false; }}>
     <span className="qc-message__light" aria-hidden="true" />
     <span className="qc-message__icon" aria-hidden="true"><Icon size={23} strokeWidth={1.8}/></span>
-    <div className="qc-message__body"><span className="qc-message__eyebrow">QCare <i/> {tone === 'success' ? 'Success' : tone === 'error' ? 'Error' : tone === 'warning' ? 'Attention' : 'Update'}</span><strong className="qc-message__title">{title || defaultTitle}</strong><p className="qc-message__text">{message}</p></div>
+    <div className="qc-message__body"><span className="qc-message__eyebrow">{tone === 'success' ? 'Success' : tone === 'error' ? 'Error' : tone === 'warning' ? 'Attention' : 'Update'}</span><strong className="qc-message__title">{title || defaultTitle}</strong><p className="qc-message__text">{message}</p></div>
     <button className="qc-message__close" type="button" aria-label="Dismiss notification" onClick={dismiss}><X size={17}/></button>
     {duration > 0 && <span className="qc-message__track" aria-hidden="true"><span style={{ transform: `scaleX(${progress / 100})` }}/></span>}
   </article>;

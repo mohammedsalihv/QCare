@@ -230,13 +230,14 @@ function Login() {
                       </div>
                       <input
                         id="username"
+                        autoFocus
                         autoComplete="username"
                         type="text"
                         required
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         disabled={loading}
-                        className="w-full pl-12 pr-4 py-3.5 border-0 border-b-2 border-slate-200 bg-white text-slate-800 font-semibold focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200"
+                        className="w-full pl-12 pr-4 py-3.5 border border-teal-200 rounded-xl bg-slate-50 text-slate-800 font-semibold focus:outline-none focus:ring-4 focus:ring-teal-500/15 focus:bg-white focus:border-teal-600 transition-all duration-200"
                         placeholder="••••••••"
                       />
                     </div>
@@ -267,7 +268,7 @@ function Login() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={loading}
-                        className="w-full pl-12 pr-14 py-3.5 border-0 border-b-2 border-slate-200 bg-white text-slate-800 font-semibold focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200"
+                        className="w-full pl-12 pr-14 py-3.5 border border-teal-200 rounded-xl bg-slate-50 text-slate-800 font-semibold focus:outline-none focus:ring-4 focus:ring-teal-500/15 focus:bg-white focus:border-teal-600 transition-all duration-200"
                         placeholder="••••••••"
                       />
                       <button

@@ -26,7 +26,7 @@ router.route('/templates/:templateId')
 
 // Audits
 router.route('/')
-  .post(protect, authorize('QualityManager', 'QualityOfficer', 'SuperAdmin'), workflow.scheduleAudit)
+  .post(protect, workflow.scheduleAudit)
   .get(protect, getAudits);
 
 router.get('/dashboard', protect, getDashboardStats);
@@ -36,7 +36,7 @@ router.route('/:id')
   .delete(protect, authorize('QualityManager', 'SuperAdmin'), workflow.deleteAudit)
   .get(protect, getAuditById);
 
-router.put('/:id/schedule-approval', protect, authorize('QualityManager', 'SuperAdmin'), workflow.approveSchedule);
+router.put('/:id/schedule-approval', protect, authorize('QualityManager'), workflow.approveSchedule);
 router.put('/:id/start', protect, workflow.startAudit);
 router.put('/:id/findings', protect, workflow.updateFindings);
 router.put('/:id/complete', protect, workflow.completeAudit);

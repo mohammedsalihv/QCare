@@ -65,7 +65,21 @@ test('the actual form payload persists through real HTTP routes and MongoDB', { 
     const payload = { auditTitle: 'CMCDL Jawda', templateId: String(template._id), auditType: 'planned', location: String(location._id), auditorName: '', concernedDepartments: [], concernedPersons: [], sessions: [21, 22, 23, 24].map(day => ({ startAt: `2026-11-${day}T09:00:00+04:00`, endAt: `2026-11-${day}T10:00:00+04:00` })) };
     const anonymous = await request('/dashboard', 'GET', undefined, null);
     assert.equal(anonymous.status, 401); assert.equal(anonymous.workflow, '13');
-    assert.equal((await request('', 'POST', payload, staff)).status, 403);
+    const admin = await makeUser('admin', 'admin'), superadmin = await makeUser('request-superadmin', 'SuperAdmin');
+    for (const requester of [staff, admin, superadmin, officer]) {
+      const submitted = await request('', 'POST', { ...payload, status: 'scheduled' }, requester);
+      assert.equal(submitted.status, 201, JSON.stringify(submitted.body));
+      assert.equal(submitted.body.status, 'pending-approval');
+      const path = '/' + submitted.body._id;
+      assert(!(await request('?scope=calendar', 'GET', undefined, requester)).body.some(a => a._id === submitted.body._id));
+      assert.equal((await request(path + '/schedule-approval', 'PUT', { expectedVersion: 0 }, requester)).status, 403);
+      const approved = await request(path + '/schedule-approval', 'PUT', { expectedVersion: 0 }, manager);
+      assert.equal(approved.status, 200); assert.equal(approved.body.status, 'scheduled');
+      for (const viewer of [staff, admin, superadmin, officer, manager]) {
+        assert((await request('?scope=calendar', 'GET', undefined, viewer)).body.some(a => a._id === submitted.body._id));
+      }
+      assert.equal((await request(path, 'DELETE', { expectedVersion: 1 })).status, 200);
+    }
     assert.equal((await request('', 'POST', { ...payload, location: '' })).status, 400);
     assert.equal(quality.role, 'QualityManager'); assert.equal(staff.role, 'user');
     const direct = await request('', 'POST', { ...payload, status: 'pending-approval' }, manager);

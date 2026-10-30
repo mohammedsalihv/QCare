@@ -122,7 +122,7 @@ exports.updateScheduledAudit = wrap(async (req, res) => {
   res.json(await load(req));
 });
 exports.approveSchedule = wrap(async (req, res) => {
-  if (!isManager(req.user)) fail('Only QM or SuperAdmin can approve audit schedules.', 403);
+  if (!directSchedule(req.user)) fail('Only a Quality Manager can approve audit schedules.', 403);
   if (!isValidObjectId(req.params.id)) fail('Invalid audit ID.');
   const audit = await load(req);
   if (audit.status !== 'pending-approval') fail('Only pending audit schedules can be approved.', 409);

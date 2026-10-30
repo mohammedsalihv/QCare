@@ -104,8 +104,8 @@ test('evidence rejects unrelated users, unknown criteria, and invalid file signa
   req.user._id = auditor; const invalid = response(); await workflow.uploadEvidence(req, invalid); assert.equal(invalid.statusCode, 400);
   req.params.criterionId = 'unknown'; const unknown = response(); await workflow.uploadEvidence(req, unknown); assert.equal(unknown.statusCode, 400);
 });
-test('review and scheduling routes keep manager role gates', () => {
-  for (const path of ['/', '/:id/review', '/templates']) {
+test('review and template routes keep manager role gates', () => {
+  for (const path of ['/:id/review', '/templates']) {
     const route = routes.stack.find(layer => layer.route?.path === path).route;
     const method = path.includes('review') ? 'put' : 'post';
     const handlers = route.stack.filter(layer => layer.method === method);
