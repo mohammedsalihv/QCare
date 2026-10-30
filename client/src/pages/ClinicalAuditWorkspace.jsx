@@ -1,3 +1,4 @@
+import AuditApprovalRequests from '../components/audit/AuditApprovalRequests';
 import AuditHistory from '../components/audit/AuditHistory';
 import AuditScheduleApproval from '../components/audit/AuditScheduleApproval';
 import { dubaiDay } from '../components/audit/auditSchedule';
@@ -164,6 +165,7 @@ export default function ClinicalAuditWorkspace() {
   const openSchedule = () => { setError(''); setEditingSchedule(null); setInitialSessionDate(''); setModal(true); };
   const sections = [
     ['dashboard', 'Overview', LayoutDashboard, null], ['audits', 'Audits', ClipboardList, audits.length],
+    ...(isManager ? [['approvals', 'Approval requests', ShieldCheck, audits.filter(a => a.status === 'pending-approval').length]] : []),
     ['calendar', 'Calendar', CalendarDays, null], ['actions', 'Findings & actions', ListChecks, actions.filter(a => a.status !== 'completed').length],
     ['templates', 'Templates', Layers3, templates.length]
   ];
@@ -172,9 +174,10 @@ export default function ClinicalAuditWorkspace() {
     <nav className="ca-tabs" aria-label="Audit sections">{sections.map(([id, label, Icon, count]) => <button key={id} aria-label={label} aria-current={view === id || (view === 'detail' && id === 'audits') ? 'page' : undefined} onClick={() => { setView(id); window.scrollTo({ top: 0, behavior: 'instant' }); refresh().catch(() => setError('Unable to refresh audits.')); }}>{React.createElement(Icon, { size: 17 })}<span>{label}</span>{count != null && <span className="ca-tab-count" aria-hidden="true">{count}</span>}</button>)}</nav>
     {error && <div role="alert" className="ca-alert"><AlertCircle size={19} />{error}</div>}
     {loading ? <div className="ca-loading" role="status"><span />Loading clinic audits…</div> : <>
-      {audits.some(a => a.status === 'pending-approval') && <div className="ca-approval-banner"><ShieldCheck size={23} /><div><strong>{audits.filter(a => a.status === 'pending-approval').length} schedule request{audits.filter(a => a.status === 'pending-approval').length === 1 ? '' : 's'} awaiting QM approval</strong><p>Proposed visits appear in the calendar only after approval.</p></div><button className="ca-button ca-secondary" onClick={() => { setStatus('pending-approval'); setSearch(''); setView('audits'); }}>Review requests</button></div>}
+      {audits.some(a => a.status === 'pending-approval') && <div className="ca-approval-banner"><ShieldCheck size={23} /><div><strong>{audits.filter(a => a.status === 'pending-approval').length} schedule request{audits.filter(a => a.status === 'pending-approval').length === 1 ? '' : 's'} {isManager ? 'awaiting your decision' : 'awaiting QM approval'}</strong><p>{isManager ? 'Review these requests and approve or reject with a reason. Your new Quality Manager schedules publish immediately.' : 'The Quality Manager must approve these proposed visits before calendar publication.'}</p></div><button className="ca-button ca-secondary" onClick={() => { setStatus('pending-approval'); setSearch(''); setView(isManager ? 'approvals' : 'audits'); }}>{isManager ? 'Open approval requests' : 'View requests'}</button></div>}
       {view === 'dashboard' && <AuditOverview audits={audits} actions={actions} stats={stats} onOpen={openAudit} onView={(next, filter) => { setStatus(filter); setView(next); }} />}
       {view === 'audits' && <AuditRegister audits={filtered} search={search} status={status} setSearch={setSearch} setStatus={setStatus} onOpen={openAudit} onDownload={download} onDelete={deleteAudit} onEditSchedule={editSchedule} canUpdateSchedule={audit => isManager || ownsSchedule(audit)} canEdit={canEdit} busy={busy} onSchedule={openSchedule} canManage={isManager} />}
+      {view === 'approvals' && isManager && <AuditApprovalRequests audits={audits} onReview={openAudit} busy={busy} />}
       {view === 'calendar' && <AuditCalendar initialDate={calendarFocusDate} audits={audits} onOpen={openAudit} onDownload={download} onDelete={deleteAudit} onEditSchedule={editSchedule} canUpdateSchedule={audit => isManager || ownsSchedule(audit)} canSchedule={canSchedule} canManage={isManager} busy={busy} onSchedule={date => { setEditingSchedule(null); setInitialSessionDate(date); setModal(true); }} />}
       {view === 'templates' && <AuditTemplateBuilder templates={templates} canManage={isManager}
         onCreate={async body => { const result = await axios.post('/api/audit/templates', body, config()); setTemplates(prev => [...prev, result.data]); showNotification('Checklist template created', 'success'); }}

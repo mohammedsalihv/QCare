@@ -1,0 +1,8 @@
+import React from 'react';
+import { ShieldCheck, ArrowRight } from 'lucide-react';
+import AuditScopeSummary from './AuditScopeSummary';
+import { AuditSessionSummary } from './AuditCalendar';
+export default function AuditApprovalRequests({ audits, onReview, busy }) {
+ const requests = audits.filter(a => a.status === 'pending-approval').sort((a,b) => new Date(a.scheduleRequestedAt || 0) - new Date(b.scheduleRequestedAt || 0));
+ return <section className="ca-panel"><header className="ca-panel-heading"><div><p className="ca-eyebrow">Quality manager inbox</p><h2>Approval requests</h2><p>Review the scope and proposed visits, then approve or reject with a reason. Older requests remain here until a decision is recorded.</p></div><span className="ca-count">{requests.length} pending</span></header>{requests.length ? <div className="ca-agenda-list">{requests.map(a => <article className="ca-agenda-card" key={a._id}><div className="ca-agenda-card-top"><h3>{a.auditTitle}</h3><span className="ca-status" data-status="pending-approval">Decision required</span></div><AuditScopeSummary audit={a}/><AuditSessionSummary audit={a}/>{a.scheduleRequestedAt && <p>Requested {new Date(a.scheduleRequestedAt).toLocaleString('en-GB',{timeZone:'Asia/Dubai',dateStyle:'medium',timeStyle:'short'})} · Dubai</p>}<div><button className="ca-button ca-primary" disabled={busy} onClick={()=>onReview(a)} aria-label={'Review and decide '+a.auditTitle}>Review & decide<ArrowRight size={16}/></button></div></article>)}</div> : <div className="ca-empty"><ShieldCheck size={30}/><h3>No approval requests waiting</h3><p>Schedules requiring your decision will appear here.</p></div>}</section>;
+}
