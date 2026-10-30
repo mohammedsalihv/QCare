@@ -90,6 +90,14 @@ test('the actual form payload persists through real HTTP routes and MongoDB', { 
     assert.equal(read.body.location.name, 'Test clinic'); assert.equal(read.body.templateId.standard, 'Jawda');
     const selected = await request('', 'POST', { ...payload, auditTitle: 'Concerned teams audit', concernedDepartments: [String(department._id)], concernedPersons: [String(staff._id), String(reviewer._id)] });
     assert.equal(selected.status, 201, JSON.stringify(selected.body));
+    // Pending requests are independent: the same officer can submit another audit.
+    assert.equal(created.body.status, 'pending-approval');
+    assert.equal(selected.body.status, 'pending-approval');
+    assert.notEqual(selected.body._id, created.body._id);
+    assert.equal((await request('/' + created.body._id)).body.status, 'pending-approval');
+    const pendingRequests = (await request('?status=pending-approval')).body;
+    assert(pendingRequests.some(a => a._id === created.body._id));
+    assert(pendingRequests.some(a => a._id === selected.body._id));
     const selectedRead = await request('/' + selected.body._id);
     assert.equal(selectedRead.body.concernedDepartments[0].name, 'Test nursing'); assert.equal(selectedRead.body.concernedPersons.length, 2);
     assert(!('password' in selectedRead.body.concernedPersons[0]));
