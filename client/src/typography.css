@@ -25,7 +25,7 @@ strong, b { font-weight:650; }
 .qc-main :is(.ca-small,.qd-caption,.qi-entry-help,.qi-description,.qc-welcome p,.qc-action-card p,.qc-directory-card p,.qc-empty p,.qd-feed p,.ca-panel-heading p,.ca-page-heading p) { font-size:var(--qc-text-small); line-height:1.6; }
 .qc-main :is(label,legend) { font-size:var(--qc-text-control); font-weight:600; line-height:1.5; }
 .qc-main :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=hidden]),textarea,select):not(.qc-select-native), .qc-login :is(input,textarea) { font-size:var(--qc-text-body); line-height:1.5; font-weight:400; }
-.qc-select-button,.qc-select-option,.qc-select-search input { font-size:var(--qc-text-control); line-height:1.5; }
+.qc-select-button,.qc-select-option,.qc-select-search input { font-size:.8125rem; line-height:1.5; font-weight:400; }
 .qc-main :is(.ca-button,.ca-tabs button,.qc-module-sidebar nav button), .qc-app nav button { font-size:var(--qc-text-control); line-height:1.4; font-weight:600; }
 .qc-main :is(.ca-audit-table,.qd-table,.qc-table) td { font-size:var(--qc-text-control); line-height:1.55; }
 .qc-table th { font-size:var(--qc-text-caption) !important; }

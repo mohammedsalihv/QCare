@@ -40,3 +40,11 @@
 .qc-action-popup { border-color: var(--qc-control-border) !important; border-radius: 11px !important; box-shadow: 0 14px 45px #173e2926 !important; }
 .qc-action-popup button:hover { background: #edf5ef !important; color: var(--qc-brand) !important; }
 .qc-table th :is(span, div, p, a, button) { color: inherit !important; }
+
+/* Lighter dropdown surfaces with readable compact options. */
+.qc-select-popup { border-color:#dce3e9; border-radius:10px; box-shadow:0 12px 36px rgb(15 23 42 / 12%); }
+.qc-select-option { min-height:36px; padding:8px 10px; }
+.qc-select-option.selected { font-weight:500; }
+.qc-select-search { padding:8px 10px; color:#64748b; }
+.qc-select-button > svg { color:#64748b; }
+@media(pointer:coarse) { .qc-select-option { min-height:44px; } }

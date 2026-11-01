@@ -1,0 +1,26 @@
+/* Compact directory and form hierarchy, scoped to Specialty Master. */
+.qc-main .specialty-master > header h1 { font-size:28px; font-weight:700; letter-spacing:-.025em; }
+.qc-main .specialty-master > header p { font-size:13px; color:#64748b; margin-top:6px; }
+.qc-main .specialty-master button { font-size:13px; font-weight:500; }
+.qc-main .specialty-master > header button { min-height:40px; padding:10px 16px; border-radius:9px; }
+.qc-main .specialty-master .qc-table td { font-size:13px; }
+.qc-main .specialty-master .qc-table th { background:#f8fafc; }
+.qc-main .specialty-master .qc-table tbody tr:hover { background:#f8fbfb; }
+.qc-main .specialty-master .specialty-backdrop { background:rgb(15 23 42 / 32%); backdrop-filter:blur(3px); }
+.qc-main .specialty-master .specialty-backdrop > section { max-width:460px; border:1px solid #e2e8f0; border-radius:16px; padding:24px; box-shadow:0 24px 70px rgb(15 23 42 / 18%); }
+.qc-main .specialty-master .specialty-backdrop h2 { font-size:20px; font-weight:650; letter-spacing:-.02em; }
+.qc-main .specialty-master .specialty-backdrop label { font-size:12px; font-weight:600; color:#475569; }
+.qc-main .specialty-master input:not(.qc-select-native),
+.qc-main .specialty-master .qc-custom-select { min-height:42px; padding:10px 12px; border:1px solid #dce3e9; border-radius:8px; background:#fff; box-shadow:none; font-size:13px; font-weight:400; }
+.qc-main .specialty-master label > input,
+.qc-main .specialty-master label > .qc-custom-select { margin-top:6px; }
+.qc-main .specialty-master input:focus-visible,
+.qc-main .specialty-master .qc-custom-select:focus-within { outline:none; border-color:#0f766e; box-shadow:0 0 0 3px rgb(15 118 110 / 10%); }
+.qc-main .specialty-master .specialty-backdrop form > div:last-child { margin-top:24px; padding-top:18px; border-top:1px solid #eef2f6; }
+.qc-main .specialty-master .specialty-backdrop form > div:last-child button { min-height:40px; padding:9px 16px; }
+@media(max-width:600px) {
+ .qc-main .specialty-master > header h1 { font-size:24px; }
+ .qc-main .specialty-master input:not(.qc-select-native) { font-size:16px; }
+ .qc-main .specialty-master .specialty-backdrop > section { padding:20px; }
+ .qc-main .specialty-master button { min-height:44px; }
+}
