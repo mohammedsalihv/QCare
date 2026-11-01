@@ -4,6 +4,7 @@ import axios from 'axios'
 import './index.css'
 import App from './App.jsx'
 import './design-system.css'
+import './typography.css'
 
 // Route all relative API requests through the current origin (using Nginx proxy)
 axios.defaults.baseURL = window.location.origin;

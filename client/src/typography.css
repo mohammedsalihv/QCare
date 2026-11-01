@@ -1,0 +1,39 @@
+/* Shared type hierarchy, loaded after module and surface styles.
+   System fonts keep the portal readable on offline clinic networks. */
+:root {
+  --qc-text-body: .9375rem;
+  --qc-text-control: .875rem;
+  --qc-text-small: .8125rem;
+  --qc-text-caption: .75rem;
+}
+body { font-size:var(--qc-text-body); line-height:1.6; font-weight:400; }
+body, button, input, textarea, select { font-family:var(--font-sans); }
+button, input, textarea, select { letter-spacing:normal; }
+strong, b { font-weight:650; }
+.qc-main h1, .qc-main :is(.qd-heading,.qi-heading,.ca-page-heading) h1 { font-size:clamp(1.75rem,2.4vw,2.125rem); line-height:1.2; font-weight:700; letter-spacing:-.025em; }
+.qc-main h2 { font-size:1.25rem; line-height:1.35; font-weight:650; letter-spacing:-.015em; }
+.qc-main h3 { font-size:1.0625rem; line-height:1.4; font-weight:650; letter-spacing:-.01em; }
+.qc-main h4 { font-size:var(--qc-text-body); line-height:1.45; font-weight:650; }
+.qc-main :is(.qd-panel-heading,.ca-panel-heading,.qc-section-heading,.qi-picker,.qi-reports) h2 { font-size:1.25rem; }
+.qc-main :is(.qd-metric,.ca-stat) h2 { font-size:var(--qc-text-small); letter-spacing:normal; }
+.qc-main :is(.qd-hero,.qc-focus-panel) h2 { font-size:clamp(1.75rem,3vw,2.5rem); line-height:1.2; }
+.qc-main :is(.qc-eyebrow,.qd-eyebrow,.ca-eyebrow) { font-size:var(--qc-text-caption); letter-spacing:.09em; font-weight:650; line-height:1.5; }
+.qc-main :is(.ca-small,.qd-caption,.qi-entry-help,.qi-description,.qc-welcome p,.qc-action-card p,.qc-directory-card p,.qc-empty p,.qd-feed p,.ca-panel-heading p,.ca-page-heading p) { font-size:var(--qc-text-small); line-height:1.6; }
+.qc-main :is(label,legend) { font-size:var(--qc-text-control); font-weight:600; line-height:1.5; }
+.qc-main :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=hidden]),textarea,select):not(.qc-select-native), .qc-login :is(input,textarea) { font-size:var(--qc-text-body); line-height:1.5; font-weight:400; }
+.qc-select-button,.qc-select-option,.qc-select-search input { font-size:var(--qc-text-control); line-height:1.5; }
+.qc-main :is(.ca-button,.ca-tabs button,.qc-module-sidebar nav button), .qc-app nav button { font-size:var(--qc-text-control); line-height:1.4; font-weight:600; }
+.qc-main :is(.ca-audit-table,.qd-table,.qc-table) td { font-size:var(--qc-text-control); line-height:1.55; }
+.qc-table th { font-size:var(--qc-text-caption) !important; }
+.qc-main :is(.ca-audit-table,.qd-table) th { font-size:var(--qc-text-caption); line-height:1.5; letter-spacing:.035em; font-weight:650; }
+.qc-main :is(.ca-audit-table,.qd-table,.qc-table) { font-variant-numeric:tabular-nums; }
+.qc-main :is(.ca-audit-name,.ca-row-title) h3 { font-size:var(--qc-text-body); line-height:1.45; }
+.qc-main :is(.ca-status,.qd-status,.ca-date-count) { font-size:var(--qc-text-caption); font-weight:600; line-height:1.4; }
+.qc-main :is(.qd-metric > strong,.qd-score-ring strong) { font-variant-numeric:tabular-nums; letter-spacing:-.025em; }
+.qc-login :is(label,button) { font-size:var(--qc-text-control); }
+.qc-login h3 { font-size:2rem; font-weight:700; line-height:1.2; letter-spacing:-.025em; }
+.qc-login p { font-weight:400; line-height:1.6; }
+@media(max-width:600px) {
+  .qc-main h1, .qc-main :is(.qd-heading,.qi-heading,.ca-page-heading) h1 { font-size:1.625rem; }
+  .qc-main :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select):not(.qc-select-native), .qc-login input { font-size:1rem; }
+}
