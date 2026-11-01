@@ -8,15 +8,24 @@ const invalid = message => { const error = new Error(message); error.status = 40
 const validId = value => typeof value === 'string' && mongoose.isObjectIdOrHexString(value);
 async function values(body, existing) {
   const result = {};
-  if (!existing || body.name !== undefined) {
-    if (typeof body.name !== 'string' || !body.name.trim() || body.name.trim().length > 150) invalid('Enter a specialty name of up to 150 characters.');
-    result.name = body.name.trim().replace(/\s+/g, ' ');
-    result.nameKey = result.name.toLowerCase();
-  }
+  let department;
   if (!existing || body.department !== undefined) {
     if (!validId(body.department)) invalid('Select a department from the list.');
-    if (!await Department.findById(body.department)) invalid('This department no longer exists. Refresh the department list.');
+    department = await Department.findById(body.department);
+    if (!department) invalid('This department no longer exists. Refresh the department list.');
     result.department = body.department;
+  }
+  if (!existing || body.name !== undefined) {
+    if (body.name !== undefined && typeof body.name !== 'string') invalid('Enter a specialty name of up to 150 characters.');
+    let name = body.name?.trim();
+    if (!name) {
+      department ||= await Department.findById(existing.department);
+      if (!department) invalid('This department no longer exists. Refresh the department list.');
+      name = department.name.trim();
+    }
+    if (!name || name.length > 150) invalid('Enter a specialty name of up to 150 characters.');
+    result.name = name.replace(/\s+/g, ' ');
+    result.nameKey = result.name.toLowerCase();
   }
   if (!existing || body.head !== undefined) {
     const head = body.head || null;

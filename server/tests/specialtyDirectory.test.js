@@ -68,6 +68,17 @@ test('specialties persist through rereads and deletions; staff directory uses re
     assert.equal((await request('/api/specialties', admin, 'POST', { ...payload, name: 'CARDIOLOGY' })).status, 409);
     assert.equal((await request('/api/specialties', admin, 'POST', { ...payload, name: 'Bad lead', head: String(inactive._id) })).status, 400);
     assert.equal((await request('/api/specialties', admin, 'POST', { ...payload, name: 'Bad department', department: '507f1f77bcf86cd799439099' })).status, 400);
+    // Blank and omitted names use the validated department; explicit names take precedence.
+    const inherited = await request('/api/specialties', admin, 'POST', { department: String(department._id) });
+    assert.equal(inherited.status, 201); assert.equal(inherited.body.name, 'Medicine');
+    assert.equal((await request('/api/specialties', admin, 'POST', { name: '   ', department: String(department._id) })).status, 409);
+    const inheritedId = inherited.body._id;
+    const statusOnly = await request('/api/specialties/' + specialtyId, admin, 'PUT', { status: 'Inactive' });
+    assert.equal(statusOnly.body.name, 'Cardiology', 'Status-only updates preserve the specialty name');
+    await request('/api/specialties/' + inheritedId, admin, 'DELETE');
+    const resetName = await request('/api/specialties/' + specialtyId, admin, 'PUT', { name: '  ' });
+    assert.equal(resetName.status, 200); assert.equal(resetName.body.name, 'Medicine');
+    assert.equal((await request('/api/specialties', admin, 'POST', { name: '', department: '507f1f77bcf86cd799439099' })).status, 400);
     const edited = await request('/api/specialties/' + specialtyId, admin, 'PUT', { name: 'Cardiology clinic', status: 'Inactive', head: '' });
     assert.equal(edited.status, 200);
     const stored = await Specialty.findById(specialtyId); assert.equal(stored.name, 'Cardiology clinic'); assert.equal(stored.status, 'Inactive'); assert.equal(stored.head, null);
