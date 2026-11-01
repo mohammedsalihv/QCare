@@ -1,0 +1,26 @@
+.clinical-privileges .cp-workspace { display:grid; grid-template-columns:230px minmax(0,1fr); gap:24px; align-items:start; }
+.clinical-privileges .cp-sidebar { width:100%; position:sticky; top:100px; padding:14px; }
+.clinical-privileges .cp-navigation { display:flex; flex-direction:column; gap:4px; }
+.clinical-privileges .cp-navigation button { border-radius:10px; padding:12px; font-size:13px; }
+.clinical-privileges .cp-navigation button svg { color:currentColor; }
+.clinical-privileges .cp-navigation button:focus-visible { outline:2px solid var(--color-primary); outline-offset:2px; }
+.clinical-privileges .cp-navigation button:nth-child(2) { margin-top:12px; border-top:1px solid #e2e8f0; }
+.clinical-privileges .cp-count { margin-left:auto; border-radius:20px; padding:1px 7px; background:#e0f2f1; color:#0f766e; }
+.clinical-privileges .cp-preview-note { margin-top:14px; padding:10px 14px; border:1px solid #dbe5ec; background:#f8fafc; color:#64748b; border-radius:10px; font-size:12px; }
+.clinical-privileges .qc-module-content { min-width:0; width:100%; }
+.clinical-privileges table { min-width:540px; }
+@media(max-width:1023px) {
+ .clinical-privileges .cp-workspace { grid-template-columns:minmax(0,1fr); gap:16px; }
+ .clinical-privileges .cp-sidebar { position:static; }
+ .clinical-privileges .cp-navigation { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+ .clinical-privileges .cp-navigation button:nth-child(2) { margin:0; border:0; }
+}
+@media(max-width:600px) {
+ .clinical-privileges .cp-navigation { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .clinical-privileges .cp-navigation button { padding:10px 8px; font-size:12px; gap:8px; }
+ .clinical-privileges .qc-module-content .p-8, .clinical-privileges .qc-module-content .p-6 { padding:16px; }
+ .clinical-privileges .qc-module-content .flex.justify-between { flex-wrap:wrap; gap:12px; }
+}
+.clinical-privileges .cp-group-label { padding:12px 12px 4px; font-size:11px; font-weight:700; color:#64748b; letter-spacing:.08em; text-transform:uppercase; }
+.clinical-privileges .cp-navigation button:nth-child(2) { margin:0; border:0; }
+@media(max-width:1023px) { .clinical-privileges .cp-group-label { grid-column:1/-1; } }
