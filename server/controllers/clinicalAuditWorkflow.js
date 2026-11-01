@@ -27,7 +27,7 @@ const wrap = fn => async (req, res) => {
 const fail = (message, status = 400) => { const error = new Error(message); error.status = status; throw error; };
 async function load(req) {
   const audit = await ClinicalAudit.findById(req.params.id).populate([
-    { path: 'history.actor', select: 'employeeName' }, { path: 'templateId' }, { path: 'location', select: 'name code' },
+    { path: 'scheduleRequestedBy', select: 'employeeName' }, { path: 'history.actor', select: 'employeeName' }, { path: 'templateId' }, { path: 'location', select: 'name code' },
     { path: 'concernedDepartments', select: 'name' }, { path: 'concernedPersons', select: 'employeeName employeeId' }
   ]);
   if (!audit) fail('Audit not found', 404);

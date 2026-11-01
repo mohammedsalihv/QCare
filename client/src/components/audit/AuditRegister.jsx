@@ -1,3 +1,4 @@
+import AuditRequester from './AuditRequester';
 import React from 'react';
 import { ArrowUpRight, CalendarDays, ClipboardList, FileDown, MapPin, Search, Pencil, Trash2, Plus, X } from 'lucide-react';
 import AuditConcernedPeople from './AuditConcernedPeople';
@@ -13,7 +14,7 @@ export default function AuditRegister({ audits, search, status, setSearch, setSt
     {!audits.length ? <div className="ca-empty"><span className="ca-empty-icon"><ClipboardList size={27} /></span><h3>No audits found</h3><p>{search || status ? 'Try another search or clear the status filter.' : 'Schedule your first audit to start tracking quality and compliance.'}</p></div> : <div className="ca-table-wrap"><table className="ca-audit-table"><thead><tr><th>Audit & standard</th><th>Location & department</th><th>Dates & time</th><th>Status</th><th>Assessment</th><th className="ca-align-right">Actions</th></tr></thead><tbody>{audits.map(audit => {
       const slots = auditSessions(audit), first = slots[0], coverage = Math.max(0, Math.min(100, audit.coverage || 0));
       return <tr key={audit._id}>
-        <td className="ca-audit-name"><div className="ca-row-title"><span className="ca-row-icon"><ClipboardList size={18} /></span><div><h3>{audit.auditTitle}</h3><StandardBadge standard={audit.standard} /></div></div><p className="ca-small ca-row-auditor">Auditor: {audit.auditorName || audit.auditor?.employeeName || 'Not specified'}</p></td>
+        <td className="ca-audit-name"><div className="ca-row-title"><span className="ca-row-icon"><ClipboardList size={18} /></span><div><h3>{audit.auditTitle}</h3><StandardBadge standard={audit.standard} /></div></div><p className="ca-small ca-row-auditor">Auditor: {audit.auditorName || audit.auditor?.employeeName || 'Not specified'}</p><AuditRequester audit={audit}/></td>
         <td data-label="Location"><p className="ca-cell-primary"><MapPin size={13} />{audit.location?.name || 'Not specified'}</p><p className="ca-small">Departments: {departmentsLabel(audit)}</p><AuditConcernedPeople audit={audit} /></td>
         <td data-label="Schedule">{audit.status === 'pending-approval' && <span className="ca-date-count">Proposed · approval pending</span>}<p className="ca-cell-primary"><CalendarDays size={13} />{dateLabel(first.startAt)}</p><p className="ca-small">{first.endAt ? `${sessionTime(first.startAt)}–${sessionTime(first.endAt)} · Dubai` : 'Time not specified'}</p>{slots.length > 1 && <span className="ca-date-count">+{slots.length - 1} more date/time{slots.length > 2 ? 's' : ''}</span>}</td>
         <td data-label="Status"><StatusBadge status={auditStatus(audit)} /></td>

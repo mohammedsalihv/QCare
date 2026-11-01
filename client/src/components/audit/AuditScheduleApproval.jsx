@@ -1,3 +1,4 @@
+import AuditRequester from './AuditRequester';
 import AuditHistory from './AuditHistory';
 import { useEffect, useRef, useState } from 'react';
 import { CalendarCheck2, ShieldCheck, X } from 'lucide-react';
@@ -20,7 +21,7 @@ export default function AuditScheduleApproval({ audit, canApprove, onApprove, on
     <div className="ca-approval-body ca-form">
       {error && <p role="alert" className="ca-alert">{error}</p>}
       {audit.scheduleRejectionReason && <p className="ca-alert"><strong>Rejection reason:</strong> {audit.scheduleRejectionReason} Edit this request to resubmit it.</p>}<div className="ca-approval-title"><h3>{audit.auditTitle}</h3><StatusBadge status={audit.status} /></div>
-      <section className="ca-approval-section"><h3>Audit scope</h3><AuditScopeSummary audit={audit} /><p className="ca-small">Standard: {audit.standard} · Type: {audit.auditType}</p><p className="ca-small">Auditor: {audit.auditorName || audit.auditor?.employeeName || 'Not specified'}</p></section>
+      <AuditRequester audit={audit}/><section className="ca-approval-section"><h3>Audit scope</h3><AuditScopeSummary audit={audit} /><p className="ca-small">Standard: {audit.standard} · Type: {audit.auditType}</p><p className="ca-small">Auditor: {audit.auditorName || audit.auditor?.employeeName || 'Not specified'}</p></section>
       <section className="ca-approval-section"><h3><CalendarCheck2 size={18} />Proposed dates & times</h3><p className="ca-small">Dubai time (UTC+04:00). These visits are not yet on the calendar.</p><AuditSessionSummary audit={audit} /></section>
       <section className="ca-approval-section"><h3>Request & decision history</h3><AuditHistory history={audit.history} /></section>
       {canApprove && audit.status === 'pending-approval' && <label>Decision comment (required for rejection)<textarea className="ca-input" maxLength={2000} value={comment} onChange={event => setComment(event.target.value)} disabled={busy} placeholder="Add a note about the agreed audit arrangements…" /></label>}

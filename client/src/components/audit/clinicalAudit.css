@@ -287,3 +287,10 @@
 .ca-request-person { display:flex; gap:9px; align-items:center; min-width:0; }.ca-request-person > span { display:grid; place-items:center; width:33px; height:33px; flex-shrink:0; border-radius:50%; background:#edf5f5; color:#157e76; }.ca-request-person strong { display:block; font-size:12px; color:#355369; }.ca-request-person small { display:block; font-size:10px; margin-top:4px; color:#728695; }
 @media(max-width:1000px) { .ca-request-grid { grid-template-columns:1fr; } }
 @media(max-width:600px) { .ca-request-header { padding:20px; flex-wrap:wrap; gap:12px; }.ca-request-header h2 { font-size:20px; }.ca-request-total { margin-left:0; text-align:left; }.ca-request-total strong { display:inline; margin-right:6px; font-size:22px; }.ca-request-order { padding:16px 18px 0; }.ca-request-order span { display:none; }.ca-request-grid { padding:18px; }.ca-request-card { padding:17px; }.ca-request-card footer > button { width:100%; justify-content:center; } }
+
+.ca-requester { margin:12px 0; padding:10px 12px; border:1px solid #e0e9ef; border-radius:10px; background:#f6f9fc; text-align:left; }
+.ca-requester > div { display:flex; align-items:flex-start; gap:7px; color:#52657a; font-size:12px; line-height:1.5; }
+.ca-requester > div + div { margin-top:5px; font-size:11px; }
+.ca-requester svg { flex-shrink:0; margin-top:2px; color:#628094; }
+.ca-requester strong { color:#142d45; font-weight:700; overflow-wrap:anywhere; }
+.ca-request-card footer .ca-requester { margin:0; flex:1; min-width:180px; }

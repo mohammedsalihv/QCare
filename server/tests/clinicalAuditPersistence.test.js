@@ -100,6 +100,12 @@ test('the actual form payload persists through real HTTP routes and MongoDB', { 
     let stored = await Audit.findById(created.body._id);
     assert(stored); assert.equal(stored.sessions.length, 4); assert.equal(String(stored.location), String(location._id));
     const read = await request('/' + created.body._id);
+    assert.equal(read.body.scheduleRequestedBy.employeeName, officer.employeeName);
+    assert.equal(read.body.scheduleRequestedAt, created.body.scheduleRequestedAt);
+    assert(!('password' in read.body.scheduleRequestedBy));
+    const listedRequest = (await request('')).body.find(a => a._id === created.body._id);
+    assert.equal(listedRequest.scheduleRequestedBy.employeeName, officer.employeeName);
+    assert.equal(listedRequest.scheduleRequestedAt, created.body.scheduleRequestedAt);
     assert.equal(read.body.history[0].actor.employeeName, officer.employeeName); assert(!('password' in read.body.history[0].actor));
     assert.equal(read.body.location.name, 'Test clinic'); assert.equal(read.body.templateId.standard, 'Jawda');
     const selected = await request('', 'POST', { ...payload, auditTitle: 'Concerned teams audit', concernedDepartments: [String(department._id)], concernedPersons: [String(staff._id), String(reviewer._id)] });
