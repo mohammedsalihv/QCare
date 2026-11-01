@@ -68,6 +68,17 @@ test('specialties persist through rereads and deletions; staff directory uses re
     assert.equal((await request('/api/specialties', admin, 'POST', { ...payload, name: 'CARDIOLOGY' })).status, 409);
     assert.equal((await request('/api/specialties', admin, 'POST', { ...payload, name: 'Bad lead', head: String(inactive._id) })).status, 400);
     assert.equal((await request('/api/specialties', admin, 'POST', { ...payload, name: 'Bad department', department: '507f1f77bcf86cd799439099' })).status, 400);
+    const standalone = await request('/api/specialties', admin, 'POST', { name: 'Standalone specialty' });
+    assert.equal(standalone.status, 201); assert.equal(standalone.body.department, null);
+    const unlinked = await request('/api/specialties/' + specialtyId, admin, 'PUT', { department: '' });
+    assert.equal(unlinked.status, 200); assert.equal(unlinked.body.name, 'Cardiology'); assert.equal(unlinked.body.department, null);
+    assert.equal((await request('/api/specialties/' + specialtyId, admin, 'PUT', { name: '  ', department: '' })).status, 400);
+    await request('/api/specialties/' + specialtyId, admin, 'PUT', { department: String(department._id) });
+    assert.equal((await request('/api/specialties', admin, 'POST', {})).status, 400);
+    assert.equal((await request('/api/specialties', admin, 'POST', { name: ' ', department: '' })).status, 400);
+    assert.equal((await request('/api/specialties', admin, 'POST', { name: 'N/A' })).status, 400);
+    assert.equal((await request('/api/specialties/' + standalone.body._id, admin, 'PUT', { status: 'Inactive' })).body.name, 'Standalone specialty');
+    await request('/api/specialties/' + standalone.body._id, admin, 'DELETE');
     const otherDepartment = await Department.create({ name: 'Surgery', code: 'TEST-SURG' });
     const na = await request('/api/specialties', admin, 'POST', { name: 'N/A', department: String(department._id) });
     assert.equal(na.status, 201); assert.equal(na.body.name, 'N/A');

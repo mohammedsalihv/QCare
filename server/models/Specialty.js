@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const specialtySchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true, maxlength: 150 },
   nameKey: { type: String, required: true, unique: true },
-  department: { type: mongoose.Schema.Types.ObjectId, ref: 'Department', required: true },
+  department: { type: mongoose.Schema.Types.ObjectId, ref: 'Department', default: null },
   head: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
   status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },

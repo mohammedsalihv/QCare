@@ -9,28 +9,31 @@ const validId = value => typeof value === 'string' && mongoose.isObjectIdOrHexSt
 async function values(body, existing) {
   const result = {};
   let department;
+  const departmentId = body.department !== undefined ? body.department || null : existing?.department || null;
   if (!existing || body.department !== undefined) {
-    if (!validId(body.department)) invalid('Select a department from the list.');
-    department = await Department.findById(body.department);
-    if (!department) invalid('This department no longer exists. Refresh the department list.');
-    result.department = body.department;
+    if (departmentId) {
+      if (!validId(departmentId)) invalid('Select a department from the list.');
+      department = await Department.findById(departmentId);
+      if (!department) invalid('This department no longer exists. Refresh the department list.');
+    }
+    result.department = departmentId;
   }
-  if (!existing || body.name !== undefined) {
+  if (!existing || body.name !== undefined || body.department !== undefined) {
     if (body.name !== undefined && typeof body.name !== 'string') invalid('Enter a specialty name of up to 150 characters.');
-    let name = body.name?.trim();
+    let name = body.name === undefined ? existing?.name : body.name.trim();
     if (!name) {
-      department ||= await Department.findById(existing.department);
+      if (!departmentId) invalid('Select a department or enter a specialty name.');
+      department ||= await Department.findById(departmentId);
       if (!department) invalid('This department no longer exists. Refresh the department list.');
       name = department.name.trim();
     }
     if (!name || name.length > 150) invalid('Enter a specialty name of up to 150 characters.');
     result.name = name.replace(/\s+/g, ' ');
-    if (result.name.toLowerCase() === 'n/a') result.name = 'N/A';
-    result.nameKey = result.name === 'N/A' ? 'n/a:' + String(result.department || existing.department) : result.name.toLowerCase();
-  }
-  // N/A is distinct for each department, including department-only edits.
-  if (existing?.name === 'N/A' && result.department && body.name === undefined) {
-    result.nameKey = 'n/a:' + String(result.department);
+    if (result.name.toLowerCase() === 'n/a') {
+      if (!departmentId) invalid('Select a department when the specialty is N/A, or enter a specialty name.');
+      result.name = 'N/A';
+    }
+    result.nameKey = result.name === 'N/A' ? 'n/a:' + String(departmentId) : result.name.toLowerCase();
   }
   if (!existing || body.head !== undefined) {
     const head = body.head || null;
