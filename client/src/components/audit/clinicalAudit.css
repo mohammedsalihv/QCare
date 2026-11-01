@@ -294,3 +294,15 @@
 .ca-requester svg { flex-shrink:0; margin-top:2px; color:#628094; }
 .ca-requester strong { color:#142d45; font-weight:700; overflow-wrap:anywhere; }
 .ca-request-card footer .ca-requester { margin:0; flex:1; min-width:180px; }
+
+/* Use available width for scope, requester and dates instead of tall half-empty columns. */
+.ca-workspace .ca-audit-context { grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr); gap:20px; padding:18px 20px; align-items:start; }
+.ca-workspace .ca-audit-context > div { min-width:0; }
+.ca-workspace .ca-audit-context > div:first-child { padding:0; border:0; }
+.ca-workspace .ca-audit-context > div + div { border-left:1px solid var(--ca-line); padding-left:20px; }
+.ca-audit-context .ca-eyebrow { margin-bottom:10px; }
+.ca-audit-context .ca-requester { margin:0; padding:0; border:0; background:transparent; }
+.ca-audit-context .ca-schedule-summary { max-height:160px; overflow:auto; margin:0; }
+.ca-workspace .ca-stack { gap:16px; }
+@media(max-width:1000px) { .ca-workspace .ca-audit-context { grid-template-columns:1fr 1fr; }.ca-workspace .ca-audit-context > div:first-child { grid-column:1/-1; }.ca-workspace .ca-audit-context > div:nth-child(2) { border:0; padding-left:0; } }
+@media(max-width:600px) { .ca-workspace .ca-audit-context { grid-template-columns:1fr; gap:14px; padding:16px; }.ca-workspace .ca-audit-context > div + div { padding:14px 0 0; border:0; border-top:1px solid var(--ca-line); } }

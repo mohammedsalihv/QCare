@@ -1,3 +1,4 @@
+import { unreadArrivals } from '../utils/notificationArrival';
 import { playNotificationSound, unlockNotificationSound, cancelPendingSound } from '../utils/notificationSound';
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import UserMessage from './feedback/UserMessage';
@@ -49,7 +50,8 @@ export const NotificationProvider = ({ children }) => {
         setNotifications((prev) => prev.filter((notification) => notification.id !== id));
     }, []);
 
-    const fetchFeed = useCallback(async () => {
+    const fetchFeed = useCallback(async (reset = false) => {
+        if (reset === true) seen.current = null;
         if (fetching.current) return;
         fetching.current = true;
         try {
@@ -58,11 +60,14 @@ export const NotificationProvider = ({ children }) => {
             if (account.current !== identity) { account.current = identity; seen.current = null; cancelPendingSound(); }
             const { data } = await axios.get('/api/notifications', getAuthConfig());
             const feed = Array.isArray(data) ? data : [];
-            const incoming = seen.current ? feed.filter(n => n._id && !n.isRead && !seen.current.has(n._id)) : [];
+            const currentUser = JSON.parse(localStorage.getItem('userInfo') || '{}');
+            if (identity !== (currentUser._id || currentUser.id || localStorage.getItem('token'))) return;
+            const initial = seen.current === null;
+            const incoming = unreadArrivals(feed, seen.current);
             if (!seen.current) seen.current = new Set();
             feed.forEach(n => { if(n._id) seen.current.add(n._id); });
             setFeedNotifications(feed);
-            if (incoming.length) { if (soundEnabled) playNotificationSound(); showNotification(incoming.length === 1 ? incoming[0].message : incoming.length + ' new notifications', 'info'); }
+            if (incoming.length) { if (soundEnabled) playNotificationSound(); showNotification(initial ? incoming.length + ' unread notification' + (incoming.length === 1 ? '' : 's') : incoming.length === 1 ? incoming[0].message : incoming.length + ' new notifications', 'info'); }
         } catch (error) { console.error('Error fetching notification feed:', error); }
         finally { fetching.current = false; }
     }, [soundEnabled, showNotification]);
@@ -70,7 +75,7 @@ export const NotificationProvider = ({ children }) => {
     useEffect(() => {
         const refresh = () => { if (localStorage.getItem('token') || JSON.parse(localStorage.getItem('userInfo') || '{}').token) fetchFeed(); };
         refresh();
-        const timer = setInterval(refresh, 10000);
+        const timer = setInterval(refresh, 5000);
         window.addEventListener('focus', refresh);
         return () => { clearInterval(timer); window.removeEventListener('focus', refresh); };
     }, [fetchFeed]);

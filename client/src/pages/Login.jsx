@@ -36,7 +36,7 @@ function Login() {
   useEffect(() => () => clearTimeout(usernameFocusTimer.current), []);
   
   const navigate = useNavigate();
-  const { showNotification } = useNotification();
+  const { showNotification, fetchFeed } = useNotification();
 
   useEffect(() => {
     setMounted(true);
@@ -57,6 +57,7 @@ function Login() {
        localStorage.setItem("token", data.token);
        showNotification('Welcome, ' + (data.employeeName || 'User') + '!', 'success');
        navigate('/dashboard');
+       void fetchFeed(true);
      } catch (err) {
        const errorMsg = err.response?.data?.message || 'Authentication failed. Please verify credentials.';
        setError(errorMsg);
