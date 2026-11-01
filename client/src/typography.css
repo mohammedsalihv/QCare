@@ -1,12 +1,12 @@
 /* Shared type hierarchy, loaded after module and surface styles.
    Bundled variable fonts keep the portal readable on offline clinic networks. */
 :root {
-  --qc-font-heading: "Manrope Variable", "Inter Variable", sans-serif;
+  --qc-font-heading: "Inter Variable", "Segoe UI", sans-serif;
   --qc-type-strong: #142d45;
   --qc-type-secondary: #52657a;
   --qc-type-accent: #08766c;
-  --qc-text-body: .9375rem;
-  --qc-text-control: .875rem;
+  --qc-text-body: .875rem;
+  --qc-text-control: .8125rem;
   --qc-text-small: .8125rem;
   --qc-text-caption: .75rem;
 }
@@ -14,9 +14,9 @@ body { font-size:var(--qc-text-body); line-height:1.6; font-weight:400; }
 body, button, input, textarea, select { font-family:var(--font-sans); }
 button, input, textarea, select { letter-spacing:normal; }
 strong, b { font-weight:650; }
-.qc-main h1, .qc-main :is(.qd-heading,.qi-heading,.ca-page-heading) h1 { font-size:clamp(2rem,2.7vw,2.5rem); line-height:1.2; font-weight:700; letter-spacing:-.025em; }
-.qc-main h2 { font-size:1.375rem; line-height:1.35; font-weight:750; letter-spacing:-.015em; }
-.qc-main h3 { font-size:1.125rem; line-height:1.4; font-weight:700; letter-spacing:-.01em; }
+.qc-main h1, .qc-main :is(.qd-heading,.qi-heading,.ca-page-heading) h1 { font-size:clamp(1.5rem,2vw,1.75rem); line-height:1.2; font-weight:600; letter-spacing:-.025em; }
+.qc-main h2 { font-size:1.25rem; line-height:1.35; font-weight:600; letter-spacing:-.015em; }
+.qc-main h3 { font-size:1rem; line-height:1.4; font-weight:600; letter-spacing:-.01em; }
 .qc-main h4 { font-size:var(--qc-text-body); line-height:1.45; font-weight:650; }
 .qc-main :is(.qd-panel-heading,.ca-panel-heading,.qc-section-heading,.qi-picker,.qi-reports) h2 { font-size:1.375rem; }
 .qc-main :is(.qd-metric,.ca-stat) h2 { font-size:var(--qc-text-small); letter-spacing:normal; }
@@ -35,33 +35,62 @@ strong, b { font-weight:650; }
 .qc-main :is(.ca-status,.qd-status,.ca-date-count) { font-size:var(--qc-text-caption); font-weight:600; line-height:1.4; }
 .qc-main :is(.qd-metric > strong,.qd-score-ring strong) { font-variant-numeric:tabular-nums; letter-spacing:-.025em; }
 .qc-login :is(label,button) { font-size:var(--qc-text-control); }
-.qc-login h3 { font-size:2rem; font-weight:700; line-height:1.2; letter-spacing:-.025em; }
+.qc-login h3 { font-size:2rem; font-weight:600; line-height:1.2; letter-spacing:-.025em; }
 .qc-login p { font-weight:400; line-height:1.6; }
 @media(max-width:600px) {
-  .qc-main h1, .qc-main :is(.qd-heading,.qi-heading,.ca-page-heading) h1 { font-size:1.875rem; }
+  .qc-main h1, .qc-main :is(.qd-heading,.qi-heading,.ca-page-heading) h1 { font-size:1.5rem; }
   .qc-main :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select):not(.qc-select-native), .qc-login input { font-size:1rem; }
 }
 
 /* Strong hierarchy: headlines, primary information, supporting detail. */
 .qc-main :is(h1,h2,h3,h4), .qc-login :is(h1,h2,h3), .qc-app dialog :is(h2,h3) { font-family:var(--qc-font-heading); }
-.qc-main h1 { color:var(--qc-type-strong); font-weight:800; letter-spacing:-.035em; }
-.qc-main :is(.qd-heading,.qi-heading,.ca-page-heading) h1 { font-weight:800; }
-.qc-main :is(.ca-panel-heading,.qd-panel-heading,.qc-section-heading) h2 { color:var(--qc-type-strong); font-weight:750; }
-.qc-main :is(.qc-eyebrow,.qd-eyebrow,.ca-eyebrow) { color:var(--qc-type-accent); font-size:.6875rem; font-weight:750; letter-spacing:.12em; text-transform:uppercase; }
+.qc-main h1 { color:var(--qc-type-strong); font-weight:650; letter-spacing:-.035em; }
+.qc-main :is(.qd-heading,.qi-heading,.ca-page-heading) h1 { font-weight:650; }
+.qc-main :is(.ca-panel-heading,.qd-panel-heading,.qc-section-heading) h2 { color:var(--qc-type-strong); font-weight:600; }
+.qc-main :is(.qc-eyebrow,.qd-eyebrow,.ca-eyebrow) { color:var(--qc-type-accent); font-size:.6875rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; }
 .qc-main :is(.qd-heading > div > p:last-child,.ca-page-heading > div > p:last-child,.qc-module-heading p) { font-size:.9375rem; line-height:1.7; color:var(--qc-type-secondary); }
 .qc-main :is(.ca-small,.qd-caption,.qi-entry-help,.qi-description) { color:var(--qc-type-secondary); font-weight:400; }
-.qc-main :is(.qd-metric > strong,.qd-score-ring strong,.ca-stat strong) { font-family:var(--qc-font-heading); font-weight:800; }
-.qc-main :is(.qc-person-name,.ca-row-title h3,.ca-cell-primary,.ca-request-person strong) { color:var(--qc-type-strong); font-weight:750; letter-spacing:-.015em; }
+.qc-main :is(.qd-metric > strong,.qd-score-ring strong,.ca-stat strong) { font-family:var(--qc-font-heading); font-weight:650; }
+.qc-main :is(.qc-person-name,.ca-row-title h3,.ca-cell-primary,.ca-request-person strong) { color:var(--qc-type-strong); font-weight:600; letter-spacing:-.015em; }
 .qc-main .qc-person-name { font-size:.9375rem; line-height:1.5; }
 .qc-main .qc-person-detail { display:block; margin-top:4px; color:var(--qc-type-secondary); font-size:.75rem; line-height:1.5; font-weight:400; letter-spacing:normal; overflow-wrap:anywhere; }
 .qc-main .qc-person-department { display:inline-block; padding:4px 9px; border-radius:6px; color:#09665f; background:#eaf5f2; font-size:.8125rem; font-weight:600; }
 .qc-main .qc-person-designation { font-size:.8125rem; font-weight:400; }
 .qc-main .ca-concerned-people li { font-size:.8125rem; font-weight:600; color:#24455f; }
-.qc-main :is(.ca-audit-table,.qd-table,.qc-table) thead th { background:#f0f5f9; color:#40576c; font-weight:700; }
-.qc-table th { font-weight:700 !important; }
-.qc-main :is(.ca-tabs button,.qc-module-sidebar nav button)[aria-current=page] { font-weight:750; }
+.qc-main :is(.ca-audit-table,.qd-table,.qc-table) thead th { background:#f0f5f9; color:#40576c; font-weight:600; }
+.qc-table th { font-weight:600 !important; }
+.qc-main :is(.ca-tabs button,.qc-module-sidebar nav button)[aria-current=page] { font-weight:600; }
 .qc-main :is(.ca-button,.qd-refresh) { font-weight:650; }
-.qc-login h3 { font-size:2.25rem; font-weight:800; }
+.qc-login h3 { font-size:2.25rem; font-weight:650; }
 .qc-login label { font-weight:650; color:var(--qc-type-strong); }
 .qc-select-option small { font-size:.75rem; font-weight:400; color:var(--qc-type-secondary); }
 @media(max-width:600px) { .qc-login h3 { font-size:1.875rem; } }
+
+/* Shared navigation and form hierarchy, including dialogs outside the main content. */
+.qc-app :is(button,input,select,textarea), .qc-feature-drawer { font-family:var(--font-sans); }
+.qc-main button { font-size:var(--qc-text-control); line-height:1.45; }
+.qc-main :is(label,legend) { font-size:.8125rem; font-weight:500; }
+.qc-main :is(.qc-module-sidebar nav button,.ca-tabs button), .qc-app nav button { font-weight:500; }
+.qc-feature-drawer .qc-feature-drawer-shell > header { padding:24px 20px 16px; }
+.qc-feature-drawer header h2 { font-family:var(--font-sans); font-size:20px; font-weight:600; letter-spacing:-.025em; line-height:1.35; }
+.qc-feature-drawer header p { font-size:13px; line-height:1.5; color:#64748b; margin-top:8px; }
+.qc-feature-drawer .qc-directory-kicker { font-size:10px; font-weight:600; letter-spacing:.09em; }
+.qc-feature-drawer .qc-directory-search { padding:0 20px 16px; }
+.qc-feature-drawer .qc-directory-search input { min-height:40px; padding:10px 12px; font-size:13px; border-radius:8px; background:#f8fafc; }
+.qc-feature-drawer .qc-directory-content { background:white; padding:8px 16px 20px; }
+.qc-feature-drawer .qc-directory-section { padding:16px 4px; border:0; border-bottom:1px solid #edf1f5; border-radius:0; box-shadow:none; background:transparent; }
+.qc-feature-drawer .qc-directory-section-title { padding:0 8px; gap:10px; margin-bottom:10px; }
+.qc-feature-drawer .qc-directory-section-title h3 { font-family:var(--font-sans); font-size:13px; font-weight:600; line-height:1.45; letter-spacing:0; }
+.qc-feature-drawer .qc-directory-section-title p { font-size:12px; line-height:1.5; margin-top:3px; }
+.qc-feature-drawer .qc-directory-section-title small { font-size:11px; white-space:nowrap; }
+.qc-feature-drawer .qc-directory-section-title > span { width:32px; height:32px; border-radius:8px; }
+.qc-feature-drawer .qc-directory-section-title > span svg { width:17px; height:17px; }
+.qc-feature-drawer .qc-directory-links { gap:2px; }
+.qc-feature-drawer .qc-directory-links a { min-height:40px; padding:10px 12px; border:1px solid transparent; border-radius:7px; font-size:13px; font-weight:400; line-height:1.45; background:transparent; }
+.qc-feature-drawer .qc-directory-links a svg { width:16px; height:16px; }
+.qc-feature-drawer .qc-directory-links a:hover { background:#f3f7f8; }
+.qc-feature-drawer .qc-directory-links a.is-current { background:#eaf6f3; color:#0f766e; font-weight:500; border-color:#cce5df; }
+.qc-feature-drawer footer { gap:14px; padding:14px 20px max(14px,env(safe-area-inset-bottom)); }
+.qc-feature-drawer footer :is(a,button) { font-size:12px; font-weight:500; }
+@media(pointer:coarse) { .qc-feature-drawer .qc-directory-links a, .qc-feature-drawer footer :is(a,button) { min-height:44px; } }
+@media(max-width:600px) { .qc-feature-drawer .qc-directory-search input { font-size:16px; } }
