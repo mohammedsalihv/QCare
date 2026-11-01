@@ -445,23 +445,23 @@ const UserManagement = () => {
                       <td className="px-7 py-4">
                         <div className="flex flex-col">
                           <span className="text-sm font-mono font-semibold text-slate-800">{user.employeeId}</span>
-                          <span className="text-[12px] text-slate-800 font-semibold font-medium">@{user.username || '—'}</span>
+                          <span className="qc-person-detail">@{user.username || '—'}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-sm font-semibold text-slate-800 leading-snug">{user.employeeName}</span>
+                            <span className="qc-person-name">{user.employeeName}</span>
                             {isOwnRow && (
                               <span className="inline-flex px-1.5 py-0.5 rounded text-[12px] font-semibold tracking-wide bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/20">You</span>
                             )}
                           </div>
-                          <span className="text-[12px] text-slate-800 font-semibold tracking-wide">{user.email}</span>
+                          <span className="qc-person-detail">{user.email}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-slate-800 font-semibold font-medium">{user.designation}</td>
+                      <td className="px-6 py-4 qc-person-designation">{user.designation}</td>
                       <td className="px-6 py-4">
-                        <span className="text-sm text-slate-800 font-semibold font-medium tracking-tight">{user.department}</span>
+                        <span className="qc-person-department">{user.department}</span>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex px-2 py-0.5 rounded-md text-[12px] font-semibold tracking-wide ${user.role?.toLowerCase() === 'superadmin' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
