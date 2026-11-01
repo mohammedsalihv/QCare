@@ -25,7 +25,12 @@ async function values(body, existing) {
     }
     if (!name || name.length > 150) invalid('Enter a specialty name of up to 150 characters.');
     result.name = name.replace(/\s+/g, ' ');
-    result.nameKey = result.name.toLowerCase();
+    if (result.name.toLowerCase() === 'n/a') result.name = 'N/A';
+    result.nameKey = result.name === 'N/A' ? 'n/a:' + String(result.department || existing.department) : result.name.toLowerCase();
+  }
+  // N/A is distinct for each department, including department-only edits.
+  if (existing?.name === 'N/A' && result.department && body.name === undefined) {
+    result.nameKey = 'n/a:' + String(result.department);
   }
   if (!existing || body.head !== undefined) {
     const head = body.head || null;

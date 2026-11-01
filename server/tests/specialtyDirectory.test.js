@@ -68,6 +68,15 @@ test('specialties persist through rereads and deletions; staff directory uses re
     assert.equal((await request('/api/specialties', admin, 'POST', { ...payload, name: 'CARDIOLOGY' })).status, 409);
     assert.equal((await request('/api/specialties', admin, 'POST', { ...payload, name: 'Bad lead', head: String(inactive._id) })).status, 400);
     assert.equal((await request('/api/specialties', admin, 'POST', { ...payload, name: 'Bad department', department: '507f1f77bcf86cd799439099' })).status, 400);
+    const otherDepartment = await Department.create({ name: 'Surgery', code: 'TEST-SURG' });
+    const na = await request('/api/specialties', admin, 'POST', { name: 'N/A', department: String(department._id) });
+    assert.equal(na.status, 201); assert.equal(na.body.name, 'N/A');
+    const otherNa = await request('/api/specialties', admin, 'POST', { name: 'n/a', department: String(otherDepartment._id) });
+    assert.equal(otherNa.status, 201); assert.equal(otherNa.body.name, 'N/A');
+    assert.equal((await request('/api/specialties', admin, 'POST', { name: 'N/A', department: String(department._id) })).status, 409);
+    assert.equal((await request('/api/specialties/' + na.body._id, admin, 'PUT', { department: String(otherDepartment._id) })).status, 409);
+    await request('/api/specialties/' + na.body._id, admin, 'DELETE');
+    await request('/api/specialties/' + otherNa.body._id, admin, 'DELETE');
     // Blank and omitted names use the validated department; explicit names take precedence.
     const inherited = await request('/api/specialties', admin, 'POST', { department: String(department._id) });
     assert.equal(inherited.status, 201); assert.equal(inherited.body.name, 'Medicine');
