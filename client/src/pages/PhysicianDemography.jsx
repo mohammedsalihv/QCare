@@ -23,11 +23,7 @@ import {
 
 const PhysicianDemography = () => {
   const [physicians, setPhysicians] = useState([
-    { id: 1, name: 'Dr. Sarah Wilson', employeeId: 'EMP-0010', gender: 'Female', specialty: 'Cardiology', qualification: 'MD, FACC', licenseType: 'DOH', licenseNumber: 'DOH-LIC-98122', expiryDate: '2028-09-12', status: 'Active' },
-    { id: 2, name: 'Dr. Aaron Patel', employeeId: 'EMP-0015', gender: 'Male', specialty: 'Pediatrics', qualification: 'MD, FAAP', licenseType: 'DHA', licenseNumber: 'DHA-LIC-44510', expiryDate: '2026-11-20', status: 'Active' },
-    { id: 3, name: 'Dr. Clara Thorne', employeeId: 'EMP-0022', gender: 'Female', specialty: 'Neurology', qualification: 'MD, PhD', licenseType: 'DOH', licenseNumber: 'DOH-LIC-22104', expiryDate: '2027-04-18', status: 'Active' },
-    { id: 4, name: 'Dr. John Doe', employeeId: 'EMP-0005', gender: 'Male', specialty: 'Orthopedics', qualification: 'MBBS, MS', licenseType: 'MOHAP', licenseNumber: 'MOH-LIC-77612', expiryDate: '2026-03-01', status: 'Inactive' },
-    { id: 5, name: 'Dr. Elena Rostova', employeeId: 'EMP-0044', gender: 'Female', specialty: 'Dermatology', qualification: 'MD', licenseType: 'DHA', licenseNumber: 'DHA-LIC-99081', expiryDate: '2027-12-15', status: 'Active' }
+    { id: 1, name: 'Dr. Sarah Wilson', employeeId: 'EMP-0010', gender: 'Female', specialty: 'Cardiology', qualification: 'MD, FACC', licenseType: 'DOH', licenseNumber: 'DOH-LIC-98122', expiryDate: '2028-09-12', status: 'Active' }
   ]);
 
   const [searchQuery, setSearchQuery] = useState('');
