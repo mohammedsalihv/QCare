@@ -1,3 +1,4 @@
+import CompactSearch from './../CompactSearch';
 import React from 'react';
 import { ShieldAlert, AlertTriangle, Search, Plus, Info } from 'lucide-react';
 
@@ -6,8 +7,8 @@ const HighAlertMedicationList = ({ medications }) => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between gap-4">
          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold" />
-            <input 
+
+            <CompactSearch
               type="text" 
               placeholder="Search high-alert formulary..." 
               className="w-full pl-12 pr-4 py-3 bg-white rounded-2xl border border-slate-100 text-[13px] font-semibold outline-none focus:border-rose-500 transition-all"

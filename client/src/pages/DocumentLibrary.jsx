@@ -1,3 +1,4 @@
+import CompactSearch from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -256,8 +257,8 @@ const DocumentLibrary = () => {
 
           <div className="p-6 border-b border-slate-100 flex flex-col sm:row items-center justify-between gap-4">
             <div className="relative w-full sm:w-96">
-               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold" />
-               <input 
+
+               <CompactSearch
                  type="text" 
                  placeholder="Search by document name or reference..."
                  className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm"

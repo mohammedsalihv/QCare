@@ -1,3 +1,4 @@
+import CompactSearch from './../components/CompactSearch';
 import { roleOptions, roleLabel } from '../utils/roles';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
@@ -352,8 +353,8 @@ const UserManagement = () => {
             <div className="flex flex-wrap items-center gap-3">
               {/* Search */}
               <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-800 font-semibold" />
-                <input
+
+                <CompactSearch
                   type="text"
                   value={searchQuery}
                   onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
@@ -363,7 +364,7 @@ const UserManagement = () => {
               </div>
               {/* Dept filter */}
               <div className="min-w-[180px]">
-                <Dropdown
+                <Dropdown compact
                   options={[{ label: 'All Departments', value: '' }, ...departments]}
                   value={filterDept}
                   onSelect={(val) => { setFilterDept(val); setCurrentPage(1); }}
@@ -372,7 +373,7 @@ const UserManagement = () => {
               </div>
               {/* Status filter */}
               <div className="min-w-[160px]">
-                <Dropdown
+                <Dropdown compact
                   options={statusFilterOptions}
                   value={filterStatus}
                   onSelect={(val) => { setFilterStatus(val); setCurrentPage(1); }}

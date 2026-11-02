@@ -1,3 +1,4 @@
+import CompactSearch from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -134,8 +135,8 @@ const JawdaBN = () => {
               <h3 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">Active Burn Inpatients</h3>
               <div className="flex items-center gap-2">
                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold" />
-                    <input type="text" placeholder="Search..." className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-[12px] font-semibold w-48" />
+
+                    <CompactSearch type="text" placeholder="Search..." className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-[12px] font-semibold w-48" />
                  </div>
               </div>
             </div>

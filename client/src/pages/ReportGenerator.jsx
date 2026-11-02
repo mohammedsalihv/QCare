@@ -1,3 +1,4 @@
+import { IconAction } from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
@@ -161,10 +162,10 @@ const ReportGenerator = () => {
                 className="flex items-center gap-2 px-5 py-3 border border-slate-200 bg-white text-slate-700 hover:border-slate-900 rounded-xl text-[13px] font-semibold normal-case tracking-normal transition-all active:scale-95 shadow-sm">
                 <Printer className="w-4 h-4" /> Print
               </button>
-              <button
+              <IconAction label="Export CSV"
                 className="flex items-center gap-2 px-5 py-3 bg-[var(--color-primary)] hover:bg-[#7a6119] text-white rounded-xl text-[13px] font-semibold normal-case tracking-normal transition-all active:scale-95 shadow-md">
                 <Download className="w-4 h-4" /> Export CSV
-              </button>
+              </IconAction>
             </div>
           )}
         </div>

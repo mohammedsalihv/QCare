@@ -1,3 +1,4 @@
+import CompactSearch from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
@@ -107,8 +108,8 @@ const PasswordManagement = () => {
                    <p className="text-[12px] text-slate-500 font-medium tracking-tight mt-1">Manage corporate login and active resets</p>
                 </div>
                 <div className="relative w-full sm:w-[250px]">
-                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold" />
-                   <input 
+
+                   <CompactSearch
                      type="text" 
                      placeholder="Search employees..."
                      value={searchQuery}

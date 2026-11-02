@@ -1,3 +1,4 @@
+import CompactSearch from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -122,8 +123,8 @@ const MailLog = () => {
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/20">
             <div className="relative w-full sm:w-[400px]">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-              <input 
+
+              <CompactSearch
                 type="text" 
                 placeholder="Search by module, subject, sender, or recipient..."
                 value={searchQuery}

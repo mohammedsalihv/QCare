@@ -1,3 +1,4 @@
+import CompactSearch from './../components/CompactSearch';
 import './IndicatorSettings.css';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
@@ -588,8 +589,8 @@ const KeyPerformanceIndicator = () => {
               {/* search input */}
               <div className="flex items-center gap-2 max-w-md">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                  <input 
+
+                  <CompactSearch
                     type="text" 
                     placeholder="Search Selection Criteria..."
                     value={criteriaSearch}

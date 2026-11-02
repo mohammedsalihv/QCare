@@ -1,3 +1,4 @@
+import CompactSearch from './../components/CompactSearch';
 import UserSelect from '../components/UserSelect';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
@@ -237,8 +238,8 @@ const PatientFeedback = () => {
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="p-6 border-b border-slate-100 bg-slate-50/20 flex flex-col lg:flex-row items-center justify-between gap-4">
             <div className="relative w-full lg:w-[400px]">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold" />
-               <input 
+
+               <CompactSearch
                  type="text" 
                  placeholder="Search feedback by patient name or content..."
                  className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#b59662] transition-all text-[13px] font-semibold shadow-inner-sm"

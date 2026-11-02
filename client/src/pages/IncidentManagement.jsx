@@ -1,3 +1,4 @@
+import CompactSearch from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -263,8 +264,8 @@ const IncidentManagement = () => {
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="p-5 border-b border-slate-100 bg-slate-50/30 flex items-center justify-between">
             <div className="relative w-full max-w-md">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-800 font-semibold" />
-              <input
+
+              <CompactSearch
                 type="text"
                 placeholder="Search by ID, title or location..."
                 className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-[13px] font-semibold"

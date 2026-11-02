@@ -1,3 +1,4 @@
+import CompactSearch from './../components/CompactSearch';
 import './ClinicalPrivileges.css';
 import UserSelect from '../components/UserSelect';
 import Table from '../components/Table.jsx';
@@ -172,8 +173,8 @@ const ClinicalPrivileges = () => {
                   </button>
                 </div>
                 <div className="relative">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                  <input 
+
+                  <CompactSearch
                     type="text" 
                     placeholder="Search Procedure Category..."
                     value={procCategorySearch}
@@ -215,8 +216,8 @@ const ClinicalPrivileges = () => {
                   </button>
                 </div>
                 <div className="relative">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                  <input 
+
+                  <CompactSearch
                     type="text" 
                     placeholder="Search Procedure Name..."
                     value={procSearch}
@@ -416,7 +417,7 @@ const ClinicalPrivileges = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Clinician Name</label>
-                <input 
+                <CompactSearch
                   type="text" 
                   placeholder="Search Doctor..."
                   value={searchClinician}

@@ -92,7 +92,7 @@ const JawdaKPI = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <Select
+              <Select compact
                 name="period"
                 value={filters.period}
                 onChange={handleFilterChange}
@@ -142,7 +142,7 @@ const JawdaKPI = () => {
           <div className="flex flex-wrap items-center gap-4 bg-slate-50 p-4 rounded-xl">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-slate-800 font-semibold">Status:</span>
-              <Select
+              <Select compact
                 name="status"
                 value={filters.status}
                 onChange={handleFilterChange}
@@ -156,7 +156,7 @@ const JawdaKPI = () => {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-slate-800 font-semibold">Category:</span>
-              <Select
+              <Select compact
                 name="category"
                 value={filters.category}
                 onChange={handleFilterChange}

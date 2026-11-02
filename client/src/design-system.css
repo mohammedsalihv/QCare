@@ -132,3 +132,21 @@ button:disabled { cursor: not-allowed; }
   .qc-module-sidebar { position: static; padding: 16px; }
 }
 @media (max-width: 440px) { .qc-feature-drawer { border-radius: 0; } }
+
+/* Compact controls share targets and keyboard focus across all list screens. */
+.qc-list-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid #e2e8f0; }
+.qc-main .qc-icon-select.qc-custom-select { display:inline-flex; flex:0 0 38px; width:38px!important; min-width:38px!important; height:38px; min-height:38px; padding:0!important; margin:0; border:1px solid #dce4ec; border-radius:9px; background:white; vertical-align:middle; }
+.qc-main .qc-icon-select .qc-select-button { width:100%; height:100%; min-height:0; padding:0!important; justify-content:center; gap:0; }
+.qc-main .qc-icon-action, .qc-compact-search > button { display:inline-flex; flex:0 0 38px; align-items:center; justify-content:center; width:38px!important; min-width:38px; height:38px; padding:0!important; gap:0!important; border:1px solid #dce4ec; border-radius:9px; background:white; color:#40566b; box-shadow:none; }
+.qc-icon-select:hover, .qc-main .qc-icon-action:hover, .qc-compact-search > button:hover { background:#f0fdfa; border-color:#99c8c1; color:#0f766e; }
+.qc-main .qc-icon-select:focus-within, .qc-icon-action:focus-visible, .qc-compact-search:focus-within { outline:2px solid #0f766e; outline-offset:2px; }
+.qc-compact-search { display:inline-flex; align-items:center; position:relative; z-index:1; max-width:100%; vertical-align:middle; background:white; border-radius:9px; }
+.qc-compact-search.is-open { border:1px solid #cbd5e1; }
+.qc-compact-search.is-open > button { border:0; background:transparent; }
+.qc-main .qc-compact-search input { width:240px; max-width:calc(100vw - 150px); min-width:0; margin:0; padding:8px 4px; border:0; border-radius:0; background:transparent; font-size:13px; outline:none; box-shadow:none; }
+.qc-compact-search input[hidden] { display:none!important; }
+.qc-icon-action:disabled { opacity:.45; cursor:not-allowed; }
+@media (pointer:coarse) { .qc-main .qc-icon-action,.qc-main .qc-icon-select.qc-custom-select,.qc-compact-search > button { min-width:44px!important; width:44px!important; height:44px; } }
+.qc-main [class*="min-w-"]:has(> .qc-compact-search),.qc-main [class*="min-w-"]:has(> .qc-icon-select) { min-width:0!important; flex:0 0 auto; }
+.qc-icon-select[data-active] { position:relative; }
+.qc-icon-select[data-active]::after { content:''; position:absolute; top:4px; right:4px; width:5px; height:5px; border-radius:50%; background:#0f766e; pointer-events:none; }

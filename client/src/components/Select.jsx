@@ -1,6 +1,6 @@
 ﻿import { Children, Fragment, forwardRef, isValidElement, useEffect, useId, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, ChevronDown, Search } from 'lucide-react';
+import { Check, ChevronDown, Search, Filter, ArrowUpDown, ArrowDownUp, Rows3 } from 'lucide-react';
 
 function textOf(children) {
   return Children.toArray(children).map(child => isValidElement(child) ? textOf(child.props.children) : String(child)).join('');
@@ -16,7 +16,7 @@ function flattenOptions(children, disabled = false) {
 }
 
 // A custom popup with a native form bridge; the browser's select menu is never opened.
-const Select = forwardRef(function Select({ className = '', children, value, defaultValue, disabled, required, onChange, onInvalid, onFocus, searchable = true, ...props }, ref) {
+const Select = forwardRef(function Select({ className = '', compact = false, children, value, defaultValue, disabled, required, onChange, onInvalid, onFocus, searchable = true, ...props }, ref) {
   const uid = useId();
   const native = useRef(null);
   const trigger = useRef(null);
@@ -116,13 +116,17 @@ const Select = forwardRef(function Select({ className = '', children, value, def
     }
   };
   const popupHost = trigger.current?.closest('dialog') || (typeof document !== 'undefined' ? document.body : null);
-  return <span className={`qc-custom-select ${className}`} data-disabled={disabled || undefined} data-invalid={invalid || undefined}>
+  const iconOnly = compact || (!required && /^All (?:statuses|departments|categories|specialties|types|locations|professions|actions|records|years)\b/i.test(options[0]?.label || ''));
+  const caption = props['aria-label'] || accessibleLabel || props.name || (/^All /i.test(options[0]?.label || '') ? `Filter ${options[0].label.slice(4)}` : 'Options');
+  const CompactIcon = /order|direction/i.test(caption) ? ArrowDownUp : /sort/i.test(caption) ? ArrowUpDown : /rows|page|limit/i.test(caption) ? Rows3 : Filter;
+  const tooltip = `${caption}: ${selected?.label || 'Select an option'}`;
+  return <span className={`qc-custom-select ${iconOnly ? 'qc-icon-select' : ''} ${className}`} data-active={iconOnly && selectedValue !== options[0]?.value || undefined} data-disabled={disabled || undefined} data-invalid={invalid || undefined}>
     <select {...props} className="qc-select-native" ref={native} value={value} defaultValue={defaultValue} disabled={disabled} required={required} tabIndex={-1} aria-hidden="true" onClick={event => event.preventDefault()} onFocus={event => { trigger.current?.focus(); onFocus?.(event); }} onChange={event => { setInternalValue(event.target.value); setInvalid(false); onChange?.(event); }} onInvalid={event => { event.preventDefault(); setInvalid(true); trigger.current?.focus(); onInvalid?.(event); }}>
       {children}
     </select>
-    <button ref={trigger} type="button" className="qc-select-button" disabled={disabled} role="combobox" aria-haspopup="listbox" aria-expanded={open} aria-controls={`${uid}-list`} aria-required={required || undefined} aria-invalid={invalid || undefined} aria-label={props['aria-label'] || accessibleLabel || undefined} aria-labelledby={props['aria-labelledby']} aria-describedby={props['aria-describedby']} onClick={() => open ? close() : start()} onKeyDown={event => {
+    <button ref={trigger} type="button" className="qc-select-button" disabled={disabled} title={iconOnly ? tooltip : undefined} role="combobox" aria-haspopup="listbox" aria-expanded={open} aria-controls={`${uid}-list`} aria-required={required || undefined} aria-invalid={invalid || undefined} aria-label={iconOnly ? tooltip : props['aria-label'] || accessibleLabel || undefined} aria-labelledby={props['aria-labelledby']} aria-describedby={props['aria-describedby']} onClick={() => open ? close() : start()} onKeyDown={event => {
       if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) { event.preventDefault(); start(); }
-    }}><span>{selected?.label || 'Select an option'}</span><ChevronDown size={16} aria-hidden="true" /></button>
+    }}>{iconOnly ? <CompactIcon size={17} aria-hidden="true" /> : <><span>{selected?.label || 'Select an option'}</span><ChevronDown size={16} aria-hidden="true" /></>}</button>
     {invalid && <span className="qc-select-validation" role="alert">Please choose an option.</span>}
     {open && popupHost && createPortal(<div ref={popup} popover="manual" className="qc-select-popup" style={position} onKeyDown={handleKeys}>
       {showSearch && <div className="qc-select-search"><Search size={16} /><input ref={searchInput} aria-label="Filter options" placeholder="Search options..." value={query} onChange={event => { setQuery(event.target.value); setActive(-1); }} /></div>}

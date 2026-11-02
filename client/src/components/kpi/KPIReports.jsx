@@ -1,3 +1,5 @@
+import Select from './../Select';
+import CompactSearch from './../CompactSearch';
 import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import ImportReportDetails from './ImportReportDetails';
@@ -12,7 +14,7 @@ export default function KPIReports({ records, period, year, reviewOnly, canManag
   const visible = periodRecords.filter(item => (!reviewOnly || ['Pending Validation', 'Pending Approval'].includes(item.validationStatus)) && (!status || item.validationStatus === status) && (item.indicatorName + ' ' + item.indicatorCode + ' ' + (item.owner || '')).toLowerCase().includes(search.toLowerCase()));
   const dateLabel = value => value ? new Date(value).toLocaleString() : '—';
   return <section className="ki-panel"><h2>{reviewOnly ? 'Review queue' : 'Period reports'} · {period} {year}</h2><p>{reviewOnly ? 'Check the source details and counts, validate the report, then approve it. Return incorrect data with a clear explanation.' : 'Search results, inspect the calculation and compare approved history for the same indicator.'}</p>
-    <div className="ki-filters"><input aria-label="Search period reports" placeholder="Search name, code or owner" value={search} onChange={event => setSearch(event.target.value)} /><select aria-label="Filter review status" value={status} onChange={event => setStatus(event.target.value)}><option value="">All review statuses</option>{(reviewOnly ? ['Pending Validation', 'Pending Approval'] : ['Draft', 'Pending Validation', 'Pending Approval', 'Approved']).map(value => <option key={value}>{value}</option>)}</select><span>{visible.length} reports</span></div>
+    <div className="ki-filters"><CompactSearch aria-label="Search period reports" placeholder="Search name, code or owner" value={search} onChange={event => setSearch(event.target.value)} /><Select compact aria-label="Filter review status" value={status} onChange={event => setStatus(event.target.value)}><option value="">All review statuses</option>{(reviewOnly ? ['Pending Validation', 'Pending Approval'] : ['Draft', 'Pending Validation', 'Pending Approval', 'Approved']).map(value => <option key={value}>{value}</option>)}</Select><span>{visible.length} reports</span></div>
     <div className="ki-report-list">{visible.map(item => {
       const history = records.filter(row => row.indicatorCode === item.indicatorCode && row.validationStatus === 'Approved').sort((a, b) => periodOrder(a) - periodOrder(b));
       const chart = history.map(row => ({ period: row.reportingPeriod + ' ' + row.reportingYear, Result: row.calculatedValue, Target: row.target }));
