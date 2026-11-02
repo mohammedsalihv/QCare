@@ -1,3 +1,4 @@
+const { listQuery } = require('../utils/listQuery');
 const Designation = require("../models/Designation");
 
 // @desc    Get all designations
@@ -5,10 +6,20 @@ const Designation = require("../models/Designation");
 // @access  Private
 const getDesignations = async (req, res) => {
   try {
-    const designations = await Designation.find({});
-    res.json(designations);
+    res.set('Cache-Control', 'no-store');
+    // Keep legacy selectors compatible; record tables explicitly request a page.
+    if (req.query.page === undefined) return res.json(await Designation.find({}).lean());
+    const options = listQuery(req.query, { sorts: {"name":"title","code":"code","grade":"grade","updatedAt":"updatedAt"} });
+    const filter = {};
+    if (options.status) filter.status = options.status;
+    if (options.regex) filter.$or = ["title","code","grade","description"].map(field => ({ [field]: options.regex }));
+    const total = await Designation.countDocuments(filter).maxTimeMS(3000);
+    const page = Math.min(options.page, Math.max(1, Math.ceil(total / options.limit)));
+    const items = await Designation.find(filter).select('title code grade description status updatedAt').sort(options.sort)
+      .skip((page - 1) * options.limit).limit(options.limit).maxTimeMS(3000).lean();
+    res.json({ items, total, page, limit: options.limit });
   } catch (error) {
-    res.status(500).json({ message: "Failed to retrieve designations" });
+    res.status(error.status === 400 ? 400 : 500).json({ message: error.status === 400 ? error.message : 'Could not load designations. Please try again.' });
   }
 };
 

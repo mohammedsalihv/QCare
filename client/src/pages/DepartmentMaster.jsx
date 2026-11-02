@@ -1,3 +1,5 @@
+import useServerList from '../hooks/useServerList';
+import ListToolbar from '../components/ListToolbar';
 import UserSelect from '../components/UserSelect';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
@@ -5,7 +7,7 @@ import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
 import Pagination from '../components/Pagination';
 import Dropdown from '../components/Dropdown';
-import { useNavigate } from 'react-router-dom';
+import { getAuthConfig } from '../utils/authConfig';
 import { useNotification } from '../components/NotificationContext';
 import { 
   Plus, 
@@ -22,18 +24,19 @@ import {
 const createDepartmentCode = () => 'DEPT-' + Array.from(crypto.getRandomValues(new Uint32Array(4)), value => value.toString(16).padStart(8, '0')).join('');
 
 const DepartmentMaster = () => {
-  const [departments, setDepartments] = useState([]);
+  const list = useServerList('/api/departments');
+  const { items: currentRecords, loading, refresh: fetchDepartments } = list;
   const [locations, setLocations] = useState([]);
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
+
+
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentDept, setCurrentDept] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 10;
-  const navigate = useNavigate();
+
+
+
   const { showNotification, confirm } = useNotification();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const isAdmin = ['admin', 'superadmin'].includes(JSON.parse(localStorage.getItem('userInfo') || '{}').role?.toLowerCase());
 
   const [formData, setFormData] = useState({
     name: '',
@@ -43,52 +46,15 @@ const DepartmentMaster = () => {
   });
 
   useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
-      const { role } = JSON.parse(userInfo);
-      setIsAdmin(!!role?.toLowerCase().includes('admin'));
-    } else {
-      navigate('/');
-    }
-  }, [navigate]);
-
-  const getAuthConfig = () => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (!userInfo) return {};
-    const { token } = JSON.parse(userInfo);
-    return {
-      headers: { Authorization: `Bearer ${token}` },
-    };
-  };
-
-  const fetchDepartments = async () => {
-    try {
-      const { data } = await axios.get('http://192.168.1.160:5000/api/departments', getAuthConfig());
-      setDepartments(data);
-    } catch (err) {
-      console.error('Error fetching departments:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchLocations = async () => {
-    try {
-      const { data } = await axios.get('http://192.168.1.160:5000/api/locations', getAuthConfig());
-      const locationOptions = data.map(l => ({
-        label: `${l.name} (${l.code})`,
-        value: `${l.name} (${l.code})`
-      }));
-      setLocations(locationOptions);
-    } catch (err) {
-      console.error('Error fetching locations:', err);
-    }
-  };
-
-  useEffect(() => {
-    fetchDepartments();
-    fetchLocations();
-  }, []);
+    if (!showModal) return;
+    const controller = new AbortController();
+    axios.get('/api/locations', { ...getAuthConfig(), signal: controller.signal }).then(({ data }) => {
+      setLocations(data.map(location => ({ label: location.name, value: location.name })));
+    }).catch(error => {
+      if (!controller.signal.aborted) showNotification(error.response?.data?.message || 'Could not load locations.', 'error');
+    });
+    return () => controller.abort();
+  }, [showModal, showNotification]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -129,7 +95,7 @@ const DepartmentMaster = () => {
       type: 'danger',
       onConfirm: async () => {
         try {
-          await axios.delete(`http://192.168.1.160:5000/api/departments/${id}`, getAuthConfig());
+          await axios.delete(`/api/departments/${id}`, getAuthConfig());
           showNotification('Department removed successfully', 'success');
           fetchDepartments();
         } catch (err) {
@@ -151,10 +117,10 @@ const DepartmentMaster = () => {
     }
     try {
        if (isEditing) {
-         await axios.put(`http://192.168.1.160:5000/api/departments/${currentDept._id}`, formData, getAuthConfig());
+         await axios.put(`/api/departments/${currentDept._id}`, formData, getAuthConfig());
          showNotification('Department updated successfully', 'success');
        } else {
-         await axios.post('http://192.168.1.160:5000/api/departments', formData, getAuthConfig());
+         await axios.post('/api/departments', formData, getAuthConfig());
          showNotification('New department established successfully', 'success');
        }
        setShowModal(false);
@@ -163,12 +129,6 @@ const DepartmentMaster = () => {
        showNotification(err.response?.data?.message || 'Error saving department', 'error');
      }
    };
-
-  const filteredDepartments = departments.filter(department => department.name.toLowerCase().includes(search.toLowerCase()));
-  const visiblePage = Math.min(currentPage, Math.max(1, Math.ceil(filteredDepartments.length / recordsPerPage)));
-  const indexOfLastRecord = visiblePage * recordsPerPage;
-  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = filteredDepartments.slice(indexOfFirstRecord, indexOfLastRecord);
 
   return (
     <DashboardLayout>
@@ -200,34 +160,22 @@ const DepartmentMaster = () => {
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/20">
-            <div className="relative w-full sm:w-[400px]">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800" />
-               <input 
-                 type="text" 
-                 placeholder="Search department by name..."
-                 aria-label="Search departments"
-                 value={search}
-                 onChange={event => { setSearch(event.target.value); setCurrentPage(1); }}
-                 className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#b59662] focus:ring-4 focus:ring-[#b59662]/5 transition-all text-[13px] font-semibold"
-               />
-            </div>
-          </div>
-
+          <ListToolbar list={list} searchLabel="Search department, head or location" sorts={[{value:'name',label:'Department'}, {value:'head',label:'Head'}, {value:'location',label:'Location'}, {value:'updatedAt',label:'Last updated'}]} />
+          {list.error && <p role="alert" className="p-4 text-red-700">{list.error}</p>}
           <div className="overflow-x-auto">
             <Table className="w-full text-left border-collapse table-fixed min-w-[700px]">
               <thead>
                 <tr className="bg-slate-100/50">
-                  <th className="w-1/4 px-7 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Department Name</th>
+                  <th className="w-16 px-3 py-4">S/N</th><th className="w-1/4 px-7 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Department Name</th>
                   <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Head of Department</th>
                   <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Location</th>
                   <th className="w-36 px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {currentRecords.map((dept) => (
+                {!loading && !list.error && currentRecords.map((dept, index) => (
                   <tr key={dept._id} className="hover:bg-slate-50/20 transition-colors group">
-                    <td className="px-7 py-4">
+                    <td className="px-3 py-4">{(list.page - 1) * list.limit + index + 1}</td><td className="px-7 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center font-medium text-slate-800 text-[12px]">
                           <Building2 className="w-4 h-4 text-[#b59662]" />
@@ -272,7 +220,7 @@ const DepartmentMaster = () => {
                 ))}
                 {(loading || currentRecords.length === 0) && (
                   <tr>
-                    <td colSpan="4" className="px-6 py-20 text-center">
+                    <td colSpan="5" className="px-6 py-20 text-center">
                       <div className="flex flex-col items-center justify-center gap-3 opacity-30">
                         <Search className="w-10 h-10" />
                         <span className="text-[13px] font-semibold normal-case tracking-normal">{loading ? 'Loading departments…' : 'No departments found matching your criteria'}</span>
@@ -285,10 +233,10 @@ const DepartmentMaster = () => {
           </div>
           
           <Pagination 
-            totalRecords={filteredDepartments.length}
-            recordsPerPage={recordsPerPage} 
-            currentPage={visiblePage}
-            onPageChange={setCurrentPage} 
+            totalRecords={list.total}
+            recordsPerPage={list.limit}
+            currentPage={list.page}
+            onPageChange={page => list.change({ page })}
           />
         </div>
 

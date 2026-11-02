@@ -1,0 +1,29 @@
+.indicator-settings .is-workspace { display:grid; grid-template-columns:224px minmax(0,1fr); align-items:start; gap:24px; }
+.indicator-settings .is-sidebar { position:sticky; top:100px; padding:14px; border:1px solid #dce6eb; border-radius:18px; background:white; }
+.indicator-settings .is-nav-label { margin:8px 12px 12px; color:#64748b; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+.indicator-settings .is-nav-item { display:flex; align-items:center; gap:12px; width:100%; padding:12px; margin:3px 0; border-radius:10px; color:#475569; font-size:13px; font-weight:600; text-align:left; }
+.indicator-settings .is-nav-item svg { flex-shrink:0; }
+.indicator-settings .is-nav-item:hover { background:#f1f5f9; }
+.indicator-settings .is-nav-item[aria-current=page] { background:#e8f5f3; color:#087d77; box-shadow:inset 3px 0 #087d77; }
+.indicator-settings .is-configuration { margin-top:16px; border-top:1px solid #e2e8f0; padding-top:12px; }
+.indicator-settings .is-configuration summary { padding:10px 12px; cursor:pointer; font-size:13px; font-weight:600; color:#64748b; }
+.indicator-settings button:focus-visible,.indicator-settings summary:focus-visible { outline:2px solid #087d77; outline-offset:3px; }
+.indicator-settings .qc-module-content { min-width:0; width:100%; }
+.indicator-settings .is-empty-chart { min-height:190px; display:grid; place-items:center; border-radius:12px; background:#f8fafc; }
+.indicator-settings .is-empty { padding:24px; display:flex; flex-direction:column; align-items:center; gap:10px; color:#64748b; text-align:center; font-size:13px; }
+.indicator-settings .is-empty h5 { color:#1e293b; font-size:15px; font-weight:600; }
+.indicator-settings .is-empty button { display:flex; align-items:center; gap:8px; padding:9px 16px; background:#087d77; color:white; border-radius:8px; font-weight:600; }
+@media(max-width:1100px) {
+ .indicator-settings .is-workspace { grid-template-columns:minmax(0,1fr); gap:16px; }
+ .indicator-settings .is-sidebar { position:static; }
+ .indicator-settings .is-sidebar nav { display:flex; flex-wrap:wrap; gap:4px; }
+ .indicator-settings .is-nav-label { width:100%; }
+ .indicator-settings .is-nav-item { width:auto; }
+ .indicator-settings .is-configuration { width:100%; margin-top:8px; }
+}
+@media(max-width:600px) {
+ .indicator-settings .is-nav-item { width:calc(50% - 4px); font-size:12px; padding:10px 8px; gap:8px; }
+ .indicator-settings .is-configuration .is-nav-item { width:100%; }
+ .indicator-settings .qc-module-content .p-6,.indicator-settings .qc-module-content .p-8 { padding:16px; }
+ .indicator-settings .qc-module-content .flex.justify-between { flex-wrap:wrap; gap:12px; }
+}

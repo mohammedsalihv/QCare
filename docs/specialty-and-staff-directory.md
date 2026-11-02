@@ -9,7 +9,7 @@ Some personnel selectors contained placeholder names. Others queried the adminis
 ## Implemented behavior
 
 - Specialty Master uses authenticated GET/POST/PUT/DELETE requests to /api/specialties.
-- Specialty records are stored in MongoDB with department and lead references. Names are normalized for duplicate detection; department and selected lead must exist.
+- Specialty records require a name and support an optional head and Active/Inactive status. An unassigned head displays N/A. Names are normalized for duplicate detection, and a selected head must be an active user. Department selection is no longer part of the form or API validation; historical department references are retained.
 - The user-facing code field is removed. MongoDB's document ID identifies each specialty.
 - Administrators manage specialties; authenticated users can read them.
 - A failed save leaves the form open. A failed delete retains the row and reports the error.
@@ -48,3 +48,10 @@ Update the running backend on 192.168.1.160 with server/index.js, server/routes/
 ## Live release verification — 2026-10-24
 
 The seven backend files above were deployed to /home/salih/QCare on 192.168.1.160 after the staged update passed syntax, module-load and isolated MongoDB persistence/permission tests on that host. PM2 process QCare was restarted and verified online. The existing database configuration was retained. Backups are at /home/salih/QCare_deploy_backups/specialty-1792871097797. The previous 404 response for /api/specialties was replaced by the expected authentication-required response. No user specialty record was created as part of deployment.
+
+
+## Specialty field update — 2026-11-01
+
+With owner approval, deployed `server/controllers/specialtyController.js` and `server/models/Specialty.js` to the connected backend at `/home/salih/QCare` on `192.168.1.160`. The live files were compared with the previous version before replacement, backed up to `/home/salih/QCare_deploy_backups/specialty-fields-1793556522180`, and the PM2 `QCare` process restarted successfully.
+
+Verification: exact deployed-file comparison; schema validation without department; controller creation returned 201 without department or head using an in-memory write stub; the restarted specialty API returned the expected unauthenticated 401 response. No production records were created by verification. An authenticated browser save was not performed.

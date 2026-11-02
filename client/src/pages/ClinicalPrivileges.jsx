@@ -1,67 +1,34 @@
+import './ClinicalPrivileges.css';
 import UserSelect from '../components/UserSelect';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
-import { useNotification } from '../components/NotificationContext';
-import DashboardLayout from '../components/DashboardLayout';
-import { 
-  Shield, 
-  ShieldCheck, 
-  Award, 
-  FileText, 
-  Search, 
-  UserCheck, 
-  History, 
-  Calendar, 
-  AlertTriangle, 
-  TrendingUp, 
-  UserX, 
-  Layers, 
-  Settings, 
-  ClipboardList, 
-  Bell, 
-  BookOpen, 
-  Plus, 
-  Trash2, 
-  Edit3, 
-  Filter,
-  CheckCircle,
-  XCircle,
-  Info,
-  Clock,
-  ArrowRight,
-  UploadCloud,
-  ChevronRight,
-  Download
-} from 'lucide-react';
+import { useNotification } from "../components/NotificationContext";
+import DashboardLayout from "../components/DashboardLayout";
+import { ShieldCheck, FileText, Search, UserCheck, History, Calendar, AlertTriangle, TrendingUp, Layers, ClipboardList, BookOpen, Plus, Edit3, Clock, ArrowRight, UploadCloud, ChevronRight } from 'lucide-react';
 
 const ClinicalPrivileges = () => {
   const { showNotification } = useNotification();
-  const [activeTab, setActiveTab] = useState('procedures-master');
+  const [activeTab, setActiveTab] = useState('normal-dashboard');
 
   // Sidebar Menu Items
   const menuItems = [
-    { id: 'procedures-master', label: 'Procedures Master', icon: BookOpen },
-    { id: 'privilege-submaster', label: 'Privilege SubMaster', icon: Layers },
-    { id: 'notification-master', label: 'Notification Master', icon: Bell },
-    { id: 'privilege-search', label: 'Privilege Search', icon: Search },
-    { id: 'apply-renew', label: 'Apply/Renew Privilege', icon: FileText },
-    { id: 'privilege-approval', label: 'Privilege Approval', icon: UserCheck },
-    { id: 'privilege-approval-master', label: 'Privilege Approval Master', icon: ClipboardList },
-    { id: 'amend-privilege', label: 'Amend Privilege', icon: Edit3 },
-    { id: 'hold-terminate', label: 'Hold/Unhold/Terminate Privilege', icon: UserX },
-    { id: 'privilege-archive', label: 'Privilege Archive', icon: History },
-    { id: 'document-expiry-monitor', label: 'Document Expiry Monitor', icon: Calendar },
-    { id: 'normal-dashboard', label: 'Normal Dashboard', icon: TrendingUp },
-    { id: 'hod-dashboard', label: 'HOD Dashboard', icon: ShieldCheck }
+    { id: 'normal-dashboard', label: 'Overview', icon: TrendingUp, group: 'Workspace' },
+    { id: 'privilege-search', label: 'Privilege register', icon: Search },
+    { id: 'apply-renew', label: 'Apply or renew', icon: FileText },
+    { id: 'privilege-approval', label: 'Approval queue', icon: UserCheck },
+    { id: 'document-expiry-monitor', label: 'Credential expiry', icon: Calendar },
+    { id: 'privilege-archive', label: 'Activity history', icon: History },
+    { id: 'procedures-master', label: 'Procedure library', icon: BookOpen, group: 'Configuration' },
+    { id: 'privilege-submaster', label: 'Eligibility criteria', icon: Layers },
+    { id: 'privilege-approval-master', label: 'Approval workflow', icon: ClipboardList }
   ];
 
   // ---------------------------------------------------------------------------
   // MOCK DATA & STATES
   // ---------------------------------------------------------------------------
   
-  // Procedures Master State
-  const [procedureType, setProcedureType] = useState('');
+  // Procedure library State
   const [procCategorySearch, setProcCategorySearch] = useState('');
   const [procSearch, setProcSearch] = useState('');
   
@@ -77,7 +44,7 @@ const ClinicalPrivileges = () => {
     { id: 3, category: 'General Anaesthesia', name: 'Intubation & Airway Management', req: 'BLS, ACLS' }
   ]);
 
-  const [approvers, setApprovers] = useState([
+  const [approvers] = useState([
     { id: 1, name: 'Dr. Yahya Mannooparambil', dept: 'Cardiology / Medical Director' },
     { id: 2, name: 'Dr. Robert Fischer', dept: 'Orthopedics / HOD' }
   ]);
@@ -90,7 +57,7 @@ const ClinicalPrivileges = () => {
   const [showAddCatModal, setShowAddCatModal] = useState(false);
   const [showAddProcModal, setShowAddProcModal] = useState(false);
 
-  // Privilege SubMaster State
+  // Eligibility criteria State
   const [submasterRole, setSubmasterRole] = useState('Consultant');
   const [submasterSpecialty, setSubmasterSpecialty] = useState('Cardiology');
   const [submasterReqs, setSubmasterReqs] = useState({
@@ -101,19 +68,11 @@ const ClinicalPrivileges = () => {
     logbook: true
   });
 
-  // Notification Master State
-  const [notifTrigger, setNotifTrigger] = useState('Application Received');
-  const [notifCC, setNotifCC] = useState(true);
-  const [notifRules, setNotifRules] = useState([
-    { id: 1, trigger: 'Application Received', cc: 'Yes', template: 'Dear HOD, a new application has been submitted...' },
-    { id: 2, trigger: 'Expiring in 30 Days', cc: 'No', template: 'Dear Clinician, your privilege for [Procedure] is expiring soon...' }
-  ]);
-
-  // Privilege Search State
+  // Privilege register State
   const [searchClinician, setSearchClinician] = useState('');
   const [searchSpecialty, setSearchSpecialty] = useState('');
   const [searchStatus, setSearchStatus] = useState('All');
-  const [searchResults, setSearchResults] = useState([
+  const [searchResults] = useState([
     { id: 1, name: 'Dr. James Smith', specialty: 'Cardiology', approvedCount: 12, expiry: '2027-02-14', status: 'Active' },
     { id: 2, name: 'Dr. Emily Watson', specialty: 'Orthopedics', approvedCount: 8, expiry: '2026-08-30', status: 'Expiring Soon' },
     { id: 3, name: 'Dr. Alistair Cook', specialty: 'Pediatrics', approvedCount: 5, expiry: '2026-05-10', status: 'Expired' }
@@ -133,14 +92,14 @@ const ClinicalPrivileges = () => {
   ]);
 
   // Approval Workflow Master State
-  const [workflowLevels, setWorkflowLevels] = useState([
+  const [workflowLevels] = useState([
     { level: 1, role: 'Department Head (HOD)', mandate: 'Clinical verification of cases logbook' },
     { level: 2, role: 'Credentialing Committee Chair', mandate: 'Secondary source verification check' },
     { level: 3, role: 'Chief Medical Director', mandate: 'Final execution and registry stamp' }
   ]);
 
   // Expiry Monitor State
-  const [expiryDocs, setExpiryDocs] = useState([
+  const [expiryDocs] = useState([
     { id: 1, doctor: 'Dr. Emily Watson', docName: 'BLS Certificate', daysLeft: 12, status: 'Critical' },
     { id: 2, doctor: 'Dr. James Smith', docName: 'DOH Professional License', daysLeft: 45, status: 'Warning' },
     { id: 3, doctor: 'Dr. Sarah Connor', docName: 'Medical Malpractice Insurance', daysLeft: 80, status: 'Healthy' }
@@ -150,17 +109,17 @@ const ClinicalPrivileges = () => {
   // ACTION HANDLERS
   // ---------------------------------------------------------------------------
   const handleAddCategory = () => {
-    if (!newCatName) return;
+    if (!newCatName.trim()) return;
     setCategories([
       ...categories,
-      { id: Date.now(), name: newCatName, addedBy: 'Current User', date: new Date().toISOString().split('T')[0] }
+      { id: Date.now(), name: newCatName.trim(), addedBy: 'Current User', date: new Date().toISOString().split('T')[0] }
     ]);
     setNewCatName('');
     setShowAddCatModal(false);
   };
 
   const handleAddProcedure = () => {
-    if (!newProcName || !newProcCat) return;
+    if (!newProcName.trim() || !newProcCat) return;
     setProcedures([
       ...procedures,
       { id: Date.now(), category: newProcCat, name: newProcName, req: newProcReq || 'None' }
@@ -194,42 +153,13 @@ const ClinicalPrivileges = () => {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
               <div>
-                <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Procedures Master</h3>
+                <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Procedure library</h3>
                 <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Configure Clinical Privilege Procedures and Approvers</p>
               </div>
-              <div className="flex gap-2">
-                <button className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[12px] font-semibold normal-case tracking-normal rounded-xl transition-all flex items-center gap-2">
-                  <Download className="w-3.5 h-3.5" /> Fetch Approver List
-                </button>
-                <button className="px-4 py-2.5 bg-primary hover:bg-primary text-white text-[12px] font-semibold normal-case tracking-normal rounded-xl transition-all flex items-center gap-2">
-                  <UserCheck className="w-3.5 h-3.5" /> Replace Approvers
-                </button>
-              </div>
-            </div>
-
-            {/* Filter Section */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-end gap-4">
-              <div className="flex-1">
-                <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Procedure Type*</label>
-                <Select 
-                  value={procedureType} 
-                  onChange={(e) => setProcedureType(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
-                >
-                  <option value="">Select</option>
-                  <option value="Surgical">Surgical</option>
-                  <option value="Non-Surgical">Non-Surgical</option>
-                  <option value="Diagnostic">Diagnostic</option>
-                  <option value="Interventional">Interventional</option>
-                </Select>
-              </div>
-              <button className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[12px] font-semibold normal-case tracking-normal rounded-xl transition-all">
-                Fetch Details
-              </button>
             </div>
 
             {/* Two Column Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               {/* Category Table */}
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                 <div className="flex justify-between items-center">
@@ -258,7 +188,6 @@ const ClinicalPrivileges = () => {
                         <th className="p-3">S.No</th>
                         <th className="p-3">Procedure Category</th>
                         <th className="p-3">Added/Edited By</th>
-                        <th className="p-3">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
@@ -267,11 +196,6 @@ const ClinicalPrivileges = () => {
                           <td className="p-3 font-semibold text-slate-500">{idx + 1}</td>
                           <td className="p-3 font-semibold text-slate-700">{cat.name}</td>
                           <td className="p-3 text-slate-500">{cat.addedBy}</td>
-                          <td className="p-3">
-                            <button className="text-red-500 hover:text-red-600 transition-colors p-1">
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -308,7 +232,6 @@ const ClinicalPrivileges = () => {
                         <th className="p-3">Category</th>
                         <th className="p-3">Procedure Name</th>
                         <th className="p-3">Requirements</th>
-                        <th className="p-3">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
@@ -319,11 +242,6 @@ const ClinicalPrivileges = () => {
                           <td className="p-3 font-semibold text-slate-700">{proc.name}</td>
                           <td className="p-3">
                             <span className="px-2.5 py-1 bg-amber-50 text-amber-700 text-[12px] font-semibold rounded-lg border border-amber-100">{proc.req}</span>
-                          </td>
-                          <td className="p-3">
-                            <button className="text-red-500 hover:text-red-600 transition-colors p-1">
-                              <Trash2 className="w-4 h-4" />
-                            </button>
                           </td>
                         </tr>
                       ))}
@@ -430,7 +348,7 @@ const ClinicalPrivileges = () => {
         return (
           <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Privilege SubMaster</h3>
+              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Eligibility criteria</h3>
               <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Design Roles, Criteria, and Qualifications by Specialty</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -448,7 +366,7 @@ const ClinicalPrivileges = () => {
                 </Select>
               </div>
               <div>
-                <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Specialty Specialty</label>
+                <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Specialty</label>
                 <Select 
                   value={submasterSpecialty}
                   onChange={(e) => setSubmasterSpecialty(e.target.value)}
@@ -487,94 +405,12 @@ const ClinicalPrivileges = () => {
           </div>
         );
 
-      // 3. NOTIFICATION MASTER
-      case 'notification-master':
-        return (
-          <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Notification Master</h3>
-              <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Manage Auto-Alert email Rules and Templates</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Trigger Event</label>
-                <Select 
-                  value={notifTrigger}
-                  onChange={(e) => setNotifTrigger(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
-                >
-                  <option value="Application Received">Application Received</option>
-                  <option value="Approval Granted">Approval Granted</option>
-                  <option value="Rejection Alert">Rejection Alert</option>
-                  <option value="Expiring in 30 Days">Expiring in 30 Days</option>
-                  <option value="Expiring in 90 Days">Expiring in 90 Days</option>
-                </Select>
-              </div>
-              <div className="flex items-center pt-8">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    checked={notifCC}
-                    onChange={(e) => setNotifCC(e.target.checked)}
-                    className="w-4.5 h-4.5 text-[var(--color-primary)] focus:ring-[var(--color-primary)] rounded border-slate-350"
-                  />
-                  <span className="text-[13px] font-semibold text-slate-700">Auto-CC Department Head</span>
-                </label>
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Email Template Content</label>
-              <textarea 
-                rows="4"
-                placeholder="Dear Clinician..."
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800 font-mono"
-              ></textarea>
-            </div>
-
-            <div className="flex justify-end">
-              <button className="px-6 py-3.5 bg-[var(--color-primary)] hover:bg-[var(--color-primary)]/90 text-white text-[12px] font-semibold normal-case tracking-normal rounded-xl transition-all">
-                Add Rule
-              </button>
-            </div>
-
-            <div className="overflow-x-auto pt-4 border-t border-slate-100">
-              <Table className="w-full text-left text-[13px]">
-                <thead>
-                  <tr className="bg-slate-50 text-slate-500 font-semibold normal-case tracking-normal border-b border-slate-100">
-                    <th className="p-3">S.No</th>
-                    <th className="p-3">Trigger Event</th>
-                    <th className="p-3">CC Department Head</th>
-                    <th className="p-3">Template Preview</th>
-                    <th className="p-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {notifRules.map((rule, idx) => (
-                    <tr key={rule.id}>
-                      <td className="p-3 text-slate-500 font-semibold">{idx+1}</td>
-                      <td className="p-3 font-semibold text-slate-700">{rule.trigger}</td>
-                      <td className="p-3 text-slate-500">{rule.cc}</td>
-                      <td className="p-3 text-slate-500 italic max-w-xs truncate">{rule.template}</td>
-                      <td className="p-3">
-                        <button className="text-red-500 hover:text-red-600 transition-colors p-1">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          </div>
-        );
-
       // 4. PRIVILEGE SEARCH
       case 'privilege-search':
         return (
           <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Privilege Search</h3>
+              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Privilege register</h3>
               <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Lookup Clinician Privilege Registries</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -662,7 +498,7 @@ const ClinicalPrivileges = () => {
           <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Apply/Renew Privilege</h3>
+                <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Apply or renew</h3>
                 <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Submit clinician privilege portfolio</p>
               </div>
               <div className="flex gap-1 items-center bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
@@ -778,7 +614,7 @@ const ClinicalPrivileges = () => {
         return (
           <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Privilege Approval Queue</h3>
+              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Approval queue Queue</h3>
               <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Clinical reviews and credential committee authorizations</p>
             </div>
             <div className="overflow-x-auto">
@@ -824,7 +660,7 @@ const ClinicalPrivileges = () => {
         return (
           <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Privilege Approval Master</h3>
+              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Approval workflow</h3>
               <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Configure multi-stage approval levels and signing mandates</p>
             </div>
             <div className="space-y-4">
@@ -849,65 +685,12 @@ const ClinicalPrivileges = () => {
           </div>
         );
 
-      // 8. AMEND PRIVILEGE
-      case 'amend-privilege':
-        return (
-          <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Amend Privileges</h3>
-              <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Alter scope of active privileges</p>
-            </div>
-            <div>
-              <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Search Clinician</label>
-              <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                <input 
-                  type="text" 
-                  placeholder="Doctor Name..."
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
-                />
-              </div>
-            </div>
-            <div className="p-12 text-center opacity-30 flex flex-col items-center gap-2 border border-dashed border-slate-200 rounded-2xl">
-              <Info className="w-8 h-8 text-slate-500" />
-              <p className="text-[12px] font-semibold normal-case tracking-normal">Select active doctor to view/amend scope</p>
-            </div>
-          </div>
-        );
-
-      // 9. HOLD/UNHOLD/TERMINATE
-      case 'hold-terminate':
-        return (
-          <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Hold/Unhold/Terminate Privilege</h3>
-              <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Administrative blocks and terminations</p>
-            </div>
-            <div>
-              <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Select Doctor</label>
-              <UserSelect aria-label="Doctor" value={applyClinician} valueField="employeeName" onChange={event => setApplyClinician(event.target.value)} placeholder="Select doctor from users" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl" />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <button onClick={() => showNotification('Privileges put on hold', 'warning')} className="p-6 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-2xl transition-all text-left">
-                <AlertTriangle className="w-8 h-8 text-amber-500 mb-3" />
-                <h4 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">Place Privileges on Hold</h4>
-                <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Suspend status temporarily</p>
-              </button>
-              <button onClick={() => showNotification('Privileges terminated', 'error')} className="p-6 bg-red-50 hover:bg-red-100 border border-red-200 rounded-2xl transition-all text-left">
-                <UserX className="w-8 h-8 text-red-500 mb-3" />
-                <h4 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">Terminate Scope</h4>
-                <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Revoke clinical credential permanently</p>
-              </button>
-            </div>
-          </div>
-        );
-
       // 10. ARCHIVE
       case 'privilege-archive':
         return (
           <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Privilege Archive</h3>
+              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Activity history</h3>
               <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Historical files and audit trails</p>
             </div>
             <div className="overflow-x-auto">
@@ -947,7 +730,7 @@ const ClinicalPrivileges = () => {
         return (
           <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Document Expiry Monitor</h3>
+              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Credential expiry</h3>
               <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Live tracking of clinician certificate validity</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -984,8 +767,8 @@ const ClinicalPrivileges = () => {
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="text-[12px] font-semibold text-slate-450 normal-case tracking-normal block">My Active Privileges</span>
-                  <span className="text-xl font-semibold text-slate-800 block mt-1">12</span>
+                  <span className="text-[12px] font-semibold text-slate-450 normal-case tracking-normal block">Active privileges</span>
+                  <span className="text-xl font-semibold text-slate-800 block mt-1">{searchResults.filter(record => record.status === "Active").reduce((total, record) => total + record.approvedCount, 0)}</span>
                 </div>
               </div>
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
@@ -994,7 +777,7 @@ const ClinicalPrivileges = () => {
                 </div>
                 <div>
                   <span className="text-[12px] font-semibold text-slate-450 normal-case tracking-normal block">Pending Submissions</span>
-                  <span className="text-xl font-semibold text-slate-800 block mt-1">2</span>
+                  <span className="text-xl font-semibold text-slate-800 block mt-1">{approvals.length}</span>
                 </div>
               </div>
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
@@ -1003,13 +786,13 @@ const ClinicalPrivileges = () => {
                 </div>
                 <div>
                   <span className="text-[12px] font-semibold text-slate-450 normal-case tracking-normal block">Critical Expiries</span>
-                  <span className="text-xl font-semibold text-slate-800 block mt-1">1</span>
+                  <span className="text-xl font-semibold text-slate-800 block mt-1">{expiryDocs.filter(doc => doc.status === "Critical").length}</span>
                 </div>
               </div>
             </div>
 
             <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-              <h4 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">Clinician Quick Actions</h4>
+              <h4 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">Quick actions</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button onClick={() => setActiveTab('apply-renew')} className="p-4 bg-slate-50 border border-slate-200/50 hover:bg-slate-100/50 rounded-2xl transition-all text-left flex items-center justify-between">
                   <div>
@@ -1030,64 +813,6 @@ const ClinicalPrivileges = () => {
           </div>
         );
 
-      // 13. HOD DASHBOARD
-      case 'hod-dashboard':
-        return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <span className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block">Department Clinicians</span>
-                <span className="text-xl font-semibold text-slate-800 block mt-2">24</span>
-              </div>
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <span className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block">Compliance Rate</span>
-                <span className="text-xl font-semibold text-emerald-600 block mt-2">91.6%</span>
-              </div>
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <span className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block">Pending HOD Signatures</span>
-                <span className="text-xl font-semibold text-amber-600 block mt-2">{approvals.length}</span>
-              </div>
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <span className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block">Expired Privileges</span>
-                <span className="text-xl font-semibold text-rose-600 block mt-2">2</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                <h4 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">HOD Action Desk</h4>
-                <div className="space-y-3">
-                  {approvals.map(app => (
-                    <div key={app.id} className="flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-2xl">
-                      <div>
-                        <span className="text-[13px] font-semibold text-slate-850 block">{app.applicant}</span>
-                        <span className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal block mt-0.5">{app.specialty} • Submitted {app.dateApplied}</span>
-                      </div>
-                      <button onClick={() => setActiveTab('privilege-approval')} className="px-3 py-1.5 bg-slate-850 hover:bg-primary text-white text-[12px] font-semibold normal-case tracking-normal rounded-lg transition-all">Review App</button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4 flex flex-col justify-between">
-                <div>
-                  <h4 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">Clinical Auditing Status</h4>
-                  <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Review departmental cases verification compliance</p>
-                </div>
-                <div className="space-y-2 pt-4">
-                  <div className="flex justify-between text-[13px] font-semibold text-slate-600">
-                    <span>Orthopedics Case Logs Verified</span>
-                    <span>88%</span>
-                  </div>
-                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <div className="bg-[var(--color-primary)] h-full rounded-full" style={{ width: '88%' }}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
       default:
         return <div>Invalid selection</div>;
     }
@@ -1095,31 +820,24 @@ const ClinicalPrivileges = () => {
 
   return (
     <DashboardLayout>
+      <div className="clinical-privileges">
       <header className="qc-module-heading">
         <h1>Clinical privileges</h1>
-        <p>Manage clinical eligibility, privilege requests and professional reviews.</p>
+        <p>Manage clinical scope, applications and credential reviews in one place.</p>
+        <div className="cp-preview-note">Preview workspace · Sample records and edits are held only for this session.</div>
       </header>
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
+      <div className="cp-workspace">
         
         {/* Left Side: Clinical Privileges Submenu Sidebar */}
-        <aside className="qc-module-sidebar w-full lg:w-64 shrink-0 sticky top-24 select-none">
-          <div className="flex items-center gap-3 border-b border-slate-100 pb-5 mb-5">
-            <div className="p-3 bg-[var(--color-primary)] text-white rounded-2xl shadow-lg shadow-none">
-              <Shield className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold text-slate-800 normal-case tracking-tight">Clinical Privileges</h2>
-              <span className="text-[12px] text-[var(--color-primary)] font-semibold normal-case tracking-normal block mt-0.5">CMC Master Portal</span>
-            </div>
-          </div>
-
-          <nav className="space-y-1">
+        <aside className="qc-module-sidebar cp-sidebar">
+          <nav aria-label="Clinical privileges navigation" className="cp-navigation">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
               return (
+                <React.Fragment key={item.id}>
+                {item.group && <p className="cp-group-label">{item.group}</p>}
                 <button
-                  key={item.id}
                   aria-current={isActive ? 'page' : undefined}
                   onClick={() => setActiveTab(item.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-[12px] font-semibold normal-case tracking-normal transition-all text-left ${
@@ -1130,7 +848,9 @@ const ClinicalPrivileges = () => {
                 >
                   <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-[var(--color-primary)]'}`} />
                   <span>{item.label}</span>
+                  {item.id === "privilege-approval" && <span className="cp-count">{approvals.length}</span>}
                 </button>
+                </React.Fragment>
               );
             })}
           </nav>
@@ -1143,6 +863,7 @@ const ClinicalPrivileges = () => {
           </div>
         </section>
 
+      </div>
       </div>
     </DashboardLayout>
   );

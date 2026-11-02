@@ -1,3 +1,4 @@
+import './IndicatorSettings.css';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
 import React, { useState, useEffect } from 'react';
@@ -129,15 +130,15 @@ const KeyPerformanceIndicator = () => {
 
   // Sidebar Menu Items
   const menuItems = [
-    { id: 'dashboard', label: 'Analytics Dashboard', icon: BarChart2 },
-    { id: 'indicator-submaster', label: 'Indicator SubMaster', icon: Sliders },
-    { id: 'notification-master', label: 'Notification Master', icon: Bell },
-    { id: 'master-indicator-definition', label: 'Master Indicator Definition', icon: BookOpen },
-    { id: 'indicator-data-submission', label: 'Indicator Data Submission', icon: FileText },
-    { id: 'indicator-validation', label: 'Indicator Validation', icon: CheckCircle2 },
-    { id: 'indicator-approval', label: 'Indicator Approval', icon: UserCheck },
-    { id: 'actions', label: 'Actions', icon: Activity },
-    { id: 'search-indicator', label: 'Search Indicator', icon: Search }
+    { id: 'dashboard', label: 'Overview', icon: BarChart2 },
+    { id: 'indicator-submaster', label: 'Categories & types', icon: Sliders },
+    { id: 'notification-master', label: 'Notifications', icon: Bell },
+    { id: 'master-indicator-definition', label: 'Indicator definitions', icon: BookOpen },
+    { id: 'indicator-data-submission', label: 'Submit data', icon: FileText },
+    { id: 'indicator-validation', label: 'Validate submissions', icon: CheckCircle2 },
+    { id: 'indicator-approval', label: 'Approve submissions', icon: UserCheck },
+    { id: 'actions', label: 'Corrective actions', icon: Activity },
+    { id: 'search-indicator', label: 'Submission history', icon: Search }
   ];
 
   // Helper: Get distinct KPIs by code (base definition)
@@ -419,10 +420,10 @@ const KeyPerformanceIndicator = () => {
       case 'dashboard':
         const COLORS = ['#10b981', '#f59e0b', '#ef4444'];
         const statCards = [
-          { title: 'Total KPIs in System', value: dashboardData.stats?.total || 0, icon: Award, color: 'text-slate-800', bg: 'bg-slate-100' },
-          { title: 'On Track Metrics', value: dashboardData.stats?.onTrack || 0, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-          { title: 'At Risk Thresholds', value: dashboardData.stats?.atRisk || 0, icon: AlertCircle, color: 'text-amber-600', bg: 'bg-amber-50' },
-          { title: 'Breached Limits', value: dashboardData.stats?.breached || 0, icon: TrendingDown, color: 'text-rose-600', bg: 'bg-rose-50' }
+          { title: 'Total indicators', value: dashboardData.stats?.total || 0, icon: Award, color: 'text-slate-800', bg: 'bg-slate-100' },
+          { title: 'On track', value: dashboardData.stats?.onTrack || 0, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+          { title: 'At risk', value: dashboardData.stats?.atRisk || 0, icon: AlertCircle, color: 'text-amber-600', bg: 'bg-amber-50' },
+          { title: 'Below target', value: dashboardData.stats?.breached || 0, icon: TrendingDown, color: 'text-rose-600', bg: 'bg-rose-50' }
         ];
 
         // Format chart data for recharts
@@ -455,14 +456,14 @@ const KeyPerformanceIndicator = () => {
               <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm min-w-0">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h4 className="text-sm font-semibold text-slate-800 normal-case tracking-tight">KPI Performance History</h4>
-                    <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-0.5">Quarterly averages comparison against target values</p>
+                    <h4 className="text-sm font-semibold text-slate-800 normal-case tracking-tight">Performance trends</h4>
+                    <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-0.5">Reported values compared with targets</p>
                   </div>
                   <span className="text-[12px] font-semibold text-[var(--color-primary)] bg-amber-50 px-3 py-1.5 rounded-full normal-case tracking-normal">
-                    Avg. Success: {dashboardData.stats?.avgAchievement}%
+                    {chartData.length ? `Average achievement: ${dashboardData.stats?.avgAchievement ?? 0}%` : "Awaiting results"}
                   </span>
                 </div>
-                <div className="h-[300px]">
+                <div className={chartData.length ? "h-[300px]" : "is-empty-chart"}>
                   {chartData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={chartData}>
@@ -479,7 +480,7 @@ const KeyPerformanceIndicator = () => {
                       </BarChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="flex items-center justify-center h-full text-[13px] font-semibold text-slate-500 normal-case tracking-normal">No Trend Data Registered</div>
+                    <div className="is-empty"><BarChart2 size={30} /><h5>No performance data yet</h5><p>Submit indicator results to compare performance against targets.</p><button onClick={() => setActiveTab("indicator-data-submission")}>Submit data <ChevronRight size={16} /></button></div>
                   )}
                 </div>
               </div>
@@ -487,11 +488,11 @@ const KeyPerformanceIndicator = () => {
               {/* Pie Breakdown & Breaches */}
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-800 normal-case tracking-tight">Status Breakdown</h4>
-                  <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-0.5">Aggregate values breakdown status</p>
+                  <h4 className="text-sm font-semibold text-slate-800 normal-case tracking-tight">Performance status</h4>
+                  <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-0.5">Status of assessed indicators</p>
                 </div>
                 <div className="h-[180px] my-4 flex items-center justify-center">
-                  {dashboardData.stats?.total > 0 ? (
+                  {(Number(dashboardData.stats?.onTrack || 0) + Number(dashboardData.stats?.atRisk || 0) + Number(dashboardData.stats?.breached || 0)) > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -513,7 +514,7 @@ const KeyPerformanceIndicator = () => {
                       </PieChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="text-[13px] font-semibold text-slate-500 normal-case tracking-normal">No stats</div>
+                    <div className="text-[13px] font-semibold text-slate-500 normal-case tracking-normal">No assessed results yet</div>
                   )}
                 </div>
                 <div className="flex justify-around text-[12px] font-semibold normal-case tracking-normal text-slate-500 border-t border-slate-100 pt-4">
@@ -659,7 +660,7 @@ const KeyPerformanceIndicator = () => {
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   <input 
                     type="text" 
-                    placeholder="Search Indicator Type..."
+                    placeholder="Submission history Type..."
                     value={typeSearch}
                     onChange={(e) => setTypeSearch(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
@@ -752,7 +753,7 @@ const KeyPerformanceIndicator = () => {
         return (
           <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">KPI Notification Master</h3>
+              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">KPI Notifications</h3>
               <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Configure automated alert thresholds and email rules</p>
             </div>
             
@@ -849,7 +850,7 @@ const KeyPerformanceIndicator = () => {
               {/* Breadcrumbs */}
               <div className="flex justify-between items-center text-[12px] font-semibold text-slate-500 normal-case tracking-normal">
                 <span>Indicator Definition Master / Indicator Detail View</span>
-                <span className="text-slate-350">Home / Master Indicator Definition</span>
+                <span className="text-slate-350">Home / Indicator definitions</span>
               </div>
 
               {/* Action Buttons */}
@@ -1137,7 +1138,7 @@ const KeyPerformanceIndicator = () => {
           <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
             {/* Breadcrumbs */}
             <div className="flex justify-between items-center text-[12px] font-semibold text-slate-500 normal-case tracking-normal border-b border-slate-100 pb-3">
-              <span>Master Indicator Definition / Home / KPI Registry</span>
+              <span>Indicator definitions / Home / KPI Registry</span>
             </div>
 
             {/* Action Buttons */}
@@ -1229,7 +1230,7 @@ const KeyPerformanceIndicator = () => {
         return (
           <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Indicator Data Submission</h3>
+              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Submit data</h3>
               <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Submit numerator & denominator values for the current period</p>
             </div>
             
@@ -1510,7 +1511,7 @@ const KeyPerformanceIndicator = () => {
         return (
           <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Search Indicators Registry</h3>
+              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Submission historys Registry</h3>
               <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Lookup historical metrics records</p>
             </div>
             <div>
@@ -1572,44 +1573,29 @@ const KeyPerformanceIndicator = () => {
 
   return (
     <DashboardLayout>
+      <div className="indicator-settings">
       <header className="qc-module-heading">
         <h1>Indicator management</h1>
         <p>Monitor performance, manage indicator definitions and review submissions.</p>
       </header>
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
+      <div className="is-workspace">
         
         {/* Left Side: Submenu Sidebar */}
-        <aside className="qc-module-sidebar w-full lg:w-64 shrink-0 sticky top-24 select-none">
-          <div className="flex items-center gap-3 border-b border-slate-100 pb-5 mb-5">
-            <div className="p-3 bg-[var(--color-primary)] text-white rounded-2xl shadow-lg shadow-none">
-              <BarChart2 className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold text-slate-800 normal-case tracking-tight">KPI Manager</h2>
-              <span className="text-[12px] text-[var(--color-primary)] font-semibold normal-case tracking-normal block mt-0.5">CMC Master Portal</span>
-            </div>
-          </div>
-
-          <nav className="space-y-1">
-            {menuItems.map((item) => {
+        <aside className="is-sidebar">
+          <nav aria-label="Indicator management navigation">
+            <p className="is-nav-label">Workspace</p>
+            {['dashboard', 'master-indicator-definition', 'indicator-data-submission', 'indicator-validation', 'indicator-approval', 'actions', 'search-indicator'].map(id => {
+              const item = menuItems.find(entry => entry.id === id);
               const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  aria-current={isActive ? 'page' : undefined}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-[12px] font-semibold normal-case tracking-normal transition-all text-left ${
-                    isActive 
-                      ? 'qc-module-active'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-[var(--color-primary)]'
-                  }`}
-                >
-                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-[var(--color-primary)]'}`} />
-                  <span>{item.label}</span>
-                </button>
-              );
+              return <button key={id} aria-current={activeTab === id ? 'page' : undefined} onClick={() => setActiveTab(id)} className="is-nav-item"><Icon size={18} /><span>{item.label}</span></button>;
             })}
+            <details className="is-configuration">
+              <summary>Configuration</summary>
+              {menuItems.filter(item => ['indicator-submaster', 'notification-master'].includes(item.id)).map(item => {
+                const Icon = item.icon;
+                return <button key={item.id} aria-current={activeTab === item.id ? 'page' : undefined} onClick={() => setActiveTab(item.id)} className="is-nav-item"><Icon size={18} /><span>{item.label}</span></button>;
+              })}
+            </details>
           </nav>
         </aside>
 
@@ -1620,6 +1606,7 @@ const KeyPerformanceIndicator = () => {
           </div>
         </section>
 
+      </div>
       </div>
     </DashboardLayout>
   );

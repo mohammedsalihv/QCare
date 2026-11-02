@@ -36,4 +36,7 @@ const designationSchema = mongoose.Schema(
   }
 );
 
+designationSchema.index({ title: 1, _id: 1 });
+designationSchema.index({ status: 1, title: 1, _id: 1 });
+
 module.exports = mongoose.model("Designation", designationSchema);

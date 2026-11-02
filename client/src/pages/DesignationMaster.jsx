@@ -1,19 +1,21 @@
+import useServerList from '../hooks/useServerList';
+import ListToolbar from '../components/ListToolbar';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
 import Pagination from '../components/Pagination';
 import { useNotification } from '../components/NotificationContext';
-import { 
-  Plus, 
-  Search, 
-  ChevronRight, 
+import {
+  Plus,
+  Search,
+  ChevronRight,
   Briefcase,
-  FileEdit, 
-  Trash2, 
-  X, 
-  ArrowUpRight, 
+  FileEdit,
+  Trash2,
+  X,
+  ArrowUpRight,
   ShieldCheck,
   CheckCircle2,
   XCircle,
@@ -21,11 +23,11 @@ import {
 } from 'lucide-react';
 
 const DesignationMaster = () => {
-  const [designations, setDesignations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 10;
+  const list = useServerList('/api/designations');
+  const { items: designations, loading } = list;
+  const currentPage = list.page;
+  const recordsPerPage = list.limit;
+  const setCurrentPage = page => list.change({ page });
 
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -50,21 +52,7 @@ const DesignationMaster = () => {
     };
   };
 
-  const fetchDesignations = async () => {
-    try {
-      const { data } = await axios.get('http://192.168.1.160:5000/api/designations', getAuthConfig());
-      setDesignations(data);
-    } catch (err) {
-      console.error('Error fetching designations:', err);
-      showNotification(err.response?.data?.message || 'Error fetching designations', 'danger');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDesignations();
-  }, []);
+  const fetchDesignations = list.refresh;
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -103,8 +91,8 @@ const DesignationMaster = () => {
   const handleDeleteClick = async (id) => {
     if (window.confirm('Are you sure you want to delete this designation?')) {
       try {
-        await axios.delete(`http://192.168.1.160:5000/api/designations/${id}`, getAuthConfig());
-        setDesignations(prev => prev.filter(d => d._id !== id));
+        await axios.delete(`/api/designations/${id}`, getAuthConfig());
+        fetchDesignations();
         showNotification('Designation deleted successfully', 'success');
       } catch (err) {
         console.error('Error deleting designation:', err);
@@ -118,8 +106,8 @@ const DesignationMaster = () => {
     if (!desg) return;
     const newStatus = desg.status === 'Active' ? 'Inactive' : 'Active';
     try {
-      const { data } = await axios.put(`http://192.168.1.160:5000/api/designations/${id}`, { status: newStatus }, getAuthConfig());
-      setDesignations(prev => prev.map(d => d._id === id ? data : d));
+      await axios.put(`/api/designations/${id}`, { status: newStatus }, getAuthConfig());
+      fetchDesignations();
       showNotification(`Designation status updated to ${newStatus}`, 'success');
     } catch (err) {
       console.error('Error updating status:', err);
@@ -131,12 +119,12 @@ const DesignationMaster = () => {
     e.preventDefault();
     try {
       if (isEditing) {
-        const { data } = await axios.put(`http://192.168.1.160:5000/api/designations/${currentDesignation._id}`, formData, getAuthConfig());
-        setDesignations(prev => prev.map(d => d._id === currentDesignation._id ? data : d));
+        await axios.put(`/api/designations/${currentDesignation._id}`, formData, getAuthConfig());
+        fetchDesignations();
         showNotification('Designation updated successfully', 'success');
       } else {
-        const { data } = await axios.post('http://192.168.1.160:5000/api/designations', formData, getAuthConfig());
-        setDesignations(prev => [data, ...prev]);
+        await axios.post('/api/designations', formData, getAuthConfig());
+        fetchDesignations();
         showNotification('Designation created successfully', 'success');
       }
       setShowModal(false);
@@ -147,16 +135,8 @@ const DesignationMaster = () => {
     }
   };
 
-  const filteredDesignations = designations.filter(d => 
-    (d.title || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
-    (d.code || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
-    (d.grade || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (d.description || '').toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const indexOfLastRecord = currentPage * recordsPerPage;
-  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = filteredDesignations.slice(indexOfFirstRecord, indexOfLastRecord);
+  const indexOfFirstRecord = (currentPage - 1) * recordsPerPage;
+  const currentRecords = list.error || loading ? [] : designations;
 
   return (
     <DashboardLayout>
@@ -173,7 +153,7 @@ const DesignationMaster = () => {
             <h1 className="text-2xl font-semibold text-slate-800 tracking-tight">Designation Master</h1>
           </div>
 
-          <button 
+          <button
             onClick={handleAddClick}
             className="flex items-center justify-between gap-4 px-6 py-4 bg-primary hover:bg-primary text-white rounded-md font-semibold transition-all shadow-lg active:scale-95 group text-sm"
           >
@@ -186,23 +166,12 @@ const DesignationMaster = () => {
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/20">
-            <div className="relative w-full sm:w-[400px]">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800 font-semibold" />
-               <input 
-                 type="text" 
-                 placeholder="Search designations by title, code, grade..."
-                 value={searchQuery}
-                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                 className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-[13px] font-semibold"
-               />
-            </div>
-          </div>
-
+          <ListToolbar list={list} searchLabel="Search designations" sorts={[{ value: 'name', label: 'Title' }, { value: 'code', label: 'Code' }, { value: 'grade', label: 'Grade' }, { value: 'updatedAt', label: 'Updated' }]} />
+          {list.error && <div role="alert" className="p-4 text-red-700">{list.error} <button type="button" onClick={list.refresh}>Retry</button></div>}
           <div className="overflow-x-auto">
             <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
               <thead>
-                <tr className="bg-slate-100/50">
+                <tr className="bg-slate-100/50"><th scope="col" className="w-16 px-4 py-3">S/N</th>
                   <th className="w-1/4 px-7 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Designation Title</th>
                   <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Designation Code</th>
                   <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Grade Level</th>
@@ -214,12 +183,13 @@ const DesignationMaster = () => {
               <tbody className="divide-y divide-slate-100">
                 {loading ? (
                   <tr>
-                    <td colSpan="6" className="px-6 py-20 text-center text-[13px] font-semibold text-slate-500">
+                    <td colSpan="7" className="px-6 py-20 text-center text-[13px] font-semibold text-slate-500">
                       Loading designations...
                     </td>
                   </tr>
-                ) : currentRecords.map((desg) => (
+                ) : currentRecords.map((desg, index) => (
                   <tr key={desg._id} className="hover:bg-slate-50/20 transition-colors group">
+                    <td className="px-4 py-3">{indexOfFirstRecord + index + 1}</td>
                     <td className="px-7 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center font-medium text-slate-800 font-semibold text-[12px]">
@@ -241,11 +211,11 @@ const DesignationMaster = () => {
                       <span className="text-[13px] font-medium text-slate-600 line-clamp-1">{desg.description}</span>
                     </td>
                     <td className="px-6 py-4">
-                       <button 
+                       <button
                          onClick={() => toggleStatus(desg._id)}
                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[12px] font-semibold normal-case tracking-normal transition-colors ${
-                           desg.status === 'Active' 
-                           ? 'bg-emerald-50/50 border-emerald-200 text-emerald-600 hover:bg-emerald-100/50' 
+                           desg.status === 'Active'
+                           ? 'bg-emerald-50/50 border-emerald-200 text-emerald-600 hover:bg-emerald-100/50'
                            : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'
                          }`}
                        >
@@ -264,13 +234,13 @@ const DesignationMaster = () => {
                     </td>
                     <td className="px-6 py-4 text-right pr-8">
                        <div className="flex items-center justify-end gap-2.5">
-                          <button 
+                          <button
                             onClick={() => handleEditClick(desg)}
                             className="w-9 h-9 rounded-md border border-slate-200 bg-white text-slate-600 flex items-center justify-center hover:border-slate-800 hover:text-slate-800 transition-all duration-300 active:scale-95 shadow-sm"
                           >
                              <FileEdit className="w-4 h-4" />
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleDeleteClick(desg._id)}
                             className="w-9 h-9 rounded-md border border-slate-200 bg-white text-rose-500 flex items-center justify-center hover:bg-rose-50 hover:border-rose-200 transition-all duration-300 active:scale-95 shadow-sm"
                           >
@@ -280,9 +250,9 @@ const DesignationMaster = () => {
                     </td>
                   </tr>
                 ))}
-                {!loading && currentRecords.length === 0 && (
+                {!loading && !list.error && currentRecords.length === 0 && (
                   <tr>
-                    <td colSpan="6" className="px-6 py-20 text-center">
+                    <td colSpan="7" className="px-6 py-20 text-center">
                       <div className="flex flex-col items-center justify-center gap-3 opacity-30">
                         <Search className="w-10 h-10" />
                         <span className="text-[13px] font-semibold normal-case tracking-normal">No designations registered</span>
@@ -293,12 +263,12 @@ const DesignationMaster = () => {
               </tbody>
             </Table>
           </div>
-          
-          <Pagination 
-            totalRecords={filteredDesignations.length} 
-            recordsPerPage={recordsPerPage} 
-            currentPage={currentPage} 
-            onPageChange={setCurrentPage} 
+
+          <Pagination
+            totalRecords={list.total}
+            recordsPerPage={recordsPerPage}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
           />
         </div>
 
