@@ -1,9 +1,9 @@
 {
   "deployed": true,
-  "backup": "/home/salih/QCare_deploy_backups/audit-1793266895880",
+  "backup": "/home/salih/QCare_deploy_backups/audit-1793361214982",
   "process": "QCare",
   "status": "online",
-  "workflow": "10",
+  "workflow": "13",
   "files": [
     "server/routes/clinicalAuditRoutes.js",
     "server/controllers/clinicalAuditController.js",
@@ -22,7 +22,23 @@
     "server/utils/clinicalAuditNotifications.js",
     "server/utils/notificationVisibility.js",
     "server/utils/seedClinicalAuditTemplates.js",
-    "server/data/clinicalAuditStarterTemplates.js"
+    "server/data/clinicalAuditStarterTemplates.js",
+    "server/utils/workflowNotifications.js",
+    "server/utils/syncWorkflowNotifications.js",
+    "server/controllers/kpiController.js",
+    "server/controllers/qmsController.js",
+    "server/controllers/cpController.js",
+    "server/controllers/incidentController.js",
+    "server/models/ChangeRequest.js",
+    "server/models/ClinicalPrivilege.js",
+    "server/utils/roles.js",
+    "server/models/users.js",
+    "server/middleware/authMiddleware.js",
+    "server/controllers/userController.js",
+    "server/routes/patientExperienceRoutes.js",
+    "server/routes/riskRoutes.js",
+    "server/routes/ooppeRoutes.js",
+    "server/routes/trainingRoutes.js"
   ],
   "health": "API healthy; audit and staff endpoints still require authentication"
 }
