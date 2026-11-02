@@ -79,6 +79,8 @@ io.on("connection", (socket) => {
   });
 });
 
+app.use("/api/clinical-staff-licenses", require("./routes/clinicalStaffLicenseRoutes"));
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -114,6 +116,7 @@ app.get("/", (req, res) => {
 });
 
 databaseReady.then(() => {
+  require('./scheduledJobs/clinicalLicenseReminder').scheduleClinicalLicenseReminders();
   server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });

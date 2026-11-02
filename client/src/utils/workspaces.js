@@ -6,10 +6,10 @@ export const workspaces = [
     ['Incidents', 'incidents'], ['Risk register', 'risks'], ['Patient experience', 'experience'], ['Infection prevention', 'ipc'], ['Medication safety', 'meds'], ['Facilities & safety', 'fms'],
   ] },
   { name: 'Assurance & evidence', description: 'Requirements, documents and readiness', links: [
-    ['Compliance', 'compliance'], ['Evidence & documents', 'documents'], ['Training & competency', 'training'], ['Medical affairs', 'cp'], ['Clinical privileges', 'clinical-privileges'], ['Suppliers', 'supplier'], ['Equipment', 'equipment'],
+    ['Compliance', 'compliance'], ['Evidence & documents', 'documents'], ['Training & competency', 'training'], ['Medical affairs', 'cp'], ['Clinical privileges', 'clinical-privileges'], ['Clinical staff & licences', 'physician-demography'], ['Suppliers', 'supplier'], ['Equipment', 'equipment'],
   ] },
   { name: 'People & administration', description: 'Organization, access and configuration', admin: true, links: [
-    ['People', 'users'], ['Departments', 'departments'], ['Contacts', 'contact-master'], ['Locations', 'location-types'], ['Specialties', 'speciality-master'], ['Designations', 'designation-master'], ['Credentials', 'mall-credential'], ['Physician directory', 'physician-demography'], ['Physician verification', 'physician-demography-verification'], ['Roles', 'application-roles'], ['Assignments', 'user-assignment'], ['Password management', 'password-management'], ['Activity history', 'audit-log'], ['Mail history', 'mail-log'], ['Settings', 'settings'],
+    ['People', 'users'], ['Departments', 'departments'], ['Contacts', 'contact-master'], ['Locations', 'location-types'], ['Specialties', 'speciality-master'], ['Designations', 'designation-master'], ['Credentials', 'mall-credential'], ['Roles', 'application-roles'], ['Assignments', 'user-assignment'], ['Password management', 'password-management'], ['Activity history', 'audit-log'], ['Mail history', 'mail-log'], ['Settings', 'settings'],
   ] },
 ];
 export const workspacePath = (slug) => `/dashboard/${slug}`;
@@ -19,6 +19,7 @@ const searchAliases = {
   documents: 'evidence policy procedure document library',
   capa: 'capa corrective preventive action improvement',
   ipc: 'ipc infection prevention control',
+  'physician-demography': 'doctor nurse allied health clinical staff licence license registration verification renewal',
 };
 export const normalizeToolSearch = (value) => value.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').trim();
 export const matchesToolSearch = (query, label, slug, group = '') => {

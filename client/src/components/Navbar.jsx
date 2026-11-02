@@ -163,8 +163,8 @@ const Navbar = ({ openProfileDrawer, user }) => {
       title: 'Clinical Specialties',
       items: [
         { label: 'Speciality Master', path: '/dashboard/speciality-master', icon: Stethoscope, desc: 'Configure clinical specialties' },
-        { label: 'Physician Demography', path: '/dashboard/physician-demography', icon: UserSquare2, desc: 'Physician license catalog' },
-        { label: 'Profile Verification', path: '/dashboard/physician-demography-verification', icon: FileCheck, desc: 'Auditing queue for physician demography' }
+        { label: 'Clinical staff & licences', path: '/dashboard/physician-demography', icon: UserSquare2, desc: 'Doctors, nurses and allied health licences' },
+        { label: 'Licence verification', path: '/dashboard/physician-demography-verification', icon: FileCheck, desc: 'Review staff licences' }
       ]
     },
     {
