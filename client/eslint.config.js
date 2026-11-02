@@ -1,3 +1,4 @@
+import jsxBindings from './eslint-rules/jsxBindings.js'
 import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -22,7 +23,9 @@ export default defineConfig([
         sourceType: 'module',
       },
     },
+    plugins: { local: { rules: { 'jsx-bindings': jsxBindings } } },
     rules: {
+      'local/jsx-bindings': 'error',
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
   },

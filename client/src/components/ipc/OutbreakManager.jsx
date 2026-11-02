@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldAlert, Users, Calendar, AlertCircle, CheckCircle2, ChevronRight, Bell } from 'lucide-react';
+import { Plus, ShieldAlert, Users, Calendar, AlertCircle, CheckCircle2, ChevronRight, Bell } from 'lucide-react';
 
 const OutbreakManager = ({ outbreaks, onSelect }) => {
   const getStatusBadge = (status) => {
