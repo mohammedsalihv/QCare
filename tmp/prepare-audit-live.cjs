@@ -3,7 +3,7 @@ const path = require('node:path');
 const cp = require('node:child_process');
 const crypto = require('node:crypto');
 const liveRoot = '/home/salih/QCare';
-const folders = ['routes', 'controllers', 'models', 'utils', 'tests', 'assets', 'assets/clinical-audit'];
+const folders = ['middleware', 'routes', 'controllers', 'models', 'utils', 'tests', 'assets', 'assets/clinical-audit'];
 for (const filename of ['/AGENTS.md', '/home/AGENTS.md', '/home/salih/AGENTS.md', liveRoot + '/AGENTS.md', liveRoot + '/server/AGENTS.md', ...folders.map(folder => `${liveRoot}/server/${folder}/AGENTS.md`)]) {
   if (fs.existsSync(filename)) throw new Error('Review applicable instructions before staging: ' + filename + '\n' + fs.readFileSync(filename, 'utf8'));
 }
@@ -30,7 +30,7 @@ for (const [relative, contents] of Object.entries({ ...payload.files, ...payload
 }
 const fromStage = require('node:module').createRequire(stageRoot + '/server/package.json');
 fromStage('./routes/clinicalAuditRoutes');
-const tests = ['server/tests/clinicalAudit.test.js', 'server/tests/clinicalAuditPersistence.test.js'];
+const tests = ['server/tests/clinicalAudit.test.js', 'server/tests/clinicalAuditPersistence.test.js', 'server/tests/kpiSubmission.test.js', 'server/tests/kpiWorkspace.test.js'];
 console.log(cp.execFileSync(process.execPath, ['--test', ...tests], { cwd: stageRoot, env: { ...process.env, QCARE_TEST_MONGOD: '/usr/local/bin/mongod' }, encoding: 'utf8', timeout: 120000, maxBuffer: 2000000 }));
 const manifest = { liveRoot, stageRoot, files, expected, prepared: new Date().toISOString(), process: { name: app.name, id: app.pm_id, cwd: app.pm2_env.pm_cwd } };
 fs.writeFileSync(stageRoot + '/manifest.json', JSON.stringify(manifest, null, 2));
