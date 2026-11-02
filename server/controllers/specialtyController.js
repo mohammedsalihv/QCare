@@ -1,3 +1,4 @@
+const { listQuery } = require('../utils/listQuery');
 const mongoose = require('mongoose');
 const Specialty = require('../models/Specialty');
 const User = require('../models/users');
@@ -28,8 +29,26 @@ async function values(body, existing) {
   return result;
 }
 exports.getSpecialties = async (req, res) => {
-  try { res.json(await populate(Specialty.find().sort({ name: 1 }))); }
-  catch { res.status(500).json({ message: 'Could not load specialties. Please try again.' }); }
+  res.set('Cache-Control', 'no-store');
+  try {
+    // Keep the existing array contract for selectors until they migrate.
+    if (req.query.page === undefined) return res.json(await populate(Specialty.find().sort({ name: 1 })).lean());
+    const options = listQuery(req.query, { sorts: { name: 'nameKey', status: 'status', updatedAt: 'updatedAt' } });
+    const filter = {};
+    if (options.status) filter.status = options.status;
+    if (options.regex) {
+      const heads = await User.find({ employeeName: options.regex }).select('_id').maxTimeMS(3000).lean();
+      filter.$or = [{ name: options.regex }, { head: { $in: heads.map(user => user._id) } }];
+    }
+    const total = await Specialty.countDocuments(filter).maxTimeMS(3000);
+    const page = Math.min(options.page, Math.max(1, Math.ceil(total / options.limit)));
+    const items = await Specialty.find(filter).select('name head status updatedAt').sort(options.sort)
+      .skip((page - 1) * options.limit).limit(options.limit).populate('head', 'employeeName')
+      .maxTimeMS(3000).lean();
+    res.json({ items, total, page, limit: options.limit });
+  } catch (error) {
+    res.status(error.status === 400 ? 400 : 500).json({ message: error.status === 400 ? error.message : 'Could not load specialties. Please try again.' });
+  }
 };
 exports.createSpecialty = async (req, res) => {
   try {

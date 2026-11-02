@@ -65,4 +65,7 @@ const locationSchema = mongoose.Schema(
   }
 );
 
+locationSchema.index({ name: 1, _id: 1 });
+locationSchema.index({ isActive: 1, name: 1, _id: 1 });
+
 module.exports = mongoose.model("Location", locationSchema);

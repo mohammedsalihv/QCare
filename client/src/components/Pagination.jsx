@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 const Pagination = ({ totalRecords, recordsPerPage = 10, currentPage = 1, onPageChange }) => {
   const totalPages = Math.ceil(totalRecords / recordsPerPage);
   
-  if (totalPages <= 1) return null;
+  // Keep record counts visible even for a single page.
 
   const getPageNumbers = () => {
     const pages = [];
@@ -34,13 +34,14 @@ const Pagination = ({ totalRecords, recordsPerPage = 10, currentPage = 1, onPage
   return (
     <div className="p-6 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
       <span className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">
-        Showing {recordsPerPage} items | Total {totalRecords} Records
+        Showing {totalRecords ? (currentPage - 1) * recordsPerPage + 1 : 0}–{Math.min(currentPage * recordsPerPage, totalRecords)} of {totalRecords} records
       </span>
       
       <div className="flex items-center gap-1.5">
         <button 
-          onClick={() => { onPageChange(currentPage - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          disabled={currentPage === 1}
+          onClick={() => { onPageChange(currentPage - 1); }}
+          aria-label="Previous page"
+          disabled={currentPage <= 1}
           className="w-9 h-9 rounded-md border border-slate-200 bg-white flex items-center justify-center text-slate-800 font-semibold hover:text-slate-800 hover:border-slate-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shadow-sm"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -53,7 +54,7 @@ const Pagination = ({ totalRecords, recordsPerPage = 10, currentPage = 1, onPage
             ) : (
               <button
                 key={page}
-                onClick={() => { onPageChange(page); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                onClick={() => { onPageChange(page); }}
                 className={`w-9 h-9 rounded-md text-[12px] font-semibold transition-all active:scale-95 ${
                   currentPage === page 
                   ? 'bg-primary text-white shadow-lg shadow-none' 
@@ -67,8 +68,9 @@ const Pagination = ({ totalRecords, recordsPerPage = 10, currentPage = 1, onPage
         </div>
  
         <button 
-          onClick={() => { onPageChange(currentPage + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          disabled={currentPage === totalPages}
+          onClick={() => { onPageChange(currentPage + 1); }}
+          aria-label="Next page"
+          disabled={currentPage >= totalPages}
           className="w-9 h-9 rounded-md border border-slate-200 bg-white flex items-center justify-center text-slate-800 font-semibold hover:text-slate-800 hover:border-slate-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shadow-sm"
         >
           <ChevronRight className="w-4 h-4" />

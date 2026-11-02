@@ -65,6 +65,13 @@ These are source-code signals, not confirmation that a page meets the standard. 
 
 ## Existing work detected
 
-Uncommitted changes already implement the shared query helper, toolbar, refresh hook and Department/Specialty integrations. Ownership must be confirmed before modifying or committing that work.
+The owner authorized pushing the combined listing work on 2026-11-02. The shared query helper, toolbar, refresh hook and Department, Specialty, Location and Designation integrations are included in this checkpoint. Other modules in this inventory remain pending.
 
 The current refresh hook uses 30-second visible-page polling and focus refresh; this is not server-push real time. The existing Socket.IO server accepts room joins without socket authentication, so it must not be reused for sensitive list events until authenticated room authorization is implemented.
+
+
+## Listing checkpoint — 2026-11-02
+
+Departments, Specialties, Locations and Designations support serial numbers, server-side search, status filtering, allowlisted sorting and bounded pagination. Location and Designation name/status indexes are defined. The shared hook cancels obsolete requests, debounces search, refreshes after mutations and polls visible pages every 30 seconds. This is polling, not server-push real time.
+
+Verification: production client build, targeted ESLint checks, query validation tests, and isolated MongoDB listing/persistence/authorization integration tests. Backend updates must be deployed with the shared server utility before the new client lists can consume paginated responses. This GitHub checkpoint does not deploy the running service.

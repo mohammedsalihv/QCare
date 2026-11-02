@@ -56,12 +56,27 @@ test('specialties persist through rereads and deletions; staff directory uses re
       assert(!('password' in user)); assert(!('email' in user)); assert(!('confirmPassword' in user)); assert(!('role' in user));
     }
     assert.equal((await request('/api/users/directory', inactive)).status, 403);
+    const departmentsPage = await request('/api/departments?page=1&search=Medicine&sortBy=name&status=Active', staff);
+    assert.equal(departmentsPage.status, 200); assert.equal(departmentsPage.body.total, 1);
+    assert.equal(departmentsPage.body.items[0].name, 'Medicine');
+    assert.equal((await request('/api/departments?page=1&limit=101', staff)).status, 400);
+    assert.equal((await request('/api/departments?page=1', null)).status, 401);
     const payload = { name: ' Cardiology ', department: String(department._id), head: String(staff._id), status: 'Active' };
     assert.equal((await request('/api/specialties', staff, 'POST', payload)).status, 403);
     const created = await request('/api/specialties', admin, 'POST', payload);
     assert.equal(created.status, 201); assert.equal(created.body.name, 'Cardiology');
     assert.equal(created.body.head.employeeName, 'Test Doctor');
     const specialtyId = created.body._id;
+    const paged = await request('/api/specialties?page=1&limit=10&search=Card&status=Active&sortBy=name&direction=desc', staff);
+    assert.equal(paged.status, 200); assert.equal(paged.body.total, 1); assert.equal(paged.body.items[0].name, 'Cardiology');
+    assert.equal((await request('/api/specialties?page=1&search=Test%20Doctor', staff)).body.total, 1);
+    assert.equal((await request('/api/specialties?page=1&search=.*', staff)).body.total, 0, 'Search treats regex syntax literally');
+    assert.equal((await request('/api/specialties?page=99', staff)).body.page, 1);
+    for (const query of ['page=0', 'page=1&limit=101', 'page=1&sortBy=password', 'page=1&direction=bad', 'page=1&status=bad', 'page=1&search[x]=y']) {
+      assert.equal((await request('/api/specialties?' + query, staff)).status, query.includes('search[x]') ? 200 : 400);
+    }
+    assert.equal((await request('/api/specialties?page=1', null)).status, 401);
+
     assert(await Specialty.findById(specialtyId), 'Create must write to MongoDB');
     const reread = await request('/api/specialties', staff);
     assert.equal(reread.body.length, 1); assert.equal(reread.body[0].name, 'Cardiology');

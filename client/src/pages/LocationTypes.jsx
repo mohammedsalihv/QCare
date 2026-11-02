@@ -1,3 +1,5 @@
+import useServerList from '../hooks/useServerList';
+import ListToolbar from '../components/ListToolbar';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -6,15 +8,15 @@ import DashboardLayout from '../components/DashboardLayout';
 import Pagination from '../components/Pagination';
 import Dropdown from '../components/Dropdown';
 import { useNotification } from '../components/NotificationContext';
-import { 
-  Plus, 
-  Search, 
-  ChevronRight, 
-  MapPin, 
-  FileEdit, 
-  Trash2, 
-  X, 
-  ArrowUpRight, 
+import {
+  Plus,
+  Search,
+  ChevronRight,
+  MapPin,
+  FileEdit,
+  Trash2,
+  X,
+  ArrowUpRight,
   ShieldCheck
 } from 'lucide-react';
 
@@ -24,18 +26,18 @@ const statusOptions = [
 ];
 
 const LocationTypes = () => {
-  const [locations, setLocations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 10;
+  const list = useServerList('/api/locations');
+  const { items: locations, loading } = list;
+  const currentPage = list.page;
+  const recordsPerPage = list.limit;
+  const setCurrentPage = page => list.change({ page });
 
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentLocation, setCurrentLocation] = useState(null);
   const navigate = useNavigate();
   const { showNotification, confirm } = useNotification();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const isAdmin = ['admin', 'superadmin'].includes(JSON.parse(localStorage.getItem('userInfo') || '{}').role?.toLowerCase());
 
   const [formData, setFormData] = useState({
     name: '',
@@ -45,12 +47,7 @@ const LocationTypes = () => {
 
   useEffect(() => {
     const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
-      const { role } = JSON.parse(userInfo);
-      setIsAdmin(!!role?.toLowerCase().includes('admin'));
-    } else {
-      navigate('/');
-    }
+    if (!userInfo) navigate('/');
   }, [navigate]);
 
   const getAuthConfig = () => {
@@ -62,21 +59,7 @@ const LocationTypes = () => {
     };
   };
 
-  const fetchLocations = async () => {
-    try {
-      setLoading(true);
-      const { data } = await axios.get('http://192.168.1.160:5000/api/locations', getAuthConfig());
-      setLocations(data);
-    } catch (err) {
-      console.error('Error fetching locations:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchLocations();
-  }, []);
+  const fetchLocations = list.refresh;
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -115,7 +98,7 @@ const LocationTypes = () => {
       type: 'danger',
       onConfirm: async () => {
         try {
-          await axios.delete(`http://192.168.1.160:5000/api/locations/${id}`, getAuthConfig());
+          await axios.delete(`/api/locations/${id}`, getAuthConfig());
           showNotification('Location removed successfully', 'success');
           fetchLocations();
         } catch (err) {
@@ -125,28 +108,14 @@ const LocationTypes = () => {
     });
   };
 
-  const toggleStatus = async (loc) => {
-    try {
-      const updatedStatus = !loc.isActive;
-      await axios.put(`http://192.168.1.160:5000/api/locations/${loc._id}`, {
-        ...loc,
-        isActive: updatedStatus
-      }, getAuthConfig());
-      showNotification(`Location marked as ${updatedStatus ? 'Active' : 'Inactive'}`, 'success');
-      fetchLocations();
-    } catch (err) {
-      showNotification('Error updating status', 'error');
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (isEditing) {
-        await axios.put(`http://192.168.1.160:5000/api/locations/${currentLocation._id}`, formData, getAuthConfig());
+        await axios.put(`/api/locations/${currentLocation._id}`, formData, getAuthConfig());
         showNotification('Location details updated successfully', 'success');
       } else {
-        await axios.post('http://192.168.1.160:5000/api/locations', formData, getAuthConfig());
+        await axios.post('/api/locations', formData, getAuthConfig());
         showNotification('New hospital zone published successfully', 'success');
       }
       setShowModal(false);
@@ -156,14 +125,8 @@ const LocationTypes = () => {
     }
   };
 
-  const filteredLocations = locations.filter(l => 
-    (l.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
-    (l.code || '').toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const indexOfLastRecord = currentPage * recordsPerPage;
-  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = filteredLocations.slice(indexOfFirstRecord, indexOfLastRecord);
+  const indexOfFirstRecord = (currentPage - 1) * recordsPerPage;
+  const currentRecords = list.error || loading ? [] : locations;
 
   return (
     <DashboardLayout>
@@ -181,7 +144,7 @@ const LocationTypes = () => {
           </div>
 
           {isAdmin && (
-            <button 
+            <button
               onClick={handleAddClick}
               className="flex items-center justify-between gap-4 px-6 py-4 bg-primary hover:bg-primary text-white rounded-md font-semibold transition-all shadow-lg active:scale-95 group text-sm"
             >
@@ -195,19 +158,8 @@ const LocationTypes = () => {
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/20">
-            <div className="relative w-full sm:w-[400px]">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-800" />
-               <input 
-                 type="text" 
-                 placeholder="Search locations by name or code..."
-                 value={searchQuery}
-                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                 className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-[13px] font-semibold"
-               />
-            </div>
-          </div>
-
+          <ListToolbar list={list} searchLabel="Search locations" sorts={[{ value: 'name', label: 'Name' }, { value: 'code', label: 'Code' }, { value: 'updatedAt', label: 'Updated' }]} />
+          {list.error && <div role="alert" className="p-4 text-red-700">{list.error} <button type="button" onClick={list.refresh}>Retry</button></div>}
           <div className="overflow-x-auto">
             <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
 <thead>
@@ -270,7 +222,7 @@ const LocationTypes = () => {
                     </td>
                   </tr>
                 ))}
-                {currentRecords.length === 0 && (
+                {!list.error && currentRecords.length === 0 && (
                   <tr>
                     <td colSpan="7" className="px-6 py-20 text-center">
                       <div className="flex flex-col items-center justify-center gap-3 opacity-30">
@@ -285,12 +237,12 @@ const LocationTypes = () => {
               </tbody>
             </Table>
           </div>
-          
-          <Pagination 
-            totalRecords={filteredLocations.length} 
-            recordsPerPage={recordsPerPage} 
-            currentPage={currentPage} 
-            onPageChange={setCurrentPage} 
+
+          <Pagination
+            totalRecords={list.total}
+            recordsPerPage={recordsPerPage}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
           />
         </div>
 
@@ -316,7 +268,7 @@ const LocationTypes = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
- 
+
               <form onSubmit={handleSubmit} className="p-8 pb-12 space-y-8 bg-white">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-1.5">

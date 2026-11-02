@@ -1,14 +1,24 @@
+const { listQuery } = require('../utils/listQuery');
 const Department = require("../models/department");
 
 // @desc    Get all departments
 // @route   GET /api/departments
 // @access  Private
 const getDepartments = async (req, res) => {
+  res.set('Cache-Control', 'no-store');
   try {
-    const departments = await Department.find({});
-    res.json(departments);
+    if (req.query.page === undefined) return res.json(await Department.find({}).lean());
+    const options = listQuery(req.query, { sorts: { name: 'name', head: 'head', location: 'location', updatedAt: 'updatedAt' } });
+    const filter = {};
+    if (options.status) filter.isActive = options.status === 'Active';
+    if (options.regex) filter.$or = ['name', 'head', 'location'].map(field => ({ [field]: options.regex }));
+    const total = await Department.countDocuments(filter).maxTimeMS(3000);
+    const page = Math.min(options.page, Math.max(1, Math.ceil(total / options.limit)));
+    const items = await Department.find(filter).select('name code head location isActive updatedAt').sort(options.sort)
+      .skip((page - 1) * options.limit).limit(options.limit).maxTimeMS(3000).lean();
+    res.json({ items, total, page, limit: options.limit });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(error.status === 400 ? 400 : 500).json({ message: error.status === 400 ? error.message : 'Could not load departments. Please try again.' });
   }
 };
 

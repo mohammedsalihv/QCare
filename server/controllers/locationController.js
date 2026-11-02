@@ -1,3 +1,4 @@
+const { listQuery } = require('../utils/listQuery');
 const Location = require("../models/Location");
 
 // @desc    Get all locations
@@ -5,10 +6,20 @@ const Location = require("../models/Location");
 // @access  Private
 const getLocations = async (req, res) => {
   try {
-    const locations = await Location.find({});
-    res.json(locations);
+    res.set('Cache-Control', 'no-store');
+    // Keep legacy selectors compatible; record tables explicitly request a page.
+    if (req.query.page === undefined) return res.json(await Location.find({}).lean());
+    const options = listQuery(req.query, { sorts: {"name":"name","code":"code","updatedAt":"updatedAt"} });
+    const filter = {};
+    if (options.status) filter.isActive = options.status === 'Active';
+    if (options.regex) filter.$or = ["name","code","createdBy"].map(field => ({ [field]: options.regex }));
+    const total = await Location.countDocuments(filter).maxTimeMS(3000);
+    const page = Math.min(options.page, Math.max(1, Math.ceil(total / options.limit)));
+    const items = await Location.find(filter).select('name code isActive createdBy createdAt updatedAt').sort(options.sort)
+      .skip((page - 1) * options.limit).limit(options.limit).maxTimeMS(3000).lean();
+    res.json({ items, total, page, limit: options.limit });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(error.status === 400 ? 400 : 500).json({ message: error.status === 400 ? error.message : 'Could not load locations. Please try again.' });
   }
 };
 
