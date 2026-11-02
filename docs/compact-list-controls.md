@@ -1,6 +1,6 @@
 # Compact list controls
 
-ListToolbar now shares compact search, status, sort, direction, page size and refresh controls. Clinical staff and licence history reuse the same toolbar, including their profession/status options. Compact dropdown tooltips and accessible names include the selected value; a small dot marks selections different from the first option.
+ListToolbar now shares compact search, status, sort, direction, page size controls. Clinical staff and licence history reuse the same toolbar, including their profession/status options. Compact dropdown tooltips and accessible names include the selected value; a small dot marks selections different from the first option.
 
 CompactSearch replaces page-level list search fields across administration, audit, clinical privileges, documents, incidents, JAWDA, KPI, logs, feedback, risks and staff pages. Click its icon to type; empty searches collapse on blur, and the close action clears the current search. Existing change handlers, pagination resets and API queries are preserved.
 
@@ -8,4 +8,4 @@ Select provides both normal form fields and compact list triggers, with the same
 
 Validation: production client build; no new ESLint violations against the existing baseline across the modified JSX screens; source audit of native select usage. Visible browser review remains unavailable because Computer Use could not determine the current Chrome URL on Windows. The local Vite session picks up the source changes; hosted frontend publication requires deploying the client build.
 
-Right alignment and action colours: shared list toolbars align controls at the right edge, with wrapping preserved on small screens. Existing flex filter rows containing the compact controls use the same alignment. Search is blue; filters amber; profession teal; sort purple; direction indigo; page size sky blue; refresh green; export cyan. Tooltips and accessible names remain available so colour is supplementary. Active dropdown borders and dots use their action colour.
+Right alignment and neutral styling: shared list toolbars align controls at the right edge, with wrapping on small screens. Controls use uniform dark charcoal icons with slightly heavier strokes, white backgrounds, light neutral borders and subtle grey hover states. Active dropdowns retain a dark border and dot. The manual refresh button has been removed; existing automatic list refresh remains active.
