@@ -3,8 +3,9 @@ import { Search, X, Filter, ArrowUpDown, Download, RefreshCw, SlidersHorizontal 
 
 export function IconAction({ label, ...props }) {
   delete props.children;
+  const controlKind = /refresh|reload/i.test(label) ? 'refresh' : /export|download/i.test(label) ? 'export' : /sort/i.test(label) ? 'sort' : /search/i.test(label) ? 'search' : 'filter';
   const Icon = /refresh|reload/i.test(label) ? RefreshCw : /export|download/i.test(label) ? Download : /sort/i.test(label) ? ArrowUpDown : /search/i.test(label) ? Search : /criteria|advanced/i.test(label) ? SlidersHorizontal : Filter;
-  return <button {...props} type={props.type || 'button'} className={`qc-icon-action ${props.className || ''}`} title={label} aria-label={label}><Icon size={17} aria-hidden="true" /></button>;
+  return <button {...props} data-control={controlKind} type={props.type || 'button'} className={`qc-icon-action ${props.className || ''}`} title={label} aria-label={label}><Icon size={17} aria-hidden="true" /></button>;
 }
 
 export default function CompactSearch(inputProps) {
