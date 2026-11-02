@@ -174,8 +174,7 @@ function Login() {
       <div className={`w-full flex items-center justify-center p-4 sm:p-6 transition-all duration-1000 ease-in-out ${mounted ? 'opacity-100' : 'opacity-0'}`}>
         <div className="w-full max-w-md lg:max-w-[940px] bg-white rounded-2xl shadow-2xl flex overflow-hidden relative">
           
-          <div className="hidden lg:flex flex-col w-5/12 bg-mesh relative p-8 text-white overflow-hidden justify-between">
-            <div className="absolute inset-0 bg-black/20 z-0"></div>
+          <div className="hidden lg:flex flex-col w-5/12 qc-login-brand-panel relative p-8 text-white overflow-hidden justify-between">
             
             <div className="relative z-10 flex items-center gap-3 slide-up" style={{ animationDelay: '0.1s' }}>
               <div className="qc-login-logo"><img src={qcareLogo} alt="QCare" width="150" height="50" /></div>
@@ -192,15 +191,15 @@ function Login() {
               
               <div className="mt-6 space-y-3 text-[13px]">
                 <div className="flex items-center gap-3 text-white/85 font-medium">
-                  <CheckCircle className="text-[var(--color-primary)]" size={20} />
+                  <CheckCircle className="text-teal-200" size={20} />
                   <span>Measure what matters</span>
                 </div>
                 <div className="flex items-center gap-3 text-white/85 font-medium">
-                  <CheckCircle className="text-[var(--color-primary)]" size={20} />
+                  <CheckCircle className="text-teal-200" size={20} />
                   <span>Learn from every incident</span>
                 </div>
                 <div className="flex items-center gap-3 text-white/85 font-medium">
-                  <CheckCircle className="text-[var(--color-primary)]" size={20} />
+                  <CheckCircle className="text-teal-200" size={20} />
                   <span>Keep evidence and actions together</span>
                 </div>
               </div>
