@@ -30,8 +30,8 @@ const createDesignation = async (req, res) => {
   try {
     const { title, code, grade, description, status } = req.body;
 
-    if (!title || !code || !grade || !description) {
-      return res.status(400).json({ message: "Please fill in all required fields" });
+    if (!title || !code) {
+      return res.status(400).json({ message: "Please provide a designation title and code" });
     }
 
     const designationExists = await Designation.findOne({
@@ -45,8 +45,8 @@ const createDesignation = async (req, res) => {
     const designation = await Designation.create({
       title: title.trim(),
       code: code.trim().toUpperCase(),
-      grade: grade.trim(),
-      description: description.trim(),
+      grade: typeof grade === "string" ? grade.trim() : "",
+      description: typeof description === "string" ? description.trim() : "",
       status: status || "Active",
     });
 

@@ -80,8 +80,8 @@ const DesignationMaster = () => {
     setFormData({
       title: desg.title,
       code: desg.code,
-      grade: desg.grade,
-      description: desg.description,
+      grade: desg.grade || '',
+      description: desg.description || '',
       status: desg.status
     });
     setIsEditing(true);
@@ -205,10 +205,10 @@ const DesignationMaster = () => {
                        </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-[13px] font-semibold text-slate-700">{desg.grade}</span>
+                      <span className="text-[13px] font-semibold text-slate-700">{desg.grade || 'N/A'}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-[13px] font-medium text-slate-600 line-clamp-1">{desg.description}</span>
+                      <span className="text-[13px] font-medium text-slate-600 line-clamp-1">{desg.description || 'N/A'}</span>
                     </td>
                     <td className="px-6 py-4">
                        <button
@@ -306,8 +306,8 @@ const DesignationMaster = () => {
                     <input name="code" value={formData.code} onChange={handleInputChange} required placeholder="e.g. RN-SPEC" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800 font-mono" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Grade Level</label>
-                    <input name="grade" value={formData.grade} onChange={handleInputChange} required placeholder="e.g. Grade 7" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
+                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Grade Level (optional)</label>
+                    <input name="grade" value={formData.grade} onChange={handleInputChange} placeholder="e.g. Grade 7" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Status</label>
@@ -317,8 +317,8 @@ const DesignationMaster = () => {
                     </Select>
                   </div>
                   <div className="col-span-2 space-y-1.5">
-                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Job Description</label>
-                    <textarea name="description" value={formData.description} onChange={handleInputChange} required rows={3} placeholder="Describe the responsibilities and scope of this role..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800 resize-none" />
+                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Job Description (optional)</label>
+                    <textarea name="description" value={formData.description} onChange={handleInputChange} rows={3} placeholder="Describe the responsibilities and scope of this role..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800 resize-none" />
                   </div>
                 </div>
 

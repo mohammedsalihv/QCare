@@ -17,12 +17,12 @@ const designationSchema = mongoose.Schema(
     },
     grade: {
       type: String,
-      required: [true, "Please add a grade level"],
+      default: "",
       trim: true,
     },
     description: {
       type: String,
-      required: [true, "Please add a job description"],
+      default: "",
       trim: true,
     },
     status: {
