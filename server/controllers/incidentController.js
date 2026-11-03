@@ -1,3 +1,5 @@
+const { randomUUID } = require('node:crypto');
+const { validateIncidentReport } = require('../utils/incidentReport');
 const Incident = require("../models/Incident");
 const Notification = require("../models/Notification");
 
@@ -8,21 +10,22 @@ const createIncident = async (req, res) => {
   try {
     const { title, description, category, location, dateOfIncident, severity } = req.body;
 
-    // Generate unique ID starting with CMCINC
-    const count = await Incident.countDocuments();
-    const incidentId = `CMCINC-${(count + 1).toString().padStart(4, '0')}`;
+    const details = await validateIncidentReport(req.body, req.files || []);
+    const incidentId = 'INC-' + randomUUID().toUpperCase();
 
     const incident = await Incident.create({
+      ...details,
       incidentId,
       title,
       description,
       category,
-      location,
+      location: details.location || location,
       dateOfIncident,
       severity,
       reportedBy: req.user._id,
     });
 
+    try {
     // Create Persistent Notification for Admins
     await Notification.create({
       type: "incident_report",
@@ -54,9 +57,15 @@ const createIncident = async (req, res) => {
       });
     }
 
-    res.status(201).json(incident);
+    for (const recipientId of details.notifyStaff) {
+      await Notification.create({ type:'incident_report', message:'You have been notified about incident ' + incidentId, user:req.user.employeeName, userId:req.user._id, actionLink:'/dashboard/incidents',recipientRole:'user',recipientId });
+      req.io?.to(String(recipientId)).emit('new-notification', {type:'incident_report'});
+    }
+    } catch { console.error('Incident saved, but notification delivery failed for ' + incidentId); }
+    const result = incident.toObject(); result.attachments = result.attachments.map(({data,...metadata})=>metadata);
+    res.status(201).json(result);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(error.status || 500).json({ message: error.status ? error.message : "Could not complete incident request." });
   }
 };
 
@@ -70,11 +79,12 @@ const getIncidents = async (req, res) => {
     // If not admin/superadmin, only show own reported incidents
     const roleLower = req.user.role?.toLowerCase();
     if (roleLower !== "admin" && roleLower !== "superadmin") {
-      query = { reportedBy: req.user._id };
+      query = { $or: [{reportedBy:req.user._id},{notifyStaff:req.user._id}] };
     }
 
-    const incidents = await Incident.find(query)
+    const incidents = await Incident.find(query).select("-attachments.data")
       .populate("reportedBy", "employeeName employeeId department")
+      .populate("involvedStaff notifyStaff", "employeeName employeeId")
       .sort({ createdAt: -1 });
 
     res.json(incidents);

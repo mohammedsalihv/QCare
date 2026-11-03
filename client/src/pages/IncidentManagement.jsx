@@ -1,3 +1,5 @@
+import IncidentReportDetails from '../components/IncidentReportDetails';
+import IncidentReportFields from '../components/IncidentReportFields';
 import CompactSearch from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
@@ -38,8 +40,11 @@ const IncidentManagement = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(searchParams.get('action') === 'new');
   const [submitting, setSubmitting] = useState(false);
+  const [reportFiles, setReportFiles] = useState([]);
   const closeReport = () => {
     setShowModal(false);
+    setReportFiles([]);
+    setFormData({title:'',description:'',category:'Clinical',location:'',dateOfIncident:'',severity:'Low'});
     if (searchParams.has('action')) {
       const next = new URLSearchParams(searchParams);
       next.delete('action');
@@ -118,12 +123,17 @@ const IncidentManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
+    if (!formData.dateOfIncident || new Date(formData.dateOfIncident)>new Date()) return showNotification('Select a valid past date and time.', 'error');
+    if (formData.notifyChoice==='Yes' && !formData.notifyStaff?.length) return showNotification('Select at least one staff member to notify.', 'error');
+    if (reportFiles.length>5 || reportFiles.reduce((n,f)=>n+f.size,0)>12*1024*1024) return showNotification('Attach up to 5 files, at most 12 MB combined.', 'error');
     setSubmitting(true);
     try {
-      await axios.post('http://192.168.1.160:5000/api/incidents', formData, {
+      const payload = new FormData(); payload.append('payload',JSON.stringify(formData)); reportFiles.forEach(file=>payload.append('attachments',file));
+      const { data: saved } = await axios.post('/api/incidents', payload, {
         headers: { Authorization: `Bearer ${loggedInUser.token}` }
       });
-      showNotification('Incident reported successfully', 'success');
+      showNotification('Incident reported: ' + saved.incidentId, 'success');
+      setReportFiles([]);
       closeReport();
       
       const reportedSeverity = formData.severity;
@@ -410,30 +420,7 @@ const IncidentManagement = () => {
                 />
               </div>
 
-              <div className="col-span-1">
-                <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2 ml-1">Location / Unit</label>
-                <input 
-                  type="text" name="location" required value={formData.location} onChange={handleInputChange}
-                  className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm font-semibold text-slate-800 shadow-inner-sm"
-                  placeholder="e.g., Emergency Room"
-                />
-              </div>
-
-              <div className="col-span-1">
-                <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2 ml-1">Date & Time of Incident</label>
-                <div className="relative">
-                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-primary)] pointer-events-none z-10" />
-                  <input 
-                    type="datetime-local" 
-                    name="dateOfIncident" 
-                    required 
-                    value={formData.dateOfIncident} 
-                    onChange={handleInputChange}
-                    max={new Date().toISOString().split('.')[0].slice(0, 16)}
-                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800 appearance-none shadow-inner-sm"
-                  />
-                </div>
-              </div>
+              <IncidentReportFields form={formData} setForm={setFormData} files={reportFiles} setFiles={setReportFiles}/>
 
               <div className="col-span-1">
                 <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2 ml-1">Initial Severity</label>
@@ -496,6 +483,7 @@ const IncidentManagement = () => {
                 </div>
               </div>
 
+              <IncidentReportDetails incident={selectedIncident}/>
               {isAdmin ? (
                 <form onSubmit={handleUpdateIncident} className="space-y-6 pt-6 border-t border-slate-100">
                   <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Admin Investigation & Actions</h4>
