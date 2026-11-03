@@ -38,8 +38,6 @@ const DesignationMaster = () => {
   const [formData, setFormData] = useState({
     title: '',
     code: '',
-    grade: '',
-    description: '',
     status: 'Active'
   });
 
@@ -62,8 +60,6 @@ const DesignationMaster = () => {
     setFormData({
       title: '',
       code: '',
-      grade: '',
-      description: '',
       status: 'Active'
     });
     setIsEditing(false);
@@ -80,8 +76,6 @@ const DesignationMaster = () => {
     setFormData({
       title: desg.title,
       code: desg.code,
-      grade: desg.grade || '',
-      description: desg.description || '',
       status: desg.status
     });
     setIsEditing(true);
@@ -166,16 +160,16 @@ const DesignationMaster = () => {
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <ListToolbar list={list} searchLabel="Search designations" sorts={[{ value: 'name', label: 'Title' }, { value: 'code', label: 'Code' }, { value: 'grade', label: 'Grade' }, { value: 'updatedAt', label: 'Updated' }]} />
+          <ListToolbar list={list} searchLabel="Search designations" sorts={[{ value: 'name', label: 'Title' }, { value: 'code', label: 'Code' }, { value: 'updatedAt', label: 'Updated' }]} />
           {list.error && <div role="alert" className="p-4 text-red-700">{list.error} <button type="button" onClick={list.refresh}>Retry</button></div>}
           <div className="overflow-x-auto">
-            <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
+            <Table className="w-full text-left border-collapse min-w-[640px]">
               <thead>
                 <tr className="bg-slate-100/50"><th scope="col" className="w-16 px-4 py-3">S/N</th>
                   <th className="w-1/4 px-7 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Designation Title</th>
                   <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Designation Code</th>
-                  <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Grade Level</th>
-                  <th className="w-1/3 px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Job Description</th>
+
+
                   <th className="px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200">Status</th>
                   <th className="w-36 px-6 py-5 text-[12px] font-semibold text-slate-800 tracking-normal border-b-2 border-slate-200 text-right pr-8">Actions</th>
                 </tr>
@@ -183,7 +177,7 @@ const DesignationMaster = () => {
               <tbody className="divide-y divide-slate-100">
                 {loading ? (
                   <tr>
-                    <td colSpan="7" className="px-6 py-20 text-center text-[13px] font-semibold text-slate-500">
+                    <td colSpan="5" className="px-6 py-20 text-center text-[13px] font-semibold text-slate-500">
                       Loading designations...
                     </td>
                   </tr>
@@ -203,12 +197,6 @@ const DesignationMaster = () => {
                           <Hash className="w-3.5 h-3.5 text-slate-500" />
                           <span className="text-[13px] font-semibold text-[var(--color-primary)] font-mono">{desg.code}</span>
                        </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-[13px] font-semibold text-slate-700">{desg.grade || 'N/A'}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-[13px] font-medium text-slate-600 line-clamp-1">{desg.description || 'N/A'}</span>
                     </td>
                     <td className="px-6 py-4">
                        <button
@@ -252,7 +240,7 @@ const DesignationMaster = () => {
                 ))}
                 {!loading && !list.error && currentRecords.length === 0 && (
                   <tr>
-                    <td colSpan="7" className="px-6 py-20 text-center">
+                    <td colSpan="5" className="px-6 py-20 text-center">
                       <div className="flex flex-col items-center justify-center gap-3 opacity-30">
                         <Search className="w-10 h-10" />
                         <span className="text-[13px] font-semibold normal-case tracking-normal">No designations registered</span>
@@ -287,7 +275,7 @@ const DesignationMaster = () => {
                       <h3 className="text-xl font-semibold text-slate-800 tracking-tight">
                         {isEditing ? 'Modify Designation Profile' : 'Establish Corporate Designation'}
                       </h3>
-                      <p className="text-[13px] text-slate-500 font-medium tracking-tight">Setup staff role hierarchy and grades</p>
+                      <p className="text-[13px] text-slate-500 font-medium tracking-tight">Manage designation title, code and status</p>
                    </div>
                 </div>
                 <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-xl hover:bg-slate-50 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-all border border-slate-100 shadow-sm active:scale-95">
@@ -306,19 +294,11 @@ const DesignationMaster = () => {
                     <input name="code" value={formData.code} onChange={handleInputChange} required placeholder="e.g. RN-SPEC" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800 font-mono" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Grade Level (optional)</label>
-                    <input name="grade" value={formData.grade} onChange={handleInputChange} placeholder="e.g. Grade 7" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800" />
-                  </div>
-                  <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Status</label>
                     <Select name="status" value={formData.status} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800">
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
                     </Select>
-                  </div>
-                  <div className="col-span-2 space-y-1.5">
-                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Job Description (optional)</label>
-                    <textarea name="description" value={formData.description} onChange={handleInputChange} rows={3} placeholder="Describe the responsibilities and scope of this role..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800 resize-none" />
                   </div>
                 </div>
 
