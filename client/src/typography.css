@@ -94,3 +94,11 @@ strong, b { font-weight:650; }
 .qc-feature-drawer footer :is(a,button) { font-size:12px; font-weight:500; }
 @media(pointer:coarse) { .qc-feature-drawer .qc-directory-links a, .qc-feature-drawer footer :is(a,button) { min-height:44px; } }
 @media(max-width:600px) { .qc-feature-drawer .qc-directory-search input { font-size:16px; } }
+
+/* Compact designation register typography. */
+.qc-main .qc-designations h1 { font-size:22px; }
+.qc-main .qc-designations :is(td,td span,td button,label,input,.qc-select-button) { font-size:12px; }
+.qc-main .qc-designations .qc-table th { font-size:11px!important; }
+.qc-main .qc-designations > div:first-child button { font-size:12px; padding:10px 16px; }
+.qc-main .qc-designations .qc-table td { padding-top:12px; padding-bottom:12px; }
+@media(max-width:600px) { .qc-main .qc-designations input { font-size:16px; } }

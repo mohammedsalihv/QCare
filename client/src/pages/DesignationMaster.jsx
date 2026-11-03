@@ -30,6 +30,7 @@ const DesignationMaster = () => {
   const setCurrentPage = page => list.change({ page });
 
   const [showModal, setShowModal] = useState(false);
+  const [statusSaving, setStatusSaving] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentDesignation, setCurrentDesignation] = useState(null);
 
@@ -95,18 +96,26 @@ const DesignationMaster = () => {
     } });
   };
 
-  const toggleStatus = async (id) => {
+  const toggleStatus = (id) => {
     const desg = designations.find(d => d._id === id);
-    if (!desg) return;
+    if (!desg || statusSaving) return;
     const newStatus = desg.status === 'Active' ? 'Inactive' : 'Active';
-    try {
-      await axios.put(`/api/designations/${id}`, { status: newStatus }, getAuthConfig());
-      fetchDesignations();
-      showNotification(`Designation status updated to ${newStatus}`, 'success');
-    } catch (err) {
-      console.error('Error updating status:', err);
-      showNotification(err.response?.data?.message || 'Error updating status', 'danger');
-    }
+    confirm({
+      title: newStatus === 'Inactive' ? 'Deactivate designation?' : 'Activate designation?',
+      message: 'Change ' + desg.title + ' from ' + desg.status + ' to ' + newStatus + '?',
+      confirmLabel: newStatus === 'Inactive' ? 'Deactivate' : 'Activate',
+      type: newStatus === 'Inactive' ? 'warning' : 'info',
+      onConfirm: async () => {
+        setStatusSaving(id);
+        try {
+          await axios.put('/api/designations/' + id, { status: newStatus }, getAuthConfig());
+          fetchDesignations();
+          showNotification('Designation status updated to ' + newStatus, 'success');
+        } catch (err) {
+          showNotification(err.response?.data?.message || 'Error updating status', 'danger');
+        } finally { setStatusSaving(null); }
+      },
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -134,7 +143,7 @@ const DesignationMaster = () => {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col gap-8">
+      <div className="qc-designations flex flex-col gap-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-[12px] font-semibold text-slate-800 normal-case tracking-normal mb-1">
@@ -201,6 +210,8 @@ const DesignationMaster = () => {
                     <td className="px-6 py-4">
                        <button
                          onClick={() => toggleStatus(desg._id)}
+                         disabled={statusSaving !== null}
+                         aria-label={"Change status for " + desg.title + ": currently " + desg.status}
                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[12px] font-semibold normal-case tracking-normal transition-colors ${
                            desg.status === 'Active'
                            ? 'bg-emerald-50/50 border-emerald-200 text-emerald-600 hover:bg-emerald-100/50'
