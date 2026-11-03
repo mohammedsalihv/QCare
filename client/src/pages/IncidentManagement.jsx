@@ -48,7 +48,7 @@ const IncidentManagement = () => {
   };
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState(null);
-  const { showNotification } = useNotification();
+  const { showNotification, confirm } = useNotification();
   
   // Options for Dropdowns
   const categoryOptions = [
@@ -144,10 +144,10 @@ const IncidentManagement = () => {
       // Auto-trigger Risk identification prompt for serious incidents
       if (reportedSeverity === 'High' || reportedSeverity === 'Critical') {
         setTimeout(() => {
-          if (window.confirm(`This incident has ${reportedSeverity} severity. Would you like to identify this as a new Risk in the Risk Register?`)) {
+          confirm({ title: "Identify a new risk?", message: `This incident has ${reportedSeverity} severity. Would you like to identify this as a new Risk in the Risk Register?`, confirmLabel: "Open risk register", cancelLabel: "Not now", onConfirm: () => {
             // Pre-fill risk data and navigate to risk creation (simulated for now by navigating)
             window.location.href = `/dashboard/risks?action=new&title=${encodeURIComponent(reportedTitle)}&desc=${encodeURIComponent(reportedDesc)}&dept=${encodeURIComponent(reportedDept)}&impact=4`;
-          }
+          } });
         }, 1000);
       }
     } catch (error) {

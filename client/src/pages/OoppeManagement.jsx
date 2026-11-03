@@ -1,3 +1,4 @@
+import { useNotification } from '../components/NotificationContext';
 import Table from '../components/Table.jsx';
 // OOPPE Management Page
 // ------------------------------------------------------------
@@ -12,6 +13,7 @@ import { getAuthConfig } from "../utils/authConfig";
 import OoppeForm from "../components/OoppeForm";
 
 const OoppeManagement = () => {
+  const { confirm } = useNotification();
   const [oopps, setOopps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,8 +67,8 @@ const OoppeManagement = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this record?")) return;
+  const handleDelete = (id) => {
+    confirm({ title: "Delete OOPPE record?", message: "Are you sure you want to delete this record?", type: "danger", confirmLabel: "Delete record", onConfirm: async () => {
     try {
       await axios.delete(`http://192.168.1.160:5000/api/ooppe/${id}`, getAuthConfig());
       setOopps((prev) => prev.filter((item) => item._id !== id));
@@ -74,6 +76,7 @@ const OoppeManagement = () => {
       console.error(err);
       setError("Failed to delete OOPPE record");
     }
+    } });
   };
 
   const openEdit = (item) => {

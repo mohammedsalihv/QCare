@@ -1,3 +1,4 @@
+import { useNotification } from '../components/NotificationContext';
 import CompactSearch from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
@@ -26,6 +27,7 @@ import {
 } from 'lucide-react';
 
 const KPIMonitor = () => {
+  const { confirm, showNotification } = useNotification();
   const [kpis, setKpis] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -129,15 +131,15 @@ const KPIMonitor = () => {
     setShowModal(true);
   };
 
-  const handleDeleteClick = async (id) => {
-    if (window.confirm('Are you sure you want to delete this KPI?')) {
+  const handleDeleteClick = (id) => {
+    confirm({ title: 'Delete KPI?', message: 'Are you sure you want to delete this KPI?', type: 'danger', confirmLabel: 'Delete KPI', onConfirm: async () => {
       try {
         await axios.delete(`http://192.168.1.160:5000/api/kpis/${id}`, getAuthConfig());
         fetchData();
       } catch (err) {
-        alert(err.response?.data?.message || 'Error deleting KPI');
+        showNotification(err.response?.data?.message || 'Error deleting KPI', 'danger');
       }
-    }
+    } });
   };
 
   const handleSubmit = async (e) => {

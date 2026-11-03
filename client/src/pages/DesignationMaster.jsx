@@ -33,7 +33,7 @@ const DesignationMaster = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentDesignation, setCurrentDesignation] = useState(null);
 
-  const { showNotification } = useNotification();
+  const { showNotification, confirm } = useNotification();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -88,8 +88,8 @@ const DesignationMaster = () => {
     setShowModal(true);
   };
 
-  const handleDeleteClick = async (id) => {
-    if (window.confirm('Are you sure you want to delete this designation?')) {
+  const handleDeleteClick = (id) => {
+    confirm({ title: 'Delete designation?', message: 'Are you sure you want to delete this designation?', type: 'danger', confirmLabel: 'Delete designation', onConfirm: async () => {
       try {
         await axios.delete(`/api/designations/${id}`, getAuthConfig());
         fetchDesignations();
@@ -98,7 +98,7 @@ const DesignationMaster = () => {
         console.error('Error deleting designation:', err);
         showNotification(err.response?.data?.message || 'Error deleting designation', 'danger');
       }
-    }
+    } });
   };
 
   const toggleStatus = async (id) => {
