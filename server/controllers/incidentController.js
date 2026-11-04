@@ -75,7 +75,7 @@ const createIncident = async (req, res) => {
 // @access  Private
 const getIncidents = async (req, res) => {
   try {
-    let query = require("../utils/incidentWorkflow").accessQuery(req.user);
+    const query = { $and: [require("../utils/incidentWorkflow").accessQuery(req.user), { isDemo: { $ne: true } }] };
 
     const incidents = await Incident.find(query).select("-attachments.data")
       .populate("reportedBy", "employeeName employeeId department")

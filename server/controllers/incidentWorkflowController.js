@@ -7,6 +7,7 @@ const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const done = ['Closed', 'Rejected', 'Duplicate'];
 function filters(user, params) {
   const clauses = [accessQuery(user)];
+  clauses.push(params.demo === 'only' ? { isDemo: true } : { isDemo: { $ne: true } });
   const queues = {
     acceptance: ['Pending', 'Needs clarification'],
     investigations: ['Accepted', 'Investigating', 'Reopened'],
@@ -65,6 +66,7 @@ async function command(req, res) {
     await row.save();
     // Delivery is best effort and must never turn a saved mutation into a retryable failure.
     try {
+      if (row.isDemo) throw new Error('Demo: notifications intentionally suppressed');
       const recipients = new Set([row.reportedBy, row.assignedTo, ...row.actions.map(a => a.owner)].filter(Boolean).map(String));
       recipients.delete(String(req.user._id));
       if (row.status === 'Closure review') await Notification.create({ type: 'system_alert', message: `Incident ${row.incidentId} awaits closure review.`, user: req.user.employeeName || 'Staff', userId: req.user._id, recipientRoles: ['admin', 'superadmin', 'qualitymanager'], actionLink: `/dashboard/incidents/${row._id}` });
@@ -72,7 +74,7 @@ async function command(req, res) {
         await Notification.create({ type: 'system_alert', message: `Incident ${row.incidentId}: ${row.status}`, user: req.user.employeeName || 'Staff', userId: req.user._id, recipientRole: 'user', recipientId, actionLink: `/dashboard/incidents/${row._id}` });
         req.io?.to(recipientId).emit('new-notification', { type: 'system_alert' });
       }
-    } catch { console.error('Incident workflow notification delivery failed for ' + row.incidentId); }
+    } catch { if (!row.isDemo) console.error('Incident workflow notification delivery failed for ' + row.incidentId); }
     await populate(row); res.json(row);
   } catch (error) { respondError(res, error); }
 }

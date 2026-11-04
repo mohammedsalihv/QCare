@@ -12,6 +12,7 @@ import '../components/incidentWorkflow.css';
 
 const statuses = ['Pending', 'Needs clarification', 'Accepted', 'Investigating', 'Action in progress', 'Closure review', 'Closed', 'Rejected', 'Duplicate', 'Reopened', 'Resolved'];
 const views = {
+  training: ['Dummy incidents', 'Fictional records for practising the workflow. Excluded from live incident totals; no staff notifications are sent.'],
   '': ['All incidents', 'Download any individual report here, or open it to see the next step.'],
   acceptance: ['Acceptance & triage', 'Review new reports, request clarification and assign an investigator.'],
   investigations: ['Investigations & risk', 'Record findings, root causes, operational impact and measures to prevent recurrence.'],
@@ -22,7 +23,7 @@ const views = {
   reports: ['Reports & downloads', 'Filter the register below, then download a summary or the matching records.']
 };
 export default function IncidentRegister({ view = '' }) {
-  const [query, setQuery] = useState({ search: '', status: '', sortBy: 'createdAt', direction: 'desc', limit: 10, page: 1, scope: view === 'mine' ? 'mine' : '', overdue: view === 'overdue' ? 'yes' : '', queue: ['acceptance', 'investigations', 'actions', 'approvals'].includes(view) ? view : '' });
+  const [query, setQuery] = useState({ demo: view === 'training' ? 'only' : '', search: '', status: '', sortBy: 'createdAt', direction: 'desc', limit: 10, page: 1, scope: view === 'mine' ? 'mine' : '', overdue: view === 'overdue' ? 'yes' : '', queue: ['acceptance', 'investigations', 'actions', 'approvals'].includes(view) ? view : '' });
   const [result, setResult] = useState({ rows: [], total: 0 });
   const [loading, setLoading] = useState(true), [error, setError] = useState(''), [exporting, setExporting] = useState(false);
   const [revision, setRevision] = useState(0);

@@ -75,3 +75,11 @@ The demo is read-only training content, served through authenticated `/api/incid
 The management summary now uses the shared CMC clinical audit layout, with aligned count tables, Dubai generation time, page numbers and an explicit empty state. The Report incident hover/focus styling is isolated from ordinary navigation links. Demo loading errors include a retry control and explain when the server route is unavailable.
 
 Verified with the production build, targeted lint, incident and audit integration tests, and rendered summary PDFs. Live deployment of the PDF/demo release remains blocked pending explicit approval to update the backend and restart QCare; a GitHub push alone does not activate these endpoints.
+
+## Editable dummy incident
+
+Reviewers can use **Create / open my dummy incident** in the walkthrough. The authenticated `POST /api/incidents/demo/practice` endpoint creates one fictional Pending incident per reviewer and returns the same record on subsequent requests without resetting progress. The **Dummy incidents** menu lists training records; each opens the existing workflow and supports its own PDF. The read-only walkthrough remains available separately.
+
+Training records are marked `isDemo`, excluded from normal registers, CSV/summary exports, legacy lists and dashboard totals, and suppress workflow notifications. Existing role, participant access and independent closure checks still apply. Integration checks cover concurrent creation, repeat opening, live/training separation, access boundaries, notification suppression and PDF generation. Existing workspace demo flags and notification protections are incorporated in this module.
+
+The live server has not been updated: deployment and creation of the requested dummy record await explicit approval to update and restart QCare.

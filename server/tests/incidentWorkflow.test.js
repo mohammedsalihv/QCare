@@ -108,6 +108,26 @@ test('incident lifecycle, role boundaries, concurrency, evidence and exports', {
     assert.equal((await fetch(url, { headers: headers(reporter) })).status, 200);
     await command(reviewer, 'reopen', { reason: 'New evidence received' }); assert.equal(row.status, 'Reopened');
     assert.equal((await fetch(url, { headers: headers(outsider) })).status, 404);
+    // Dummy incidents persist for practice but stay outside live lists and notifications.
+    assert.equal((await fetch(base + '/demo/practice', { method: 'POST', headers: headers(reporter) })).status, 403);
+    const noticesBeforePractice = await Notification.countDocuments();
+    const practice = async () => { const response = await fetch(base + '/demo/practice', { method: 'POST', headers: headers(reviewer) }); assert.equal(response.status, 200); return response.json(); };
+    const [dummy, repeated] = await Promise.all([practice(), practice()]);
+    assert.equal(dummy._id, repeated._id); assert.equal(dummy.isDemo, true); assert.equal(dummy.status, 'Pending');
+    assert.equal(await Incident.countDocuments({ isDemo: true }), 1);
+    assert.equal((await (await fetch(base + '/register', { headers: headers(reviewer) })).json()).total, 1);
+    assert.equal((await (await fetch(base, { headers: headers(reviewer) })).json()).length, 1);
+    const training = await (await fetch(base + '/register?demo=only', { headers: headers(reviewer) })).json();
+    assert.equal(training.total, 1); assert.equal(training.rows[0]._id, dummy._id);
+    assert.equal((await fetch(base + '/' + dummy._id, { headers: headers(outsider) })).status, 404);
+    const accepted = await fetch(base + '/' + dummy._id + '/workflow', { method: 'POST', headers: headers(reviewer), body: JSON.stringify({ command: 'accept', version: dummy.__v, assignedTo: investigator._id, investigationDue: '2026-12-01', riskLevel: 'High' }) });
+    assert.equal(accepted.status, 200); assert.equal((await accepted.json()).status, 'Accepted');
+    assert.equal((await practice()).status, 'Accepted', 'Opening again must preserve progress');
+    assert.equal(await Notification.countDocuments(), noticesBeforePractice, 'Dummy workflow must not notify real staff');
+    assert(!(await (await fetch(base + '/export', { headers: headers(reviewer) })).text()).includes('DEMO-PRACTICE'));
+    assert((await (await fetch(base + '/export?demo=only', { headers: headers(reviewer) })).text()).includes('DEMO-PRACTICE'));
+    const dummyPdf = await fetch(base + '/' + dummy._id + '/report.pdf', { headers: headers(reviewer) });
+    assert.equal(dummyPdf.status, 200); assert.equal(Buffer.from(await dummyPdf.arrayBuffer()).subarray(0, 5).toString(), '%PDF-');
   } finally {
     if (server) await new Promise(resolve => server.close(resolve));
     await mongoose.disconnect(); database.kill(); await exited;

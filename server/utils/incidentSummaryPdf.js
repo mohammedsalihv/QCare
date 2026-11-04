@@ -4,7 +4,7 @@ module.exports = function incidentSummaryPdf({ statuses, risks, categories, over
   const selected = ['queue', 'search', 'status', 'category', 'riskLevel', 'location', 'department', 'scope', 'overdue', 'from', 'to']
     .filter(key => filters[key]).map(key => `${key}: ${filters[key]}`).join('\n');
   return governanceReport({
-    title: 'Incident management summary', reference: 'INCIDENT-SUMMARY', reportLabel: 'INCIDENT SUMMARY REPORT',
+    title: 'Incident management summary', reference: 'INCIDENT-SUMMARY', reportLabel: filters.demo === 'only' ? 'DUMMY INCIDENT SUMMARY - TRAINING ONLY' : 'INCIDENT SUMMARY REPORT',
     status: 'Management summary', approvalText: 'Current saved records',
     metrics: [[String(total), 'Total incidents'], [String(overdue), 'With overdue work'], [String(statuses.find(row => row._id === 'Closed')?.count || 0), 'Closed incidents']],
     ...options,
