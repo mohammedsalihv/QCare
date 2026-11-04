@@ -72,6 +72,7 @@
 .iw-sidebar a:hover,.iw-sidebar nav button:hover { background:#f5f7f9; }
 .iw-sidebar [aria-current] { background:#edf5f4; color:#0f665e; border-color:#d4e7e3; font-weight:650; }
 .iw-sidebar .iw-new-report { background:#0f766e; color:#fff; margin:0 0 14px; justify-content:center; font-weight:600; }
+.iw-sidebar .iw-new-report:hover,.iw-sidebar .iw-new-report:focus-visible { background:#115e59; color:#fff; }
 .iw-sidebar a:focus-visible,.iw-sidebar button:focus-visible { outline:2px solid #0f766e; outline-offset:2px; }
 .iw-sidebar nav button:disabled { opacity:.45; cursor:wait; }
 .iw-record-menu { border-top:1px solid #e6ebef; margin-top:14px; padding-top:12px; }
