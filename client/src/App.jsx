@@ -99,6 +99,7 @@ function App() {
           <Route path="/dashboard/departments" element={<DepartmentMaster/>} />
           <Route path="/dashboard/kpi" element={<IndicatorWorkspace/>} />
           <Route path="/dashboard/incidents" element={<IncidentManagement/>} />
+          <Route path="/dashboard/incidents/new" element={<IncidentManagement reportPage/>} />
           <Route path="/notifications" element={<Notifications/>} />
           <Route path="/dashboard/settings" element={<SystemSettings/>} />
           <Route path="/dashboard/support" element={<HelpDesk/>} />

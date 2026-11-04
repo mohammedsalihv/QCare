@@ -1,69 +1,49 @@
 import IncidentReportDetails from '../components/IncidentReportDetails';
-import IncidentReportFields from '../components/IncidentReportFields';
+import IncidentReportPage from '../components/IncidentReportPage';
 import CompactSearch from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { useNotification } from '../components/NotificationContext';
 import Dropdown from '../components/Dropdown';
 import { 
-  AlertTriangle, 
   Plus, 
-  Search, 
   Filter, 
   ChevronRight, 
   Calendar, 
   MapPin, 
-  User, 
   ShieldAlert,
   Clock,
   CheckCircle2,
-  AlertCircle,
   X,
   FileText,
   Eye,
   Settings2,
-  Activity,
-  Shield,
-  Briefcase,
-  Wrench,
-  HelpCircle,
   Flag,
   ArrowUpRight
 } from 'lucide-react';
 
-const IncidentManagement = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+const IncidentManagement = ({ reportPage = false }) => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(searchParams.get('action') === 'new');
+  useEffect(() => { if (searchParams.get('action') === 'new') navigate('/dashboard/incidents/new', { replace: true }); }, [searchParams, navigate]);
   const [submitting, setSubmitting] = useState(false);
   const [reportFiles, setReportFiles] = useState([]);
   const closeReport = () => {
-    setShowModal(false);
+    navigate('/dashboard/incidents');
     setReportFiles([]);
     setFormData({title:'',description:'',category:'Clinical',location:'',dateOfIncident:'',severity:'Low'});
-    if (searchParams.has('action')) {
-      const next = new URLSearchParams(searchParams);
-      next.delete('action');
-      setSearchParams(next, { replace: true });
-    }
+
   };
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState(null);
   const { showNotification, confirm } = useNotification();
   
   // Options for Dropdowns
-  const categoryOptions = [
-    { label: 'Clinical', value: 'Clinical', icon: Activity },
-    { label: 'Safety', value: 'Safety', icon: Shield },
-    { label: 'Administrative', value: 'Administrative', icon: Briefcase },
-    { label: 'Technical', value: 'Technical', icon: Wrench },
-    { label: 'Other', value: 'Other', icon: HelpCircle },
-  ];
-
   const severityOptions = [
     { label: 'Low', value: 'Low', icon: Flag },
     { label: 'Medium', value: 'Medium', icon: Flag },
@@ -100,12 +80,12 @@ const IncidentManagement = () => {
   const isAdmin = loggedInUser.role?.toLowerCase() === 'admin' || loggedInUser.role?.toLowerCase() === 'superadmin';
 
   useEffect(() => {
-    fetchIncidents();
-  }, []);
+    if (!reportPage) fetchIncidents();
+  }, [reportPage]);
 
   const fetchIncidents = async () => {
     try {
-      const { data } = await axios.get('http://192.168.1.160:5000/api/incidents', {
+      const { data } = await axios.get('/api/incidents', {
         headers: { Authorization: `Bearer ${loggedInUser.token}` }
       });
       setIncidents(data);
@@ -116,9 +96,6 @@ const IncidentManagement = () => {
     }
   };
 
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -212,6 +189,8 @@ const IncidentManagement = () => {
     }
   };
 
+  if (reportPage) return <DashboardLayout><IncidentReportPage form={formData} setForm={setFormData} files={reportFiles} setFiles={setReportFiles} onSubmit={handleSubmit} onCancel={closeReport} busy={submitting}/></DashboardLayout>;
+
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-8">
@@ -231,7 +210,7 @@ const IncidentManagement = () => {
           </div>
           
           <button 
-            onClick={() => setShowModal(true)}
+            onClick={() => navigate('/dashboard/incidents/new')}
             className="flex items-center justify-between gap-4 px-6 py-4 bg-primary hover:bg-primary text-white rounded-md font-semibold transition-all shadow-lg shadow-none active:scale-95 group text-sm"
           >
              <div className="flex items-center gap-3">
@@ -381,75 +360,6 @@ const IncidentManagement = () => {
           </div>
         </div>
       </div>
-
-      {/* Report Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" />
-          <div role="dialog" aria-modal="true" aria-labelledby="report-incident-title" className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92dvh] overflow-y-auto">
-            <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)] flex items-center justify-center text-slate-800 font-semibold shadow-lg shadow-[var(--color-primary)]/30">
-                  <AlertCircle className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 id="report-incident-title" className="text-xl font-semibold text-slate-800">Report an incident</h3>
-                  <p className="text-[13px] text-slate-500 mt-1">Capture the facts now. Your team can follow up.</p>
-                </div>
-              </div>
-              <button disabled={submitting} aria-label="Close incident report" onClick={closeReport} className="p-2 rounded-xl hover:bg-white hover:shadow-sm text-slate-800 transition-all"><X className="w-6 h-6" /></button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-6 grid grid-cols-1 md:grid-cols-3 gap-x-5 gap-y-4">
-              <div className="md:col-span-3">
-                <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2 ml-1">Incident Title / Summary</label>
-                <input 
-                  type="text" name="title" required value={formData.title} onChange={handleInputChange}
-                  className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm font-semibold text-slate-800 shadow-inner-sm"
-                  placeholder="e.g., Medication Error at Ward 4"
-                />
-              </div>
-              
-              <div className="col-span-1">
-                <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2 ml-1">Category</label>
-                <Dropdown 
-                  options={categoryOptions}
-                  value={formData.category}
-                  onSelect={(val) => setFormData({ ...formData, category: val })}
-                  fullWidth
-                />
-              </div>
-
-              <IncidentReportFields form={formData} setForm={setFormData} files={reportFiles} setFiles={setReportFiles}/>
-
-              <div className="col-span-1">
-                <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2 ml-1">Initial Severity</label>
-                <Dropdown 
-                  options={severityOptions}
-                  value={formData.severity}
-                  onSelect={(val) => setFormData({ ...formData, severity: val })}
-                  fullWidth
-                />
-              </div>
-
-              <div className="md:col-span-3">
-                <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal block mb-2 ml-1">Detailed Description & Immediate Actions</label>
-                <textarea 
-                  name="description" required value={formData.description} onChange={handleInputChange} rows="4"
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-sm font-semibold text-slate-800 resize-none shadow-inner-sm"
-                  placeholder="Provide a clear and detailed account of the incident..."
-                ></textarea>
-              </div>
-
-              <div className="md:col-span-3 pt-6 border-t border-slate-100">
-                <button type="submit" disabled={submitting} className="w-full py-4 bg-primary text-white rounded-md text-sm font-semibold transition-all shadow-lg shadow-none hover:bg-primary active:scale-[0.98]">
-                  {submitting ? 'Submitting…' : 'Submit incident'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* View/Update Modal */}
       {showViewModal && selectedIncident && (
