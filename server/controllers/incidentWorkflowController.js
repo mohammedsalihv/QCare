@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const PDFDocument = require('pdfkit');
 const Incident = require('../models/Incident');
 const Notification = require('../models/Notification');
 const { accessQuery, applyCommand, record, fail } = require('../utils/incidentWorkflow');
@@ -122,20 +121,8 @@ async function summaryPdf(req, res) {
       Incident.countDocuments(filters(req.user, { ...req.query, overdue: 'yes' })),
       Incident.countDocuments(query)
     ]);
-    const doc = new PDFDocument({ margin: 45, size: 'A4' }), chunks = [];
-    const completed = new Promise((resolve, reject) => { doc.on('data', c => chunks.push(c)); doc.on('end', resolve); doc.on('error', reject); });
-    doc.fontSize(20).text('QCare | Incident summary').moveDown();
-    doc.fontSize(10).text('Generated: ' + new Date().toISOString()).text('Scope: incidents accessible to the requesting user.');
-    const filterText = ['queue', 'search', 'status', 'category', 'riskLevel', 'scope', 'overdue', 'from', 'to'].filter(key => req.query[key]).map(key => `${key}: ${req.query[key]}`).join('; ');
-    doc.text('Filters: ' + (filterText || 'All accessible incidents')).moveDown();
-    doc.fontSize(13).text(`Total incidents: ${total}`).text(`Incidents with overdue work: ${overdue}`);
-    for (const [title, rows] of [['By status', statuses], ['By assessed risk', risks], ['By category', categories]]) {
-      doc.moveDown().fontSize(13).text(title).moveDown(.4);
-      rows.forEach(row => doc.fontSize(10).text(`${row._id || 'Not assessed'}: ${row.count}`));
-    }
-    doc.moveDown().fontSize(9).text('Counts reflect current saved records, not the number of events or affected people. Overdue excludes closed, rejected and duplicate incidents.');
-    doc.end(); await completed;
-    res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': 'attachment; filename="incident-summary.pdf"', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' }).send(Buffer.concat(chunks));
+    const report = await require('../utils/incidentSummaryPdf')({ statuses, risks, categories, overdue, total, filters: req.query });
+    res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': 'attachment; filename="incident-summary.pdf"', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' }).send(report);
   } catch (error) { respondError(res, error); }
 }
 module.exports = { list, detail, command, evidence, exportCsv, pdf, summaryPdf, accessQuery };

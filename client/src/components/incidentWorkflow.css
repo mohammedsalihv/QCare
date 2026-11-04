@@ -69,10 +69,10 @@
 .iw-sidebar-title small { display:block; color:#72808e; font-size:10px; font-weight:400; margin-top:5px; }
 .iw-sidebar a,.iw-sidebar nav button { display:flex; align-items:center; gap:9px; font-size:12px; line-height:1.4; text-decoration:none; color:#344253; border:1px solid transparent; border-radius:7px; padding:10px; width:100%; text-align:left; background:transparent; margin:2px 0; }
 .iw-sidebar svg { flex-shrink:0; }
-.iw-sidebar a:hover,.iw-sidebar nav button:hover { background:#f5f7f9; }
+.iw-sidebar nav a:hover,.iw-sidebar nav button:hover { background:#f5f7f9; }
 .iw-sidebar [aria-current] { background:#edf5f4; color:#0f665e; border-color:#d4e7e3; font-weight:650; }
 .iw-sidebar .iw-new-report { background:#0f766e; color:#fff; margin:0 0 14px; justify-content:center; font-weight:600; }
-.iw-sidebar .iw-new-report:hover,.iw-sidebar .iw-new-report:focus-visible { background:#115e59; color:#fff; }
+.iw-workspace .iw-sidebar a.iw-new-report:is(:hover,:focus-visible,:active) { background:#115e59; color:#fff; border-color:#115e59; }
 .iw-sidebar a:focus-visible,.iw-sidebar button:focus-visible { outline:2px solid #0f766e; outline-offset:2px; }
 .iw-sidebar nav button:disabled { opacity:.45; cursor:wait; }
 .iw-record-menu { border-top:1px solid #e6ebef; margin-top:14px; padding-top:12px; }

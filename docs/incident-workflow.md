@@ -69,3 +69,9 @@ Incident PDFs use the same shared CMC report renderer as clinical audits: the lo
 Select **Demo walkthrough** in Incident Management, or **Explore a demo incident from report to closure** above the register. The fictional medicine-storage near miss explains seven steps, responsible roles, example decisions and completion evidence. Previous/next controls and step buttons let users explore the complete flow, with a sample PDF available from the demo header.
 
 The demo is read-only training content, served through authenticated `/api/incidents/demo/example` and `/api/incidents/demo/report.pdf` routes. It creates no incident, staff or notification records and never contributes to live register totals. Live workflow permissions, approvals and independent closure requirements are unchanged.
+
+## Summary layout and hover correction
+
+The management summary now uses the shared CMC clinical audit layout, with aligned count tables, Dubai generation time, page numbers and an explicit empty state. The Report incident hover/focus styling is isolated from ordinary navigation links. Demo loading errors include a retry control and explain when the server route is unavailable.
+
+Verified with the production build, targeted lint, incident and audit integration tests, and rendered summary PDFs. Live deployment of the PDF/demo release remains blocked pending explicit approval to update the backend and restart QCare; a GitHub push alone does not activate these endpoints.

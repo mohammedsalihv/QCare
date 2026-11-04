@@ -6,20 +6,20 @@ import { incidentDownload } from '../utils/incidentDownload';
 import { useNotification } from './NotificationContext';
 
 export default function IncidentDemo() {
-  const [data, setData] = useState(null), [error, setError] = useState(''), [busy, setBusy] = useState(false), [step, setStep] = useState(0);
+  const [data, setData] = useState(null), [error, setError] = useState(''), [busy, setBusy] = useState(false), [step, setStep] = useState(0), [revision, setRevision] = useState(0);
   const { showNotification } = useNotification();
   useEffect(() => {
     const controller = new AbortController();
-    axios.get('/api/incidents/demo/example', { ...getAuthConfig(), signal: controller.signal }).then(({ data }) => setData(data)).catch(e => { if (!controller.signal.aborted) setError(e.response?.data?.message || 'Unable to load the demo. Reload to try again.'); });
+    axios.get('/api/incidents/demo/example', { ...getAuthConfig(), signal: controller.signal }).then(({ data }) => setData(data)).catch(e => { if (!controller.signal.aborted) setError(e.response?.status === 404 ? 'The demo is not available on this server yet. The incident backend update must be deployed.' : e.response?.data?.message || 'Unable to load the demo. Please try again.'); });
     return () => controller.abort();
-  }, []);
+  }, [revision]);
   const download = async () => {
     setBusy(true);
     try { await incidentDownload('/api/incidents/demo/report.pdf', 'DEMO-INC-001.pdf'); }
     catch (e) { showNotification(e.message, 'error'); }
     finally { setBusy(false); }
   };
-  if (!data) return <div className="iw-page"><p role={error ? 'alert' : 'status'}>{error || 'Loading demo incident…'}</p></div>;
+  if (!data) return <div className="iw-page"><p role={error ? 'alert' : 'status'}>{error || 'Loading demo incident…'}</p>{error && <button className="iw-secondary" onClick={() => { setError(''); setRevision(value => value + 1); }}>Retry demo</button>}</div>;
   const current = data.steps[step];
   return <div className="iw-page">
     <header className="iw-heading"><div><span className="ir-eyebrow">DEMO · TRAINING ONLY</span><h1>{data.row.title}</h1><p>{data.row.incidentId} · Fictional example of a completed incident</p></div><button className="iw-secondary" disabled={busy} onClick={download}><Download size={16}/>{busy ? 'Downloading…' : 'Download demo PDF'}</button></header>
