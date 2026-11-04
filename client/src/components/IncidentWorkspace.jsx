@@ -5,6 +5,7 @@ import './incidentWorkflow.css';
 
 const links = [
   ['', 'All incidents', ClipboardList],
+  ['demo', 'Demo walkthrough', ClipboardList],
   ['acceptance', 'Acceptance & triage', Inbox],
   ['investigations', 'Investigations & risk', SearchCheck],
   ['actions', 'Actions & follow-up', ListChecks],

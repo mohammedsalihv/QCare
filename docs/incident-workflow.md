@@ -49,7 +49,7 @@ Sidebar navigation asks before discarding unsaved report or investigation entrie
 - Upload up to five files per request, with a maximum of 20 attachments and 12 MB combined per incident. Existing report creation still accepts up to five initial files. Extension allowlisting is not malware scanning.
 - Report IDs and old records are preserved. Old Pending records go through triage. Old Resolved records need assignment, documented root cause/actions and verified closure. Historical records cannot reconstruct approvals that were never stored.
 - The legacy arbitrary status PATCH is replaced by validated workflow commands; old frontend builds must be updated to use this workflow.
-- PDF uses the existing PDFKit standard fonts. Complex-script typography requires a separately licensed/approved embedded font before claiming full multilingual PDF support.
+- Incident PDFs embed the same DejaVu fonts as the clinical audit report. Complex-script shaping has not been validated.
 
 ## Verification and rollout
 
@@ -59,3 +59,13 @@ Sidebar navigation asks before discarding unsaved report or investigation entrie
 - Live authenticated register and summary PDF return 200; anonymous register requests return 401.
 - Frontend changes are in the local project used by the Vite portal. The separate hosted frontend build has not been published by this change.
 - Visual review in the owner's visible browser remains unverified because browser access was unavailable.
+
+## Individual reports and training walkthrough
+
+Every row in the incident register and its filtered queues has a **PDF** button. The incident workspace also retains **Download PDF**, available at every saved status, including pending reports. Access remains limited to authorized incident participants and quality reviewers.
+
+Incident PDFs use the same shared CMC report renderer as clinical audits: the logo, fonts, red/navy palette, numbered bordered tables, repeating headers, confidentiality footer and page numbers. Long narratives continue across pages. Reports include the overview, investigation and risk, actions and completion evidence, closure, comments, attachment metadata and history; attachment files are downloaded separately.
+
+Select **Demo walkthrough** in Incident Management, or **Explore a demo incident from report to closure** above the register. The fictional medicine-storage near miss explains seven steps, responsible roles, example decisions and completion evidence. Previous/next controls and step buttons let users explore the complete flow, with a sample PDF available from the demo header.
+
+The demo is read-only training content, served through authenticated `/api/incidents/demo/example` and `/api/incidents/demo/report.pdf` routes. It creates no incident, staff or notification records and never contributes to live register totals. Live workflow permissions, approvals and independent closure requirements are unchanged.

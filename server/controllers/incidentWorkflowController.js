@@ -109,28 +109,9 @@ async function exportCsv(req, res) {
 async function pdf(req, res) {
   try {
     const row = await load(req); await populate(row);
-    const doc = new PDFDocument({ margin: 45, size: 'A4', info: { Title: `Incident ${row.incidentId}` } });
-    const chunks = [];
-    const completed = new Promise((resolve, reject) => { doc.on('data', chunk => chunks.push(chunk)); doc.on('end', resolve); doc.on('error', reject); });
-    const section = title => { doc.moveDown().font('Helvetica-Bold').fontSize(13).fillColor('#0f766e').text(title).moveDown(.4); doc.fillColor('#1e293b').font('Helvetica').fontSize(10); };
-    const field = (label, value) => doc.text(`${label}: ${value || 'Not recorded'}`, { lineGap: 3 }).moveDown(.3);
-    doc.fontSize(20).text('QCare | Incident report');
-    field('Reference', row.incidentId); field('Title', row.title); field('Status', row.status);
-    field('Generated', new Date().toISOString());
-    section('Overview');
-    for (const [label, value] of [['Branch', row.location], ['Department', row.department], ['Area / room', row.areaRoom], ['Category', row.category], ['Incident date', row.dateOfIncident?.toISOString()], ['Reported by', row.reportedBy?.employeeName], ['Description', row.description], ['Harm level', row.harmLevel], ['Immediate actions', row.immediateActions], ['Involved staff', row.involvedStaff.map(u => u.employeeName).join(', ')], ['Witnesses', row.witnesses]]) field(label, value);
-    section('Investigation and risk');
-    for (const [label, value] of [['Investigator', row.assignedTo?.employeeName], ['Deadline', row.investigationDue?.toISOString()], ['Initial severity', row.severity], ['Assessed risk', row.riskLevel], ['Likelihood', row.likelihood], ['Potential consequence', row.potentialConsequence], ['Operational impact', row.operationalImpact], ['Temporary controls', row.temporaryControls], ['Findings', row.findings], ['Root cause', row.rootCause], ['Contributing factors', row.contributingFactors], ['Actions already taken', row.actionsTaken]]) field(label, value);
-    section('Corrective and preventive actions');
-    row.actions.forEach((a, i) => { field(`${i + 1}. ${a.kind}`, a.title); field('Owner / deadline', `${a.owner?.employeeName} / ${a.dueDate?.toISOString().slice(0, 10)}`); field('Success criteria', a.successCriteria); field('Completion evidence', a.completion); field('Completed', a.completedAt?.toISOString()); });
-    section('Closure and effectiveness');
-    for (const [label, value] of [['Summary', row.closureSummary], ['Effectiveness', row.effectiveness], ['Evidence', row.effectivenessEvidence], ['Review date', row.effectivenessDate?.toISOString()], ['Residual risk', row.residualRisk], ['Approved by', row.closedBy?.employeeName], ['Closed', row.closedAt?.toISOString()]]) field(label, value);
-    section('Comments and statements'); row.comments.forEach(c => field(`${c.kind} · ${c.authorName} · ${c.at.toISOString()}`, c.body));
-    section('Attachments'); row.attachments.forEach(a => field(a.name, `${a.size} bytes (download separately in QCare)`));
-    section('History'); row.history.forEach(h => field(`${h.at.toISOString()} · ${h.actorName} · ${h.event}`, h.detail));
-    doc.end(); await completed;
+    const report = await require('../utils/incidentPdf')(row);
     await Incident.updateOne({ _id: row._id }, { $push: { history: { event: 'pdf', detail: 'Incident PDF downloaded', actor: req.user._id, actorName: req.user.employeeName, at: new Date() } } });
-    res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename="${row.incidentId}.pdf"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' }).send(Buffer.concat(chunks));
+    res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename="${row.incidentId}.pdf"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' }).send(report);
   } catch (error) { respondError(res, error); }
 }
 async function summaryPdf(req, res) {

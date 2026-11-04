@@ -30,8 +30,23 @@ test('incident lifecycle, role boundaries, concurrency, evidence and exports', {
     const app = express(); app.use(express.json()); app.use('/api/incidents', require('../routes/incidentRoutes'));
     server = await new Promise(resolve => { const instance = app.listen(0, '127.0.0.1', () => resolve(instance)); });
     const base = 'http://127.0.0.1:' + server.address().port + '/api/incidents';
+    // Training endpoints are authenticated, read-only and independent of live records.
+    const Incident = require('../models/Incident'), Notification = require('../models/Notification');
+    const beforeDemo = [await Incident.countDocuments(), await Notification.countDocuments()];
+    assert.equal((await fetch(base + '/demo/example')).status, 401);
+    assert.equal((await fetch(base + '/demo/report.pdf')).status, 401);
+    const demo = await (await fetch(base + '/demo/example', { headers: headers(reporter) })).json();
+    assert.equal(demo.row.isDemo, true); assert.equal(demo.steps.length, 7);
+    assert.equal(demo.steps[0].status, 'Pending'); assert.equal(demo.steps.at(-1).status, 'Closed');
+    const demoPdf = await fetch(base + '/demo/report.pdf', { headers: headers(reporter) });
+    assert.equal(demoPdf.status, 200); assert.equal(demoPdf.headers.get('content-type'), 'application/pdf');
+    assert.equal(Buffer.from(await demoPdf.arrayBuffer()).subarray(0, 5).toString(), '%PDF-');
+    assert.deepEqual([await Incident.countDocuments(), await Notification.countDocuments()], beforeDemo);
     const created = await fetch(base, { method: 'POST', headers: headers(reporter), body: JSON.stringify({ title: '=Test report', description: 'Test facts', category: 'Safety', location: 'Test branch', dateOfIncident: '2025-01-01', severity: 'High' }) });
     assert.equal(created.status, 201); let row = await created.json();
+    const pendingPdf = await fetch(base + '/' + row._id + '/report.pdf', { headers: headers(reporter) });
+    assert.equal(pendingPdf.status, 200, 'Pending incidents must also be downloadable');
+    assert.equal(Buffer.from(await pendingPdf.arrayBuffer()).subarray(0, 5).toString(), '%PDF-');
     const queueCount = async queue => (await (await fetch(base + '/register?queue=' + queue, { headers: headers(reviewer) })).json()).total;
     assert.equal(await queueCount('acceptance'), 1);
     assert.equal(await queueCount('investigations'), 0);
