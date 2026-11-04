@@ -48,7 +48,7 @@ const incidentSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ["Pending", "Investigating", "Resolved", "Closed"],
+      enum: ["Pending", "Accepted", "Needs clarification", "Investigating", "Action in progress", "Closure review", "Resolved", "Closed", "Rejected", "Duplicate", "Reopened"],
       default: "Pending",
     },
     reportedBy: {
@@ -68,10 +68,43 @@ const incidentSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    investigationDue: Date,
+    rootCause: { type: String, default: '' },
+    contributingFactors: { type: String, default: '' },
+    operationalImpact: { type: String, default: '' },
+    temporaryControls: { type: String, default: '' },
+    riskLevel: { type: String, enum: ['', 'Low', 'Medium', 'High', 'Critical'], default: '' },
+    likelihood: { type: String, default: '' },
+    potentialConsequence: { type: String, default: '' },
+    residualRisk: { type: String, enum: ['', 'Low', 'Medium', 'High', 'Critical'], default: '' },
+    effectiveness: { type: String, enum: ['', 'Effective', 'Partially effective', 'Ineffective'], default: '' },
+    effectivenessEvidence: { type: String, default: '' },
+    effectivenessDate: Date,
+    closureSummary: { type: String, default: '' },
+    closedAt: Date,
+    closedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    actions: [{
+      title: { type: String, required: true },
+      kind: { type: String, enum: ['Correction', 'Corrective', 'Preventive'], required: true },
+      owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+      dueDate: { type: Date, required: true },
+      successCriteria: { type: String, required: true },
+      completion: String,
+      completedAt: Date,
+      completedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    }],
+    comments: [{ body: String, kind: { type: String, enum: ['Comment', 'Witness statement', 'Clarification'], default: 'Comment' }, author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, authorName: String, at: { type: Date, default: Date.now } }],
+    history: [{ event: String, detail: String, actor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, actorName: String, at: { type: Date, default: Date.now } }],
   },
   {
     timestamps: true,
+    optimisticConcurrency: true,
   }
 );
+incidentSchema.index({ status: 1, createdAt: -1 });
+incidentSchema.index({ reportedBy: 1, createdAt: -1 });
+incidentSchema.index({ assignedTo: 1, createdAt: -1 });
+incidentSchema.index({ 'actions.owner': 1 });
+incidentSchema.index({ notifyStaff: 1 });
 
 module.exports = mongoose.model("Incident", incidentSchema);

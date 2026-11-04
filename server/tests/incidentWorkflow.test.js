@@ -1,0 +1,93 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const os = require('node:os');
+const { spawn } = require('node:child_process');
+const mongoose = require('mongoose');
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const User = require('../models/users');
+require('../models/Specialty');
+
+test('incident lifecycle, role boundaries, concurrency, evidence and exports', { timeout: 120000 }, async () => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'qcare-workflow-test-'));
+  const database = spawn(process.env.QCARE_TEST_MONGOD || 'C:/Program Files/MongoDB/Server/8.2/bin/mongod.exe', ['--dbpath', directory, '--port', '27986', '--bind_ip', '127.0.0.1', '--quiet'], { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+  let output = '', server;
+  database.stdout.on('data', chunk => { output = (output + chunk).slice(-12000); });
+  database.stderr.on('data', chunk => { output = (output + chunk).slice(-12000); });
+  const exited = new Promise(resolve => database.once('exit', resolve));
+  try {
+    for (let attempt = 0; attempt < 150 && !output.includes('Waiting for connections'); attempt++) {
+      if (database.exitCode !== null) throw Error(output);
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    assert(output.includes('Waiting for connections'));
+    await mongoose.connect('mongodb://127.0.0.1:27986/qcare_workflow_test');
+    const makeUser = (name, role = 'Staff') => User.create({ employeeId: name, employeeName: name, email: name + '@test.invalid', password: 'test-only', role, department: 'Quality', designation: 'Staff' });
+    const reporter = await makeUser('reporter'), investigator = await makeUser('investigator'), owner = await makeUser('owner'), reviewer = await makeUser('reviewer', 'admin'), outsider = await makeUser('outsider');
+    const headers = user => ({ Authorization: 'Bearer ' + jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'default_secret'), 'Content-Type': 'application/json' });
+    const app = express(); app.use(express.json()); app.use('/api/incidents', require('../routes/incidentRoutes'));
+    server = await new Promise(resolve => { const instance = app.listen(0, '127.0.0.1', () => resolve(instance)); });
+    const base = 'http://127.0.0.1:' + server.address().port + '/api/incidents';
+    const created = await fetch(base, { method: 'POST', headers: headers(reporter), body: JSON.stringify({ title: '=Test report', description: 'Test facts', category: 'Safety', location: 'Test branch', dateOfIncident: '2025-01-01', severity: 'High' }) });
+    assert.equal(created.status, 201); let row = await created.json();
+    const url = base + '/' + row._id;
+    const command = async (user, name, fields = {}, expected = 200) => {
+      const response = await fetch(url + '/workflow', { method: 'POST', headers: headers(user), body: JSON.stringify({ command: name, version: row.__v, ...fields }) });
+      const result = await response.json(); assert.equal(response.status, expected, JSON.stringify(result));
+      if (expected === 200) row = result;
+      return result;
+    };
+    assert.equal((await fetch(url, { headers: headers(outsider) })).status, 404);
+    assert.equal((await fetch(url + '/report.pdf', { headers: headers(outsider) })).status, 404);
+    await command(reporter, 'accept', {}, 403);
+    await command(reviewer, 'close', {}, 400);
+    await command(reviewer, 'clarify', { reason: 'Please confirm the time.' });
+    await command(reporter, 'comment', { kind: 'Clarification', body: 'Time confirmed.' });
+    await command(reviewer, 'accept', { assignedTo: investigator._id, investigationDue: '2027-01-01', riskLevel: 'High' });
+    assert.equal((await fetch(url, { headers: headers(investigator) })).status, 200);
+    await command(investigator, 'start');
+    await command(investigator, 'investigate', { findings: 'Verified facts', rootCause: 'Missing check', operationalImpact: 'Delay', riskLevel: 'High', likelihood: 'Possible' });
+    await command(investigator, 'addAction', { title: 'Introduce a check', owner: owner._id, kind: 'Preventive', dueDate: '2027-01-01', successCriteria: 'Ten consecutive checks pass' });
+    const actionId = row.actions[0]._id;
+    await command(reporter, 'editAction', { actionId }, 403);
+    await command(investigator, 'editAction', { actionId, title: 'Introduce and verify a check', owner: owner._id, kind: 'Preventive', dueDate: '2027-01-02', successCriteria: 'Ten consecutive checks pass' });
+    await command(owner, 'completeAction', { actionId, completion: 'Done' }, 400);
+    await command(investigator, 'approvePlan', {}, 403);
+    await command(reviewer, 'approvePlan');
+    await command(investigator, 'requestClosure', { closureSummary: 'Done' }, 400);
+    await command(reporter, 'completeAction', { actionId, completion: 'Done' }, 403);
+    await command(owner, 'completeAction', { actionId, completion: 'Check introduced; evidence attached.' });
+    await command(owner, 'comment', { version: row.__v - 1, body: 'Old edit' }, 409);
+    const form = new FormData(); form.append('version', row.__v); form.append('attachments', new Blob(['passed checks']), 'checks.txt');
+    const upload = await fetch(url + '/evidence', { method: 'POST', headers: { Authorization: headers(owner).Authorization }, body: form });
+    assert.equal(upload.status, 200); row = await upload.json(); assert.equal(row.attachments[0].data, undefined);
+    assert.equal(await (await fetch(url + '/attachments/' + row.attachments[0]._id, { headers: headers(investigator) })).text(), 'passed checks');
+    await command(investigator, 'requestClosure', { closureSummary: 'Check implemented and reviewed.' });
+    await command(reviewer, 'return', { reason: 'Need more observations', effectiveness: 'Partially effective' });
+    await command(reviewer, 'approvePlan');
+    await command(investigator, 'requestClosure', { closureSummary: 'Additional checks passed.' });
+    // Even an administrator who completed the action cannot approve closure.
+    await User.updateOne({ _id: owner._id }, { role: 'admin' });
+    await command(owner, 'close', { effectiveness: 'Effective', effectivenessEvidence: 'Passed', effectivenessDate: '2025-02-01', residualRisk: 'Low' }, 403);
+    await command(reviewer, 'close', { effectiveness: 'Effective', effectivenessEvidence: 'Ten consecutive checks passed.', effectivenessDate: '2025-02-01', residualRisk: 'Low' });
+    assert.equal(row.status, 'Closed'); assert(row.closedAt);
+    await command(reviewer, 'investigate', { findings: 'Overwrite closed' }, 400);
+    const list = await (await fetch(base + '/register?search=Test&status=Closed&limit=1', { headers: headers(reporter) })).json();
+    assert.equal(list.total, 1); assert.equal(list.rows.length, 1);
+    const hidden = await (await fetch(base + '/register', { headers: headers(outsider) })).json(); assert.equal(hidden.total, 0);
+    const pdf = await fetch(url + '/report.pdf', { headers: headers(reporter) }); assert.equal(pdf.status, 200); assert.equal(pdf.headers.get('content-type'), 'application/pdf'); assert((await pdf.arrayBuffer()).byteLength > 1000);
+    const csv = await (await fetch(base + '/export?status=Closed', { headers: headers(reporter) })).text(); assert(csv.includes("'=Test report"));
+    const summary = await fetch(base + '/summary.pdf?status=Closed', { headers: headers(reporter) }); assert.equal(summary.status, 200); assert((await summary.arrayBuffer()).byteLength > 1000);
+    const emptyExport = await (await fetch(base + '/export', { headers: headers(outsider) })).text(); assert(!emptyExport.includes('Test report'));
+    assert.equal((await fetch(base + '/register?from=invalid', { headers: headers(reporter) })).status, 400);
+    assert.equal((await fetch(url, { headers: headers(reporter) })).status, 200);
+    await command(reviewer, 'reopen', { reason: 'New evidence received' }); assert.equal(row.status, 'Reopened');
+    assert.equal((await fetch(url, { headers: headers(outsider) })).status, 404);
+  } finally {
+    if (server) await new Promise(resolve => server.close(resolve));
+    await mongoose.disconnect(); database.kill(); await exited;
+    const resolved = path.resolve(directory); assert.equal(path.dirname(resolved).toLowerCase(), path.resolve(os.tmpdir()).toLowerCase()); assert(path.basename(resolved).startsWith('qcare-workflow-test-')); await fs.rm(resolved, { recursive: true, force: true });
+  }
+});

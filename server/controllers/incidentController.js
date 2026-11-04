@@ -23,6 +23,7 @@ const createIncident = async (req, res) => {
       dateOfIncident,
       severity,
       reportedBy: req.user._id,
+      history: [{ event: "reported", actor: req.user._id, actorName: req.user.employeeName, detail: "Incident submitted" }],
     });
 
     try {
@@ -32,7 +33,7 @@ const createIncident = async (req, res) => {
       message: `New incident reported: ${title}`,
       user: req.user.employeeName,
       userId: req.user._id,
-      actionLink: "/incidents",
+      actionLink: "/dashboard/incidents",
       recipientRole: "admin"
     });
 
@@ -74,13 +75,7 @@ const createIncident = async (req, res) => {
 // @access  Private
 const getIncidents = async (req, res) => {
   try {
-    let query = {};
-
-    // If not admin/superadmin, only show own reported incidents
-    const roleLower = req.user.role?.toLowerCase();
-    if (roleLower !== "admin" && roleLower !== "superadmin") {
-      query = { $or: [{reportedBy:req.user._id},{notifyStaff:req.user._id}] };
-    }
+    let query = require("../utils/incidentWorkflow").accessQuery(req.user);
 
     const incidents = await Incident.find(query).select("-attachments.data")
       .populate("reportedBy", "employeeName employeeId department")
@@ -93,61 +88,4 @@ const getIncidents = async (req, res) => {
   }
 };
 
-// @desc    Update incident status/findings (Admin/Superadmin only)
-// @route   PATCH /api/incidents/:id
-// @access  Private/Admin
-const updateIncident = async (req, res) => {
-  try {
-    const incident = await Incident.findById(req.params.id);
-
-    if (!incident) {
-      return res.status(404).json({ message: "Incident not found" });
-    }
-
-    // Role check for updating (only admins can update status/findings)
-    const roleLower = req.user.role?.toLowerCase();
-    if (roleLower !== "admin" && roleLower !== "superadmin") {
-      return res.status(403).json({ message: "Not authorized to update incidents" });
-    }
-
-    const { status, severity, findings, actionsTaken } = req.body;
-
-    incident.status = status || incident.status;
-    incident.severity = severity || incident.severity;
-    incident.findings = findings || incident.findings;
-    incident.actionsTaken = actionsTaken || incident.actionsTaken;
-
-    const updatedIncident = await incident.save();
-
-    // Notify the reporter
-    await Notification.create({
-      type: "system_alert",
-      message: `Your incident report ${incident.incidentId} has been updated to: ${incident.status}`,
-      user: req.user.employeeName || req.user.username || "Administrator",
-      userId: req.user._id, // Admin who updated it
-      actionLink: "/dashboard/incidents",
-      recipientRole: "user",
-      recipientId: incident.reportedBy
-    });
-
-    // Emit socket event to the reporter
-    if (req.io) {
-      req.io.to(incident.reportedBy.toString()).emit("new-notification", {
-        type: "system_alert",
-        message: `Your incident report ${incident.incidentId} has been updated to: ${incident.status}`,
-        user: req.user.employeeName || req.user.username || "Administrator",
-        time: new Date()
-      });
-    }
-
-    res.json(updatedIncident);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-module.exports = {
-  createIncident,
-  getIncidents,
-  updateIncident,
-};
+module.exports = { createIncident, getIncidents };
