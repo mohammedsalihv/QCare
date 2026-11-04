@@ -17,7 +17,7 @@ function flattenOptions(children, disabled = false) {
 }
 
 // A custom popup with a native form bridge; the browser's select menu is never opened.
-const Select = forwardRef(function Select({ className = '', compact = false, children, value, defaultValue, disabled, required, onChange, onInvalid, onFocus, searchable = true, ...props }, ref) {
+const Select = forwardRef(function Select({ className = '', compact, children, value, defaultValue, disabled, required, onChange, onInvalid, onFocus, searchable = true, ...props }, ref) {
   const uid = useId();
   const native = useRef(null);
   const trigger = useRef(null);
@@ -117,7 +117,7 @@ const Select = forwardRef(function Select({ className = '', compact = false, chi
     }
   };
   const popupHost = trigger.current?.closest('dialog') || (typeof document !== 'undefined' ? document.body : null);
-  const iconOnly = compact || (!required && /^All (?:statuses|departments|categories|specialties|types|locations|professions|actions|records|years)\b/i.test(options[0]?.label || ''));
+  const iconOnly = compact ?? (!required && /^All (?:statuses|departments|categories|specialties|types|locations|professions|actions|records|years)\b/i.test(options[0]?.label || ''));
   const caption = props['aria-label'] || accessibleLabel || props.name || (/^All /i.test(options[0]?.label || '') ? `Filter ${options[0].label.slice(4)}` : 'Options');
   const controlKind = /profession/i.test(caption) ? 'profession' : /order|direction/i.test(caption) ? 'order' : /sort/i.test(caption) ? 'sort' : /rows|page|limit/i.test(caption) ? 'rows' : 'filter';
   const tooltip = `${caption}: ${selected?.label || 'Select an option'}`;
