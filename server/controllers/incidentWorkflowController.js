@@ -8,6 +8,17 @@ const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const done = ['Closed', 'Rejected', 'Duplicate'];
 function filters(user, params) {
   const clauses = [accessQuery(user)];
+  const queues = {
+    acceptance: ['Pending', 'Needs clarification'],
+    investigations: ['Accepted', 'Investigating', 'Reopened'],
+    actions: ['Investigating', 'Reopened', 'Action in progress'],
+    approvals: ['Closure review', 'Resolved']
+  };
+  if (params.queue) {
+    if (!Object.hasOwn(queues, params.queue)) fail('Choose a valid incident work queue.');
+    clauses.push({ status: { $in: queues[params.queue] } });
+    if (params.queue === 'actions') clauses.push({ 'actions.0': { $exists: true } });
+  }
   if (params.search) {
     if (typeof params.search !== 'string' || params.search.length > 100) fail('Search must be under 100 characters.');
     clauses.push({ $or: ['incidentId', 'title', 'location', 'department'].map(key => ({ [key]: { $regex: escapeRegex(params.search), $options: 'i' } })) });
@@ -134,7 +145,7 @@ async function summaryPdf(req, res) {
     const completed = new Promise((resolve, reject) => { doc.on('data', c => chunks.push(c)); doc.on('end', resolve); doc.on('error', reject); });
     doc.fontSize(20).text('QCare | Incident summary').moveDown();
     doc.fontSize(10).text('Generated: ' + new Date().toISOString()).text('Scope: incidents accessible to the requesting user.');
-    const filterText = ['search', 'status', 'category', 'riskLevel', 'scope', 'overdue', 'from', 'to'].filter(key => req.query[key]).map(key => `${key}: ${req.query[key]}`).join('; ');
+    const filterText = ['queue', 'search', 'status', 'category', 'riskLevel', 'scope', 'overdue', 'from', 'to'].filter(key => req.query[key]).map(key => `${key}: ${req.query[key]}`).join('; ');
     doc.text('Filters: ' + (filterText || 'All accessible incidents')).moveDown();
     doc.fontSize(13).text(`Total incidents: ${total}`).text(`Incidents with overdue work: ${overdue}`);
     for (const [title, rows] of [['By status', statuses], ['By assessed risk', risks], ['By category', categories]]) {

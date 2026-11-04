@@ -32,6 +32,9 @@ test('incident lifecycle, role boundaries, concurrency, evidence and exports', {
     const base = 'http://127.0.0.1:' + server.address().port + '/api/incidents';
     const created = await fetch(base, { method: 'POST', headers: headers(reporter), body: JSON.stringify({ title: '=Test report', description: 'Test facts', category: 'Safety', location: 'Test branch', dateOfIncident: '2025-01-01', severity: 'High' }) });
     assert.equal(created.status, 201); let row = await created.json();
+    const queueCount = async queue => (await (await fetch(base + '/register?queue=' + queue, { headers: headers(reviewer) })).json()).total;
+    assert.equal(await queueCount('acceptance'), 1);
+    assert.equal(await queueCount('investigations'), 0);
     const url = base + '/' + row._id;
     const command = async (user, name, fields = {}, expected = 200) => {
       const response = await fetch(url + '/workflow', { method: 'POST', headers: headers(user), body: JSON.stringify({ command: name, version: row.__v, ...fields }) });
@@ -46,16 +49,20 @@ test('incident lifecycle, role boundaries, concurrency, evidence and exports', {
     await command(reviewer, 'clarify', { reason: 'Please confirm the time.' });
     await command(reporter, 'comment', { kind: 'Clarification', body: 'Time confirmed.' });
     await command(reviewer, 'accept', { assignedTo: investigator._id, investigationDue: '2027-01-01', riskLevel: 'High' });
+    assert.equal(await queueCount('acceptance'), 0);
+    assert.equal(await queueCount('investigations'), 1);
     assert.equal((await fetch(url, { headers: headers(investigator) })).status, 200);
     await command(investigator, 'start');
     await command(investigator, 'investigate', { findings: 'Verified facts', rootCause: 'Missing check', operationalImpact: 'Delay', riskLevel: 'High', likelihood: 'Possible' });
     await command(investigator, 'addAction', { title: 'Introduce a check', owner: owner._id, kind: 'Preventive', dueDate: '2027-01-01', successCriteria: 'Ten consecutive checks pass' });
     const actionId = row.actions[0]._id;
+    assert.equal(await queueCount('actions'), 1);
     await command(reporter, 'editAction', { actionId }, 403);
     await command(investigator, 'editAction', { actionId, title: 'Introduce and verify a check', owner: owner._id, kind: 'Preventive', dueDate: '2027-01-02', successCriteria: 'Ten consecutive checks pass' });
     await command(owner, 'completeAction', { actionId, completion: 'Done' }, 400);
     await command(investigator, 'approvePlan', {}, 403);
     await command(reviewer, 'approvePlan');
+    assert.equal(await queueCount('actions'), 1);
     await command(investigator, 'requestClosure', { closureSummary: 'Done' }, 400);
     await command(reporter, 'completeAction', { actionId, completion: 'Done' }, 403);
     await command(owner, 'completeAction', { actionId, completion: 'Check introduced; evidence attached.' });
@@ -65,6 +72,7 @@ test('incident lifecycle, role boundaries, concurrency, evidence and exports', {
     assert.equal(upload.status, 200); row = await upload.json(); assert.equal(row.attachments[0].data, undefined);
     assert.equal(await (await fetch(url + '/attachments/' + row.attachments[0]._id, { headers: headers(investigator) })).text(), 'passed checks');
     await command(investigator, 'requestClosure', { closureSummary: 'Check implemented and reviewed.' });
+    assert.equal(await queueCount('approvals'), 1);
     await command(reviewer, 'return', { reason: 'Need more observations', effectiveness: 'Partially effective' });
     await command(reviewer, 'approvePlan');
     await command(investigator, 'requestClosure', { closureSummary: 'Additional checks passed.' });

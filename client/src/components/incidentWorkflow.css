@@ -60,3 +60,27 @@
 .iw-history { list-style:none; padding:0; }.iw-history li { border-left:2px solid #dce5e9; padding:0 0 20px 18px; font-size:12px; }
 .iw-error { background:#fff2f2; border:1px solid #f4d1d1; color:#a32323; padding:14px; border-radius:8px; font-size:13px; margin:16px 0; }.iw-error button { text-decoration:underline; margin-left:8px; }
 @media(max-width:700px) { .iw-grid { grid-template-columns:1fr; }.iw-padded { padding:16px; }.iw-next { align-items:flex-start; flex-direction:column; }.iw-page h1 { font-size:22px; }.iw-page :is(input,textarea) { font-size:16px; } }
+.iw-workspace { display:grid; grid-template-columns:218px minmax(0,1fr); gap:24px; align-items:start; }
+.iw-workspace-main { min-width:0; }
+.iw-workspace .iw-page { max-width:none; }
+.iw-sidebar { position:sticky; top:110px; background:#fff; border:1px solid #dfe6ec; border-radius:12px; padding:16px 10px; max-height:calc(100dvh - 130px); overflow-y:auto; }
+.iw-sidebar-title { display:flex; align-items:flex-start; gap:9px; padding:2px 6px 16px; font-size:13px; font-weight:650; color:#263746; }
+.iw-sidebar-title > svg { flex-shrink:0; }
+.iw-sidebar-title small { display:block; color:#72808e; font-size:10px; font-weight:400; margin-top:5px; }
+.iw-sidebar a,.iw-sidebar nav button { display:flex; align-items:center; gap:9px; font-size:12px; line-height:1.4; text-decoration:none; color:#344253; border:1px solid transparent; border-radius:7px; padding:10px; width:100%; text-align:left; background:transparent; margin:2px 0; }
+.iw-sidebar svg { flex-shrink:0; }
+.iw-sidebar a:hover,.iw-sidebar nav button:hover { background:#f5f7f9; }
+.iw-sidebar [aria-current] { background:#edf5f4; color:#0f665e; border-color:#d4e7e3; font-weight:650; }
+.iw-sidebar .iw-new-report { background:#0f766e; color:#fff; margin:0 0 14px; justify-content:center; font-weight:600; }
+.iw-sidebar a:focus-visible,.iw-sidebar button:focus-visible { outline:2px solid #0f766e; outline-offset:2px; }
+.iw-sidebar nav button:disabled { opacity:.45; cursor:wait; }
+.iw-record-menu { border-top:1px solid #e6ebef; margin-top:14px; padding-top:12px; }
+.iw-record-menu > p { font-size:10px; font-weight:600; color:#74818e; margin:0 10px 6px; }
+.iw-menu-number { display:grid; place-items:center; width:20px; height:20px; flex-shrink:0; border:1px solid #dbe4e8; border-radius:5px; font-size:10px; }
+.iw-sidebar-help { font-size:11px; line-height:1.6; color:#788592; margin:16px 8px 0; }
+.iw-section-heading { padding:16px 0; }.iw-section-heading > span { color:#718096; font-size:11px; }.iw-section-heading h2 { margin:4px 0 0; }
+.iw-feature-guide { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border:1px solid #dfe6ec; border-radius:10px; background:#fff; margin-bottom:22px; }
+.iw-feature-guide > div { padding:16px; border-right:1px solid #edf0f3; font-size:12px; }.iw-feature-guide > div:last-child { border-right:0; }.iw-feature-guide p { color:#697989; font-size:11px; margin:6px 0 0; }
+.iw-report-options { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-bottom:24px; }.iw-report-options article { display:flex; flex-direction:column; align-items:flex-start; padding:20px; border:1px solid #dfe6ec; border-radius:12px; background:#fff; }.iw-report-options h2 { margin-top:14px; }.iw-report-options p { font-size:12px; flex:1; color:#697989; }.iw-report-options a { color:#0f665e; font-size:12px; text-decoration:underline; }
+@media(max-width:1100px) { .iw-workspace { grid-template-columns:190px minmax(0,1fr); gap:16px; }.iw-feature-guide { grid-template-columns:repeat(2,minmax(0,1fr)); }.iw-report-options { grid-template-columns:1fr; } }
+@media(max-width:800px) { .iw-workspace { grid-template-columns:1fr; }.iw-sidebar { position:static; max-height:none; padding:12px; }.iw-sidebar-title,.iw-sidebar-help { display:none; }.iw-sidebar nav { display:flex; overflow-x:auto; gap:4px; }.iw-sidebar a,.iw-sidebar nav button { width:auto; white-space:nowrap; flex-shrink:0; }.iw-sidebar .iw-new-report { width:fit-content; margin-bottom:10px; }.iw-record-menu > p { display:none; }.iw-feature-guide { grid-template-columns:1fr 1fr; } }

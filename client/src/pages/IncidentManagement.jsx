@@ -1,3 +1,4 @@
+import IncidentWorkspace from '../components/IncidentWorkspace';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -19,6 +20,10 @@ export default function IncidentManagement({ reportPage = false }) {
   const cancelReport = () => {
     if (formData.title || formData.description || formData.branch || reportFiles.length) confirm({ title: 'Discard this report?', message: 'This report has not been submitted. Discard your entries and return to the register?', confirmLabel: 'Discard report', cancelLabel: 'Keep editing', onConfirm: closeReport });
     else closeReport();
+  };
+  const leaveReport = next => {
+    if (reportPage && (formData.title || formData.description || formData.branch || reportFiles.length)) confirm({ title: 'Discard this report?', message: 'Your report has not been submitted.', confirmLabel: 'Discard report', cancelLabel: 'Keep editing', onConfirm: next });
+    else next();
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,5 +49,5 @@ export default function IncidentManagement({ reportPage = false }) {
   };
 
 
-  return <DashboardLayout>{reportPage ? <IncidentReportPage form={formData} setForm={setFormData} files={reportFiles} setFiles={setReportFiles} onSubmit={handleSubmit} onCancel={cancelReport} busy={submitting}/> : <IncidentRegister/>}</DashboardLayout>;
+  return <DashboardLayout><IncidentWorkspace beforeNavigate={leaveReport} busy={submitting}>{reportPage ? <IncidentReportPage form={formData} setForm={setFormData} files={reportFiles} setFiles={setReportFiles} onSubmit={handleSubmit} onCancel={cancelReport} busy={submitting}/> : <IncidentRegister key={searchParams.get('view') || 'all'} view={searchParams.get('view') || ''}/>}</IncidentWorkspace></DashboardLayout>;
 }

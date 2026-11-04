@@ -1,3 +1,4 @@
+import IncidentWorkspace from '../components/IncidentWorkspace';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -12,7 +13,7 @@ import { getAuthConfig } from '../utils/authConfig';
 import { incidentDownload } from '../utils/incidentDownload';
 import '../components/incidentWorkflow.css';
 
-const tabs = ['Overview', 'Investigation', 'Actions & follow-up', 'Comments & evidence', 'Approvals & history'];
+const tabs = ['Report & acceptance', 'Investigation, risk & root cause', 'Actions & follow-up', 'Comments & evidence', 'Closure, approvals & history'];
 const riskOptions = ['Low', 'Medium', 'High', 'Critical'];
 const identity = value => value?._id || value;
 const same = (a, b) => String(identity(a)) === String(identity(b));
@@ -72,28 +73,33 @@ export default function IncidentDetail() {
     catch (e) { setError(e.response?.data?.message || 'Unable to upload evidence.'); return false; }
     finally { setBusy(false); }
   };
+  const nextSection = row ? ({ Pending: 0, 'Needs clarification': 3, Accepted: 1, Investigating: 1, 'Action in progress': 2, 'Closure review': 4, Resolved: 0, Reopened: 1, Closed: 4, Rejected: 4, Duplicate: 4 })[row.status] ?? 0 : 0;
   const locked = row && ['Closed', 'Rejected', 'Duplicate'].includes(row.status);
   const investigator = row && (reviewer || same(row.assignedTo, userId));
-  return <DashboardLayout><div className="iw-page">
+  const leaveIncident = next => {
+    if (dirty) confirm({ title: 'Discard unsaved entries?', message: 'Save your changes before leaving, or discard these entries.', confirmLabel: 'Discard entries', cancelLabel: 'Keep editing', onConfirm: () => { setDirty(false); next(); } });
+    else next();
+  };
+  return <DashboardLayout><IncidentWorkspace beforeNavigate={leaveIncident} busy={busy} sections={row ? tabs : undefined} activeSection={tab} onSectionChange={switchTab}><div className="iw-page">
     <Link className="ir-back" to="/dashboard/incidents"><ArrowLeft size={16}/>Incident register</Link>
     {error && <div role="alert" className="iw-error">{error} <button disabled={busy} onClick={() => confirm({ title: 'Reload incident?', message: 'Unsaved entries will be discarded when the latest incident is loaded.', confirmLabel: 'Reload', onConfirm: () => { setRow(null); setRevision(v => v + 1); } })}>Reload latest</button></div>}
     {!row ? <p className="iw-empty">{error ? 'Incident unavailable.' : 'Loading incident…'}</p> : <>
       <header className="iw-heading"><div><small className="iw-reference">{row.incidentId}</small><h1>{row.title}</h1><p>{row.location} · {row.department || 'Department not recorded'} · Reported {when(row.createdAt)}</p></div><button className="iw-secondary" disabled={busy} onClick={download}><Download size={16}/>Download PDF</button></header>
       <div className="iw-summary"><span className="iw-badge">{row.status === 'Pending' ? 'Awaiting triage' : row.status}</span><span>Risk: <strong>{row.riskLevel || 'Not assessed'}</strong></span><span>Investigator: <strong>{row.assignedTo?.employeeName || 'Unassigned'}</strong></span>{row.investigationDue && <span><Clock size={14}/>Due {when(row.investigationDue)}</span>}</div>
-      <div className="iw-next"><div><strong>Next step</strong><p>{nextStep[row.status]}</p></div>{investigator && ['Accepted', 'Reopened', 'Resolved'].includes(row.status) && <button disabled={busy} className="iw-primary" onClick={() => run('start')}>Start investigation</button>}</div>
-      <div className="iw-tabs" role="tablist" aria-label="Incident sections">{tabs.map((label, i) => <button key={label} role="tab" id={'incident-tab-' + i} aria-controls={'incident-panel-' + i} aria-selected={tab === i} onClick={() => switchTab(i)}>{label}</button>)}</div>
+      <div className="iw-next"><div><strong>Next step</strong><p>{nextStep[row.status]}</p></div>{nextSection !== tab && <button type="button" className="iw-secondary" disabled={busy} onClick={() => switchTab(nextSection)}>Open next step</button>}{investigator && ['Accepted', 'Reopened', 'Resolved'].includes(row.status) && <button disabled={busy} className="iw-primary" onClick={() => run('start')}>Start investigation</button>}</div>
+      <div className="iw-section-heading"><span>Incident section {tab + 1} of {tabs.length}</span><h2 id="incident-current-section">{tabs[tab]}</h2></div>
       <fieldset key={draftRevision} disabled={busy} className="iw-body" aria-busy={busy} onChange={() => setDirty(true)}>
-        <div hidden={tab !== 0} role="tabpanel" id="incident-panel-0" aria-labelledby="incident-tab-0">
+        <div hidden={tab !== 0} role="region" aria-labelledby="incident-current-section">
           <section className="iw-card iw-padded"><h2>Report details</h2><div className="iw-grid"><Read label="Reported by" value={row.reportedBy?.employeeName}/><Read label="Incident date & time" value={when(row.dateOfIncident)}/><Read label="Category" value={row.category}/><Read label="Initial severity" value={row.severity}/></div><Read label="What happened" value={row.description}/><IncidentReportDetails incident={row}/></section>
           {reviewer && !['Closed', 'Rejected', 'Duplicate', 'Closure review'].includes(row.status) && <Triage key={row.__v} row={row} run={run} approve={approve}/>}
         </div>
-        <div hidden={tab !== 1} role="tabpanel" id="incident-panel-1" aria-labelledby="incident-tab-1"><Investigation key={row.__v} row={row} editable={investigator && ['Investigating', 'Action in progress', 'Reopened'].includes(row.status)} run={run}/></div>
-        <div hidden={tab !== 2} role="tabpanel" id="incident-panel-2" aria-labelledby="incident-tab-2"><Actions key={row.__v} row={row} userId={userId} reviewer={reviewer} investigator={investigator} run={run} approve={approve}/></div>
-        <div hidden={tab !== 3} role="tabpanel" id="incident-panel-3" aria-labelledby="incident-tab-3"><Comments key={row.__v} row={row} locked={locked} run={run} upload={upload}/></div>
-        <div hidden={tab !== 4} role="tabpanel" id="incident-panel-4" aria-labelledby="incident-tab-4"><Closure key={row.__v} row={row} reviewer={reviewer} investigator={investigator} userId={userId} approve={approve}/><section className="iw-card iw-padded"><h2>Activity & approvals</h2><p>All times shown in UAE time. Earlier records may have limited history.</p><ol className="iw-history">{[...row.history].reverse().map(h => <li key={h._id}><strong>{eventName(h.event)}</strong><small>{h.actorName} · {when(h.at)}</small><p>{h.detail}</p></li>)}</ol></section></div>
+        <div hidden={tab !== 1} role="region" aria-labelledby="incident-current-section"><Investigation key={row.__v} row={row} editable={investigator && ['Investigating', 'Action in progress', 'Reopened'].includes(row.status)} run={run}/></div>
+        <div hidden={tab !== 2} role="region" aria-labelledby="incident-current-section"><Actions key={row.__v} row={row} userId={userId} reviewer={reviewer} investigator={investigator} run={run} approve={approve}/></div>
+        <div hidden={tab !== 3} role="region" aria-labelledby="incident-current-section"><Comments key={row.__v} row={row} locked={locked} run={run} upload={upload}/></div>
+        <div hidden={tab !== 4} role="region" aria-labelledby="incident-current-section"><Closure key={row.__v} row={row} reviewer={reviewer} investigator={investigator} userId={userId} approve={approve}/><section className="iw-card iw-padded"><h2>Activity & approvals</h2><p>All times shown in UAE time. Earlier records may have limited history.</p><ol className="iw-history">{[...row.history].reverse().map(h => <li key={h._id}><strong>{eventName(h.event)}</strong><small>{h.actorName} · {when(h.at)}</small><p>{h.detail}</p></li>)}</ol></section></div>
       </fieldset>
     </>}
-  </div></DashboardLayout>;
+  </div></IncidentWorkspace></DashboardLayout>;
 }
 function Read({ label, value }) { return <div className="iw-read"><span>{label}</span><p>{value || 'Not recorded'}</p></div>; }
 function Area({ label, value, onChange, required = false, rows = 3 }) { return <label>{label}{required ? ' *' : ''}<textarea required={required} maxLength={5000} rows={rows} value={value || ''} onChange={e => onChange(e.target.value)}/></label>; }
@@ -110,7 +116,7 @@ function Investigation({ row, editable, run }) {
   const keys = { findings: 'Verified findings', rootCause: 'Root cause — why did it happen?', contributingFactors: 'Contributing factors', operationalImpact: 'Impact on services and workflow', temporaryControls: 'Temporary controls', potentialConsequence: 'Potential consequence', actionsTaken: 'Actions already taken' };
   const [data, setData] = useState(Object.fromEntries([...Object.keys(keys), 'riskLevel', 'likelihood'].map(k => [k, row[k] || ''])));
   const change = (key, value) => setData(previous => ({ ...previous, [key]: value }));
-  return <section className="iw-card iw-padded"><h2>Investigation & risk assessment</h2><p>Separate facts from assumptions. Record the underlying causes and practical controls to reduce recurrence.</p>{!editable ? <><div className="iw-grid">{Object.entries(keys).map(([key, label]) => <Read key={key} label={label} value={row[key]}/>)}</div><Read label="Likelihood" value={row.likelihood}/><Read label="Risk level" value={row.riskLevel}/></> : <form onSubmit={e => { e.preventDefault(); run('investigate', data); }}><div className="iw-grid">{Object.entries(keys).map(([key, label]) => <Area key={key} label={label} value={data[key]} onChange={value => change(key, value)}/>)}<Choices label="Likelihood" value={data.likelihood} options={['Rare', 'Unlikely', 'Possible', 'Likely', 'Almost certain']} onChange={value => change('likelihood', value)}/><Choices required label="Assessed risk level" value={data.riskLevel} options={riskOptions} onChange={value => change('riskLevel', value)}/></div><p className="iw-note">Use your approved risk matrix. QCare records your assessment; it does not infer a clinical risk score.</p><button className="iw-primary">Save investigation</button></form>}</section>;
+  return <section className="iw-card iw-padded"><h2>Investigation & risk assessment</h2><p>Record the root cause, risk level, impact on operations and temporary controls. Plan permanent preventive actions in Actions & follow-up.</p>{!editable && <p className="iw-note">This section is read-only until the incident is accepted and investigation is started. Only its assigned investigator or a reviewer can edit it.</p>}{!editable ? <><div className="iw-grid">{Object.entries(keys).map(([key, label]) => <Read key={key} label={label} value={row[key]}/>)}</div><Read label="Likelihood" value={row.likelihood}/><Read label="Risk level" value={row.riskLevel}/></> : <form onSubmit={e => { e.preventDefault(); run('investigate', data); }}><div className="iw-grid">{Object.entries(keys).map(([key, label]) => <Area key={key} label={label} value={data[key]} onChange={value => change(key, value)}/>)}<Choices label="Likelihood" value={data.likelihood} options={['Rare', 'Unlikely', 'Possible', 'Likely', 'Almost certain']} onChange={value => change('likelihood', value)}/><Choices required label="Assessed risk level" value={data.riskLevel} options={riskOptions} onChange={value => change('riskLevel', value)}/></div><p className="iw-note">Use your approved risk matrix. QCare records your assessment; it does not infer a clinical risk score.</p><button className="iw-primary">Save investigation</button></form>}</section>;
 }
 function Actions({ row, userId, reviewer, investigator, run, approve }) {
   const [data, setData] = useState({ title: '', kind: 'Corrective', owner: '', dueDate: '', successCriteria: '' });
@@ -126,7 +132,7 @@ function Action({ action, index, canComplete, run, onEdit }) {
 }
 function Comments({ row, locked, run, upload }) {
   const [body, setBody] = useState(''), [kind, setKind] = useState('Comment'), [files, setFiles] = useState([]);
-  return <><section className="iw-card iw-padded"><h2>Comments & statements</h2><p>Keep follow-up questions, responses and opinions together. Comments are visible to authorized incident participants.</p>{row.comments.map(c => <article className="iw-comment" key={c._id}><strong>{c.authorName}</strong><small>{c.kind} · {when(c.at)}</small><p>{c.body}</p></article>)}{!locked && <form onSubmit={e => { e.preventDefault(); run('comment', { body, kind }); }}><Choices label="Entry type" required value={kind} onChange={setKind} options={['Comment', 'Witness statement', 'Clarification']}/><Area required label="Message" value={body} onChange={setBody}/><button className="iw-primary">Add comment</button></form>}</section><section className="iw-card iw-padded"><h2>Supporting evidence</h2><IncidentReportDetails incident={row} attachmentsOnly/>{!locked && <form onSubmit={async e => { e.preventDefault(); await upload(files); }}><label>Choose files<input required type="file" multiple accept=".png,.jpg,.jpeg,.gif,.webp,.pdf,.mp4,.mov,.webm,.mp3,.wav,.txt,.csv,.docx,.xlsx,.pptx" onChange={e => setFiles(Array.from(e.target.files))}/></label><p className="iw-note">Up to 5 files per upload; 20 attachments and 12 MB total per incident. Images, video, audio, PDFs and office documents.</p><button className="iw-primary">Upload evidence</button></form>}</section></>;
+  return <><section className="iw-card iw-padded"><h2>Comments, opinions & statements</h2><p>Keep follow-up questions, responses and opinions together. Comments are visible to authorized incident participants.</p>{row.comments.map(c => <article className="iw-comment" key={c._id}><strong>{c.authorName}</strong><small>{c.kind} · {when(c.at)}</small><p>{c.body}</p></article>)}{!locked && <form onSubmit={e => { e.preventDefault(); run('comment', { body, kind }); }}><Choices label="Entry type" required value={kind} onChange={setKind} options={['Comment', 'Witness statement', 'Clarification']}/><Area required label="Message" value={body} onChange={setBody}/><button className="iw-primary">Add comment</button></form>}</section><section className="iw-card iw-padded"><h2>Supporting evidence</h2><IncidentReportDetails incident={row} attachmentsOnly/>{!locked && <form onSubmit={async e => { e.preventDefault(); await upload(files); }}><label>Choose files<input required type="file" multiple accept=".png,.jpg,.jpeg,.gif,.webp,.pdf,.mp4,.mov,.webm,.mp3,.wav,.txt,.csv,.docx,.xlsx,.pptx" onChange={e => setFiles(Array.from(e.target.files))}/></label><p className="iw-note">Up to 5 files per upload; 20 attachments and 12 MB total per incident. Images, video, audio, PDFs and office documents.</p><button className="iw-primary">Upload evidence</button></form>}</section></>;
 }
 function Closure({ row, reviewer, investigator, userId, approve }) {
   const [summary, setSummary] = useState(row.closureSummary || ''), [reason, setReason] = useState('');

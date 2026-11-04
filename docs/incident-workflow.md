@@ -15,6 +15,14 @@ Incident Management is independent of Clinical Privileges. A Clinical incident c
 
 The five tabs are Overview, Investigation, Actions & follow-up, Comments & evidence, and Approvals & history. The header explains the next step. Save changes before changing sections; a confirmation protects unsaved text. Do not treat a saved draft investigation as an approved action plan.
 
+### Navigation update
+
+The compact Incident Management side menu now exposes All incidents, Acceptance & triage, Investigations & risk, Actions & follow-up, Assigned to me, Overdue work, Closure approvals, and Reports & downloads. These are live, permission-filtered work queues. Actions includes plans awaiting approval as well as approved work. The Reports area has labelled PDF and CSV choices instead of relying only on toolbar icons.
+
+Inside a record, the same sidebar provides five explicit sections: Report & acceptance; Investigation, risk & root cause; Actions & follow-up; Comments & evidence; and Closure, approvals & history. This replaces the former horizontal tabs. All sections remain discoverable; editing is controlled by role and workflow stage. New reports must be accepted and investigation started before findings can be edited. No demonstration records are added to the production database.
+
+Sidebar navigation asks before discarding unsaved report or investigation entries. On narrow screens the menus become horizontally scrollable rows. Queue filtering is enforced on the backend and applies to exports as well. The queue backend update was deployed with backup `/home/salih/QCare_deploy_backups/incident-workflow-1793779905733`.
+
 ## Roles and access
 
 - Admin, superadmin and qualitymanager are reviewers and can access all incidents.
