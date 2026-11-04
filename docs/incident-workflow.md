@@ -19,8 +19,6 @@ The five tabs are Overview, Investigation, Actions & follow-up, Comments & evide
 
 The compact Incident Management side menu now exposes All incidents, Acceptance & triage, Investigations & risk, Actions & follow-up, Assigned to me, Overdue work, Closure approvals, and Reports & downloads. These are live, permission-filtered work queues. Actions includes plans awaiting approval as well as approved work. The Reports area has labelled PDF and CSV choices instead of relying only on toolbar icons.
 
-Inside a record, the same sidebar provides five explicit sections: Report & acceptance; Investigation, risk & root cause; Actions & follow-up; Comments & evidence; and Closure, approvals & history. This replaces the former horizontal tabs. All sections remain discoverable; editing is controlled by role and workflow stage. New reports must be accepted and investigation started before findings can be edited. No demonstration records are added to the production database.
-
 Sidebar navigation asks before discarding unsaved report or investigation entries. On narrow screens the menus become horizontally scrollable rows. Queue filtering is enforced on the backend and applies to exports as well. The queue backend update was deployed with backup `/home/salih/QCare_deploy_backups/incident-workflow-1793779905733`.
 
 ## Roles and access
@@ -60,26 +58,12 @@ Sidebar navigation asks before discarding unsaved report or investigation entrie
 - Frontend changes are in the local project used by the Vite portal. The separate hosted frontend build has not been published by this change.
 - Visual review in the owner's visible browser remains unverified because browser access was unavailable.
 
-## Individual reports and training walkthrough
+## Individual reports
 
 Every row in the incident register and its filtered queues has a **PDF** button. The incident workspace also retains **Download PDF**, available at every saved status, including pending reports. Access remains limited to authorized incident participants and quality reviewers.
 
 Incident PDFs use the same shared CMC report renderer as clinical audits: the logo, fonts, red/navy palette, numbered bordered tables, repeating headers, confidentiality footer and page numbers. Long narratives continue across pages. Reports include the overview, investigation and risk, actions and completion evidence, closure, comments, attachment metadata and history; attachment files are downloaded separately.
 
-Select **Demo walkthrough** in Incident Management, or **Explore a demo incident from report to closure** above the register. The fictional medicine-storage near miss explains seven steps, responsible roles, example decisions and completion evidence. Previous/next controls and step buttons let users explore the complete flow, with a sample PDF available from the demo header.
-
-The demo is read-only training content, served through authenticated `/api/incidents/demo/example` and `/api/incidents/demo/report.pdf` routes. It creates no incident, staff or notification records and never contributes to live register totals. Live workflow permissions, approvals and independent closure requirements are unchanged.
-
 ## Summary layout and hover correction
 
-The management summary now uses the shared CMC clinical audit layout, with aligned count tables, Dubai generation time, page numbers and an explicit empty state. The Report incident hover/focus styling is isolated from ordinary navigation links. Demo loading errors include a retry control and explain when the server route is unavailable.
-
-Verified with the production build, targeted lint, incident and audit integration tests, and rendered summary PDFs. Live deployment of the PDF/demo release remains blocked pending explicit approval to update the backend and restart QCare; a GitHub push alone does not activate these endpoints.
-
-## Editable dummy incident
-
-Reviewers can use **Create / open my dummy incident** in the walkthrough. The authenticated `POST /api/incidents/demo/practice` endpoint creates one fictional Pending incident per reviewer and returns the same record on subsequent requests without resetting progress. The **Dummy incidents** menu lists training records; each opens the existing workflow and supports its own PDF. The read-only walkthrough remains available separately.
-
-Training records are marked `isDemo`, excluded from normal registers, CSV/summary exports, legacy lists and dashboard totals, and suppress workflow notifications. Existing role, participant access and independent closure checks still apply. Integration checks cover concurrent creation, repeat opening, live/training separation, access boundaries, notification suppression and PDF generation. Existing workspace demo flags and notification protections are incorporated in this module.
-
-The live server has not been updated: deployment and creation of the requested dummy record await explicit approval to update and restart QCare.
+The management summary uses the shared CMC report layout, aligned count tables, Dubai generation time and page numbers. Empty results are displayed explicitly. The Report incident button retains readable contrast on hover and focus.

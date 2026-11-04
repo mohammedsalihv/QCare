@@ -1,4 +1,3 @@
-import IncidentDemo from '../components/IncidentDemo';
 import IncidentWorkspace from '../components/IncidentWorkspace';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -50,5 +49,5 @@ export default function IncidentManagement({ reportPage = false }) {
   };
 
 
-  return <DashboardLayout><IncidentWorkspace beforeNavigate={leaveReport} busy={submitting}>{reportPage ? <IncidentReportPage form={formData} setForm={setFormData} files={reportFiles} setFiles={setReportFiles} onSubmit={handleSubmit} onCancel={cancelReport} busy={submitting}/> : searchParams.get('view') === 'demo' ? <IncidentDemo/> : <IncidentRegister key={searchParams.get('view') || 'all'} view={searchParams.get('view') || ''}/>}</IncidentWorkspace></DashboardLayout>;
+  return <DashboardLayout><IncidentWorkspace beforeNavigate={leaveReport} busy={submitting}>{reportPage ? <IncidentReportPage form={formData} setForm={setFormData} files={reportFiles} setFiles={setReportFiles} onSubmit={handleSubmit} onCancel={cancelReport} busy={submitting}/> : <IncidentRegister key={searchParams.get('view') || 'all'} view={searchParams.get('view') || ''}/>}</IncidentWorkspace></DashboardLayout>;
 }

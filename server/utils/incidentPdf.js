@@ -5,9 +5,9 @@ const field = (caption, text) => ({ caption, text: text || 'Not recorded' });
 
 module.exports = function incidentPdf(row, options = {}) {
   return governanceReport({
-    title: row.title, reference: row.incidentId, reportLabel: row.isDemo ? 'DEMO INCIDENT REPORT - TRAINING ONLY' : 'INCIDENT REPORT',
+    title: row.title, reference: row.incidentId, reportLabel: 'INCIDENT REPORT',
     status: row.status, statusColor: row.status === 'Closed' ? '#107C65' : '#627488',
-    approvalText: row.isDemo ? 'Fictional training record' : row.status === 'Closed' ? 'Approved closure' : 'Current saved incident record',
+    approvalText: row.status === 'Closed' ? 'Approved closure' : 'Current saved incident record',
     ...options,
     metrics: [[row.riskLevel || 'Not assessed', 'Assessed risk'], [row.harmLevel || 'Unknown', 'Harm level'], [String((row.actions || []).filter(a => !a.completedAt).length), 'Open actions']],
     render: ({ table }) => {

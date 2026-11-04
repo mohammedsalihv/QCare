@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const incidentSchema = new mongoose.Schema(
   {
-    isDemo: { type: Boolean, default: false },
     incidentId: {
       type: String,
       required: true,

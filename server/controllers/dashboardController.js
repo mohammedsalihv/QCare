@@ -30,7 +30,7 @@ const counts = [
 
 // Return aggregate counts only; never send user profiles or patient records.
 exports.getOverview = async (req, res) => {
-  const jobs = counts.map(([key, model]) => [key, () => model.countDocuments(key === 'incidents' ? { isDemo: { $ne: true } } : {}).maxTimeMS(8000)]);
+  const jobs = counts.map(([key, model]) => [key, () => model.countDocuments({}).maxTimeMS(8000)]);
   jobs.push(['indicators', async () => {
     const rows = await KPIIndicator.aggregate([{ $match: { indicatorCode: { $type: 'string', $ne: '' } } }, { $group: { _id: '$indicatorCode' } }, { $count: 'total' }]).option({ maxTimeMS: 8000 });
     return rows[0]?.total || 0;
