@@ -50,7 +50,7 @@ async function list(req, res) {
     const limit = Math.max(1, Math.min(100, parseInt(req.query.limit, 10) || 10));
     const sortBy = ['createdAt', 'title', 'status', 'investigationDue', 'incidentId'].includes(req.query.sortBy) ? req.query.sortBy : 'createdAt';
     const sort = { [sortBy]: req.query.direction === 'asc' ? 1 : -1, _id: -1 };
-    const [total, rows] = await Promise.all([Incident.countDocuments(query), populate(Incident.find(query).select('incidentId title location department category status severity riskLevel assignedTo reportedBy investigationDue createdAt actions').sort(sort).skip((page - 1) * limit).limit(limit)).lean()]);
+    const [total, rows] = await Promise.all([Incident.countDocuments(query), populate(Incident.find(query).select('incidentId title location department category status severity harmLevel dateOfIncident riskLevel assignedTo reportedBy investigationDue createdAt actions').sort(sort).skip((page - 1) * limit).limit(limit)).lean()]);
     res.set('Cache-Control', 'no-store').json({ rows, total, page, limit });
   } catch (error) { respondError(res, error); }
 }

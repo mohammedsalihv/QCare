@@ -67,3 +67,11 @@ Incident PDFs use the same shared CMC report renderer as clinical audits: the lo
 ## Summary layout and hover correction
 
 The management summary uses the shared CMC report layout, aligned count tables, Dubai generation time and page numbers. Empty results are displayed explicitly. The Report incident button retains readable contrast on hover and focus.
+
+## Register and status guidance
+
+The register puts the unique incident reference above the title and groups each row into incident/location, status/next step, risk/harm, investigator/action progress, dates/deadline and report controls. Search, status, type, risk, sorting and page-size controls have visible labels. Overdue deadlines are highlighted; completed actions and inactive investigation deadlines are excluded. Closed, rejected and duplicate records have no open deadline.
+
+“Understand every status” explains all stored statuses and can filter the register. The same status definitions appear on the incident detail and in PDFs. “Resolved — review required” is explicitly distinguished from approved closure. The individual PDF starts with workflow position, next responsible role, completion and deadlines. The summary explains the next action for each status group and distinguishes assessed risk from initial severity.
+
+Verification for this register update: production client build, targeted frontend lint and six server tests passed. Individual and summary PDF fixtures were rendered and visually checked. The backend update and pending demo removal were deployed with source-hash verification; backup: `/home/salih/QCare_deploy_backups/incident-register-1793810426015`. All five fictional sample records were preserved. The local Vite server serves the revised modules. Live authenticated downloads and visual browser review remain unverified: browser automation captured the wrong window, and automatic approval review rejected a fallback-secret authentication check.

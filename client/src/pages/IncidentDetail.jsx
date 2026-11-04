@@ -1,3 +1,4 @@
+import { statusInfo } from '../utils/incidentPresentation';
 import IncidentWorkspace from '../components/IncidentWorkspace';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -18,19 +19,7 @@ const riskOptions = ['Low', 'Medium', 'High', 'Critical'];
 const identity = value => value?._id || value;
 const same = (a, b) => String(identity(a)) === String(identity(b));
 const when = value => value ? new Date(value).toLocaleString('en-GB', { timeZone: 'Asia/Dubai', dateStyle: 'medium', timeStyle: 'short' }) : 'Not recorded';
-const nextStep = {
-  Pending: 'A quality reviewer will accept the report and assign an investigator.',
-  'Needs clarification': 'The reporter can respond in Comments & evidence. A reviewer can then accept the report.',
-  Accepted: 'The assigned investigator can start the investigation.',
-  Investigating: 'Record findings and root cause, then plan actions for reviewer approval.',
-  'Action in progress': 'Action owners complete their tasks and record evidence before closure review.',
-  'Closure review': 'An independent reviewer checks effectiveness and remaining risk before closure.',
-  Resolved: 'This legacy report needs a documented investigation and action plan before verified closure.',
-  Reopened: 'A reviewer can assign the incident again, or the existing investigator can resume investigation.',
-  Closed: 'This incident is closed. A reviewer can reopen it if further work is needed.',
-  Rejected: 'Review the decision in history. A reviewer can reopen the incident.',
-  Duplicate: 'The duplicate reference and decision are recorded in history.'
-};
+
 export default function IncidentDetail() {
   const { id } = useParams();
   const [row, setRow] = useState(null), [error, setError] = useState(''), [busy, setBusy] = useState(false), [tab, setTab] = useState(0), [revision, setRevision] = useState(0);
@@ -85,8 +74,8 @@ export default function IncidentDetail() {
     {error && <div role="alert" className="iw-error">{error} <button disabled={busy} onClick={() => confirm({ title: 'Reload incident?', message: 'Unsaved entries will be discarded when the latest incident is loaded.', confirmLabel: 'Reload', onConfirm: () => { setRow(null); setRevision(v => v + 1); } })}>Reload latest</button></div>}
     {!row ? <p className="iw-empty">{error ? 'Incident unavailable.' : 'Loading incident…'}</p> : <>
       <header className="iw-heading"><div><small className="iw-reference">{row.incidentId}</small><h1>{row.title}</h1><p>{row.location} · {row.department || 'Department not recorded'} · Reported {when(row.createdAt)}</p></div><button className="iw-secondary" disabled={busy} onClick={download}><Download size={16}/>Download PDF</button></header>
-      <div className="iw-summary"><span className="iw-badge">{row.status === 'Pending' ? 'Awaiting triage' : row.status}</span><span>Risk: <strong>{row.riskLevel || 'Not assessed'}</strong></span><span>Investigator: <strong>{row.assignedTo?.employeeName || 'Unassigned'}</strong></span>{row.investigationDue && <span><Clock size={14}/>Due {when(row.investigationDue)}</span>}</div>
-      <div className="iw-next"><div><strong>Next step</strong><p>{nextStep[row.status]}</p></div>{nextSection !== tab && <button type="button" className="iw-secondary" disabled={busy} onClick={() => switchTab(nextSection)}>Open next step</button>}{investigator && ['Accepted', 'Reopened', 'Resolved'].includes(row.status) && <button disabled={busy} className="iw-primary" onClick={() => run('start')}>Start investigation</button>}</div>
+      <div className="iw-summary"><span className={'iw-status-pill iw-tone-' + statusInfo(row.status).tone}>{statusInfo(row.status).label}</span><span>Risk: <strong>{row.riskLevel || 'Not assessed'}</strong></span><span>Investigator: <strong>{row.assignedTo?.employeeName || 'Unassigned'}</strong></span>{row.investigationDue && <span><Clock size={14}/>Due {when(row.investigationDue)}</span>}</div>
+      <div className="iw-next"><div><strong>Next step</strong><p>{statusInfo(row.status).meaning} {statusInfo(row.status).next}</p></div>{nextSection !== tab && <button type="button" className="iw-secondary" disabled={busy} onClick={() => switchTab(nextSection)}>Open next step</button>}{investigator && ['Accepted', 'Reopened', 'Resolved'].includes(row.status) && <button disabled={busy} className="iw-primary" onClick={() => run('start')}>Start investigation</button>}</div>
       <div className="iw-section-heading"><span>Incident section {tab + 1} of {tabs.length}</span><h2 id="incident-current-section">{tabs[tab]}</h2></div>
       <fieldset key={draftRevision} disabled={busy} className="iw-body" aria-busy={busy} onChange={() => setDirty(true)}>
         <div hidden={tab !== 0} role="region" aria-labelledby="incident-current-section">
