@@ -9,6 +9,7 @@ const incidentSchema = new mongoose.Schema(
       trim: true,
     },
     branch: { type: mongoose.Schema.Types.ObjectId, ref: 'Location' },
+    previousIncidentIds: [{ type: String, trim: true }],
     department: { type: String, default: '' },
     areaRoom: { type: String, default: '' },
     harmLevel: { type: String, enum: ['No harm','Low harm','Moderate harm','Severe harm','Death','Unknown'], default: 'Unknown' },

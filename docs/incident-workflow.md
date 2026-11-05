@@ -60,6 +60,8 @@ Sidebar navigation asks before discarding unsaved report or investigation entrie
 
 ## Individual reports
 
+New incident references use `INC-` plus eight random characters (for example `INC-7K4M9X2R`), excluding ambiguous I/O/0/1 characters. A unique database index prevents duplicates; creation retries an incident-code collision up to five times and does not retry unrelated failures. The five fictional samples were converted to short codes, with previous references retained in `previousIncidentIds` and included in register search. Record IDs, links, content and workflow stages are preserved. Previously downloaded files retain their original references. Other existing incident references are unchanged.
+
 Every row in the incident register and its filtered queues has a **PDF** button. The incident workspace also retains **Download PDF**, available at every saved status, including pending reports. Access remains limited to authorized incident participants and quality reviewers.
 
 Incident PDFs use the same shared CMC report renderer as clinical audits: the logo, fonts, red/navy palette, numbered bordered tables, repeating headers, confidentiality footer and page numbers. Long narratives continue across pages. Reports include the overview, investigation and risk, actions and completion evidence, closure, comments, attachment metadata and history; attachment files are downloaded separately.

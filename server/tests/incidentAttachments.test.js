@@ -47,7 +47,7 @@ test('incident attachments persist and enforce reporter and recipient access', {
     form.append('attachments',new Blob(['synthetic image fixture']), 'scene.png');
     form.append('attachments',new Blob(['synthetic video fixture']), 'scene.mp4');
     const created=await fetch(base,{method:'POST',headers:headers(admin),body:form});assert.equal(created.status,201);const row=await created.json();assert.equal(row.attachments[0].data,undefined);
-    assert.match(row.incidentId, /^INC-[0-9A-F-]{36}$/);
+    assert.match(row.incidentId, /^INC-[2-9A-HJ-NP-Z]{8}$/);
     const detail = await (await fetch(base+'/'+row._id,{headers:headers(admin)})).json();
     const saved = detail.row || detail;
     for(const [key,value] of Object.entries({location:'Test branch',department:'Test department',areaRoom:'Treatment room 2',witnesses:'Fictional witness statement',immediateActions:'Device isolated',harmLevel:'No harm',notifyChoice:'Yes',description:'Complete incident narrative'})) assert.equal(saved[key],value,key);
@@ -55,6 +55,8 @@ test('incident attachments persist and enforce reporter and recipient access', {
     assert.equal(saved.notifyStaff[0].employeeName,'Test Doctor');
     assert.equal(saved.attachments.length,3);
     assert.equal((await (await fetch(base+'/register?search='+encodeURIComponent(row.incidentId),{headers:headers(admin)})).json()).total,1);
+    await require('../models/Incident').updateOne({_id:row._id},{$addToSet:{previousIncidentIds:'INC-OLD-REFERENCE'}});
+    assert.equal((await (await fetch(base+'/register?search=INC-OLD-REFERENCE',{headers:headers(admin)})).json()).total,1);
     const url=base+'/'+row._id+'/attachments/'+row.attachments[0]._id;
     const download=await fetch(url,{headers:headers(staff)});assert.equal(download.status,200);assert.equal(await download.text(),'test evidence');assert.match(download.headers.get('content-disposition'),/^attachment/);
     assert.equal((await fetch(url,{headers:headers(stranger)})).status,404);assert.equal((await fetch(url)).status,401);
@@ -65,3 +67,4 @@ test('incident attachments persist and enforce reporter and recipient access', {
     const resolved=path.resolve(directory);assert.equal(path.dirname(resolved).toLowerCase(),path.resolve(os.tmpdir()).toLowerCase());assert(path.basename(resolved).startsWith('qcare-incident-files-test-'));await fs.rm(resolved,{recursive:true,force:true});
   }
 });
+

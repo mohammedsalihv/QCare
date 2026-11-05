@@ -1,4 +1,4 @@
-const { randomUUID } = require('node:crypto');
+const { createWithIncidentId } = require('../utils/incidentId');
 const { validateIncidentReport } = require('../utils/incidentReport');
 const Incident = require("../models/Incident");
 const Notification = require("../models/Notification");
@@ -11,11 +11,8 @@ const createIncident = async (req, res) => {
     const { title, description, category, location, dateOfIncident, severity } = req.body;
 
     const details = await validateIncidentReport(req.body, req.files || []);
-    const incidentId = 'INC-' + randomUUID().toUpperCase();
-
-    const incident = await Incident.create({
+    const incident = await createWithIncidentId(Incident, {
       ...details,
-      incidentId,
       title,
       description,
       category,
@@ -25,6 +22,7 @@ const createIncident = async (req, res) => {
       reportedBy: req.user._id,
       history: [{ event: "reported", actor: req.user._id, actorName: req.user.employeeName, detail: "Incident submitted" }],
     });
+    const incidentId = incident.incidentId;
 
     try {
     // Create Persistent Notification for Admins

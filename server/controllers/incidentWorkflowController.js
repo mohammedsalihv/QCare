@@ -20,7 +20,7 @@ function filters(user, params) {
   }
   if (params.search) {
     if (typeof params.search !== 'string' || params.search.length > 100) fail('Search must be under 100 characters.');
-    clauses.push({ $or: ['incidentId', 'title', 'location', 'department'].map(key => ({ [key]: { $regex: escapeRegex(params.search), $options: 'i' } })) });
+    clauses.push({ $or: ['incidentId', 'previousIncidentIds', 'title', 'location', 'department'].map(key => ({ [key]: { $regex: escapeRegex(params.search), $options: 'i' } })) });
   }
   for (const key of ['status', 'category', 'riskLevel', 'location', 'department']) if (params[key]) {
     if (typeof params[key] !== 'string' || params[key].length > 200) fail('Invalid filter.');
