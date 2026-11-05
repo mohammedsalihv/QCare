@@ -79,7 +79,7 @@ export default function IncidentDetail() {
       <div className="iw-section-heading"><span>Incident section {tab + 1} of {tabs.length}</span><h2 id="incident-current-section">{tabs[tab]}</h2></div>
       <fieldset key={draftRevision} disabled={busy} className="iw-body" aria-busy={busy} onChange={() => setDirty(true)}>
         <div hidden={tab !== 0} role="region" aria-labelledby="incident-current-section">
-          <section className="iw-card iw-padded"><IncidentReportDetails incident={row}/></section>
+          <IncidentReportDetails incident={row}/>
           {reviewer && !['Closed', 'Rejected', 'Duplicate', 'Closure review'].includes(row.status) && <Triage key={row.__v} row={row} run={run} approve={approve}/>}
         </div>
         <div hidden={tab !== 1} role="region" aria-labelledby="incident-current-section"><Investigation key={row.__v} row={row} editable={investigator && ['Investigating', 'Action in progress', 'Reopened'].includes(row.status)} run={run}/></div>
