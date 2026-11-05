@@ -16,6 +16,7 @@ const incidentSchema = new mongoose.Schema(
     immediateActions: { type: String, default: '' },
     involvedStaff: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     notifyStaff: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    notifyChoice: { type: String, enum: ['', 'Yes', 'No'], default: '' },
     attachments: [{ name: String, mime: String, data: { type: Buffer, select: false }, size: Number }],
     title: {
       type: String,

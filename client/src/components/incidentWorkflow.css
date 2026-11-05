@@ -87,6 +87,7 @@
 @media(max-width:800px) { .iw-workspace { grid-template-columns:1fr; }.iw-sidebar { position:static; max-height:none; padding:12px; }.iw-sidebar-title,.iw-sidebar-help { display:none; }.iw-sidebar nav { display:flex; overflow-x:auto; gap:4px; }.iw-sidebar a,.iw-sidebar nav button { width:auto; white-space:nowrap; flex-shrink:0; }.iw-sidebar .iw-new-report { width:fit-content; margin-bottom:10px; }.iw-record-menu > p { display:none; }.iw-feature-guide { grid-template-columns:1fr 1fr; } }
 
 /* Incident register: readable identifiers, explicit controls and workflow context. */
+.iw-page .iw-reference { font-size:14px; color:#17364d; overflow-wrap:anywhere; }
 .iw-register .iw-register-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:22px 22px 14px; }
 .iw-register-heading h2 { margin:0; font-size:16px; }.iw-register-heading p { margin:5px 0 0; color:#64748b; font-size:12px; }
 .iw-register .iw-date-filters { padding:12px 16px; }

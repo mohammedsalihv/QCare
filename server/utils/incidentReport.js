@@ -8,6 +8,11 @@ async function validateIncidentReport(body, files) {
   const date = new Date(body.dateOfIncident);
   if (!Number.isFinite(+date) || date > new Date()) fail('Choose a valid incident date and time in the past.');
   const result = {};
+  if (body.notifyChoice !== undefined) {
+    if (!['Yes', 'No'].includes(body.notifyChoice)) fail('Choose whether additional staff should be notified.');
+    if (!body.branch || !body.department?.trim() || !body.harmLevel) fail('Select a branch, corresponding department and harm level.');
+  }
+  result.notifyChoice = body.notifyChoice || '';
   if (body.branch) {
     if (!mongoose.isObjectIdOrHexString(body.branch)) fail('Select a valid branch.');
     const branch = await Location.findById(body.branch);
@@ -19,7 +24,6 @@ async function validateIncidentReport(body, files) {
     result[key] = body[key]?.trim() || '';
   }
   if (result.department && !await Department.exists({name:result.department,isActive:{$ne:false}})) fail('Select an active department.');
-  if (body.category !== 'Clinical') result.areaRoom = '';
   result.harmLevel = body.harmLevel || 'Unknown';
   if (!['No harm','Low harm','Moderate harm','Severe harm','Death','Unknown'].includes(result.harmLevel)) fail('Choose a harm level.');
   for (const key of ['involvedStaff','notifyStaff']) {
@@ -28,6 +32,8 @@ async function validateIncidentReport(body, files) {
     result[key] = [...new Set(values)];
     if (await User.countDocuments({_id:{$in:result[key]},isActive:{$ne:false},status:{$nin:['blocked','inactive']}}) !== result[key].length) fail('Select active staff members.');
   }
+  if (result.notifyChoice === 'Yes' && !result.notifyStaff.length) fail('Select at least one staff member to notify.');
+  if (result.notifyChoice === 'No' && result.notifyStaff.length) fail('Remove notification recipients or choose Yes.');
   if (files.reduce((n,f)=>n+f.size,0)>12*1024*1024) fail('Attachments must total 12 MB or less.');
   const allowed = /\.(png|jpe?g|gif|webp|pdf|mp4|mov|webm|mp3|wav|txt|csv|docx|xlsx|pptx)$/i;
   result.attachments = files.map(file=>{

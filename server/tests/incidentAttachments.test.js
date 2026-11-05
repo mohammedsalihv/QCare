@@ -10,6 +10,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 const Department = require('../models/department');
 const Specialty = require('../models/Specialty');
+const Location = require('../models/Location');
 
 // An isolated local MongoDB process. Never connects to the application's database.
 test('incident attachments persist and enforce reporter and recipient access', { timeout: 120000 }, async () => {
@@ -40,8 +41,20 @@ test('incident attachments persist and enforce reporter and recipient access', {
     const base='http://127.0.0.1:'+server.address().port+'/api/incidents';
     const headers=user=>({Authorization:'Bearer '+jwt.sign({id:user._id},process.env.JWT_SECRET||'default_secret')});
     const stranger=await User.create({employeeId:'STRANGER',employeeName:'Other Staff',email:'other@test.invalid',password:'test-password-only',role:'Staff',department:'Medicine',designation:'Physician'});
-    const form=new FormData();form.append('payload',JSON.stringify({title:'Attachment test',description:'Test',category:'Clinical',location:'Branch',dateOfIncident:'2025-01-01',notifyStaff:[String(staff._id)]}));form.append('attachments',new Blob(['test evidence']), 'evidence.txt');
+    const branch = await Location.create({ name: 'Test branch', code: 'TEST-BRANCH' });
+    await Department.create({ name: 'Test department', code: 'TEST-DEPT', isActive: true });
+    const form=new FormData();form.append('payload',JSON.stringify({title:'Attachment test',description:'Complete incident narrative',category:'Clinical',branch:String(branch._id),department:'Test department',areaRoom:'Treatment room 2',dateOfIncident:'2025-01-01T09:30:00+04:00',severity:'High',harmLevel:'No harm',witnesses:'Fictional witness statement',immediateActions:'Device isolated',involvedStaff:[String(staff._id)],notifyChoice:'Yes',notifyStaff:[String(staff._id)]}));form.append('attachments',new Blob(['test evidence']), 'evidence.txt');
+    form.append('attachments',new Blob(['synthetic image fixture']), 'scene.png');
+    form.append('attachments',new Blob(['synthetic video fixture']), 'scene.mp4');
     const created=await fetch(base,{method:'POST',headers:headers(admin),body:form});assert.equal(created.status,201);const row=await created.json();assert.equal(row.attachments[0].data,undefined);
+    assert.match(row.incidentId, /^INC-[0-9A-F-]{36}$/);
+    const detail = await (await fetch(base+'/'+row._id,{headers:headers(admin)})).json();
+    const saved = detail.row || detail;
+    for(const [key,value] of Object.entries({location:'Test branch',department:'Test department',areaRoom:'Treatment room 2',witnesses:'Fictional witness statement',immediateActions:'Device isolated',harmLevel:'No harm',notifyChoice:'Yes',description:'Complete incident narrative'})) assert.equal(saved[key],value,key);
+    assert.equal(saved.involvedStaff[0].employeeName,'Test Doctor');
+    assert.equal(saved.notifyStaff[0].employeeName,'Test Doctor');
+    assert.equal(saved.attachments.length,3);
+    assert.equal((await (await fetch(base+'/register?search='+encodeURIComponent(row.incidentId),{headers:headers(admin)})).json()).total,1);
     const url=base+'/'+row._id+'/attachments/'+row.attachments[0]._id;
     const download=await fetch(url,{headers:headers(staff)});assert.equal(download.status,200);assert.equal(await download.text(),'test evidence');assert.match(download.headers.get('content-disposition'),/^attachment/);
     assert.equal((await fetch(url,{headers:headers(stranger)})).status,404);assert.equal((await fetch(url)).status,401);
