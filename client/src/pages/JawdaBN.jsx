@@ -1,3 +1,4 @@
+import TableToolbar from '../components/TableToolbar';
 import CompactSearch from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
@@ -133,12 +134,12 @@ const JawdaBN = () => {
           <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
             <div className="p-6 border-b border-slate-100 bg-slate-50/30 flex items-center justify-between">
               <h3 className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal">Active Burn Inpatients</h3>
-              <div className="flex items-center gap-2">
+              <TableToolbar>
                  <div className="relative">
 
                     <CompactSearch type="text" placeholder="Search..." className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-orange-500 text-[12px] font-semibold w-48" />
                  </div>
-              </div>
+              </TableToolbar>
             </div>
             <div className="overflow-x-auto">
               <Table className="w-full text-left border-collapse">

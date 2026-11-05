@@ -1,3 +1,4 @@
+import TableToolbar from '../components/TableToolbar';
 import CompactSearch from './../components/CompactSearch';
 import WorkflowNotificationDetail from '../components/WorkflowNotificationDetail';
 import React, { useState, useEffect } from 'react';
@@ -179,7 +180,7 @@ const Notifications = () => {
            {/* Notifications List */}
            <div className="lg:col-span-3">
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                 <div className="p-6 border-b border-slate-100 bg-slate-50/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+                 <TableToolbar>
                     <div className="relative w-full sm:w-96">
 
                        <CompactSearch
@@ -195,7 +196,7 @@ const Notifications = () => {
                           <Filter className="w-5 h-5" />
                        </button>
                     </div>
-                 </div>
+                 </TableToolbar>
 
                  <div className="divide-y divide-slate-100">
                     {loading ? (

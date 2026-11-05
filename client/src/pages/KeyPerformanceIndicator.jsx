@@ -1,3 +1,4 @@
+import TableToolbar from '../components/TableToolbar';
 import CompactSearch from './../components/CompactSearch';
 import './IndicatorSettings.css';
 import Table from '../components/Table.jsx';
@@ -587,7 +588,7 @@ const KeyPerformanceIndicator = () => {
               </div>
 
               {/* search input */}
-              <div className="flex items-center gap-2 max-w-md">
+              <TableToolbar>
                 <div className="relative flex-1">
 
                   <CompactSearch
@@ -598,7 +599,7 @@ const KeyPerformanceIndicator = () => {
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
                   />
                 </div>
-              </div>
+              </TableToolbar>
 
               {/* criteria grid table */}
               <div className="overflow-x-auto">

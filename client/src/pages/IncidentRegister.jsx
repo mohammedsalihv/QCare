@@ -1,9 +1,10 @@
+import Table from '../components/Table';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { ClipboardList, Download, ArrowUpRight, FileChartColumn } from 'lucide-react';
-import Select from '../components/Select';
-import { Search } from 'lucide-react';
+import ListToolbar from '../components/ListToolbar';
+import { IconAction } from '../components/CompactSearch';
 import { incidentStatuses, statusInfo, incidentDate, incidentDeadline } from '../utils/incidentPresentation';
 import Pagination from '../components/Pagination';
 import IncidentDateField from '../components/IncidentDateField';
@@ -51,17 +52,17 @@ export default function IncidentRegister({ view = '' }) {
     <details className="iw-status-guide"><summary>Understand every status <span>Review → Investigate → Take action → Verify → Close</span></summary><div className="iw-status-grid">{statuses.map(status => { const info = statusInfo(status); return <article key={status}><button className={'iw-status-pill iw-tone-' + info.tone} onClick={() => change({ status })}>{info.label}</button><strong>{info.stage}</strong><p>{info.meaning}</p><small>{info.next}</small></article>; })}</div></details>
     {view === 'reports' && <section className="iw-report-options" aria-label="Available reports"><article><FileChartColumn size={22}/><h2>Management summary</h2><p>PDF showing filtered totals by status, risk and category, including overdue work.</p><button className="iw-secondary" disabled={exporting} onClick={() => download(true)}>Download summary PDF</button></article><article><Download size={22}/><h2>Incident register</h2><p>Download all matching records as CSV for spreadsheets, up to 5,000 records.</p><button className="iw-secondary" disabled={exporting} onClick={() => download()}>Download register CSV</button></article><article><ClipboardList size={22}/><h2>Individual incident</h2><p>Use the PDF button on any incident below, or open it and select Download PDF for its investigation, actions, approvals and history.</p><a href="#incident-register-table">Choose an incident below</a></article></section>}
     <section className="iw-card">
-      <div className="iw-register-heading"><div><h2>Incident register</h2><p>{loading ? 'Updating records…' : error ? 'Records unavailable' : result.total + ' matching incident' + (result.total === 1 ? '' : 's')} · Select a title to review the full report</p></div><div className="iw-export-actions"><button className="iw-secondary" disabled={exporting} onClick={() => download()}><Download size={15}/>Export CSV</button><button className="iw-secondary" disabled={exporting} onClick={() => download(true)}><FileChartColumn size={15}/>Summary PDF</button></div></div>
-      <div className="iw-register-filters"><label className="iw-visible-search"><span>Search incidents</span><div><Search size={17}/><input type="search" maxLength={100} placeholder="Incident ID, title, branch or department" value={query.search} onChange={e => change({ search: e.target.value })}/></div></label>
-        <label><span>Status</span><Select compact={false} value={query.status} onChange={e => change({ status: e.target.value })}><option value="">All statuses</option>{statuses.map(status => <option value={status} key={status}>{statusInfo(status).label}</option>)}</Select></label>
-        <label><span>Type</span><Select compact={false} value={query.category || ''} onChange={e => change({ category: e.target.value })}><option value="">All types</option>{['Clinical','Safety','Administrative','Technical','Other'].map(type => <option key={type}>{type}</option>)}</Select></label>
-        <label><span>Risk</span><Select compact={false} value={query.riskLevel || ''} onChange={e => change({ riskLevel: e.target.value })}><option value="">All risks</option>{['Low','Medium','High','Critical'].map(risk => <option key={risk}>{risk}</option>)}</Select></label>
-        <label><span>Sort</span><Select compact={false} value={query.sortBy + ':' + query.direction} onChange={e => { const [sortBy, direction] = e.target.value.split(':'); change({ sortBy, direction }); }}><option value="createdAt:desc">Newest reported</option><option value="createdAt:asc">Oldest reported</option><option value="title:asc">Title A–Z</option><option value="status:asc">Status A–Z</option><option value="investigationDue:asc">Investigation due</option></Select></label>
-        <label><span>Rows</span><Select compact={false} value={query.limit} onChange={e => change({ limit: Number(e.target.value) })}>{[10,25,50,100].map(n => <option key={n}>{n}</option>)}</Select></label>
-      </div>
+      <div className="iw-register-heading"><div><h2>Incident register</h2><p>{loading ? 'Updating records…' : error ? 'Records unavailable' : result.total + ' matching incident' + (result.total === 1 ? '' : 's')} · Select a title to review the full report</p></div></div>
+      <ListToolbar list={{ query, change }} searchLabel="Search incident ID, title, branch or department"
+        statuses={statuses.map(value => ({ value, label: statusInfo(value).label }))}
+        extraFilters={[{ key: 'category', label: 'Filter by incident type', allLabel: 'All types', options: ['Clinical', 'Safety', 'Administrative', 'Technical', 'Other'] }, { key: 'riskLevel', label: 'Filter by risk', allLabel: 'All risks', options: ['Low', 'Medium', 'High', 'Critical'] }]}
+        sorts={[{ value: 'createdAt', label: 'Reported date' }, { value: 'title', label: 'Title' }, { value: 'status', label: 'Status' }, { value: 'investigationDue', label: 'Investigation due' }]}>
+        <IconAction label="Export filtered incidents as CSV" disabled={exporting} onClick={() => download()} />
+        <IconAction label="Download incident summary PDF" disabled={exporting} onClick={() => download(true)} />
+      </ListToolbar>
       <details className="iw-date-filters"><summary>Incident date range</summary><div className="iw-grid"><IncidentDateField label="From" value={query.from} onChange={from => change({ from })}/><IncidentDateField label="To" value={query.to} onChange={to => change({ to })}/></div></details>
       {error && <p role="alert" className="iw-error">{error} <button onClick={() => setRevision(v => v + 1)}>Retry</button></p>}
-      <div className="iw-table-wrap" id="incident-register-table" tabIndex={0} role="region" aria-label="Incident reports"><table className="iw-register-table" aria-busy={loading}><caption className="iw-sr-only">Incident IDs, workflow status, risk, ownership, deadlines and report downloads</caption><thead><tr>{['Incident / location', 'Status / next step', 'Risk / harm', 'Investigator / actions', 'Dates / deadline', 'Report'].map(h => <th scope="col" key={h}>{h}</th>)}</tr></thead><tbody>
+      <div className="iw-table-wrap" id="incident-register-table" tabIndex={0} role="region" aria-label="Incident reports"><Table className="iw-register-table" aria-busy={loading}><caption className="iw-sr-only">Incident IDs, workflow status, risk, ownership, deadlines and report downloads</caption><thead><tr>{['Incident / location', 'Status / next step', 'Risk / harm', 'Investigator / actions', 'Dates / deadline', 'Report'].map(h => <th scope="col" key={h}>{h}</th>)}</tr></thead><tbody>
         {loading ? <tr><td colSpan={6} className="iw-empty">Loading incidents…</td></tr> : error ? null : !result.rows.length ? <tr><td colSpan={6} className="iw-empty">No incidents match these filters. Change the search or status to see more records.</td></tr> : result.rows.map(row => {
           const info = statusInfo(row.status), deadline = incidentDeadline(row), actions = row.actions || [], completed = actions.filter(action => action.completedAt).length;
           return <tr key={row._id}><td><span className="iw-record-id">{row.incidentId}</span><Link className="iw-record-title" to={'/dashboard/incidents/' + row._id}>{row.title}</Link><span className="iw-type-tag">{row.category}</span><small>{row.location}{row.department ? ' · ' + row.department : ''}</small></td>
@@ -71,7 +72,7 @@ export default function IncidentRegister({ view = '' }) {
             <td><strong className={deadline.overdue ? 'iw-overdue' : 'iw-due'}>{deadline.overdue ? 'Overdue · ' : ''}{deadline.label}</strong>{deadline.kind && <small>{deadline.kind}</small>}<small>Occurred: {incidentDate(row.dateOfIncident)}</small><small>Reported: {incidentDate(row.createdAt)}</small></td>
             <td><div className="iw-row-tools"><Link className="iw-secondary" to={'/dashboard/incidents/' + row._id} aria-label={'Open incident ' + row.incidentId}>Open<ArrowUpRight size={14}/></Link><button type="button" className="iw-secondary" disabled={exporting} aria-label={'Download PDF for ' + row.incidentId} onClick={() => downloadReport(row)}><Download size={14}/>PDF</button></div></td></tr>;
         })}
-      </tbody></table></div><Pagination totalRecords={error ? 0 : result.total} recordsPerPage={query.limit} currentPage={query.page} onPageChange={page => setQuery(q => ({ ...q, page }))}/>
+      </tbody></Table></div><Pagination totalRecords={error ? 0 : result.total} recordsPerPage={query.limit} currentPage={query.page} onPageChange={page => setQuery(q => ({ ...q, page }))}/>
     </section>
   </div>;
 }

@@ -1,3 +1,4 @@
+import TableToolbar from '../TableToolbar';
 import CompactSearch from './../CompactSearch';
 import React from 'react';
 import { ShieldAlert, AlertTriangle, Search, Plus, Info } from 'lucide-react';
@@ -5,7 +6,7 @@ import { ShieldAlert, AlertTriangle, Search, Plus, Info } from 'lucide-react';
 const HighAlertMedicationList = ({ medications }) => {
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between gap-4">
+      <TableToolbar>
          <div className="relative flex-1">
 
             <CompactSearch
@@ -18,7 +19,7 @@ const HighAlertMedicationList = ({ medications }) => {
             <Plus className="w-4 h-4" />
             Register Med
          </button>
-      </div>
+      </TableToolbar>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {medications?.map((med) => (

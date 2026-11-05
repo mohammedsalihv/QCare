@@ -1,3 +1,4 @@
+import TableToolbar from '../components/TableToolbar';
 import CompactSearch from './../components/CompactSearch';
 import { roleOptions, roleLabel } from '../utils/roles';
 import Table from '../components/Table.jsx';
@@ -349,8 +350,7 @@ const UserManagement = () => {
 
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           {/* Filter Toolbar */}
-          <div className="p-5 border-b border-slate-100 bg-slate-50/30">
-            <div className="flex flex-wrap items-center gap-3">
+          <TableToolbar>
               {/* Search */}
               <div className="relative flex-1 min-w-[200px]">
 
@@ -392,8 +392,7 @@ const UserManagement = () => {
               <span className="ml-auto text-[12px] font-semibold text-slate-800 normal-case tracking-normal">
                 {filteredSortedUsers.length} of {users.length} records
               </span>
-            </div>
-          </div>
+          </TableToolbar>
 
           <div className="overflow-x-auto custom-scrollbar">
             <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">

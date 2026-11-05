@@ -1,3 +1,4 @@
+import TableToolbar from '../components/TableToolbar';
 import { useNotification } from '../components/NotificationContext';
 import CompactSearch from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
@@ -227,7 +228,7 @@ const KPIMonitor = () => {
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-100 flex flex-col lg:flex-row items-center justify-between gap-4 bg-slate-50/20">
+          <TableToolbar>
             <div className="relative w-full lg:w-[400px]">
 
                <CompactSearch
@@ -242,7 +243,7 @@ const KPIMonitor = () => {
                 <span className="text-[12px] font-semibold text-slate-800 normal-case">Filters</span>
               </div>
             </div>
-          </div>
+          </TableToolbar>
 
           <div className="overflow-x-auto">
             <Table className="w-full text-left border-collapse table-fixed min-w-[1100px]">

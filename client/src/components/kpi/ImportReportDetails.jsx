@@ -1,3 +1,4 @@
+import Table from '../Table';
 export default function ImportReportDetails({ report }) {
   const summary = report.importSummary;
   if (!summary) return null;
@@ -14,6 +15,6 @@ export default function ImportReportDetails({ report }) {
     {summary.warnings?.map(warning => <p key={warning}>{warning}</p>)}
     {summary.analysis && <div><strong>Calculated improvement analysis</strong><p>{summary.analysis.targetMet === null ? 'Not assessed' : summary.analysis.targetMet ? 'Target met' : 'Target not met'} / {summary.analysis.status.replaceAll('-', ' ')}</p>{summary.analysis.suggestions?.map(item => <p key={item}>{item}</p>)}</div>}
     {summary.departments?.length > 0 && <div><strong>Department / specialty results</strong>{summary.departments.map(item => <p key={item.label}>{item.label}: {item.numerator} / {item.denominator} = {item.calculatedValue ?? 'Not assessed'}</p>)}</div>}
-    {summary.caseObservations?.length > 0 && <details><summary>Anonymous source observations</summary><div className="ki-table-scroll"><table><thead><tr><th scope="col">Reference</th><th scope="col">Date</th><th scope="col">Outcome</th><th scope="col">Reason category</th><th scope="col">Department / specialty</th></tr></thead><tbody>{summary.caseObservations.map((item, index) => <tr key={index}><td>{item.recordId}</td><td>{item.date}</td><td>{item.outcome === 'yes' ? 'Numerator match' : item.outcome === 'excluded' ? 'Excluded' : 'No numerator match'}</td><td>{item.reason || '—'}</td><td>{item.department || 'Unassigned'}</td></tr>)}</tbody></table></div></details>}
+    {summary.caseObservations?.length > 0 && <details><summary>Anonymous source observations</summary><div className="ki-table-scroll"><Table><thead><tr><th scope="col">Reference</th><th scope="col">Date</th><th scope="col">Outcome</th><th scope="col">Reason category</th><th scope="col">Department / specialty</th></tr></thead><tbody>{summary.caseObservations.map((item, index) => <tr key={index}><td>{item.recordId}</td><td>{item.date}</td><td>{item.outcome === 'yes' ? 'Numerator match' : item.outcome === 'excluded' ? 'Excluded' : 'No numerator match'}</td><td>{item.reason || '—'}</td><td>{item.department || 'Unassigned'}</td></tr>)}</tbody></Table></div></details>}
   </details>;
 }

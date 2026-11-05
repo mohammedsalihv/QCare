@@ -1,3 +1,4 @@
+import TableToolbar from '../components/TableToolbar';
 import CompactSearch from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
 import React, { useState, useEffect } from 'react';
@@ -111,7 +112,7 @@ const AuditLog = () => {
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/20">
+          <TableToolbar>
             <div className="relative w-full sm:w-[400px]">
 
                <CompactSearch
@@ -122,7 +123,7 @@ const AuditLog = () => {
                  className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-[13px] font-semibold"
                />
             </div>
-          </div>
+          </TableToolbar>
 
           <div className="overflow-x-auto">
             <Table className="w-full text-left border-collapse min-w-[1200px]">

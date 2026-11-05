@@ -1,3 +1,4 @@
+import TableToolbar from '../components/TableToolbar';
 import CompactSearch from './../components/CompactSearch';
 import UserSelect from '../components/UserSelect';
 import Table from '../components/Table.jsx';
@@ -236,7 +237,7 @@ const RiskManagement = () => {
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-100 bg-slate-50/20 flex flex-col lg:flex-row items-center justify-between gap-4">
+          <TableToolbar>
             <div className="relative w-full lg:w-[450px]">
 
                <CompactSearch
@@ -255,7 +256,7 @@ const RiskManagement = () => {
                   View Matrix
                </button>
             </div>
-          </div>
+          </TableToolbar>
 
           <div className="overflow-x-auto">
             <Table className="w-full text-left border-collapse table-fixed min-w-[1200px]">

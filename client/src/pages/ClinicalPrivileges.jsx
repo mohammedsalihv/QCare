@@ -1,3 +1,4 @@
+import TableToolbar from '../components/TableToolbar';
 import CompactSearch from './../components/CompactSearch';
 import './ClinicalPrivileges.css';
 import UserSelect from '../components/UserSelect';
@@ -172,7 +173,7 @@ const ClinicalPrivileges = () => {
                     <Plus className="w-3.5 h-3.5" /> Add Procedure Category
                   </button>
                 </div>
-                <div className="relative">
+                <TableToolbar>
 
                   <CompactSearch
                     type="text" 
@@ -181,7 +182,7 @@ const ClinicalPrivileges = () => {
                     onChange={(e) => setProcCategorySearch(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
                   />
-                </div>
+                </TableToolbar>
                 <div className="overflow-x-auto">
                   <Table className="w-full text-left text-[13px]">
                     <thead>
@@ -215,7 +216,7 @@ const ClinicalPrivileges = () => {
                     <Plus className="w-3.5 h-3.5" /> Add Procedure
                   </button>
                 </div>
-                <div className="relative">
+                <TableToolbar>
 
                   <CompactSearch
                     type="text" 
@@ -224,7 +225,7 @@ const ClinicalPrivileges = () => {
                     onChange={(e) => setProcSearch(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
                   />
-                </div>
+                </TableToolbar>
                 <div className="overflow-x-auto">
                   <Table className="w-full text-left text-[13px]">
                     <thead>
@@ -414,9 +415,8 @@ const ClinicalPrivileges = () => {
               <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Privilege register</h3>
               <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Lookup Clinician Privilege Registries</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <TableToolbar>
               <div>
-                <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Clinician Name</label>
                 <CompactSearch
                   type="text" 
                   placeholder="Search Doctor..."
@@ -426,9 +426,7 @@ const ClinicalPrivileges = () => {
                 />
               </div>
               <div>
-                <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Specialty</label>
-                <Select 
-                  value={searchSpecialty}
+                <Select compact aria-label="Filter by specialty" value={searchSpecialty}
                   onChange={(e) => setSearchSpecialty(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
                 >
@@ -439,9 +437,7 @@ const ClinicalPrivileges = () => {
                 </Select>
               </div>
               <div>
-                <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Status</label>
-                <Select 
-                  value={searchStatus}
+                <Select compact aria-label="Filter by status" value={searchStatus}
                   onChange={(e) => setSearchStatus(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
                 >
@@ -451,7 +447,7 @@ const ClinicalPrivileges = () => {
                   <option value="Expired">Expired</option>
                 </Select>
               </div>
-            </div>
+            </TableToolbar>
 
             <div className="overflow-x-auto pt-4">
               <Table className="w-full text-left text-[13px]">

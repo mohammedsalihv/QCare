@@ -1,3 +1,4 @@
+import TableToolbar from '../components/TableToolbar';
 import CompactSearch, { IconAction } from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
 import Select from '../components/Select.jsx';
@@ -129,7 +130,7 @@ const JawdaAOT = () => {
         {/* Table Section */}
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="p-6 border-b border-slate-100 bg-slate-50/30 flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <TableToolbar>
                <div className="relative">
 
                   <CompactSearch type="text" placeholder="Search recipients..." className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold w-64" />
@@ -137,7 +138,7 @@ const JawdaAOT = () => {
                <IconAction label="Filter" className="flex items-center gap-2 px-3 py-2.5 border border-slate-200 rounded-xl text-[12px] font-semibold text-slate-800 hover:bg-white transition-all normal-case tracking-normal">
                   <Filter className="w-3.5 h-3.5" /> Filter
                </IconAction>
-            </div>
+            </TableToolbar>
             <div className="flex items-center gap-2">
                <span className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Reporting Cycle: Feb 2026 (H2-2025)</span>
             </div>

@@ -153,6 +153,10 @@ button:disabled { cursor: not-allowed; }
 
 /* Neutral, right-aligned list controls shared across modules. */
 .qc-list-toolbar { justify-content:flex-end; }
+.qc-list-toolbar > :is(div,label):has(.qc-compact-search),
+.qc-list-toolbar > :is(div,label):has(.qc-icon-select) { width:auto; min-width:0; max-width:100%; flex:0 0 auto; margin:0; }
+.qc-list-toolbar > .ca-search { padding:0; border:0; background:transparent; }
+.qc-list-toolbar .qc-compact-search input { height:auto; }
 .qc-main :is(.flex,.ki-filters,.ca-filters,.ca-toolbar):has(> .qc-compact-search),
 .qc-main :is(.flex,.ki-filters,.ca-filters,.ca-toolbar):has(> div > .qc-compact-search),
 .qc-main :is(.flex,.ki-filters,.ca-filters,.ca-toolbar):has(> .qc-icon-select) { justify-content:flex-end; }

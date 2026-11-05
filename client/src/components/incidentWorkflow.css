@@ -89,13 +89,7 @@
 /* Incident register: readable identifiers, explicit controls and workflow context. */
 .iw-register .iw-register-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:22px 22px 14px; }
 .iw-register-heading h2 { margin:0; font-size:16px; }.iw-register-heading p { margin:5px 0 0; color:#64748b; font-size:12px; }
-.iw-export-actions { display:flex; flex-wrap:wrap; gap:8px; }
-.iw-register .iw-register-filters { display:grid; grid-template-columns:minmax(240px,2fr) minmax(170px,1.3fr) minmax(120px,1fr) minmax(110px,.8fr) minmax(150px,1fr) 80px; gap:12px; padding:8px 22px 18px; align-items:end; }
-.iw-register .iw-register-filters label { min-width:0; gap:6px; font-size:12px; color:#526579; }
-.iw-register-filters .qc-custom-select { width:100%; min-width:0; height:44px; padding:0; box-sizing:border-box; border-color:#dce3e9; }
-.iw-register-filters .qc-select-button { height:100%; padding:0 12px; }
-.iw-visible-search > div { display:flex; align-items:center; gap:8px; height:44px; box-sizing:border-box; border:1px solid #dce3e9; border-radius:8px; padding:0 12px; background:white; }.iw-register .iw-visible-search input { height:100%; border:0; padding:0; font-size:13px; }.iw-visible-search svg { flex-shrink:0; color:#64748b; }
-.iw-register .iw-date-filters { padding-left:22px; padding-right:22px; }
+.iw-register .iw-date-filters { padding:12px 16px; }
 .iw-register .iw-register-table { min-width:1090px; table-layout:fixed; font-size:12px; }.iw-register-table th:nth-child(1) { width:26%; }.iw-register-table th:nth-child(2) { width:23%; }.iw-register-table th:nth-child(3) { width:12%; }.iw-register-table th:nth-child(4) { width:15%; }.iw-register-table th:nth-child(5) { width:15%; }.iw-register-table th:nth-child(6) { width:9%; }
 .iw-register .iw-register-table th { padding:13px 16px; color:#526579; font-size:11px; background:#f3f7fa; border-top:1px solid #e5edf2; white-space:normal; }
 .iw-register .iw-register-table td { padding:20px 16px; line-height:1.55; }.iw-register-table tbody tr:nth-child(even) { background:#fafcfd; }.iw-register-table tbody tr:hover { background:#f0f8f7; }
@@ -109,5 +103,4 @@
 .iw-overdue { color:#b42336; font-size:12px; }.iw-due { color:#344b60; font-size:12px; font-weight:600; }.iw-row-tools { display:flex; flex-direction:column; gap:8px; align-items:stretch; }.iw-register .iw-row-tools .iw-secondary { font-size:11px; padding:7px 9px; color:#365268; white-space:nowrap; }.iw-register .iw-row-tools .iw-secondary:hover { color:#0f665e; background:#eaf6f3; border-color:#b6d8cf; }
 .iw-page .iw-status-guide { border:1px solid #dce6ed; border-radius:10px; padding:14px 18px; background:white; margin:0 0 18px; }.iw-status-guide summary { color:#29465c; }.iw-status-guide summary > span { font-weight:400; color:#728397; margin-left:12px; font-size:11px; }.iw-status-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:18px; }.iw-status-grid article { border-top:1px solid #e6edf2; padding-top:14px; }.iw-status-grid strong { display:block; font-size:11px; margin:8px 0; color:#526579; }.iw-status-grid p { font-size:12px; margin:5px 0; }.iw-status-grid small { line-height:1.6; }.iw-status-grid button { cursor:pointer; }
 .iw-sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-@media(max-width:1450px) { .iw-register .iw-register-filters { grid-template-columns:minmax(220px,2fr) 1.4fr 1fr; } }
-@media(max-width:800px) { .iw-register .iw-register-heading { align-items:flex-start; flex-direction:column; padding:18px 16px 12px; }.iw-register .iw-register-filters { grid-template-columns:1fr 1fr; padding:8px 16px 16px; }.iw-register-filters .iw-visible-search { grid-column:1/-1; }.iw-status-grid { grid-template-columns:1fr; }.iw-status-guide summary > span { display:block; margin:6px 0 0; } }
+@media(max-width:800px) { .iw-register .iw-register-heading { align-items:flex-start; flex-direction:column; padding:18px 16px 12px; } .iw-status-grid { grid-template-columns:1fr; }.iw-status-guide summary > span { display:block; margin:6px 0 0; } }

@@ -1,3 +1,4 @@
+import TableToolbar from '../components/TableToolbar';
 import CompactSearch from './../components/CompactSearch';
 import Table from '../components/Table.jsx';
 import React, { useState } from 'react';
@@ -102,7 +103,7 @@ const PasswordManagement = () => {
           {/* Left Panel: Force Reset Dashboard */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-              <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/20">
+              <TableToolbar>
                 <div>
                    <h4 className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal">Active User Accounts</h4>
                    <p className="text-[12px] text-slate-500 font-medium tracking-tight mt-1">Manage corporate login and active resets</p>
@@ -117,7 +118,7 @@ const PasswordManagement = () => {
                      className="w-full pl-11 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] focus:ring-4 focus:ring-[var(--color-primary)]/5 transition-all text-[13px] font-semibold"
                    />
                 </div>
-              </div>
+              </TableToolbar>
 
               <div className="overflow-x-auto">
                 <Table className="w-full text-left border-collapse table-fixed min-w-[800px]">

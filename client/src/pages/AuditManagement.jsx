@@ -1,3 +1,4 @@
+import TableToolbar from '../components/TableToolbar';
 import CompactSearch from './../components/CompactSearch';
 import UserSelect from '../components/UserSelect';
 import Table from '../components/Table.jsx';
@@ -272,7 +273,7 @@ const AuditManagement = () => {
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-100 bg-slate-50/20 flex flex-col lg:flex-row items-center justify-between gap-4">
+          <TableToolbar>
             <div className="relative w-full lg:w-[400px]">
 
                <CompactSearch
@@ -281,7 +282,7 @@ const AuditManagement = () => {
                  className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold"
                />
             </div>
-          </div>
+          </TableToolbar>
 
           <div className="overflow-x-auto">
             <Table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
