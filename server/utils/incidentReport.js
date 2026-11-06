@@ -21,7 +21,7 @@ async function validateIncidentReport(body, files) {
   } else if (!body.location?.trim()) fail('Select a branch.');
   for (const key of ['department','areaRoom','witnesses','immediateActions']) {
     if (body[key] !== undefined && (typeof body[key] !== 'string' || body[key].length > 5000)) fail('Invalid ' + key + '.');
-    result[key] = body[key]?.trim() || '';
+    result[key] = key === 'department' && body[key] === '__auto__' ? '' : body[key]?.trim() || '';
   }
   if (result.department && !await Department.exists({name:result.department,isActive:{$ne:false}})) fail('Select an active department.');
   result.harmLevel = body.harmLevel || 'Unknown';

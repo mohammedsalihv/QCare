@@ -33,7 +33,9 @@ module.exports = function incidentPdf(row, options = {}) {
         [field('Description', row.description)], [field('Immediate actions', row.immediateActions)],
         [field('Involved staff', (row.involvedStaff || []).map(person).join(', ')), field('Notified staff', (row.notifyStaff || []).map(person).join(', '))],
         [field('Additional staff notification requested', row.notifyChoice || (row.notifyStaff?.length ? 'Yes - recipients recorded' : 'Not recorded in this older report'))],
-        [field('Witnesses', row.witnesses)]
+        [field('Witnesses', row.witnesses)],
+        [field('Accountable department manager', person(row.primaryResponsible)), field('Secondary branch responsible person', person(row.secondaryResponsible))],
+        [field('Assignment basis', row.routingReason)]
       ]);
       table('03', 'Investigation & risk assessment', [], [.5, .5], investigationRecorded ? [
         [field('Investigator', person(row.assignedTo)), field('Investigation deadline', date(row.investigationDue))],
@@ -45,6 +47,11 @@ module.exports = function incidentPdf(row, options = {}) {
         `${person(a.owner)}\n\nDue: ${date(a.dueDate)}`,
         a.completedAt ? `Completed: ${date(a.completedAt)}\nBy: ${person(a.completedBy)}\n\n${a.completion || 'Not recorded'}` : 'Open - completion pending'
       ]) : [[field('No actions planned', 'An action must state what will be done, its type, owner, deadline and success criteria. Completion evidence is recorded after plan approval.')]]);
+      if (row.opinions?.length) table('OP', 'Department / manager opinions', ['Request / requested by', 'Recipient / status', 'Opinion'], [.4, .25, .35], row.opinions.map(o => [
+        `${o.question}\nRequested by: ${person(o.requestedBy)}\n${date(o.requestedAt)}`,
+        `${person(o.recipient)}\n${o.respondedAt ? 'Responded: ' + date(o.respondedAt) : 'Awaiting opinion'}`,
+        o.response || 'Response pending',
+      ]));
       table('05', 'Closure & effectiveness', [], [.5, .5], closureRecorded ? [
         [field('Approval position', row.status === 'Closed' ? 'Independent closure approved.' : ['Rejected', 'Duplicate'].includes(row.status) ? 'Review decision recorded; see activity history.' : 'Closure is not yet approved.')],
         [field('Closure summary', row.closureSummary)],

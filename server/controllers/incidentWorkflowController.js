@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Incident = require('../models/Incident');
 const Notification = require('../models/Notification');
 const { accessQuery, applyCommand, record, fail } = require('../utils/incidentWorkflow');
-const populate = query => query.populate([{ path: 'reportedBy assignedTo closedBy', select: 'employeeName employeeId' }, { path: 'involvedStaff notifyStaff actions.owner actions.completedBy', select: 'employeeName employeeId' }]);
+const populate = query => query.populate([{ path: 'reportedBy assignedTo primaryResponsible secondaryResponsible closedBy opinions.recipient opinions.requestedBy', select: 'employeeName employeeId' }, { path: 'involvedStaff notifyStaff actions.owner actions.completedBy', select: 'employeeName employeeId' }]);
 const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const done = ['Closed', 'Rejected', 'Duplicate'];
 function filters(user, params) {
@@ -26,7 +26,7 @@ function filters(user, params) {
     if (typeof params[key] !== 'string' || params[key].length > 200) fail('Invalid filter.');
     clauses.push({ [key]: params[key] });
   }
-  if (params.scope === 'mine') clauses.push({ $or: [{ assignedTo: user._id }, { actions: { $elemMatch: { owner: user._id, completedAt: null } } }] });
+  if (params.scope === 'mine') clauses.push({ $or: [{ assignedTo: user._id }, { primaryResponsible: user._id }, { secondaryResponsible: user._id }, { opinions: { $elemMatch: { recipient: user._id, respondedAt: null } } }, { actions: { $elemMatch: { owner: user._id, completedAt: null } } }] });
   if (params.overdue === 'yes') clauses.push({ status: { $nin: done }, $or: [{ investigationDue: { $lt: new Date() }, status: { $in: ['Accepted', 'Investigating', 'Reopened'] } }, { actions: { $elemMatch: { completedAt: null, dueDate: { $lt: new Date() } } } }] });
   for (const [key, op] of [['from', '$gte'], ['to', '$lte']]) if (params[key]) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(params[key])) fail('Invalid date filter.');
@@ -65,11 +65,12 @@ async function command(req, res) {
     await row.save();
     // Delivery is best effort and must never turn a saved mutation into a retryable failure.
     try {
-      const recipients = new Set([row.reportedBy, row.assignedTo, ...row.actions.map(a => a.owner)].filter(Boolean).map(String));
+      const recipients = new Set([row.reportedBy, row.assignedTo, row.primaryResponsible, row.secondaryResponsible, ...row.actions.map(a => a.owner), ...(row.opinions || []).filter(o => !o.respondedAt).map(o => o.recipient)].filter(Boolean).map(String));
       recipients.delete(String(req.user._id));
       if (row.status === 'Closure review') await Notification.create({ type: 'system_alert', message: `Incident ${row.incidentId} awaits closure review.`, user: req.user.employeeName || 'Staff', userId: req.user._id, recipientRoles: ['admin', 'superadmin', 'qualitymanager'], actionLink: `/dashboard/incidents/${row._id}` });
       for (const recipientId of recipients) {
-        await Notification.create({ type: 'system_alert', message: `Incident ${row.incidentId}: ${row.status}`, user: req.user.employeeName || 'Staff', userId: req.user._id, recipientRole: 'user', recipientId, actionLink: `/dashboard/incidents/${row._id}` });
+        const update = req.body.command === 'requestOpinion' ? 'a department / manager opinion was requested' : req.body.command === 'respondOpinion' ? 'an opinion was submitted' : row.status;
+        await Notification.create({ type: 'system_alert', message: `Incident ${row.incidentId}: ${update}`, user: req.user.employeeName || 'Staff', userId: req.user._id, recipientRole: 'user', recipientId, actionLink: `/dashboard/incidents/${row._id}` });
         req.io?.to(recipientId).emit('new-notification', { type: 'system_alert' });
       }
     } catch { console.error('Incident workflow notification delivery failed for ' + row.incidentId); }

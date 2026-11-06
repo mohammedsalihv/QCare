@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const User = require('../models/users');
 const reviewer = user => ['admin', 'superadmin', 'qualitymanager'].includes(user.role?.toLowerCase());
 const same = (a, b) => String(a?._id || a) === String(b?._id || b);
-const accessQuery = user => reviewer(user) ? {} : { $or: [{ reportedBy: user._id }, { assignedTo: user._id }, { notifyStaff: user._id }, { 'actions.owner': user._id }] };
-const canRead = (row, user) => reviewer(user) || same(row.reportedBy, user._id) || same(row.assignedTo, user._id) || row.notifyStaff.some(id => same(id, user._id)) || row.actions.some(action => same(action.owner, user._id));
-const canInvestigate = (row, user) => reviewer(user) || same(row.assignedTo, user._id);
+const accessQuery = user => reviewer(user) ? {} : { $or: [{ reportedBy: user._id }, { assignedTo: user._id }, { notifyStaff: user._id }, { primaryResponsible: user._id }, { secondaryResponsible: user._id }, { 'opinions.recipient': user._id }, { 'actions.owner': user._id }] };
+const canRead = (row, user) => reviewer(user) || same(row.reportedBy, user._id) || same(row.assignedTo, user._id) || same(row.primaryResponsible, user._id) || same(row.secondaryResponsible, user._id) || (row.opinions || []).some(opinion => same(opinion.recipient, user._id)) || row.notifyStaff.some(id => same(id, user._id)) || row.actions.some(action => same(action.owner, user._id));
+const canInvestigate = (row, user) => reviewer(user) || same(row.assignedTo, user._id) || same(row.primaryResponsible, user._id);
 const fail = (message, status = 400) => { const error = new Error(message); error.status = status; throw error; };
 const text = (value, label, required = false, max = 5000) => {
   if (value === undefined && !required) return '';
@@ -35,20 +35,44 @@ async function applyCommand(row, user, body) {
   let detail = '';
   switch (command) {
     case 'accept': case 'assign':
-      requireReviewer();
+      if (!(command === 'accept' && same(row.primaryResponsible, user._id) && same(body.assignedTo, row.assignedTo))) requireReviewer();
       if (command === 'accept' && !['Pending', 'Needs clarification', 'Reopened'].includes(row.status)) fail('This incident has already been accepted.');
       if (row.status === 'Closure review') fail('Return the incident for further work before changing its investigator.');
       row.assignedTo = await activeUser(body.assignedTo);
+      if (manager && body.primaryResponsible !== undefined) row.primaryResponsible = body.primaryResponsible ? await activeUser(body.primaryResponsible) : undefined;
+      if (manager && body.secondaryResponsible !== undefined) row.secondaryResponsible = body.secondaryResponsible ? await activeUser(body.secondaryResponsible) : undefined;
+      if (manager) { row.routingSource = 'manual'; row.routingReason = 'Assigned by Quality reviewer'; }
       row.investigationDue = date(body.investigationDue, 'investigation deadline');
       row.riskLevel = choice(body.riskLevel, ['Low', 'Medium', 'High', 'Critical'], 'initial risk');
       if (command === 'accept' || row.status === 'Resolved') row.status = 'Accepted';
       detail = `Investigator ${row.assignedTo}; deadline ${row.investigationDue.toISOString()}; risk ${row.riskLevel}.`; break;
+    case 'route': {
+      requireReviewer();
+      if (!['Pending', 'Needs clarification', 'Accepted', 'Reopened'].includes(row.status)) fail('Automatic routing is available before investigation begins.');
+      const routing = await require('./incidentRouting').resolveRouting(row);
+      if (!routing.assignedTo) fail(routing.routingReason);
+      row.secondaryResponsible = undefined;
+      row.primaryResponsible = undefined;
+      Object.assign(row, routing); detail = routing.routingReason; break;
+    }
+    case 'requestOpinion':
+      if (!investigator && !same(row.secondaryResponsible, user._id)) fail('Only the investigator, branch responsible person or Quality reviewer can request an opinion.', 403);
+      if (row.opinions.length >= 50) fail('This incident already has 50 opinion requests.');
+      row.opinions.push({ recipient: await activeUser(body.recipient), requestedBy: user._id, question: text(body.question, 'Opinion request', true) });
+      detail = 'Department / manager opinion requested'; break;
+    case 'respondOpinion': {
+      const opinion = row.opinions.id(body.opinionId);
+      if (!opinion || !same(opinion.recipient, user._id)) fail('Only the requested person can submit this opinion.', 403);
+      if (opinion.respondedAt) fail('This opinion has already been submitted. Add any further clarification as a comment.');
+      opinion.response = text(body.response, 'Opinion', true); opinion.respondedAt = new Date();
+      detail = 'Requested opinion submitted'; break;
+    }
     case 'clarify': case 'reject': case 'duplicate':
       requireReviewer();
       if (!['Pending', 'Needs clarification', 'Reopened'].includes(row.status)) fail('Triage decisions apply only before acceptance.');
       detail = reason(); row.status = { clarify: 'Needs clarification', reject: 'Rejected', duplicate: 'Duplicate' }[command]; break;
     case 'start':
-      requireInvestigator();
+      if (!manager && !same(row.assignedTo, user._id)) fail('Only the Quality investigator or reviewer can start the investigation.', 403);
       if (!['Accepted', 'Reopened', 'Resolved'].includes(row.status)) fail('Accept this incident before starting investigation.');
       if (!row.assignedTo) fail('Assign an investigator before starting investigation.');
       row.status = 'Investigating'; break;
@@ -90,13 +114,16 @@ async function applyCommand(row, user, body) {
     }
     case 'requestClosure':
       requireInvestigator();
+      if (row.primaryResponsible && !manager && !same(row.primaryResponsible, user._id)) fail('The accountable department manager must request closure.', 403);
+      if (row.opinions.some(o => !o.respondedAt)) fail('Obtain all requested opinions before requesting closure.');
       if (!['Action in progress', 'Resolved'].includes(row.status) || !row.findings?.trim() || !row.rootCause?.trim() || !row.actions.length || row.actions.some(a => !a.completedAt)) fail('Record findings and root cause, and complete all actions before requesting closure.');
       row.closureSummary = text(body.closureSummary, 'Closure summary', true);
       row.status = 'Closure review'; break;
     case 'close':
       requireReviewer();
+      if (row.opinions.some(o => !o.respondedAt)) fail('Obtain all requested opinions before approving closure.');
       if (row.status !== 'Closure review') fail('Request closure review first.');
-      if (same(row.assignedTo, user._id) || same(row.reportedBy, user._id) || row.actions.some(a => same(a.owner, user._id) || same(a.completedBy, user._id))) fail('Closure must be approved by a reviewer independent of the reporter, investigator and action owners.', 403);
+      if (same(row.primaryResponsible, user._id) || same(row.secondaryResponsible, user._id) || same(row.assignedTo, user._id) || same(row.reportedBy, user._id) || row.actions.some(a => same(a.owner, user._id) || same(a.completedBy, user._id))) fail('Closure must be approved by a reviewer independent of the responsible managers, reporter, investigator and action owners.', 403);
       if (!row.actions.length || row.actions.some(a => !a.completedAt)) fail('Complete all actions first.');
       row.effectiveness = choice(body.effectiveness, ['Effective'], 'effective review result');
       row.effectivenessEvidence = text(body.effectivenessEvidence, 'Effectiveness evidence', true);

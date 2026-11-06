@@ -19,6 +19,7 @@ export default function IncidentWorkspace({ children, beforeNavigate, busy = fal
   const view = new URLSearchParams(location.search).get('view') || '';
   const isRegister = location.pathname === '/dashboard/incidents';
   const isNew = location.pathname.endsWith('/new');
+  const canRoute = ['admin', 'superadmin', 'qualitymanager'].includes(JSON.parse(localStorage.getItem('userInfo') || '{}').role?.toLowerCase());
   const follow = (event, target) => {
     if (busy) { event.preventDefault(); return; }
     if (beforeNavigate && !event.metaKey && !event.ctrlKey && !event.shiftKey && event.button === 0) {
@@ -32,7 +33,7 @@ export default function IncidentWorkspace({ children, beforeNavigate, busy = fal
       <nav aria-label="Incident management menu">{links.map(([key, label, Icon]) => {
         const target = '/dashboard/incidents' + (key ? '?view=' + key : '');
         return <Link key={key} to={target} aria-current={isRegister && view === key ? 'page' : undefined} onClick={event => follow(event, target)}>{createElement(Icon, { size: 17, strokeWidth: 2 })}<span>{label}</span></Link>;
-      })}</nav>
+      })}{canRoute && <Link to="/dashboard/incidents/routing" aria-current={location.pathname.endsWith('/routing') ? 'page' : undefined} onClick={event => follow(event, '/dashboard/incidents/routing')}><UserRoundCheck size={17}/><span>Responsibility routing</span></Link>}</nav>
       {sections && <nav className="iw-record-menu" aria-label="Sections in this incident"><p>This incident</p>{sections.map((label, index) => <button type="button" key={label} disabled={busy} aria-current={activeSection === index ? 'step' : undefined} onClick={() => onSectionChange(index)}><span className="iw-menu-number">{index + 1}</span>{label}</button>)}</nav>}
       <p className="iw-sidebar-help">Open an incident to review its details and next action. Available actions depend on your role.</p>
     </aside>

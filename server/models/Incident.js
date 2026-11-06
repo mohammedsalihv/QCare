@@ -62,6 +62,18 @@ const incidentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    primaryResponsible: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    secondaryResponsible: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    routingSource: { type: String, default: '' },
+    routingReason: { type: String, default: '' },
+    opinions: [{
+      recipient: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+      requestedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+      question: { type: String, required: true },
+      requestedAt: { type: Date, default: Date.now },
+      response: String,
+      respondedAt: Date,
+    }],
     findings: {
       type: String,
       default: "",
@@ -108,5 +120,8 @@ incidentSchema.index({ reportedBy: 1, createdAt: -1 });
 incidentSchema.index({ assignedTo: 1, createdAt: -1 });
 incidentSchema.index({ 'actions.owner': 1 });
 incidentSchema.index({ notifyStaff: 1 });
+incidentSchema.index({ secondaryResponsible: 1 });
+incidentSchema.index({ primaryResponsible: 1 });
+incidentSchema.index({ 'opinions.recipient': 1 });
 
 module.exports = mongoose.model("Incident", incidentSchema);

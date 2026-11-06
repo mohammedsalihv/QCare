@@ -1,5 +1,5 @@
 {
-  "Pending": { "label": "Awaiting triage", "stage": "1. Review", "tone": "amber", "meaning": "Report submitted; acceptance and assignment are pending.", "next": "Quality reviewer: review the report and assign an investigator." },
+  "Pending": { "label": "Awaiting triage", "stage": "1. Review", "tone": "amber", "meaning": "Report submitted; acceptance is pending.", "next": "Department owner: accept responsibility. Quality: confirm department ownership and investigator assignment." },
   "Needs clarification": { "label": "Needs clarification", "stage": "1. Review", "tone": "amber", "meaning": "More information is needed before acceptance.", "next": "Reporter: answer the reviewer's questions in Comments & evidence." },
   "Accepted": { "label": "Accepted", "stage": "2. Investigate", "tone": "blue", "meaning": "The report has been accepted and an investigator assigned.", "next": "Investigator: start the investigation before the deadline." },
   "Investigating": { "label": "Investigating", "stage": "2. Investigate", "tone": "blue", "meaning": "Findings, root cause and the action plan are being prepared.", "next": "Investigator: record findings, assess risk and prepare actions for approval." },

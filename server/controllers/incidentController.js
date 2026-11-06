@@ -11,8 +11,10 @@ const createIncident = async (req, res) => {
     const { title, description, category, location, dateOfIncident, severity } = req.body;
 
     const details = await validateIncidentReport(req.body, req.files || []);
+    const routing = await require('../utils/incidentRouting').resolveRouting({ ...req.body, ...details });
     const incident = await createWithIncidentId(Incident, {
       ...details,
+      ...routing,
       title,
       description,
       category,
@@ -56,7 +58,7 @@ const createIncident = async (req, res) => {
       });
     }
 
-    for (const recipientId of details.notifyStaff) {
+    for (const recipientId of new Set([...details.notifyStaff, routing.assignedTo, routing.primaryResponsible, routing.secondaryResponsible].filter(Boolean).map(String))) {
       await Notification.create({ type:'incident_report', message:'You have been notified about incident ' + incidentId, user:req.user.employeeName, userId:req.user._id, actionLink:'/dashboard/incidents',recipientRole:'user',recipientId });
       req.io?.to(String(recipientId)).emit('new-notification', {type:'incident_report'});
     }

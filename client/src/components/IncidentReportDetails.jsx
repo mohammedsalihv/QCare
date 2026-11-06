@@ -42,7 +42,10 @@ export default function IncidentReportDetails({ incident, attachmentsOnly = fals
           ['Concerned department', incident.department || 'Not recorded in this report'],
           ['Reported by', staffName(incident.reportedBy)],
           ['Staff involved', staffNames(incident.involvedStaff) || 'No staff recorded'],
-          ['Assigned investigator', staffName(incident.assignedTo) || 'Not assigned yet'],
+          ['Accountable department manager', staffName(incident.primaryResponsible) || 'Not assigned yet'],
+          ['Quality investigator', staffName(incident.assignedTo) || 'Not assigned yet'],
+          ['Secondary branch responsible', staffName(incident.secondaryResponsible) || 'Not assigned yet'],
+          ['Assignment basis', incident.routingReason || 'Earlier assignment; routing basis not recorded'],
           ['Additional staff to notify', staffNames(incident.notifyStaff) || (incident.notifyChoice === 'No' ? 'No additional notification requested' : 'No recipients recorded')],
           ['Closure approved by', staffName(incident.closedBy) || 'Closure not approved yet'],
         ]}/><div className="id-narrative"><h4>Action owners & responsibilities</h4>{incident.actions?.length ? <ul className="id-responsibilities">{incident.actions.map((action, index) => <li key={action._id || index}><strong>{staffName(action.owner) || 'Owner unavailable'}</strong><span>{action.title}</span><small>{action.kind} · {action.completedAt ? 'Completed' : 'Open'} · Due {when(action.dueDate) || 'Not scheduled'}</small></li>)}</ul> : <p className="id-muted">No actions or action owners assigned yet.</p>}</div><Narrative title="Witnesses and observations" value={incident.witnesses} empty="No witness information recorded."/></section>

@@ -26,6 +26,7 @@ test('incident lifecycle, role boundaries, concurrency, evidence and exports', {
     await mongoose.connect('mongodb://127.0.0.1:27986/qcare_workflow_test');
     const makeUser = (name, role = 'Staff') => User.create({ employeeId: name, employeeName: name, email: name + '@test.invalid', password: 'test-only', role, department: 'Quality', designation: 'Staff' });
     const reporter = await makeUser('reporter'), investigator = await makeUser('investigator'), owner = await makeUser('owner'), reviewer = await makeUser('reviewer', 'admin'), outsider = await makeUser('outsider');
+    const consultant = await makeUser('department-head'), secondary = await makeUser('branch-manager');
     const headers = user => ({ Authorization: 'Bearer ' + jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'default_secret'), 'Content-Type': 'application/json' });
     const app = express(); app.use(express.json()); app.use('/api/incidents', require('../routes/incidentRoutes'));
     server = await new Promise(resolve => { const instance = app.listen(0, '127.0.0.1', () => resolve(instance)); });
@@ -58,6 +59,16 @@ test('incident lifecycle, role boundaries, concurrency, evidence and exports', {
     assert.equal(await queueCount('investigations'), 1);
     assert.equal((await fetch(url, { headers: headers(investigator) })).status, 200);
     await command(investigator, 'start');
+    await command(reporter, 'requestOpinion', { recipient: consultant._id, question: 'Review the departmental controls.' }, 403);
+    await command(investigator, 'requestOpinion', { recipient: consultant._id, question: 'Review the departmental controls.' });
+    const opinionId = row.opinions[0]._id;
+    assert.equal((await fetch(url, { headers: headers(consultant) })).status, 200);
+    await command(reviewer, 'respondOpinion', { opinionId, response: 'Pretend to be consultant' }, 403);
+    await command(investigator, 'requestClosure', { closureSummary: 'Premature closure' }, 400);
+    await command(consultant, 'respondOpinion', { opinionId, response: 'Add an independent check at handover.' });
+    assert(row.opinions[0].respondedAt);
+    await command(consultant, 'respondOpinion', { opinionId, response: 'Overwrite signed response' }, 400);
+    await command(consultant, 'investigate', { findings: 'Cannot edit investigation' }, 403);
     await command(investigator, 'investigate', { findings: 'Verified facts', rootCause: 'Missing check', operationalImpact: 'Delay', riskLevel: 'High', likelihood: 'Possible' });
     await command(investigator, 'addAction', { title: 'Introduce a check', owner: owner._id, kind: 'Preventive', dueDate: '2027-01-01', successCriteria: 'Ten consecutive checks pass' });
     const actionId = row.actions[0]._id;
@@ -98,6 +109,19 @@ test('incident lifecycle, role boundaries, concurrency, evidence and exports', {
     assert.equal((await fetch(url, { headers: headers(reporter) })).status, 200);
     await command(reviewer, 'reopen', { reason: 'New evidence received' }); assert.equal(row.status, 'Reopened');
     assert.equal((await fetch(url, { headers: headers(outsider) })).status, 404);
+    const Department = require('../models/department'), Location = require('../models/Location');
+    const department = await Department.create({ name: 'Facilities', code: 'FAC' });
+    const branch = await Location.create({ name: 'Test clinic', code: 'TESTCLINIC' });
+    const config = { version: 0, fallback: reviewer._id, departments: [{ department: department._id, owner: investigator._id, keywords: ['water leak'] }], branches: [{ branch: branch._id, owner: secondary._id }] };
+    assert.equal((await fetch(base + '/routing', { method: 'PUT', headers: headers(outsider), body: JSON.stringify(config) })).status, 403);
+    const savedConfig = await fetch(base + '/routing', { method: 'PUT', headers: headers(reviewer), body: JSON.stringify(config) });
+    assert.equal(savedConfig.status, 200);
+    const autoReport = await fetch(base, { method: 'POST', headers: headers(reporter), body: JSON.stringify({ title: 'Water leak in clinic', description: 'Water leak beside reception.', category: 'Safety', branch: branch._id, department: '__auto__', dateOfIncident: '2025-01-01', severity: 'Low' }) });
+    assert.equal(autoReport.status, 201); const routed = await autoReport.json();
+    assert.equal(routed.department, 'Facilities'); assert.equal(routed.primaryResponsible, String(investigator._id)); assert.equal(routed.assignedTo, String(reviewer._id)); assert.equal(routed.secondaryResponsible, String(secondary._id));
+    assert.equal((await fetch(base + '/' + routed._id, { headers: headers(secondary) })).status, 200);
+    const acceptSelf = await fetch(base + '/' + routed._id + '/workflow', { method: 'POST', headers: headers(investigator), body: JSON.stringify({ command: 'accept', version: routed.__v, assignedTo: reviewer._id, investigationDue: '2027-01-01', riskLevel: 'Low' }) });
+    assert.equal(acceptSelf.status, 200);
   } finally {
     if (server) await new Promise(resolve => server.close(resolve));
     await mongoose.disconnect(); database.kill(); await exited;

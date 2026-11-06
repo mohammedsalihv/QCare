@@ -10,6 +10,9 @@ const reportUpload = (req,res,next) => {
  if (!req.is('multipart/form-data')) return next();
  upload(req,res,error=>{if(error)return res.status(400).json({message:'Attach up to 5 files, at most 12 MB each and 12 MB combined.'});try{req.body=JSON.parse(req.body.payload);if(!req.body || Array.isArray(req.body))throw Error();next();}catch{return res.status(400).json({message:'Invalid report.'});}});
 };
+const routing = require('../controllers/incidentRoutingController');
+router.get('/routing', protect, routing.read);
+router.put('/routing', protect, routing.save);
 router.get('/register', protect, workflow.list);
 router.get('/export', protect, workflow.exportCsv);
 router.get('/summary.pdf', protect, workflow.summaryPdf);
