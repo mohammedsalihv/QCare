@@ -19,6 +19,7 @@ const departmentSchema = mongoose.Schema(
       type: String, // Can be a string name or a reference to User model
       default: "Not Assigned",
     },
+    headUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     location: {
       type: String,
       default: "Main Campus",

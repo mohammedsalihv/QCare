@@ -1,3 +1,4 @@
+import UserSelect from '../components/UserSelect';
 import useServerList from '../hooks/useServerList';
 import ListToolbar from '../components/ListToolbar';
 import Table from '../components/Table.jsx';
@@ -41,7 +42,7 @@ const LocationTypes = () => {
 
   const [formData, setFormData] = useState({
     name: '',
-    code: '',
+    code: '', responsibleUser: '',
     isActive: true
   });
 
@@ -68,7 +69,7 @@ const LocationTypes = () => {
   const resetForm = () => {
     setFormData({
       name: '',
-      code: '',
+      code: '', responsibleUser: '',
       isActive: true
     });
     setIsEditing(false);
@@ -84,7 +85,7 @@ const LocationTypes = () => {
     setCurrentLocation(loc);
     setFormData({
       name: loc.name || '',
-      code: loc.code || '',
+      code: loc.code || '', responsibleUser: loc.responsibleUser || '',
       isActive: loc.isActive !== undefined ? loc.isActive : true
     });
     setIsEditing(true);
@@ -279,7 +280,7 @@ const LocationTypes = () => {
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Location / Zone Code</label>
                     <input name="code" value={formData.code} onChange={handleInputChange} required placeholder="e.g. DEN-SB" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-[var(--color-primary)] transition-all text-[13px] font-semibold text-slate-800 font-mono" />
                   </div>
-                  <div className="space-y-1.5 col-span-2">
+                  <div className="space-y-1.5 col-span-2"><label className="text-sm">Branch manager / supervisor<UserSelect aria-label="Branch manager / supervisor" value={formData.responsibleUser} onChange={e => setFormData({ ...formData, responsibleUser: e.target.value })}/></label><p className="text-xs text-slate-500">Used as the secondary responsible person for new incidents at this branch.</p></div><div className="space-y-1.5 col-span-2">
                     <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal ml-1">Status</label>
                     <Dropdown
                       options={statusOptions}

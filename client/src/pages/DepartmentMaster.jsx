@@ -41,7 +41,7 @@ const DepartmentMaster = () => {
   const [formData, setFormData] = useState({
     name: '',
     code: '',
-    head: '',
+    head: '', headUser: '',
     location: ''
   });
 
@@ -64,7 +64,7 @@ const DepartmentMaster = () => {
     setFormData({
       name: '',
       code: createDepartmentCode(),
-      head: '',
+      head: '', headUser: '',
       location: ''
     });
     setIsEditing(false);
@@ -81,7 +81,7 @@ const DepartmentMaster = () => {
     setFormData({
       name: dept.name,
       code: dept.code,
-      head: dept.head,
+      head: dept.head, headUser: dept.headUser || '',
       location: dept.location
     });
     setIsEditing(true);
@@ -107,7 +107,7 @@ const DepartmentMaster = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.head) {
+    if (!formData.headUser) {
       showNotification('Please select an In-Charge (Head)', 'error');
       return;
     }
@@ -274,7 +274,7 @@ const DepartmentMaster = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">In-Charge (Head) *</label>
-                    <UserSelect aria-label="Department head" name="head" value={formData.head} valueField="employeeName" onChange={handleInputChange} placeholder="Select department head" required className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm" />
+                    <UserSelect aria-label="Department head" name="headUser" value={formData.headUser} selectedLabel={formData.head} onChange={e => setFormData({ ...formData, headUser: e.target.value, head: e.target.value ? e.target.selectedOptions[0].text : '' })} placeholder="Select department head" required className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-semibold text-slate-800 normal-case tracking-normal ml-1">Location / Floor *</label>

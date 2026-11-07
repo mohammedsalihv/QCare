@@ -1,3 +1,4 @@
+const { resolveMasterUser, selectedMasterUser } = require('../utils/masterResponsibility');
 const { listQuery } = require('../utils/listQuery');
 const Location = require("../models/Location");
 
@@ -15,8 +16,9 @@ const getLocations = async (req, res) => {
     if (options.regex) filter.$or = ["name","code","createdBy"].map(field => ({ [field]: options.regex }));
     const total = await Location.countDocuments(filter).maxTimeMS(3000);
     const page = Math.min(options.page, Math.max(1, Math.ceil(total / options.limit)));
-    const items = await Location.find(filter).select('name code isActive createdBy createdAt updatedAt').sort(options.sort)
+    const items = await Location.find(filter).select('name code responsibleUser hodName inchargeName isActive createdBy createdAt updatedAt').sort(options.sort)
       .skip((page - 1) * options.limit).limit(options.limit).maxTimeMS(3000).lean();
+    await Promise.all(items.map(async item => { if (item.responsibleUser === undefined) item.responsibleUser = (await resolveMasterUser(null, item.hodName))?._id || (await resolveMasterUser(null, item.inchargeName))?._id; }));
     res.json({ items, total, page, limit: options.limit });
   } catch (error) {
     res.status(error.status === 400 ? 400 : 500).json({ message: error.status === 400 ? error.message : 'Could not load locations. Please try again.' });
@@ -41,7 +43,9 @@ const createLocation = async (req, res) => {
 
     const now = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
 
+    const responsible = await selectedMasterUser(req.body.responsibleUser);
     const location = await Location.create({
+      responsibleUser: req.body.responsibleUser !== undefined ? responsible?._id || null : undefined,
       name,
       code,
       building,
@@ -57,7 +61,7 @@ const createLocation = async (req, res) => {
 
     res.status(201).json(location);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(error.status || 500).json({ message: error.message });
   }
 };
 
@@ -72,6 +76,10 @@ const updateLocation = async (req, res) => {
       return res.status(404).json({ message: "Location not found" });
     }
 
+    if (req.body.responsibleUser !== undefined) {
+      const person = await selectedMasterUser(req.body.responsibleUser);
+      location.responsibleUser = person?._id || null;
+    }
     location.name = req.body.name || location.name;
     location.code = req.body.code || location.code;
     location.building = req.body.building !== undefined ? req.body.building : location.building;
@@ -89,7 +97,7 @@ const updateLocation = async (req, res) => {
     const updatedLoc = await location.save();
     res.json(updatedLoc);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(error.status || 500).json({ message: error.message });
   }
 };
 
@@ -107,7 +115,7 @@ const deleteLocation = async (req, res) => {
     await location.deleteOne();
     res.json({ message: "Location removed" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(error.status || 500).json({ message: error.message });
   }
 };
 

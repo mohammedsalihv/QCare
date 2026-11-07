@@ -70,6 +70,20 @@ test('location and designation lists paginate, filter and sort with bounded auth
       const empty = await request('/api/' + route + '?page=2', staff);
       assert.equal(empty.body.page, 1); assert.equal(empty.body.total, 0); assert.deepEqual(empty.body.items, []);
     }
+    const updatedHead = await request('/api/departments/' + department._id, admin, 'PUT', { headUser: staff._id });
+    assert.equal(updatedHead.status, 200); assert.equal(updatedHead.body.headUser, String(staff._id)); assert.equal(updatedHead.body.head, staff.employeeName);
+    assert.equal((await request('/api/departments/' + department._id, admin, 'PUT', { headUser: inactive._id })).status, 400);
+    await Department.updateOne({ _id: department._id }, { $unset: { headUser: '' }, $set: { head: staff.employeeName } });
+    assert.equal((await request('/api/departments?page=1')).body.items[0].headUser, String(staff._id), 'legacy head names resolve for the ID selector');
+    const createdBranch = await request('/api/locations', admin, 'POST', { name: 'Clinic', code: 'CLINIC', responsibleUser: staff._id });
+    assert.equal(createdBranch.status, 201); assert.equal(createdBranch.body.responsibleUser, String(staff._id));
+    assert.equal((await request('/api/locations/' + createdBranch.body._id, admin, 'PUT', { responsibleUser: inactive._id })).status, 400);
+    const cleared = await request('/api/locations/' + createdBranch.body._id, admin, 'PUT', { responsibleUser: '' });
+    assert.equal(cleared.status, 200); assert.equal(cleared.body.responsibleUser, null);
+    const { resolveMasterUser } = require('../utils/masterResponsibility');
+    assert.equal(await resolveMasterUser(inactive._id, staff.employeeName), null, 'inactive explicit IDs never fall back to a different name');
+    await User.create({ employeeId: 'DUPLICATE-NAME', employeeName: staff.employeeName, email: 'duplicate@test.invalid', password: 'test-only', role: 'user', department: 'Medicine', designation: 'Physician' });
+    assert.equal(await resolveMasterUser(null, staff.employeeName), null, 'ambiguous legacy names need a manual master selection');
   } finally {
     if (server) await new Promise(resolve => server.close(resolve));
     await mongoose.disconnect();

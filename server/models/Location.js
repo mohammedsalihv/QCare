@@ -37,6 +37,7 @@ const locationSchema = mongoose.Schema(
       trim: true,
       default: "",
     },
+    responsibleUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     inchargeName: {
       type: String,
       trim: true,

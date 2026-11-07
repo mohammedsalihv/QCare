@@ -1,29 +1,33 @@
 # Incident responsibility and opinions
 
-The accountable department manager and the Quality investigator are different incident assignments. `primaryResponsible` is the department owner; `assignedTo` remains the investigator for compatibility with existing incidents. `secondaryResponsible` is the branch manager or supervisor. Existing incidents are not reassigned automatically.
+## Single source of responsibility
 
-`IncidentRouting` is a responsibility mapping collection: department ObjectId → head User ObjectId; branch ObjectId → manager/supervisor User ObjectId; Quality investigator → User ObjectId. It does not infer authority from designation text. The existing user department/designation strings and legacy department head names remain compatible. When no settings exist, exact unique matches of existing department heads to active users are presented as unsaved suggestions. Names that cannot be matched uniquely are left blank. No users are silently granted incident access from their title alone.
+Department Master owns the accountable head (`Department.headUser`, a User ObjectId); the existing `head` name is retained for display and compatibility. Branch/Location Master owns its manager or supervisor (`Location.responsibleUser`, a User ObjectId). Its editor now includes that staff selector. New selections are validated against active users.
 
-The directory should ultimately use Department and Designation ObjectId references on users, with designation describing the job title and explicit department/branch leadership relationships defining the scope of responsibility. That directory-wide migration is separate from this incident-specific mapping and is not performed by this change.
+Incident assignment reads the current active master records directly. Until an older master record is saved with an ID, an exact unique active-user match to its existing head name or employee ID remains supported. Ambiguous names are not guessed; inactive or missing explicit user references do not fall back to another person. An administrator can resolve these cases in the master editor.
 
-## Assignment
+`primaryResponsible` is the accountable department manager; `assignedTo` remains the Quality investigator; `secondaryResponsible` is the branch manager/supervisor. Existing incidents retain their assignments. Quality can explicitly apply current master assignments before investigation or manually reassign an incident.
 
-Administrators and Quality Managers configure Responsibility routing using existing departments, branches, and active users. A Quality Manager, Quality Officer, or administrator must be selected as the Quality investigator/triage owner before settings can be saved. The selected department takes precedence. Reporters may instead select automatic detection: configured phrases are matched locally against title/description, using whole normalized phrases. Exactly one matching department supplies its configured head. Ambiguous or missing matches are left for the Quality triage owner to resolve. This is explainable phrase matching, not a language-model or clinical assessment service. No incident content is sent externally.
+## Incident settings
 
-The configured Quality user is assigned separately to investigate and follow up. A matching branch adds its secondary responsible person. Inactive owners are not assigned. Without saved settings, reporting continues and the incident explicitly awaits manual Quality assignment. Quality can manually set primary, secondary and investigator assignments, or explicitly apply current routing before investigation. Setup changes do not rewrite existing incidents.
+The former `/dashboard/incidents/routing` page redirects to `/dashboard/incidents/settings`. The navigation label is **Incident settings**. There are no department-head or branch-manager selectors on this page.
 
-## Responsibilities
+Only the Quality investigator/triage owner and optional department-matching phrases remain in `IncidentRouting`. Old saved owner/branch mappings are ignored, omitted from API responses, and rejected on settings updates. They cannot override master data. Existing department heads are usable without saving incident settings first; Quality assignment remains pending when no Quality investigator is configured.
 
-- Department owner: accept an incident assigned to them without changing the Quality investigator, contribute root cause, corrective/preventive actions and evidence, and request closure.
-- Quality investigator: start investigation, assess risk, gather evidence and follow up. Department owner and Quality can collaborate on investigation fields and action planning.
-- Branch manager/supervisor: access their assigned incident, contribute comments/evidence and request opinions.
-- Reviewer (Admin/Superadmin/Quality Manager): manual assignment, plan approval and closure review. Closure remains independent of the department/branch owners, investigator, reporter and action owners/completers.
-- Invited opinion recipient: access that incident and answer only their own opinion request. The investigator, accountable owner, branch responsible person or reviewer can request an opinion. Only the recipient can submit it, and a submitted response cannot be overwritten. Follow-up can be recorded as a comment.
+The reporter-selected department takes precedence. When automatic detection is chosen, locally configured phrases match the title/description. Exactly one matching department supplies its master head. Ambiguous or missing matches require Quality triage. This is phrase matching; no incident content is sent externally for AI analysis.
 
-Outstanding opinion requests prevent closure requests and closure approval. Opinions include author, date, question and response in the detailed workflow and PDF. Assignment and opinion events are added to incident history, with best-effort portal notifications. Scheduled reminder automation is not introduced here; existing work queues remain available for follow-up.
+## Responsibilities and opinions
 
-## Verification
+- Department owner: accept assigned responsibility, contribute root cause, corrective/preventive actions and evidence, then request closure.
+- Quality investigator: start investigation, assess risk, gather evidence and follow up. Department owner and Quality collaborate on investigation fields and actions.
+- Branch responsible person: access assigned incidents, contribute comments/evidence and request opinions.
+- Reviewer (Admin/Superadmin/Quality Manager): manual assignment, plan approval and independent closure review.
+- Invited opinion recipient: access that incident and answer their own request. Other users cannot submit an opinion on their behalf. Completed responses cannot be overwritten; follow-up can be added as comments.
 
-Client lint/build and isolated MongoDB integration tests cover automatic department routing, separate Quality assignment, branch access, self-acceptance by the accountable owner, opinion-only access, impersonation rejection, one-time responses, closure gates, attachments and exports. Pure matcher tests cover explicit department precedence, normalized phrase matching, ambiguous matches and no match.
+Outstanding requested opinions prevent closure requests/approval. Opinions and responsibilities appear in the incident detail/PDF; portal notifications and history track workflow activity. Scheduled reminder automation is not introduced by this feature.
 
-Backend deployed on 2026-11-06 to the existing QCare service at 192.168.1.160. Live files matched their expected baselines before replacement; backup: /home/salih/QCare_deploy_backups/incident-routing-20261106. The authenticated Responsibility routing page was reviewed in the owner's existing Chrome tab. No routing settings or production incident assignments were saved during verification. Local Vite serves the updated client; hosted frontend publishing is separate.
+## Verification and deployment
+
+Isolated MongoDB tests cover master user-ID selection, inactive-user rejection, legacy exact/ambiguous matching, master changes affecting future routing only, stale duplicate mappings being ignored/rejected, separate Quality assignment, branch access, opinion permissions, closure gates, attachments and exports. Client lint/build passed.
+
+The master consolidation was deployed on 2026-11-07 to the existing backend at 192.168.1.160. Live source baselines and staged syntax were verified before replacement; rollback files are at `/home/salih/QCare_deploy_backups/incident-master-consolidation-20261107`. Only PM2 QCare was restarted. The owner's existing Chrome portal tab confirmed the old route redirected and duplicate mapping sections were absent. No production master values or incident assignments were modified during verification. The local Vite frontend serves these changes; hosted frontend publishing is separate.

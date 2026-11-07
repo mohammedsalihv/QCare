@@ -1,6 +1,6 @@
 import IncidentDetail from './pages/IncidentDetail';
 import IncidentRouting from './pages/IncidentRouting';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { NotificationProvider } from "./components/NotificationContext";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -102,7 +102,7 @@ function App() {
           <Route path="/dashboard/kpi" element={<IndicatorWorkspace/>} />
           <Route path="/dashboard/incidents" element={<IncidentManagement/>} />
           <Route path="/dashboard/incidents/new" element={<IncidentManagement reportPage/>} />
-          <Route path="/dashboard/incidents/routing" element={<IncidentRouting/>} />
+          <Route path="/dashboard/incidents/routing" element={<Navigate to="/dashboard/incidents/settings" replace/>} /><Route path="/dashboard/incidents/settings" element={<IncidentRouting/>} />
           <Route path="/dashboard/incidents/:id" element={<IncidentDetail/>} />
           <Route path="/notifications" element={<Notifications/>} />
           <Route path="/dashboard/settings" element={<SystemSettings/>} />

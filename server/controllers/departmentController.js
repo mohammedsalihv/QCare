@@ -1,3 +1,4 @@
+const { resolveMasterUser, selectedMasterUser } = require('../utils/masterResponsibility');
 const { listQuery } = require('../utils/listQuery');
 const Department = require("../models/department");
 
@@ -14,8 +15,9 @@ const getDepartments = async (req, res) => {
     if (options.regex) filter.$or = ['name', 'head', 'location'].map(field => ({ [field]: options.regex }));
     const total = await Department.countDocuments(filter).maxTimeMS(3000);
     const page = Math.min(options.page, Math.max(1, Math.ceil(total / options.limit)));
-    const items = await Department.find(filter).select('name code head location isActive updatedAt').sort(options.sort)
+    const items = await Department.find(filter).select('name code head headUser location isActive updatedAt').sort(options.sort)
       .skip((page - 1) * options.limit).limit(options.limit).maxTimeMS(3000).lean();
+    await Promise.all(items.map(async item => { if (!item.headUser) item.headUser = (await resolveMasterUser(null, item.head))?._id; }));
     res.json({ items, total, page, limit: options.limit });
   } catch (error) {
     res.status(error.status === 400 ? 400 : 500).json({ message: error.status === 400 ? error.message : 'Could not load departments. Please try again.' });
@@ -28,6 +30,7 @@ const getDepartments = async (req, res) => {
 const createDepartment = async (req, res) => {
   try {
     const { name, code, head, location } = req.body;
+    const headPerson = req.body.headUser !== undefined ? await selectedMasterUser(req.body.headUser) : await resolveMasterUser(null, head);
 
     const deptExists = await Department.findOne({ $or: [{ name }, { code }] });
 
@@ -38,13 +41,14 @@ const createDepartment = async (req, res) => {
     const department = await Department.create({
       name,
       code,
-      head,
+      head: headPerson?.employeeName || head,
+      headUser: headPerson?._id,
       location,
     });
 
     res.status(201).json(department);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(error.status || 500).json({ message: error.message });
   }
 };
 
@@ -61,14 +65,20 @@ const updateDepartment = async (req, res) => {
 
     department.name = req.body.name || department.name;
     department.code = req.body.code || department.code;
-    department.head = req.body.head || department.head;
+    if (req.body.headUser !== undefined) {
+      const person = await selectedMasterUser(req.body.headUser);
+      department.headUser = person?._id; department.head = person?.employeeName || 'Not Assigned';
+    } else if (req.body.head !== undefined) {
+      const person = await resolveMasterUser(null, req.body.head);
+      department.headUser = person?._id; department.head = req.body.head || 'Not Assigned';
+    }
     department.location = req.body.location || department.location;
     department.isActive = req.body.isActive !== undefined ? req.body.isActive : department.isActive;
 
     const updatedDept = await department.save();
     res.json(updatedDept);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(error.status || 500).json({ message: error.message });
   }
 };
 
@@ -86,7 +96,7 @@ const deleteDepartment = async (req, res) => {
     await department.deleteOne();
     res.json({ message: "Department removed" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(error.status || 500).json({ message: error.message });
   }
 };
 

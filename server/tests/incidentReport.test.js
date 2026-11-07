@@ -3,7 +3,7 @@ const User=require('../models/users'),Location=require('../models/Location'),Dep
 const {validateIncidentReport}=require('../utils/incidentReport');const {createIncident}=require('../controllers/incidentController');
 const id=new mongoose.Types.ObjectId();const body={title:'Test incident',description:'Test details',category:'Clinical',location:'Branch',dateOfIncident:'2025-01-01T12:00:00+04:00',severity:'Low'};
 test('incident validation and parallel creation preserve unique codes and attachments',async t=>{
- t.mock.method(require('../models/IncidentRouting'),'findOne',()=>({lean:async()=>null}));
+ t.mock.method(require('../models/IncidentRouting'),'findOne',()=>({lean:async()=>null})); t.mock.method(Department,'find',()=>({lean:async()=>[]}));
  t.mock.method(User,'countDocuments',async q=>q._id.$in.length);t.mock.method(Location,'findById',async()=>({_id:id,name:'Branch',isActive:true}));t.mock.method(Department,'exists',async()=>true);
  const file={originalname:'photo.png',buffer:Buffer.from('test'),size:4};
  const report=await validateIncidentReport({...body,branch:String(id),department:'Medicine',involvedStaff:[String(id)],notifyStaff:[String(id)],harmLevel:'No harm'},[file]);assert.equal(report.location,'Branch');assert.equal(report.attachments.length,1);
