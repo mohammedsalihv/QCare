@@ -50,6 +50,20 @@ test('applications persist scope, evidence and reviewer; enforce ownership and i
     assert.equal((await approve(applicant)).status, 403);
     const result = await approve(reviewer); assert.equal(result.status, 200); assert.equal((await result.json()).procedures[0].approved, true);
     assert.equal((await approve(reviewer)).status, 409);
+    const director = await make('director');
+    await User.updateOne({ _id: director._id }, { designation: 'Medical Director' });
+    const superadmin = await make('superadmin', 'SuperAdmin');
+    const options = await (await fetch(base + '/options', { headers: headers(outsider) })).json();
+    assert(options.approvers.some(u => u._id === String(director._id)));
+    assert(!options.approvers.some(u => u._id === String(superadmin._id)));
+    const request = await post(outsider, { ...body, staffId: outsider._id, assignedApprover: director._id });
+    assert.equal(request.status, 201);
+    const directed = await request.json();
+    assert.equal((await fetch(base, { headers: headers(director) })).status, 200);
+    const decision = actor => fetch(base + '/' + directed._id + '/approve', { method: 'PUT', headers: { ...headers(actor), 'Content-Type': 'application/json' }, body: JSON.stringify({ decision: 'approve' }) });
+    assert.equal((await decision(superadmin)).status, 403);
+    assert.equal((await decision(reviewer)).status, 403);
+    assert.equal((await decision(director)).status, 200);
   } finally {
     if (server) await new Promise(resolve => server.close(resolve)); await mongoose.disconnect(); database.kill(); await exited;
     if (path.resolve(directory).startsWith(path.resolve(os.tmpdir()) + path.sep) && path.basename(directory).startsWith('qcare-privilege-test-')) await fs.rm(directory, { recursive: true, force: true });

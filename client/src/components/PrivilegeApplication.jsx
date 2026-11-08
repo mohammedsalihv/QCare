@@ -11,8 +11,8 @@ const levels = { 'independent': 'Independent', 'direct-supervision': 'Direct sup
 export default function PrivilegeApplication({ reviewQueue = false }) {
   const user = JSON.parse(localStorage.getItem('userInfo') || '{}');
   const role = String(user.role || '').toLowerCase();
-  const reviewer = ['superadmin', 'qualitymanager'].includes(role);
-  const onBehalf = reviewer || role === 'admin';
+  const reviewer = role === 'qualitymanager' || String(user.designation || '').trim().replace(/\s+/g, ' ').toLowerCase() === 'medical director';
+  const onBehalf = reviewer || ['admin', 'superadmin'].includes(role);
   const [form, setForm] = useState({ ...empty, staffId: user._id || '' });
   const [clinicianName, setClinicianName] = useState(user.employeeName || 'Your signed-in account');
   const [procedures, setProcedures] = useState([{ name: '', level: 'independent' }]);
@@ -82,8 +82,8 @@ export default function PrivilegeApplication({ reviewQueue = false }) {
             <button type="button" disabled={procedures.length >= 50} onClick={() => setProcedures([...procedures, { name: '', level: 'independent' }])}>+ Add procedure</button>
           </section>
           <section><h3>When & who approves?</h3><div className="pa-grid"><IncidentDateField label="Requested start date" required value={form.requestedStartDate} onChange={value => set('requestedStartDate', value)} /><IncidentDateField label="Requested end date" required value={form.expiryDate} onChange={value => set('expiryDate', value)} /></div>
-            <label>Assigned approver *<Select aria-label="Assigned approver" value={form.assignedApprover} onChange={e => set('assignedApprover', e.target.value)}><option value="">Select an authorised reviewer</option>{approvers.filter(p => p._id !== form.staffId).map(p => <option value={p._id} key={p._id}>{p.employeeName} · {p.role === 'SuperAdmin' ? 'Super administrator' : 'Quality manager'}</option>)}</Select></label>
-            <p>Current approval authority: Quality Manager or Super Administrator. The applicant and submitter cannot approve their own request.</p>
+            <label>Assigned approver *<Select aria-label="Assigned approver" value={form.assignedApprover} onChange={e => set('assignedApprover', e.target.value)}><option value="">Select an authorised reviewer</option>{approvers.filter(p => p._id !== form.staffId).map(p => <option value={p._id} key={p._id}>{p.employeeName} · {String(p.designation || '').trim().toLowerCase() === 'medical director' ? 'Medical Director' : 'Quality Manager'}</option>)}</Select></label>
+            <p>Approval authority: Medical Director or Quality Manager. The applicant and submitter cannot approve their own request.</p>
           </section>
           <section><h3>Supporting documents <span>Optional</span></h3><p>Attach relevant licences, training certificates, procedure logs or signed forms. PDF, JPG or PNG; up to 5 files, 5 MB each and 10 MB combined.</p>
             <label className="pa-upload">Choose supporting documents<input type="file" multiple accept=".pdf,.jpg,.jpeg,.png" onChange={e => {
@@ -103,7 +103,7 @@ export default function PrivilegeApplication({ reviewQueue = false }) {
         <ul>{row.procedures.map((p, i) => <li key={i}>{p.name} · {levels[p.level]}</li>)}</ul>
         <p><strong>Supporting documents:</strong> {!row.supportingDocuments?.length && 'None attached'}</p>{row.supportingDocuments?.map(d => <button type="button" key={d._id} onClick={() => download(row, d)}>{d.name}</button>)}
         {row.reviewNotes && <p><strong>Reviewer notes:</strong> {row.reviewNotes}</p>}
-        {reviewQueue && reviewer && row.status === 'pending-approval' && row.staffId?._id !== user._id && row.requestedBy !== user._id && (role === 'superadmin' || !row.assignedApprover || row.assignedApprover?._id === user._id) && <div><label>Review notes (required to reject)<textarea value={notes[row._id] || ''} onChange={e => setNotes({ ...notes, [row._id]: e.target.value })} /></label><footer><button type="button" disabled={busy} onClick={() => decide(row, 'reject')}>Reject application</button><button type="button" className="pa-primary" disabled={busy} onClick={() => decide(row, 'approve')}>Approve requested scope</button></footer></div>}
+        {reviewQueue && reviewer && row.status === 'pending-approval' && row.staffId?._id !== user._id && row.requestedBy !== user._id && (!row.assignedApprover || row.assignedApprover?._id === user._id) && <div><label>Review notes (required to reject)<textarea value={notes[row._id] || ''} onChange={e => setNotes({ ...notes, [row._id]: e.target.value })} /></label><footer><button type="button" disabled={busy} onClick={() => decide(row, 'reject')}>Reject application</button><button type="button" className="pa-primary" disabled={busy} onClick={() => decide(row, 'approve')}>Approve requested scope</button></footer></div>}
       </details>)}
     </section>
   </div>;

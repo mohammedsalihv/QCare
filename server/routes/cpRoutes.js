@@ -11,6 +11,9 @@ const {
   getCPDashboard
 } = require('../controllers/cpController');
 const { protect, authorize } = require('../middleware/authMiddleware');
+const { canReview } = require('../utils/privilegeApplication');
+const reviewerOnly = (req, res, next) => canReview(req.user) ? next() : res.status(403).json({ message: 'Only a Medical Director or Quality Manager can approve privileges.' });
+const portfolioAccess = (req, res, next) => canReview(req.user) || ['SuperAdmin', 'admin'].includes(req.user.role) ? next() : res.status(403).json({ message: 'Not authorised to view privilege applications.' });
 const controller = require('../controllers/cpController');
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage(), limits: { files: 5, fileSize: 5 * 1024 * 1024, fields: 1, fieldSize: 50000 } }).array('documents', 5);
@@ -29,9 +32,9 @@ router.get('/privileges/:id/documents/:documentId', protect, controller.download
 // Privileges
 router.route('/privileges')
   .post(protect, applicationUpload, requestPrivileges)
-  .get(protect, authorize('SuperAdmin', 'QualityManager', 'admin'), getAllPrivileges);
+  .get(protect, portfolioAccess, getAllPrivileges);
 
-router.put('/privileges/:id/approve', protect, authorize('SuperAdmin', 'QualityManager'), approvePrivileges);
+router.put('/privileges/:id/approve', protect, reviewerOnly, approvePrivileges);
 router.get('/privileges/staff/:staffId', protect, getStaffPrivileges);
 
 // Credentialing

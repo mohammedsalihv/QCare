@@ -1,6 +1,6 @@
 const { normalizeRole } = require('./roles');
-const canReview = user => ['SuperAdmin', 'QualityManager'].includes(normalizeRole(user.role));
-const canRead = (user, row) => canReview(user) || normalizeRole(user.role) === 'admin' || [row.staffId, row.requestedBy].some(id => String(id?._id || id) === String(user._id));
+const canReview = user => normalizeRole(user.role) === 'QualityManager' || String(user.designation || '').trim().replace(/\s+/g, ' ').toLowerCase() === 'medical director';
+const canRead = (user, row) => canReview(user) || ['admin', 'SuperAdmin'].includes(normalizeRole(user.role)) || [row.staffId, row.requestedBy].some(id => String(id?._id || id) === String(user._id));
 function applicationData(body, files = []) {
   const fail = message => { throw new Error(message); };
   const text = (value, label, max) => typeof value !== 'string' || !value.trim() || value.trim().length > max ? fail(`${label} is required (maximum ${max} characters).`) : value.trim();

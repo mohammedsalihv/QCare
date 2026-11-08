@@ -17,7 +17,7 @@ exports.requestPrivileges = async (req, res) => {
     const active = user => user && user.isActive !== false && !['blocked', 'inactive'].includes(user.status);
     if (!active(staff) || !active(approver) || !canReview(approver)) return res.status(400).json({ message: 'Choose an active clinician and an eligible approver.' });
     if ([String(staff._id), String(req.user._id)].includes(String(approver._id))) return res.status(400).json({ message: 'Select an independent approver, different from the applicant and submitter.' });
-    if (!canReview(req.user) && req.user.role !== 'admin' && String(staff._id) !== String(req.user._id)) return res.status(403).json({ message: 'You can only apply for your own privileges.' });
+    if (!canReview(req.user) && !['admin', 'SuperAdmin'].includes(req.user.role) && String(staff._id) !== String(req.user._id)) return res.status(403).json({ message: 'You can only apply for your own privileges.' });
     const privilege = await ClinicalPrivilege.create({ ...data, staffId: staff._id, assignedApprover: approver._id, requestedBy: req.user._id, status: 'pending-approval' });
     await notifyPrivilege(req, privilege).catch(error => console.error('Privilege notification failed:', error.message));
     res.status(201).json(await ClinicalPrivilege.findById(privilege._id).populate('staffId assignedApprover', 'employeeName'));
@@ -31,7 +31,7 @@ exports.approvePrivileges = async (req, res) => {
     const privilege = await ClinicalPrivilege.findById(req.params.id);
     if (!privilege) return res.status(404).json({message:'Privilege request not found'});
     if ([privilege.staffId, privilege.requestedBy].some(id => String(id) === String(req.user._id))) return res.status(403).json({ message: 'An independent reviewer must decide this application.' });
-    if (privilege.assignedApprover && String(privilege.assignedApprover) !== String(req.user._id) && req.user.role !== 'SuperAdmin') return res.status(403).json({ message: 'This application is assigned to another approver.' });
+    if (privilege.assignedApprover && String(privilege.assignedApprover) !== String(req.user._id)) return res.status(403).json({ message: 'This application is assigned to another approver.' });
     if (privilege.status !== 'pending-approval') return res.status(409).json({message:'Only pending requests can be reviewed.'});
     const decision = req.body.decision || 'approve';
     if (!['approve','reject'].includes(decision)) return res.status(400).json({message:'Choose approve or reject.'});
@@ -83,7 +83,7 @@ exports.getAllPrivileges = async (req, res) => {
 };
 
 exports.applicationOptions = async (req, res) => {
-  const users = await User.find({ isActive: { $ne: false }, status: { $nin: ['blocked', 'inactive'] } }).select('employeeName role');
+  const users = await User.find({ isActive: { $ne: false }, status: { $nin: ['blocked', 'inactive'] } }).select('employeeName role designation');
   res.json({ approvers: users.filter(user => canReview(user) && String(user._id) !== String(req.user._id)) });
 };
 exports.myApplications = async (req, res) => {
