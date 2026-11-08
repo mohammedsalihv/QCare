@@ -110,7 +110,7 @@ async function pdf(req, res) {
   try {
     const row = await load(req); await populate(row);
     const report = await require('../utils/incidentPdf')(row);
-    await Incident.updateOne({ _id: row._id }, { $push: { history: { event: 'pdf', detail: 'Incident PDF downloaded', actor: req.user._id, actorName: req.user.employeeName, at: new Date() } } });
+    await Incident.updateOne({ _id: row._id }, { $push: { history: { event: 'pdf', request: req.auditMetadata, detail: 'Incident PDF downloaded', actor: req.user._id, actorName: req.user.employeeName, at: new Date() } } });
     res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename="${row.incidentId}.pdf"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' }).send(report);
   } catch (error) { respondError(res, error); }
 }

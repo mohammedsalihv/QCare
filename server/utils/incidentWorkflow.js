@@ -20,7 +20,7 @@ async function activeUser(id) {
 }
 const terminal = row => ['Closed', 'Rejected', 'Duplicate'].includes(row.status);
 function record(row, user, event, detail = '') {
-  row.history.push({ event, detail, actor: user._id, actorName: user.employeeName || 'Staff member', at: new Date() });
+  row.history.push({ event, detail, actor: user._id, actorName: user.employeeName || 'Staff member', at: new Date(), request: require('./requestAudit').currentMetadata() });
 }
 
 // Every write goes through a named command; arbitrary status/field patches are not accepted.

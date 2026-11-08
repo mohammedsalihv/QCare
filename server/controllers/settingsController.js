@@ -147,104 +147,7 @@ const seedDemoDataIfEmpty = async () => {
       seededUsers[u.employeeName] = dbUser._id;
     }
 
-    // 2. Check if AuditLog is empty
-    const auditCount = await AuditLog.countDocuments({});
-    if (auditCount === 0) {
-      console.log('Seeding demo audit logs...');
-      const auditLogsToSeed = [
-        {
-          action: 'USER_LOGGED_IN',
-          module: 'Main Master',
-          pageName: 'Login',
-          activity: "User 'YAHIYA MANNOOPARAMBIL' Logged In",
-          performedBy: seededUsers['YAHIYA MANNOOPARAMBIL'],
-          ipAddress: '192.168.1.160',
-          createdAt: new Date('2026-06-27T18:12:00Z'),
-          timestamp: new Date('2026-06-27T18:12:00Z')
-        },
-        {
-          action: 'USER_LOGGED_IN',
-          module: 'Main Master',
-          pageName: 'Login',
-          activity: "User 'AZAD CHEERAM KULANGARA' Logged In",
-          performedBy: seededUsers['AZAD CHEERAM KULANGARA'],
-          ipAddress: '192.168.1.15',
-          createdAt: new Date('2026-06-27T15:21:00Z'),
-          timestamp: new Date('2026-06-27T15:21:00Z')
-        },
-        {
-          action: 'REPORT_INCIDENT_ADDED',
-          module: 'Incident Module',
-          pageName: 'Report Incident',
-          activity: 'Clicked Add Button to Add Report Incident',
-          performedBy: seededUsers['AMIRA IBRAHIM AHMED MOHAMED'],
-          ipAddress: '192.168.1.42',
-          createdAt: new Date('2026-06-27T14:28:00Z'),
-          timestamp: new Date('2026-06-27T14:28:00Z')
-        },
-        {
-          action: 'UNAUTHORIZED_ACCESS',
-          module: 'Main Master',
-          pageName: 'Login',
-          activity: 'Unauthorized Access - Tried to Login with Invalid Employee ID/Password',
-          performedBy: null,
-          ipAddress: '192.168.1.160',
-          createdAt: new Date('2026-06-27T14:20:00Z'),
-          timestamp: new Date('2026-06-27T14:20:00Z')
-        },
-        {
-          action: 'UNAUTHORIZED_ACCESS',
-          module: 'Main Master',
-          pageName: 'Login',
-          activity: 'Unauthorized Access - Tried to Login with Invalid Employee ID/Password',
-          performedBy: null,
-          ipAddress: '192.168.1.160',
-          createdAt: new Date('2026-06-27T14:20:00Z'),
-          timestamp: new Date('2026-06-27T14:20:00Z')
-        },
-        {
-          action: 'UNAUTHORIZED_ACCESS',
-          module: 'Main Master',
-          pageName: 'Login',
-          activity: 'Unauthorized Access - Tried to Login with Invalid Employee ID/Password',
-          performedBy: null,
-          ipAddress: '192.168.1.160',
-          createdAt: new Date('2026-06-27T14:20:00Z'),
-          timestamp: new Date('2026-06-27T14:20:00Z')
-        },
-        {
-          action: 'UNAUTHORIZED_ACCESS',
-          module: 'Main Master',
-          pageName: 'Login',
-          activity: 'Unauthorized Access - Tried to Login with Invalid Employee ID/Password',
-          performedBy: null,
-          ipAddress: '192.168.1.160',
-          createdAt: new Date('2026-06-27T14:20:00Z'),
-          timestamp: new Date('2026-06-27T14:20:00Z')
-        },
-        {
-          action: 'UNAUTHORIZED_ACCESS',
-          module: 'Main Master',
-          pageName: 'Login',
-          activity: 'Unauthorized Access - Tried to Login with Invalid Employee ID/Password',
-          performedBy: null,
-          ipAddress: '192.168.1.19',
-          createdAt: new Date('2026-06-27T14:19:00Z'),
-          timestamp: new Date('2026-06-27T14:19:00Z')
-        },
-        {
-          action: 'INDICATOR_ADDED',
-          module: 'KPI Module',
-          pageName: 'Indicator Data Submission',
-          activity: "Clicked Add Button to Add 'Biomedical Preventive Maintenance Completion rate' Indicator Name",
-          performedBy: seededUsers['NISHAD KUNHAHAMMED'],
-          ipAddress: '192.168.1.55',
-          createdAt: new Date('2026-06-27T13:15:00Z'),
-          timestamp: new Date('2026-06-27T13:15:00Z')
-        }
-      ];
-      await AuditLog.insertMany(auditLogsToSeed);
-    }
+    // Audit records are never fabricated or seeded.
 
     // 3. Check if MailLog is empty
     const mailCount = await MailLog.countDocuments({});
@@ -344,7 +247,6 @@ const seedDemoDataIfEmpty = async () => {
 // @access  Private/Admin
 const getAuditLogs = async (req, res) => {
   try {
-    await seedDemoDataIfEmpty();
     const logs = await AuditLog.find({})
       .populate('performedBy', 'employeeName email employeeId department designation')
       .sort({ createdAt: -1 })

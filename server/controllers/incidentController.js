@@ -22,7 +22,7 @@ const createIncident = async (req, res) => {
       dateOfIncident,
       severity,
       reportedBy: req.user._id,
-      history: [{ event: "reported", actor: req.user._id, actorName: req.user.employeeName, detail: "Incident submitted" }],
+      history: [{ event: "reported", actor: req.user._id, actorName: req.user.employeeName, detail: "Incident submitted", request: req.auditMetadata }],
     });
     const incidentId = incident.incidentId;
 

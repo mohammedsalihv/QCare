@@ -28,7 +28,7 @@ test('incident lifecycle, role boundaries, concurrency, evidence and exports', {
     const reporter = await makeUser('reporter'), investigator = await makeUser('investigator'), owner = await makeUser('owner'), reviewer = await makeUser('reviewer', 'admin'), outsider = await makeUser('outsider');
     const consultant = await makeUser('department-head'), secondary = await makeUser('branch-manager');
     const headers = user => ({ Authorization: 'Bearer ' + jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'default_secret'), 'Content-Type': 'application/json' });
-    const app = express(); app.use(express.json()); app.use('/api/incidents', require('../routes/incidentRoutes'));
+    const app = express(); app.use(express.json()); app.use(require('../middleware/moduleAudit')); app.use('/api/audit-events', require('../routes/moduleAuditRoutes')); app.use('/api/incidents', require('../routes/incidentRoutes'));
     server = await new Promise(resolve => { const instance = app.listen(0, '127.0.0.1', () => resolve(instance)); });
     const base = 'http://127.0.0.1:' + server.address().port + '/api/incidents';
     for (const route of ['/demo/example', '/demo/report.pdf']) assert.equal((await fetch(base + route, { headers: headers(reviewer) })).status, 404);
@@ -174,6 +174,24 @@ test('incident lifecycle, role boundaries, concurrency, evidence and exports', {
     const routedLatest = await require('../models/Incident').findById(routed._id);
     assert.equal((await mutation(superadmin, 'DELETE', '/' + routed._id, { version: routedLatest.__v, reason: 'Superadmin removal' })).status, 200);
     assert.equal((await require('../models/Incident').findById(row._id)).history.filter(h => h.event === 'deleteIncident').length, 1);
+    const AuditLog = require('../models/AuditLog');
+    for (let attempt = 0; attempt < 50 && await AuditLog.exists({ source: 'server-request', outcome: 'Pending' }); attempt++) await new Promise(resolve => setTimeout(resolve, 20));
+    const loggedDelete = await AuditLog.findOne({ moduleKey: 'incidents', method: 'DELETE', recordId: row._id, outcome: 'Success' });
+    assert(loggedDelete); assert.equal(loggedDelete.actorRole.toLowerCase(), 'qualitymanager'); assert(loggedDelete.ipAddress); assert(loggedDelete.requestId); assert(loggedDelete.userAgent);
+    assert.equal(row.history.find(h => h.event === 'editReport').request.browser, 'Unknown');
+    assert(row.history.find(h => h.event === 'editReport').request.ipAddress);
+    const auditBase = base.replace('/incidents', '/audit-events');
+    assert.equal((await fetch(auditBase, { headers: headers(reporter) })).status, 403);
+    assert.equal((await fetch(auditBase + '?module=users', { headers: headers(qm) })).status, 403);
+    const moduleHistory = await (await fetch(auditBase + '?module=incidents&status=Success', { headers: headers(qm) })).json();
+    assert(moduleHistory.total > 5); assert(moduleHistory.rows.every(r => r.moduleKey === 'incidents' && r.outcome === 'Success'));
+    const denied = await (await fetch(auditBase + '?module=incidents&status=Denied', { headers: headers(superadmin) })).json();
+    assert(denied.total > 0);
+    const secretProbe = await mutation(superadmin, 'PUT', '/' + row._id + '/report', { password: 'NEVER-STORE-THIS', token: 'PRIVATE-TOKEN', description: 'PRIVATE-NARRATIVE' });
+    assert.equal(secretProbe.status, 404);
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const captured = JSON.stringify(await AuditLog.find({ source: 'server-request' }).lean());
+    assert(!captured.includes('NEVER-STORE-THIS')); assert(!captured.includes('PRIVATE-TOKEN')); assert(!captured.includes('PRIVATE-NARRATIVE'));
   } finally {
     if (server) await new Promise(resolve => server.close(resolve));
     await mongoose.disconnect(); database.kill(); await exited;

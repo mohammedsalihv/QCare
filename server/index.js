@@ -42,6 +42,8 @@ app.use(cors());
 app.use('/api/kpi/automatic/preview', express.json({ limit: '1mb' }));
 app.use('/api/kpi/submit-data', express.json({ limit: '2mb' }));
 app.use(express.json());
+app.use(require('./middleware/moduleAudit'));
+app.use('/api/audit-events', require('./routes/moduleAuditRoutes'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect Database

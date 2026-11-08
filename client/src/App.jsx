@@ -141,6 +141,7 @@ function App() {
           <Route path="/dashboard/user-assignment" element={<UserAssignment/>} />
           <Route path="/dashboard/password-management" element={<PasswordManagement/>} />
           <Route path="/dashboard/audit-log" element={<AuditLog/>} />
+          <Route path="/dashboard/module-audit/:module" element={<AuditLog/>} />
           <Route path="/dashboard/mail-log" element={<MailLog/>} />
           <Route path="/dashboard/report-generator" element={<ReportGenerator/>} />
           <Route path="/dashboard/clinical-privileges" element={<ClinicalPrivileges/>} />

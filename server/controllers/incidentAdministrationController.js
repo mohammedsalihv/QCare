@@ -75,7 +75,7 @@ async function audit(req, res) {
       { $facet: { count: [{ $count: 'total' }], rows: [
         { $sort: { [sortKey]: req.query.direction === 'asc' ? 1 : -1, 'history._id': -1 } },
         { $skip: (page - 1) * limit }, { $limit: limit },
-        { $project: { _id: '$history._id', incident: '$_id', incidentId: 1, title: 1, deletedAt: 1, event: '$history.event', detail: '$history.detail', changes: '$history.changes', actorName: '$history.actorName', at: '$history.at' } }
+        { $project: { _id: '$history._id', incident: '$_id', incidentId: 1, title: 1, deletedAt: 1, event: '$history.event', detail: '$history.detail', changes: '$history.changes', request: '$history.request', actorName: '$history.actorName', at: '$history.at' } }
       ] } }
     ]);
     res.set('Cache-Control', 'no-store').json({ rows: result.rows, total: result.count[0]?.total || 0, page, limit });
