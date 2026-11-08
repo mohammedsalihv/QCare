@@ -18,6 +18,7 @@ const auditLogSchema = new mongoose.Schema({
   operatingSystem: String,
   deviceType: String,
   ipSource: String,
+  peerIpAddress: String,
   action: {
     type: String,
     required: true
