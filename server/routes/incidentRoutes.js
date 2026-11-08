@@ -11,6 +11,10 @@ const reportUpload = (req,res,next) => {
  upload(req,res,error=>{if(error)return res.status(400).json({message:'Attach up to 5 files, at most 12 MB each and 12 MB combined.'});try{req.body=JSON.parse(req.body.payload);if(!req.body || Array.isArray(req.body))throw Error();next();}catch{return res.status(400).json({message:'Invalid report.'});}});
 };
 const routing = require('../controllers/incidentRoutingController');
+const administration = require('../controllers/incidentAdministrationController');
+router.get('/audit-log', protect, administration.audit);
+router.put('/:id/report', protect, administration.requireEditor, reportUpload, administration.edit);
+router.delete('/:id', protect, administration.remove);
 router.get('/routing', protect, routing.read);
 router.put('/routing', protect, routing.save);
 router.get('/register', protect, workflow.list);

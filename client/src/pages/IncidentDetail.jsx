@@ -9,6 +9,7 @@ import Select from '../components/Select';
 import UserSelect from '../components/UserSelect';
 import IncidentDateField from '../components/IncidentDateField';
 import IncidentReportDetails from '../components/IncidentReportDetails';
+import IncidentAdministration from '../components/IncidentAdministration';
 import IncidentOpinions from '../components/IncidentOpinions';
 import { useNotification } from '../components/NotificationContext';
 import { getAuthConfig } from '../utils/authConfig';
@@ -75,7 +76,7 @@ export default function IncidentDetail() {
     {error && <div role="alert" className="iw-error">{error} <button disabled={busy} onClick={() => confirm({ title: 'Reload incident?', message: 'Unsaved entries will be discarded when the latest incident is loaded.', confirmLabel: 'Reload', onConfirm: () => { setRow(null); setRevision(v => v + 1); } })}>Reload latest</button></div>}
     {!row ? <p className="iw-empty">{error ? 'Incident unavailable.' : 'Loading incident…'}</p> : <>
       <header className="iw-heading"><div><p className="iw-reference"><strong>Incident ID: {row.incidentId}</strong></p><p>Search this exact ID in the incident register.</p><h1>{row.title}</h1><p>{row.location} · {row.department || 'Department not recorded'} · Reported {when(row.createdAt)}</p></div><button className="iw-secondary" disabled={busy} onClick={download}><Download size={16}/>Download PDF</button></header>
-      <div className="iw-summary"><span className={'iw-status-pill iw-tone-' + statusInfo(row.status).tone}>{statusInfo(row.status).label}</span><span>Risk: <strong>{row.riskLevel || 'Not assessed'}</strong></span><span>Investigator: <strong>{row.assignedTo?.employeeName || 'Unassigned'}</strong></span>{row.investigationDue && <span><Clock size={14}/>Due {when(row.investigationDue)}</span>}</div>
+      <IncidentAdministration row={row} busy={busy} beforeNavigate={leaveIncident}/><div className="iw-summary"><span className={'iw-status-pill iw-tone-' + statusInfo(row.status).tone}>{statusInfo(row.status).label}</span><span>Risk: <strong>{row.riskLevel || 'Not assessed'}</strong></span><span>Investigator: <strong>{row.assignedTo?.employeeName || 'Unassigned'}</strong></span>{row.investigationDue && <span><Clock size={14}/>Due {when(row.investigationDue)}</span>}</div>
       <div className="iw-next"><div><strong>Next step</strong><p>{statusInfo(row.status).meaning} {statusInfo(row.status).next}</p></div>{nextSection !== tab && <button type="button" className="iw-secondary" disabled={busy} onClick={() => switchTab(nextSection)}>Open next step</button>}{(reviewer || same(row.assignedTo, userId)) && ['Accepted', 'Reopened', 'Resolved'].includes(row.status) && <button disabled={busy} className="iw-primary" onClick={() => run('start')}>Start investigation</button>}</div>
       <div className="iw-section-heading"><span>Incident section {tab + 1} of {tabs.length}</span><h2 id="incident-current-section">{tabs[tab]}</h2></div>
       <fieldset key={draftRevision} disabled={busy} className="iw-body" aria-busy={busy} onChange={() => setDirty(true)}>

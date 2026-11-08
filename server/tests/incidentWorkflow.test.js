@@ -133,6 +133,47 @@ test('incident lifecycle, role boundaries, concurrency, evidence and exports', {
     assert.equal(String((await require('../models/Incident').findById(routed._id)).primaryResponsible), String(investigator._id), 'existing incident assignments stay intact');
     const exposed = await (await fetch(base + '/routing', { headers: headers(reviewer) })).json();
     assert.equal(exposed.branches, undefined); assert.equal(exposed.departments[0].owner, undefined);
+    const superadmin = await makeUser('superadmin', 'SuperAdmin'), qm = await makeUser('quality-manager', 'QualityManager');
+    const mutation = async (user, method, path, body) => fetch(base + path, { method, headers: headers(user), body: JSON.stringify(body) });
+    const reportEdit = { version: row.__v, reason: 'Correct reported facts', title: 'Corrected test report', description: 'Updated factual description', category: 'Safety', severity: 'Medium', dateOfIncident: '2025-01-01', branch: branch._id, department: 'Facilities', harmLevel: 'No harm', notifyChoice: 'No', involvedStaff: [reporter._id], notifyStaff: [], witnesses: 'Witness statement corrected', immediateActions: 'Area secured', areaRoom: 'Reception' };
+    for (const user of [reporter, investigator, reviewer, qm]) {
+      assert.equal((await mutation(user, 'PUT', '/' + row._id + '/report', reportEdit)).status, 403, 'only Superadmin edits report facts');
+    }
+    assert.equal((await mutation(superadmin, 'PUT', '/' + row._id + '/report', { ...reportEdit, version: -1 })).status, 409);
+    assert.equal((await mutation(superadmin, 'PUT', '/' + row._id + '/report', { ...reportEdit, reason: '' })).status, 400);
+    const edited = await mutation(superadmin, 'PUT', '/' + row._id + '/report', { ...reportEdit, status: 'Closed', incidentId: 'FORGED', assignedTo: outsider._id });
+    assert.equal(edited.status, 200, await edited.text());
+    const originalId = row.incidentId, oldVersion = row.__v;
+    row = await (await fetch(url, { headers: headers(superadmin) })).json();
+    assert.equal(row.incidentId, originalId); assert.equal(row.status, 'Reopened'); assert.equal(row.assignedTo._id, String(investigator._id));
+    assert.equal(row.title, reportEdit.title); assert.equal(row.areaRoom, 'Reception'); assert.equal(row.involvedStaff[0]._id, String(reporter._id));
+    const editEvent = row.history.find(h => h.event === 'editReport');
+    assert.equal(editEvent.changes.title.before, '=Test report'); assert.equal(editEvent.changes.title.after, reportEdit.title);
+    assert.equal(editEvent.actor, String(superadmin._id)); assert.equal(row.__v, oldVersion + 1);
+    assert.equal((await fetch(base + '/audit-log', { headers: headers(reporter) })).status, 403);
+    const audit = await (await fetch(base + '/audit-log?event=editReport&search=' + originalId, { headers: headers(qm) })).json();
+    assert.equal(audit.total, 1); assert.equal(audit.rows[0].actorName, 'superadmin');
+    assert.equal((await fetch(base + '/audit-log?search=%5B', { headers: headers(qm) })).status, 200, 'search metacharacters escaped');
+    for (const user of [reporter, investigator, reviewer]) assert.equal((await mutation(user, 'DELETE', '/' + row._id, { version: row.__v, reason: 'Remove test' })).status, 403);
+    assert.equal((await mutation(qm, 'DELETE', '/' + row._id, { version: oldVersion, reason: 'Remove test' })).status, 409);
+    assert.equal((await mutation(qm, 'DELETE', '/' + row._id, { version: row.__v, reason: '' })).status, 400);
+    assert.equal((await mutation(qm, 'DELETE', '/' + row._id, { version: row.__v, reason: 'Duplicate test record removed' })).status, 200);
+    for (const user of [superadmin, qm, reporter]) {
+      assert.equal((await fetch(url, { headers: headers(user) })).status, 404);
+      assert.equal((await fetch(url + '/report.pdf', { headers: headers(user) })).status, 404);
+      assert.equal((await fetch(url + '/attachments/' + new mongoose.Types.ObjectId(), { headers: headers(user) })).status, 404);
+      assert.equal((await (await fetch(base + '/register?search=' + originalId, { headers: headers(user) })).json()).total, 0);
+      assert(!(await (await fetch(base + '/export', { headers: headers(user) })).text()).includes(originalId));
+    }
+    assert.equal((await mutation(superadmin, 'POST', '/' + row._id + '/workflow', { command: 'comment', body: 'Cannot mutate deleted', version: row.__v + 1 })).status, 404);
+    assert.equal((await mutation(superadmin, 'PUT', '/' + row._id + '/report', { ...reportEdit, version: row.__v + 1 })).status, 404);
+    const deletedAudit = await (await fetch(base + '/audit-log?search=' + originalId, { headers: headers(qm) })).json();
+    assert(deletedAudit.total > 1); assert.equal(deletedAudit.rows[0].event, 'deleteIncident'); assert(deletedAudit.rows[0].deletedAt);
+    assert.equal(deletedAudit.rows[0].detail, 'Duplicate test record removed');
+    assert(!(await (await fetch(base, { headers: headers(superadmin) })).json()).some(r => r.incidentId === originalId));
+    const routedLatest = await require('../models/Incident').findById(routed._id);
+    assert.equal((await mutation(superadmin, 'DELETE', '/' + routed._id, { version: routedLatest.__v, reason: 'Superadmin removal' })).status, 200);
+    assert.equal((await require('../models/Incident').findById(row._id)).history.filter(h => h.event === 'deleteIncident').length, 1);
   } finally {
     if (server) await new Promise(resolve => server.close(resolve));
     await mongoose.disconnect(); database.kill(); await exited;

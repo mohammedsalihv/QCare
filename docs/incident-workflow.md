@@ -23,6 +23,17 @@ Sidebar navigation asks before discarding unsaved report or investigation entrie
 
 ## Roles and access
 
+### Report administration and audit log (7 November 2026)
+
+- **Superadmin** can edit reported facts and delete an incident. **Quality Manager** can delete but cannot edit reported facts. Other roles, including ordinary Admin, cannot use either administration action. Existing workflow permissions are separate and unchanged.
+- Open an incident to find **Edit report** and/or **Delete incident**, according to the signed-in role. Editing reuses the report form and preloads UAE date/time, staff, witnesses, harm and other saved fields. New attachments are appended; existing evidence is retained.
+- Both operations require a reason and the current record version. Edits cannot replace the incident ID, assignments, approvals or workflow status. If branch/department is corrected, review the existing responsibilities separately in Acceptance.
+- Deletion is a soft deletion: the incident disappears from active lists, exports, PDFs, attachment downloads and workflow endpoints. The retained record and deletion history are saved atomically; no purge or restore UI is provided.
+- **Audit log** in the Incident Management menu is available to Superadmin, Quality Manager and existing Admin reviewers. It uses the shared table/search/filter/sort/pagination components. Search by incident ID (including old aliases), title, actor or reason; filter activity and sort by date, incident ID or actor.
+- The audit section reads retained incident history, including previously recorded workflow events and PDF downloads. New report edits include before/after field values; deletions include actor, timestamp and reason. Historical events do not reconstruct field changes that were never captured. Log entries cannot be edited or deleted through the portal.
+- Verified role boundaries, stale-version rejection, retained audit history and inaccessible deleted incidents in the isolated MongoDB lifecycle suite. Reviewed the prefilled edit form and live audit ID search in the owner's existing Chrome portal. No live incident was changed or deleted during verification.
+- Backend backup: `/home/salih/QCare_deploy_backups/incident-administration-20261107`. The local Vite portal uses the new frontend source; the separately hosted frontend is not published by this change.
+
 - Admin, superadmin and qualitymanager are reviewers and can access all incidents.
 - Reporters, investigators, action owners and explicitly notified staff can access their related incidents.
 - Being named as involved staff alone does not grant access.

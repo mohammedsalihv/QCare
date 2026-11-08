@@ -1,3 +1,5 @@
+import IncidentEdit from './pages/IncidentEdit';
+import IncidentAuditLog from './pages/IncidentAuditLog';
 import IncidentDetail from './pages/IncidentDetail';
 import IncidentRouting from './pages/IncidentRouting';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -103,6 +105,7 @@ function App() {
           <Route path="/dashboard/incidents" element={<IncidentManagement/>} />
           <Route path="/dashboard/incidents/new" element={<IncidentManagement reportPage/>} />
           <Route path="/dashboard/incidents/routing" element={<Navigate to="/dashboard/incidents/settings" replace/>} /><Route path="/dashboard/incidents/settings" element={<IncidentRouting/>} />
+          <Route path="/dashboard/incidents/audit-log" element={<IncidentAuditLog/>} /><Route path="/dashboard/incidents/:id/edit" element={<IncidentEdit/>} />
           <Route path="/dashboard/incidents/:id" element={<IncidentDetail/>} />
           <Route path="/notifications" element={<Notifications/>} />
           <Route path="/dashboard/settings" element={<SystemSettings/>} />

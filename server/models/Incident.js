@@ -108,7 +108,9 @@ const incidentSchema = new mongoose.Schema(
       completedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     }],
     comments: [{ body: String, kind: { type: String, enum: ['Comment', 'Witness statement', 'Clarification'], default: 'Comment' }, author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, authorName: String, at: { type: Date, default: Date.now } }],
-    history: [{ event: String, detail: String, actor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, actorName: String, at: { type: Date, default: Date.now } }],
+    deletedAt: Date,
+    deletedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    history: [{ event: String, detail: String, changes: mongoose.Schema.Types.Mixed, actor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, actorName: String, at: { type: Date, default: Date.now } }],
   },
   {
     timestamps: true,

@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 const User = require('../models/users');
 const reviewer = user => ['admin', 'superadmin', 'qualitymanager'].includes(user.role?.toLowerCase());
 const same = (a, b) => String(a?._id || a) === String(b?._id || b);
-const accessQuery = user => reviewer(user) ? {} : { $or: [{ reportedBy: user._id }, { assignedTo: user._id }, { notifyStaff: user._id }, { primaryResponsible: user._id }, { secondaryResponsible: user._id }, { 'opinions.recipient': user._id }, { 'actions.owner': user._id }] };
-const canRead = (row, user) => reviewer(user) || same(row.reportedBy, user._id) || same(row.assignedTo, user._id) || same(row.primaryResponsible, user._id) || same(row.secondaryResponsible, user._id) || (row.opinions || []).some(opinion => same(opinion.recipient, user._id)) || row.notifyStaff.some(id => same(id, user._id)) || row.actions.some(action => same(action.owner, user._id));
+const participantQuery = user => reviewer(user) ? {} : { $or: [{ reportedBy: user._id }, { assignedTo: user._id }, { notifyStaff: user._id }, { primaryResponsible: user._id }, { secondaryResponsible: user._id }, { 'opinions.recipient': user._id }, { 'actions.owner': user._id }] };
+const accessQuery = user => ({ $and: [{ deletedAt: null }, participantQuery(user)] });
+const canRead = (row, user) => !row.deletedAt && (reviewer(user) || same(row.reportedBy, user._id) || same(row.assignedTo, user._id) || same(row.primaryResponsible, user._id) || same(row.secondaryResponsible, user._id) || (row.opinions || []).some(opinion => same(opinion.recipient, user._id)) || row.notifyStaff.some(id => same(id, user._id)) || row.actions.some(action => same(action.owner, user._id)));
 const canInvestigate = (row, user) => reviewer(user) || same(row.assignedTo, user._id) || same(row.primaryResponsible, user._id);
 const fail = (message, status = 400) => { const error = new Error(message); error.status = status; throw error; };
 const text = (value, label, required = false, max = 5000) => {
