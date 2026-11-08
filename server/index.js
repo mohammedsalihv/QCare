@@ -95,7 +95,6 @@ app.use("/api/kpi", kpiRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/incidents", incidentRoutes);
 app.use('/api/notifications', require('./routes/notificationRoutes'));
-app.use('/api/jawda', require('./routes/jawdaRoutes'));
 app.use("/api/risks", riskRoutes);
 app.use("/api/audits", auditRoutes);
 app.use("/api/compliance", complianceRoutes);

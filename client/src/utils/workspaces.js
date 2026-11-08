@@ -1,6 +1,6 @@
 export const workspaces = [
   { name: 'Measure & improve', description: 'Indicators, audits and improvement actions', links: [
-    ['Indicators & submissions', 'kpi'], ['Clinical audits', 'audit'], ['Corrective actions', 'capa'], ['Change requests', 'change-management'], ['Deviations', 'deviations'], ['Reports', 'report-generator'], ['JAWDA · AOT', 'jawda/aot'], ['JAWDA · ASD', 'jawda/asd'], ['JAWDA · BN', 'jawda/bn'], ['JAWDA · DF', 'jawda/df'],
+    ['Indicators & submissions', 'kpi'], ['Clinical audits', 'audit'], ['Corrective actions', 'capa'], ['Change requests', 'change-management'], ['Deviations', 'deviations'], ['Reports', 'report-generator'],
   ] },
   { name: 'Safety & experience', description: 'Report, investigate and learn', links: [
     ['Incidents', 'incidents'], ['Risk register', 'risks'], ['Patient experience', 'experience'], ['Infection prevention', 'ipc'], ['Medication safety', 'meds'], ['Facilities & safety', 'fms'],

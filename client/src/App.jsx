@@ -9,16 +9,11 @@ import Dashboard from "./pages/Dashboard";
 import DocumentLibrary from "./pages/DocumentLibrary";
 import UserManagement from "./pages/UserManagement";
 import DepartmentMaster from "./pages/DepartmentMaster";
-import JawdaKPI from "./pages/JawdaKPI";
 import IncidentManagement from "./pages/IncidentManagement";
 import Notifications from "./pages/Notifications";
 import SystemSettings from "./pages/SystemSettings";
 import HelpDesk from "./pages/HelpDesk";
 import UserManuals from "./pages/UserManuals";
-import JawdaAOT from "./pages/JawdaAOT";
-import JawdaASD from "./pages/JawdaASD";
-import JawdaBN from "./pages/JawdaBN";
-import JawdaDF from "./pages/JawdaDF";
 import ComplianceManagement from "./pages/ComplianceManagement";
 import ClinicalAuditCenter from "./pages/ClinicalAuditWorkspace";
 import RiskManagementCenter from "./pages/RiskManagementCenter";
@@ -98,6 +93,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login/>} />
           <Route path="/dashboard" element={<Dashboard/>} />
+          <Route path="/dashboard/jawda/*" element={<Navigate to="/dashboard" replace/>} />
           <Route path="/dashboard/documents" element={<DocumentLibrary/>} />
           <Route path="/dashboard/users" element={<UserManagement/>} />
           <Route path="/dashboard/departments" element={<DepartmentMaster/>} />
@@ -111,10 +107,6 @@ function App() {
           <Route path="/dashboard/settings" element={<SystemSettings/>} />
           <Route path="/dashboard/support" element={<HelpDesk/>} />
           <Route path="/dashboard/manuals" element={<UserManuals/>} />
-          <Route path="/dashboard/jawda/aot" element={<JawdaAOT/>} />
-          <Route path="/dashboard/jawda/asd" element={<JawdaASD/>} />
-          <Route path="/dashboard/jawda/bn" element={<JawdaBN/>} />
-          <Route path="/dashboard/jawda/df" element={<JawdaDF/>} />
           <Route path="/dashboard/compliance" element={<ComplianceManagement/>} />
           <Route path="/dashboard/audit" element={<ClinicalAuditCenter/>} />
           <Route path="/dashboard/risks" element={<RiskManagementCenter/>} />
