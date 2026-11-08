@@ -3,6 +3,11 @@ const mongoose = require('mongoose');
 const clinicalPrivilegeSchema = new mongoose.Schema({
   staffId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   specialty: { type: String, required: true },
+  applicationType: { type: String, enum: ['new', 'renewal', 'extension'], default: 'new' },
+  reason: { type: String, maxlength: 4000 },
+  requestedStartDate: Date,
+  assignedApprover: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  supportingDocuments: [{ name: String, mimeType: String, size: Number, data: { type: Buffer, select: false } }],
   privilegeType: {
     type: String,
     enum: ['core', 'special', 'emergency'],
@@ -29,7 +34,8 @@ const clinicalPrivilegeSchema = new mongoose.Schema({
   attachments: [String], // Signed Privilege Form
   reviewNotes: String
 }, {
-  timestamps: true
+  timestamps: true,
+  optimisticConcurrency: true
 });
 
 module.exports = mongoose.model('ClinicalPrivilege', clinicalPrivilegeSchema);

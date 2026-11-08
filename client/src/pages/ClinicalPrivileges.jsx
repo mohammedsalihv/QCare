@@ -1,3 +1,4 @@
+import PrivilegeApplication from '../components/PrivilegeApplication';
 import TableToolbar from '../components/TableToolbar';
 import CompactSearch from './../components/CompactSearch';
 import './ClinicalPrivileges.css';
@@ -7,11 +8,11 @@ import Select from '../components/Select.jsx';
 import React, { useState } from 'react';
 import { useNotification } from "../components/NotificationContext";
 import DashboardLayout from "../components/DashboardLayout";
-import { ShieldCheck, FileText, Search, UserCheck, History, Calendar, AlertTriangle, TrendingUp, Layers, ClipboardList, BookOpen, Plus, Edit3, Clock, ArrowRight, UploadCloud, ChevronRight } from 'lucide-react';
+import { ShieldCheck, FileText, Search, UserCheck, History, Calendar, AlertTriangle, TrendingUp, Layers, ClipboardList, BookOpen, Plus, Edit3, Clock, ChevronRight } from 'lucide-react';
 
 const ClinicalPrivileges = () => {
   const { showNotification } = useNotification();
-  const [activeTab, setActiveTab] = useState('normal-dashboard');
+  const [activeTab, setActiveTab] = useState(new URLSearchParams(window.location.search).get('tab') === 'apply' ? 'apply-renew' : new URLSearchParams(window.location.search).get('tab') === 'reviews' ? 'privilege-approval' : 'normal-dashboard');
 
   // Sidebar Menu Items
   const menuItems = [
@@ -80,15 +81,8 @@ const ClinicalPrivileges = () => {
     { id: 3, name: 'Dr. Alistair Cook', specialty: 'Pediatrics', approvedCount: 5, expiry: '2026-05-10', status: 'Expired' }
   ]);
 
-  // Apply/Renew State
-  const [applyStep, setApplyStep] = useState(1);
-  const [applyClinician, setApplyClinician] = useState('');
-  const [applySpecialty, setApplySpecialty] = useState('Cardiology');
-  const [applyProcs, setApplyProcs] = useState([]);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-
   // Approvals Queue State
-  const [approvals, setApprovals] = useState([
+  const [approvals] = useState([
     { id: 1, applicant: 'Dr. Emily Watson', specialty: 'Orthopedics', dateApplied: '2026-07-02', status: 'Pending HOD Approval' },
     { id: 2, applicant: 'Dr. Alistair Cook', specialty: 'Pediatrics', dateApplied: '2026-07-04', status: 'Pending Committee Review' }
   ]);
@@ -129,19 +123,6 @@ const ClinicalPrivileges = () => {
     setNewProcName('');
     setNewProcReq('');
     setShowAddProcModal(false);
-  };
-
-  const handleApplyProcToggle = (procName) => {
-    if (applyProcs.includes(procName)) {
-      setApplyProcs(applyProcs.filter(p => p !== procName));
-    } else {
-      setApplyProcs([...applyProcs, procName]);
-    }
-  };
-
-  const handleFileUpload = (e) => {
-    const files = Array.from(e.target.files);
-    setUploadedFiles([...uploadedFiles, ...files.map(f => ({ name: f.name, size: (f.size / 1024 / 1024).toFixed(2) }))]);
   };
 
   // ---------------------------------------------------------------------------
@@ -489,168 +470,8 @@ const ClinicalPrivileges = () => {
           </div>
         );
 
-      // 5. APPLY/RENEW PRIVILEGE
-      case 'apply-renew':
-        return (
-          <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Apply or renew</h3>
-                <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Submit clinician privilege portfolio</p>
-              </div>
-              <div className="flex gap-1 items-center bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
-                {[1, 2, 3].map((step) => (
-                  <div key={step} className={`w-8 h-8 rounded-xl flex items-center justify-center text-[13px] font-semibold transition-all ${
-                    applyStep === step ? 'bg-[var(--color-primary)] text-white' : 'text-slate-500'
-                  }`}>{step}</div>
-                ))}
-              </div>
-            </div>
-
-            {applyStep === 1 && (
-              <div className="space-y-6">
-                <h4 className="text-[13px] font-semibold text-slate-700 normal-case tracking-normal">Step 1: Specialty & Clinician Details</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Select Clinician</label>
-                    <UserSelect aria-label="Clinician" value={applyClinician} valueField="employeeName" onChange={event => setApplyClinician(event.target.value)} placeholder="Select clinician from users" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl" />
-                  </div>
-                  <div>
-                    <label className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block mb-2">Medical Specialty</label>
-                    <Select 
-                      value={applySpecialty}
-                      onChange={(e) => setApplySpecialty(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[var(--color-primary)] text-[13px] font-semibold text-slate-800"
-                    >
-                      <option value="Cardiology">Cardiology</option>
-                      <option value="Orthopedics">Orthopedics</option>
-                    </Select>
-                  </div>
-                </div>
-                <div className="flex justify-end">
-                  <button onClick={() => setApplyStep(2)} className="px-6 py-3 bg-primary text-white text-[12px] font-semibold normal-case tracking-normal rounded-xl hover:bg-primary transition-all flex items-center gap-2">
-                    Next <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {applyStep === 2 && (
-              <div className="space-y-6">
-                <h4 className="text-[13px] font-semibold text-slate-700 normal-case tracking-normal">Step 2: Request Procedures & Scope</h4>
-                <div className="space-y-3">
-                  {procedures.filter(p => p.category.includes(applySpecialty)).map(proc => (
-                    <label key={proc.id} className="flex items-start gap-4 p-4 bg-slate-50 border border-slate-200/50 rounded-2xl cursor-pointer hover:bg-slate-100/50 transition-all">
-                      <input 
-                        type="checkbox" 
-                        checked={applyProcs.includes(proc.name)}
-                        onChange={() => handleApplyProcToggle(proc.name)}
-                        className="mt-1 w-4.5 h-4.5 text-[var(--color-primary)] rounded border-slate-350"
-                      />
-                      <div className="flex-1">
-                        <span className="text-[13px] font-semibold text-slate-800 normal-case tracking-normal block">{proc.name}</span>
-                        <span className="text-[12px] text-slate-500 font-semibold block mt-1">Requirement: {proc.req}</span>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-                <div className="flex justify-between">
-                  <button onClick={() => setApplyStep(1)} className="px-6 py-3 bg-slate-100 text-slate-700 text-[12px] font-semibold normal-case tracking-normal rounded-xl">Back</button>
-                  <button onClick={() => setApplyStep(3)} className="px-6 py-3 bg-primary text-white text-[12px] font-semibold normal-case tracking-normal rounded-xl hover:bg-primary transition-all flex items-center gap-2">
-                    Next <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {applyStep === 3 && (
-              <div className="space-y-6">
-                <h4 className="text-[13px] font-semibold text-slate-700 normal-case tracking-normal">Step 3: Upload Evidence Documents</h4>
-                <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center bg-slate-50 relative hover:bg-slate-100/50 transition-all">
-                  <input 
-                    type="file" 
-                    multiple 
-                    onChange={handleFileUpload}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                  />
-                  <UploadCloud className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                  <p className="text-[13px] font-semibold text-slate-700">Drag & Drop certificate files or click to browse</p>
-                  <p className="text-[12px] text-slate-500 mt-1">PDF, JPG, PNG formats up to 5MB</p>
-                </div>
-
-                {uploadedFiles.length > 0 && (
-                  <div className="space-y-2">
-                    <span className="text-[12px] font-semibold text-slate-500 normal-case tracking-normal block">Uploaded Portfolio Files ({uploadedFiles.length})</span>
-                    {uploadedFiles.map((file, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-3 bg-slate-50 border border-slate-200/50 rounded-2xl">
-                        <span className="text-[13px] font-semibold text-slate-700">{file.name}</span>
-                        <span className="text-[12px] text-slate-500 font-semibold">{file.size} MB</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="flex justify-between pt-4 border-t border-slate-100">
-                  <button onClick={() => setApplyStep(2)} className="px-6 py-3 bg-slate-100 text-slate-700 text-[12px] font-semibold normal-case tracking-normal rounded-xl">Back</button>
-                  <button onClick={() => {
-                    showNotification('Privilege request submitted successfully', 'success');
-                    setApplyStep(1);
-                    setApplyProcs([]);
-                    setUploadedFiles([]);
-                  }} className="px-6 py-3 bg-emerald-600 text-white text-[12px] font-semibold normal-case tracking-normal rounded-xl hover:bg-emerald-700 transition-all">
-                    Submit Application
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-
-      // 6. PRIVILEGE APPROVAL
-      case 'privilege-approval':
-        return (
-          <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Approval queue Queue</h3>
-              <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Clinical reviews and credential committee authorizations</p>
-            </div>
-            <div className="overflow-x-auto">
-              <Table className="w-full text-left text-[13px]">
-                <thead>
-                  <tr className="bg-slate-50 text-slate-500 font-semibold normal-case tracking-normal border-b border-slate-100">
-                    <th className="p-3">Applicant</th>
-                    <th className="p-3">Specialty</th>
-                    <th className="p-3">Submission Date</th>
-                    <th className="p-3">Review Level</th>
-                    <th className="p-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {approvals.map((app) => (
-                    <tr key={app.id}>
-                      <td className="p-3 font-semibold text-slate-700">{app.applicant}</td>
-                      <td className="p-3 text-slate-500">{app.specialty}</td>
-                      <td className="p-3 text-slate-500">{app.dateApplied}</td>
-                      <td className="p-3">
-                        <span className="px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-100 rounded-full text-[12px] font-semibold">{app.status}</span>
-                      </td>
-                      <td className="p-3 flex gap-2">
-                        <button onClick={() => {
-                          showNotification(`Approved application from ${app.applicant}`, 'success');
-                          setApprovals(approvals.filter(a => a.id !== app.id));
-                        }} className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[12px] font-semibold normal-case tracking-normal rounded-lg transition-all">Approve</button>
-                        <button onClick={() => {
-                          showNotification(`Rejected application from ${app.applicant}`, 'info');
-                          setApprovals(approvals.filter(a => a.id !== app.id));
-                        }} className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 text-[12px] font-semibold normal-case tracking-normal rounded-lg transition-all">Reject</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          </div>
-        );
+      case 'apply-renew': return <PrivilegeApplication />;
+      case 'privilege-approval': return <PrivilegeApplication key="reviews" reviewQueue />;
 
       // 7. PRIVILEGE APPROVAL MASTER
       case 'privilege-approval-master':
@@ -821,7 +642,7 @@ const ClinicalPrivileges = () => {
       <header className="qc-module-heading">
         <h1>Clinical privileges</h1>
         <p>Manage clinical scope, applications and credential reviews in one place.</p>
-        <div className="cp-preview-note">Preview workspace · Sample records and edits are held only for this session.</div>
+        {!['apply-renew', 'privilege-approval'].includes(activeTab) && <div className="cp-preview-note">Preview workspace · Other tabs show sample data. Applications and application reviews use saved records.</div>}
       </header>
       <div className="cp-workspace">
         
@@ -845,7 +666,7 @@ const ClinicalPrivileges = () => {
                 >
                   <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-[var(--color-primary)]'}`} />
                   <span>{item.label}</span>
-                  {item.id === "privilege-approval" && <span className="cp-count">{approvals.length}</span>}
+
                 </button>
                 </React.Fragment>
               );
