@@ -190,7 +190,7 @@ test('the actual form payload persists through real HTTP routes and MongoDB', { 
     const requesterEvents=(await notificationRequest('', 'GET', staff)).body.filter(n=>n.workflow?.recordId===change.body._id);
     assert(requesterEvents.some(n=>n.workflow.status==='Pending Approval'));
     assert(requesterEvents.some(n=>n.workflow.reason==='Add impact assessment' && n.workflow.actor.name===quality.employeeName));
-    const privilege=await processRequest('/api/cp/privileges','POST',{staffId:String(staff._id),specialty:'General practice',expiryDate:'2027-10-30'});
+    const privilege=await processRequest('/api/cp/privileges','POST',{staffId:String(staff._id),specialty:'General practice',applicationType:'new',privilegeType:'core',reason:'Request scope following competency training',requestedStartDate:'2027-01-01',expiryDate:'2027-10-30',assignedApprover:String(manager._id),procedures:[{name:'General practice consultation',level:'independent'}]});
     assert.equal(privilege.status,201,JSON.stringify(privilege.body));
     assert.equal((await processRequest('/api/cp/privileges/'+privilege.body._id+'/approve','PUT',{decision:'reject'},manager)).status,400);
     assert.equal((await processRequest('/api/cp/privileges/'+privilege.body._id+'/approve','PUT',{decision:'reject',reviewNotes:'Provide competency evidence'},manager)).body.status,'rejected');
