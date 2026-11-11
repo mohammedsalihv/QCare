@@ -1,5 +1,5 @@
 const event = require('../utils/workflowNotifications');
-const notifyPrivilege = (req, privilege) => event({module:'Clinical privileges', recordId:privilege._id, title:privilege.specialty + ' privileges', status:privilege.status, actor:req.user, requester:privilege.requestedBy || privilege.staffId, participants:[privilege.staffId, privilege.assignedApprover], reason:privilege.reviewNotes || '', actionLink:'/dashboard/clinical-privileges?tab=reviews', recipientRoles:['qualitymanager']});
+const notifyPrivilege = (req, privilege) => event({module:'Clinical privileges', recordId:privilege._id, title:privilege.specialty + ' privileges', status:privilege.status, actor:req.user, requester:privilege.requestedBy || privilege.staffId, participants:[privilege.staffId, privilege.assignedApprover], reason:privilege.reviewNotes || '', actionLink:'/dashboard/clinical-privileges?tab=reviews', recipientRoles:[]});
 const ClinicalPrivilege = require('../models/ClinicalPrivilege');
 const CredentialingRecord = require('../models/CredentialingRecord');
 const User = require('../models/users');

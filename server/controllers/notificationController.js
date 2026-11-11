@@ -8,7 +8,7 @@ const Notification = require("../models/Notification");
 const getNotifications = async (req, res) => {
   try {
     if (auditNotifications.isQuality(req.user)) await auditNotifications.syncPending();
-    if (auditNotifications.isQuality(req.user) || req.user.role?.toLowerCase() === 'admin') await require('../utils/syncWorkflowNotifications')();
+    if (auditNotifications.isQuality(req.user) || req.user.role?.toLowerCase() === 'admin' || require('../utils/privilegeApplication').canReview(req.user)) await require('../utils/syncWorkflowNotifications')();
     const roleQuery = visibility(req.user);
 
     // Filter out notifications deleted by this specific user

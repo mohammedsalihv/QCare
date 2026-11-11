@@ -8,6 +8,8 @@ const mongoose = require('mongoose');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
+const Notification = require('../models/Notification');
+const visibility = require('../utils/notificationVisibility');
 const { applicationData } = require('../utils/privilegeApplication');
 const payload = { specialty: 'Test specialty', applicationType: 'new', privilegeType: 'core', reason: 'Test training and service need', requestedStartDate: '2027-01-01', expiryDate: '2028-01-01', procedures: [{ name: 'Test procedure', level: 'direct-supervision', approved: true }] };
 test('application validation rejects invalid dates, duplicates and disguised files', () => {
@@ -28,7 +30,7 @@ test('applications persist scope, evidence and reviewer; enforce ownership and i
     const make = (name, role = 'user') => User.create({ employeeId: name, employeeName: name, email: name + '@test.invalid', password: 'test-only', role, department: 'Test', designation: 'Test' });
     const applicant = await make('applicant'), outsider = await make('outsider'), reviewer = await make('reviewer', 'QualityManager'), other = await make('other-reviewer', 'QualityManager');
     const headers = user => ({ Authorization: 'Bearer ' + jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'default_secret') });
-    const app = express(); app.use(express.json()); app.use('/api/cp', require('../routes/cpRoutes'));
+    const app = express(); app.use(express.json()); app.use('/api/cp', require('../routes/cpRoutes')); app.use('/api/notifications', require('../routes/notificationRoutes'));
     server = await new Promise(resolve => { const instance = app.listen(0, '127.0.0.1', () => resolve(instance)); });
     const base = 'http://127.0.0.1:' + server.address().port + '/api/cp/privileges';
     const body = { ...payload, staffId: String(applicant._id), assignedApprover: String(reviewer._id), status: 'approved', approvedBy: reviewer._id };
@@ -64,6 +66,53 @@ test('applications persist scope, evidence and reviewer; enforce ownership and i
     assert.equal((await decision(superadmin)).status, 403);
     assert.equal((await decision(reviewer)).status, 403);
     assert.equal((await decision(director)).status, 200);
+    const unrelated = await make('unrelated-manager', 'QualityManager');
+    const assertRecipients = async (recordId, status, approver) => {
+      const query = { 'workflow.recordId': recordId, 'workflow.status': status };
+      const alert = await Notification.findOne(query);
+      assert(alert, `Missing ${status} alert`);
+      assert.deepEqual([...alert.recipientRoles], []);
+      assert.deepEqual(alert.recipientIds.map(String).sort(), [reviewer, outsider, approver].map(u => String(u._id)).sort());
+      for (const recipient of [reviewer, outsider, approver]) {
+        assert(await Notification.exists({ ...query, ...visibility(recipient) }), `${recipient.employeeName} must receive ${status}`);
+      }
+      for (const excluded of [unrelated, superadmin, applicant]) {
+        assert.equal(await Notification.exists({ ...query, ...visibility(excluded) }), null, `${excluded.employeeName} must not receive ${status}`);
+      }
+      return alert;
+    };
+    // A manager submits for a separate clinician; both retain submission and decision alerts.
+    for (const approver of [other, director]) {
+      for (const outcome of ['approve', 'reject']) {
+        const submitted = await post(reviewer, { ...body, staffId: outsider._id, assignedApprover: approver._id });
+        assert.equal(submitted.status, 201);
+        const application = await submitted.json();
+        await assertRecipients(application._id, 'pending-approval', approver);
+        if (approver === director && outcome === 'reject') {
+          // A director fetching notifications must recover a missing pending alert.
+          await Notification.deleteMany({ 'workflow.recordId': application._id });
+          const feed = await fetch(base.replace('/cp/privileges', '/notifications'), { headers: headers(director) });
+          assert.equal(feed.status, 200);
+          assert((await feed.json()).some(n => n.workflow.recordId === application._id));
+          const backfilled = await assertRecipients(application._id, 'pending-approval', approver);
+          assert.equal(backfilled.actionLink, '/dashboard/clinical-privileges?tab=reviews');
+          // Existing alerts from the old backfill are repaired without duplication.
+          await Notification.updateOne({ _id: backfilled._id }, { $set: {
+            recipientIds: [reviewer._id], recipientRoles: ['qualitymanager'], actionLink: '/dashboard/cp'
+          } });
+          await require('../utils/syncWorkflowNotifications')();
+          await assertRecipients(application._id, 'pending-approval', approver);
+          assert.equal(await Notification.countDocuments({ 'workflow.recordId': application._id }), 1);
+        }
+        const reviewed = await fetch(base + '/' + application._id + '/approve', {
+          method: 'PUT', headers: { ...headers(approver), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ decision: outcome, reviewNotes: outcome === 'reject' ? 'Evidence needed' : '' })
+        });
+        assert.equal(reviewed.status, 200);
+        const alert = await assertRecipients(application._id, outcome === 'approve' ? 'approved' : 'rejected', approver);
+        assert.equal(alert.workflow.reason, outcome === 'reject' ? 'Evidence needed' : '');
+      }
+    }
   } finally {
     if (server) await new Promise(resolve => server.close(resolve)); await mongoose.disconnect(); database.kill(); await exited;
     if (path.resolve(directory).startsWith(path.resolve(os.tmpdir()) + path.sep) && path.basename(directory).startsWith('qcare-privilege-test-')) await fs.rm(directory, { recursive: true, force: true });
