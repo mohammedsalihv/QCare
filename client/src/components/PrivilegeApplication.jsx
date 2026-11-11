@@ -1,3 +1,4 @@
+import PrivilegeWorkflow from './PrivilegeWorkflow';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Select from './Select';
@@ -98,13 +99,13 @@ export default function PrivilegeApplication({ reviewQueue = false }) {
       </form>
     </>}
     <section><h3>{reviewQueue ? 'Saved applications' : 'My submitted applications'}</h3>{loading ? <p>Loading applications…</p> : !rows.length && <p>No applications found.</p>}
-      {rows.map(row => <details key={row._id}><summary><strong>{row.staffId?.employeeName || 'Clinician'} · {row.specialty}</strong><span>{row.status.replaceAll('-', ' ')}</span></summary>
+      {rows.map(row => <article className="pa-application-card" key={row._id}><h4>{row.specialty}</h4><p>Clinician: {row.staffId?.employeeName || 'Not recorded'}</p><PrivilegeWorkflow application={{ ...row, requestedBy: row.requestedBy?.employeeName ? row.requestedBy : (row.requestedBy?._id || row.requestedBy) === user._id ? user : row.requestedBy, assignedApprover: approvers.find(person => person._id === (row.assignedApprover?._id || row.assignedApprover)) || row.assignedApprover }} /><details><summary>View application details</summary>
         <p>{row.applicationType || 'Application'} · {row.privilegeType}</p><p><strong>Reason:</strong> {row.reason || 'Not recorded in this older application'}</p><p><strong>Requested dates:</strong> {row.requestedStartDate?.slice(0, 10) || 'Not recorded'} to {row.expiryDate?.slice(0, 10)}</p><p><strong>Assigned approver:</strong> {row.assignedApprover?.employeeName || 'Not assigned'}</p>
         <ul>{row.procedures.map((p, i) => <li key={i}>{p.name} · {levels[p.level]}</li>)}</ul>
         <p><strong>Supporting documents:</strong> {!row.supportingDocuments?.length && 'None attached'}</p>{row.supportingDocuments?.map(d => <button type="button" key={d._id} onClick={() => download(row, d)}>{d.name}</button>)}
         {row.reviewNotes && <p><strong>Reviewer notes:</strong> {row.reviewNotes}</p>}
-        {reviewQueue && reviewer && row.status === 'pending-approval' && row.staffId?._id !== user._id && row.requestedBy !== user._id && (!row.assignedApprover || row.assignedApprover?._id === user._id) && <div><label>Review notes (required to reject)<textarea value={notes[row._id] || ''} onChange={e => setNotes({ ...notes, [row._id]: e.target.value })} /></label><footer><button type="button" disabled={busy} onClick={() => decide(row, 'reject')}>Reject application</button><button type="button" className="pa-primary" disabled={busy} onClick={() => decide(row, 'approve')}>Approve requested scope</button></footer></div>}
-      </details>)}
+        {reviewQueue && reviewer && row.status === 'pending-approval' && row.staffId?._id !== user._id && (row.requestedBy?._id || row.requestedBy) !== user._id && (!row.assignedApprover || row.assignedApprover?._id === user._id) && <div><label>Review notes (required to reject)<textarea value={notes[row._id] || ''} onChange={e => setNotes({ ...notes, [row._id]: e.target.value })} /></label><footer><button type="button" disabled={busy} onClick={() => decide(row, 'reject')}>Reject application</button><button type="button" className="pa-primary" disabled={busy} onClick={() => decide(row, 'approve')}>Approve requested scope</button></footer></div>}
+      </details></article>)}
     </section>
   </div>;
 }

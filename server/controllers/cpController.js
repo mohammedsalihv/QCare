@@ -20,7 +20,7 @@ exports.requestPrivileges = async (req, res) => {
     if (!canReview(req.user) && !['admin', 'SuperAdmin'].includes(req.user.role) && String(staff._id) !== String(req.user._id)) return res.status(403).json({ message: 'You can only apply for your own privileges.' });
     const privilege = await ClinicalPrivilege.create({ ...data, staffId: staff._id, assignedApprover: approver._id, requestedBy: req.user._id, status: 'pending-approval' });
     await notifyPrivilege(req, privilege).catch(error => console.error('Privilege notification failed:', error.message));
-    res.status(201).json(await ClinicalPrivilege.findById(privilege._id).populate('staffId assignedApprover', 'employeeName'));
+    res.status(201).json(await ClinicalPrivilege.findById(privilege._id).populate('staffId requestedBy reviewedBy approvedBy', 'employeeName').populate('assignedApprover', 'employeeName designation role'));
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -74,7 +74,7 @@ exports.getAllPrivileges = async (req, res) => {
     const privileges = await ClinicalPrivilege.find()
       .populate('staffId', 'employeeName employeeId specialty')
       .populate('approvedBy', 'employeeName')
-      .populate('assignedApprover', 'employeeName')
+      .populate('assignedApprover', 'employeeName designation role').populate('requestedBy reviewedBy', 'employeeName')
       .sort({ status: 1 });
     res.json(privileges);
   } catch (error) {
@@ -87,7 +87,7 @@ exports.applicationOptions = async (req, res) => {
   res.json({ approvers: users.filter(user => canReview(user) && String(user._id) !== String(req.user._id)) });
 };
 exports.myApplications = async (req, res) => {
-  const rows = await ClinicalPrivilege.find({ $or: [{ staffId: req.user._id }, { requestedBy: req.user._id }] }).populate('staffId assignedApprover approvedBy', 'employeeName').sort({ createdAt: -1 });
+  const rows = await ClinicalPrivilege.find({ $or: [{ staffId: req.user._id }, { requestedBy: req.user._id }] }).populate('staffId requestedBy reviewedBy approvedBy', 'employeeName').populate('assignedApprover', 'employeeName designation role').sort({ createdAt: -1 });
   res.json(rows);
 };
 exports.downloadDocument = async (req, res) => {

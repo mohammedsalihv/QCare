@@ -87,6 +87,8 @@ test('applications persist scope, evidence and reviewer; enforce ownership and i
         const submitted = await post(reviewer, { ...body, staffId: outsider._id, assignedApprover: approver._id });
         assert.equal(submitted.status, 201);
         const application = await submitted.json();
+        assert.equal(application.requestedBy.employeeName, reviewer.employeeName);
+        assert.equal(application.assignedApprover.employeeName, approver.employeeName);
         await assertRecipients(application._id, 'pending-approval', approver);
         if (approver === director && outcome === 'reject') {
           // A director fetching notifications must recover a missing pending alert.
