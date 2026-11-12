@@ -4,6 +4,7 @@ const ClinicalPrivilege = require('../models/ClinicalPrivilege');
 const CredentialingRecord = require('../models/CredentialingRecord');
 const User = require('../models/users');
 const AuditLog = require('../models/AuditLog');
+const { auditEntry } = require('../utils/privilegeAudit');
 const { applicationData, canRead, canReview } = require('../utils/privilegeApplication');
 const mongoose = require('mongoose');
 
@@ -18,7 +19,9 @@ exports.requestPrivileges = async (req, res) => {
     if (!active(staff) || !active(approver) || !canReview(approver)) return res.status(400).json({ message: 'Choose an active clinician and an eligible approver.' });
     if ([String(staff._id), String(req.user._id)].includes(String(approver._id))) return res.status(400).json({ message: 'Select an independent approver, different from the applicant and submitter.' });
     if (!canReview(req.user) && !['admin', 'SuperAdmin'].includes(req.user.role) && String(staff._id) !== String(req.user._id)) return res.status(403).json({ message: 'You can only apply for your own privileges.' });
-    const privilege = await ClinicalPrivilege.create({ ...data, staffId: staff._id, assignedApprover: approver._id, requestedBy: req.user._id, status: 'pending-approval' });
+    const privilege = new ClinicalPrivilege({ ...data, staffId: staff._id, assignedApprover: approver._id, requestedBy: req.user._id, status: 'pending-approval' });
+    privilege.auditHistory.push(auditEntry(req.user, privilege, 'submitted', undefined));
+    await privilege.save();
     await notifyPrivilege(req, privilege).catch(error => console.error('Privilege notification failed:', error.message));
     res.status(201).json(await ClinicalPrivilege.findById(privilege._id).populate('staffId requestedBy reviewedBy approvedBy', 'employeeName').populate('assignedApprover', 'employeeName designation role'));
   } catch (error) {
@@ -35,20 +38,26 @@ exports.approvePrivileges = async (req, res) => {
     if (privilege.status !== 'pending-approval') return res.status(409).json({message:'Only pending requests can be reviewed.'});
     const decision = req.body.decision || 'approve';
     if (!['approve','reject'].includes(decision)) return res.status(400).json({message:'Choose approve or reject.'});
+    if (req.body.reviewNotes != null && (typeof req.body.reviewNotes !== 'string' || req.body.reviewNotes.length > 4000)) return res.status(400).json({ message: 'Review notes must be text, up to 4000 characters.' });
     if (decision === 'reject' && !req.body.reviewNotes?.trim()) return res.status(400).json({message:'Provide a rejection reason.'});
+    const previousStatus = privilege.status;
     privilege.status = decision === 'approve' ? 'approved' : 'rejected';
     privilege.reviewedBy = req.user._id; privilege.reviewedAt = new Date();
     privilege.approvedBy = decision === 'approve' ? req.user._id : undefined; privilege.approvalDate = decision === 'approve' ? new Date() : undefined; privilege.reviewNotes = req.body.reviewNotes || '';
     privilege.procedures.forEach(p => { p.approved = decision === 'approve'; });
+    privilege.auditHistory.push(auditEntry(req.user, privilege, privilege.status, previousStatus));
     await privilege.save(); await notifyPrivilege(req, privilege).catch(error => console.error('Privilege notification failed:', error.message));
 
     await AuditLog.create({
       action: decision === 'approve' ? 'PRIVILEGES_APPROVED' : 'PRIVILEGES_REJECTED',
       module: 'MedicalAffairs',
-      details: `Clinical privileges approved for staff ID: ${privilege.staffId}`,
-      user: req.user.employeeName,
-      userId: req.user._id
-    });
+      recordId: String(privilege._id),
+      details: `Clinical privileges ${privilege.status} for staff ID: ${privilege.staffId}`,
+      actorName: req.user.employeeName,
+      actorEmployeeId: req.user.employeeId,
+      actorRole: req.user.role,
+      performedBy: req.user._id
+    }).catch(error => console.error('Privilege central audit failed; application history retained:', error.message));
 
     res.json(privilege);
   } catch (error) {

@@ -32,7 +32,20 @@ const clinicalPrivilegeSchema = new mongoose.Schema({
     default: 'draft'
   },
   attachments: [String], // Signed Privilege Form
-  reviewNotes: String
+  reviewNotes: String,
+  auditHistory: [{
+    action: { type: String, enum: ['submitted', 'approved', 'rejected'], required: true },
+    occurredAt: { type: Date, required: true },
+    actorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    actorName: String,
+    actorEmployeeId: String,
+    actorRole: String,
+    actorDesignation: String,
+    previousStatus: String,
+    newStatus: { type: String, required: true },
+    notes: String,
+    procedures: [{ _id: false, name: String, level: String, approved: Boolean }]
+  }]
 }, {
   timestamps: true,
   optimisticConcurrency: true

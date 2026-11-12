@@ -12,4 +12,6 @@ Uploads accept up to five PDF/JPEG/PNG files, maximum 5 MB each and 10 MB combin
 
 Other Clinical privileges tabs remain explicitly labelled preview data; the procedure library, eligibility criteria and sample three-level workflow are not a configured live approval chain. The live application uses manually entered procedure scope and a single assigned authorised reviewer.
 
+Each saved application now has a read-only **Audit history** in the application journey. Submission and approval/rejection entries capture the server time (displayed in UAE time), actor identity/employee ID, role and designation at the time, previous/new status, reason or review notes, and procedure scope with approval results. History is saved atomically with the application, and request payloads cannot supply history entries. Older applications explicitly show that earlier history is unavailable; no events are invented. The central decision log also records the correct outcome, application ID and actor. Review notes accept up to 4,000 characters.
+
 Verification: `node --test tests/privilegeApplication.test.js` (isolated MongoDB, not production), targeted client ESLint, production client build, and visual review in the owner's existing portal tab. No real clinical privilege request was submitted during UI review.

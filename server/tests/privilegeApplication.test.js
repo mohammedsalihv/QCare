@@ -33,7 +33,7 @@ test('applications persist scope, evidence and reviewer; enforce ownership and i
     const app = express(); app.use(express.json()); app.use('/api/cp', require('../routes/cpRoutes')); app.use('/api/notifications', require('../routes/notificationRoutes'));
     server = await new Promise(resolve => { const instance = app.listen(0, '127.0.0.1', () => resolve(instance)); });
     const base = 'http://127.0.0.1:' + server.address().port + '/api/cp/privileges';
-    const body = { ...payload, staffId: String(applicant._id), assignedApprover: String(reviewer._id), status: 'approved', approvedBy: reviewer._id };
+    const body = { ...payload, staffId: String(applicant._id), assignedApprover: String(reviewer._id), status: 'approved', approvedBy: reviewer._id, auditHistory: [{ action: 'approved', actorName: 'Forged reviewer' }] };
     const post = (actor, data) => fetch(base, { method: 'POST', headers: { ...headers(actor), 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
     assert.equal((await post(outsider, body)).status, 403);
     assert.equal((await post(applicant, { ...body, assignedApprover: outsider._id })).status, 400);
@@ -42,6 +42,13 @@ test('applications persist scope, evidence and reviewer; enforce ownership and i
     const response = await fetch(base, { method: 'POST', headers: headers(applicant), body: form });
     const row = await response.json(); assert.equal(response.status, 201, JSON.stringify(row)); assert.equal(row.reason, payload.reason); assert.equal(row.status, 'pending-approval'); assert.equal(row.procedures[0].approved, false); assert.equal(row.approvedBy, undefined); assert.equal(row.supportingDocuments[0].data, undefined);
     const documentUrl = base + '/' + row._id + '/documents/' + row.supportingDocuments[0]._id;
+    assert.equal(row.auditHistory.length, 1);
+    assert.equal(row.auditHistory[0].action, 'submitted');
+    assert.equal(row.auditHistory[0].actorId, String(applicant._id));
+    assert.equal(row.auditHistory[0].actorName, applicant.employeeName);
+    assert.equal(row.auditHistory[0].notes, payload.reason);
+    assert.equal(row.auditHistory[0].procedures[0].approved, false);
+    assert(Number.isFinite(Date.parse(row.auditHistory[0].occurredAt)));
     assert.equal((await fetch(documentUrl, { headers: headers(outsider) })).status, 404);
     assert.equal(await (await fetch(documentUrl, { headers: headers(reviewer) })).text(), '%PDF-1.4\ntest evidence');
     const mine = await (await fetch(base + '/mine', { headers: headers(applicant) })).json(); assert.equal(mine.length, 1); assert.equal(mine[0].supportingDocuments[0].data, undefined);
@@ -52,6 +59,14 @@ test('applications persist scope, evidence and reviewer; enforce ownership and i
     assert.equal((await approve(applicant)).status, 403);
     const result = await approve(reviewer); assert.equal(result.status, 200); assert.equal((await result.json()).procedures[0].approved, true);
     assert.equal((await approve(reviewer)).status, 409);
+    const saved = await require('../models/ClinicalPrivilege').findById(row._id);
+    assert.equal(saved.auditHistory.length, 2);
+    assert.equal(saved.auditHistory[1].action, 'approved');
+    assert.equal(saved.auditHistory[1].previousStatus, 'pending-approval');
+    assert.equal(saved.auditHistory[1].newStatus, 'approved');
+    assert.equal(saved.auditHistory[1].actorEmployeeId, reviewer.employeeId);
+    assert.equal(saved.auditHistory[1].procedures[0].approved, true);
+    assert.equal(saved.auditHistory[0].procedures[0].approved, false);
     const director = await make('director');
     await User.updateOne({ _id: director._id }, { designation: 'Medical Director' });
     const superadmin = await make('superadmin', 'SuperAdmin');
@@ -111,6 +126,15 @@ test('applications persist scope, evidence and reviewer; enforce ownership and i
           body: JSON.stringify({ decision: outcome, reviewNotes: outcome === 'reject' ? 'Evidence needed' : '' })
         });
         assert.equal(reviewed.status, 200);
+        const history = (await reviewed.json()).auditHistory;
+        assert.equal(history.length, 2);
+        assert.equal(history[1].actorId, String(approver._id));
+        assert.equal(history[1].action, outcome === 'approve' ? 'approved' : 'rejected');
+        assert.equal(history[1].notes, outcome === 'reject' ? 'Evidence needed' : '');
+        assert.equal(history[1].procedures[0].approved, outcome === 'approve');
+        const log = await require('../models/AuditLog').findOne({ recordId: application._id });
+        assert.equal(String(log.performedBy), String(approver._id));
+        assert(log.details.includes(history[1].action));
         const alert = await assertRecipients(application._id, outcome === 'approve' ? 'approved' : 'rejected', approver);
         assert.equal(alert.workflow.reason, outcome === 'reject' ? 'Evidence needed' : '');
       }
