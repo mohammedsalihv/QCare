@@ -1,6 +1,5 @@
 import { ArrowRight, Check, CheckCheck, Clock3, FileCheck2, Send, ShieldCheck, X } from 'lucide-react';
 import './PrivilegeWorkflow.css';
-import PrivilegeAuditHistory from './PrivilegeAuditHistory';
 
 const date = value => value && !Number.isNaN(Date.parse(value))
   ? new Date(value).toLocaleDateString('en-GB', { timeZone: 'Asia/Dubai', day: 'numeric', month: 'short', year: 'numeric' }) : 'Date not recorded';
@@ -34,6 +33,5 @@ export default function PrivilegeWorkflow({ application: row }) {
       </li>
     </ol>
     <div className="pw-footnote"><ShieldCheck size={17} aria-hidden="true" /><span>{pending ? 'Clinical privileges begin only after approval — submitting a request does not authorise practice.' : 'The decision and application details are retained below for reference.'}</span></div>
-    <PrivilegeAuditHistory application={row} />
   </div>;
 }

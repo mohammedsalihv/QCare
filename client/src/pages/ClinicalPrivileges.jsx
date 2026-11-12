@@ -1,3 +1,4 @@
+import ModuleAuditLog from '../components/ModuleAuditLog';
 import PrivilegeApplication from '../components/PrivilegeApplication';
 import TableToolbar from '../components/TableToolbar';
 import CompactSearch from './../components/CompactSearch';
@@ -12,7 +13,7 @@ import { ShieldCheck, FileText, Search, UserCheck, History, Calendar, AlertTrian
 
 const ClinicalPrivileges = () => {
   const { showNotification } = useNotification();
-  const [activeTab, setActiveTab] = useState(new URLSearchParams(window.location.search).get('tab') === 'apply' ? 'apply-renew' : new URLSearchParams(window.location.search).get('tab') === 'reviews' ? 'privilege-approval' : 'normal-dashboard');
+  const [activeTab, setActiveTab] = useState(new URLSearchParams(window.location.search).get('tab') === 'audit' ? 'privilege-audit' : new URLSearchParams(window.location.search).get('tab') === 'apply' ? 'apply-renew' : new URLSearchParams(window.location.search).get('tab') === 'reviews' ? 'privilege-approval' : 'normal-dashboard');
 
   // Sidebar Menu Items
   const menuItems = [
@@ -21,7 +22,7 @@ const ClinicalPrivileges = () => {
     { id: 'apply-renew', label: 'Apply or renew', icon: FileText },
     { id: 'privilege-approval', label: 'Approval queue', icon: UserCheck },
     { id: 'document-expiry-monitor', label: 'Credential expiry', icon: Calendar },
-    { id: 'privilege-archive', label: 'Activity history', icon: History },
+    { id: 'privilege-audit', label: 'Audit log', icon: History },
     { id: 'procedures-master', label: 'Procedure library', icon: BookOpen, group: 'Configuration' },
     { id: 'privilege-submaster', label: 'Eligibility criteria', icon: Layers },
     { id: 'privilege-approval-master', label: 'Approval workflow', icon: ClipboardList }
@@ -503,45 +504,8 @@ const ClinicalPrivileges = () => {
           </div>
         );
 
-      // 10. ARCHIVE
-      case 'privilege-archive':
-        return (
-          <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-800 normal-case tracking-tight">Activity history</h3>
-              <p className="text-[12px] text-slate-500 font-semibold normal-case tracking-normal mt-1">Historical files and audit trails</p>
-            </div>
-            <div className="overflow-x-auto">
-              <Table className="w-full text-left text-[13px]">
-                <thead>
-                  <tr className="bg-slate-50 text-slate-500 font-semibold normal-case tracking-normal border-b border-slate-100">
-                    <th className="p-3">Log ID</th>
-                    <th className="p-3">Action</th>
-                    <th className="p-3">Doctor</th>
-                    <th className="p-3">Authorized By</th>
-                    <th className="p-3">Timestamp</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  <tr className="text-slate-500">
-                    <td className="p-3 font-semibold">#ARC-9021</td>
-                    <td className="p-3"><span className="px-2 py-0.5 bg-slate-100 rounded text-[12px] font-semibold normal-case">Terminated</span></td>
-                    <td className="p-3 font-semibold text-slate-700">Dr. Sarah Connor</td>
-                    <td className="p-3">Credentialing Committee</td>
-                    <td className="p-3 text-[12px]">2026-07-01 10:15</td>
-                  </tr>
-                  <tr className="text-slate-500">
-                    <td className="p-3 font-semibold">#ARC-9019</td>
-                    <td className="p-3"><span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[12px] font-semibold normal-case">Approved</span></td>
-                    <td className="p-3 font-semibold text-slate-700">Dr. James Smith</td>
-                    <td className="p-3">Dr. Yahya Mannooparambil</td>
-                    <td className="p-3 text-[12px]">2026-06-25 14:30</td>
-                  </tr>
-                </tbody>
-              </Table>
-            </div>
-          </div>
-        );
+      case 'privilege-audit':
+        return <ModuleAuditLog moduleKey="privileges" />;
 
       // 11. DOCUMENT EXPIRY MONITOR
       case 'document-expiry-monitor':
@@ -642,7 +606,7 @@ const ClinicalPrivileges = () => {
       <header className="qc-module-heading">
         <h1>Clinical privileges</h1>
         <p>Manage clinical scope, applications and credential reviews in one place.</p>
-        {!['apply-renew', 'privilege-approval'].includes(activeTab) && <div className="cp-preview-note">Preview workspace · Other tabs show sample data. Applications and application reviews use saved records.</div>}
+        {!['apply-renew', 'privilege-approval', 'privilege-audit'].includes(activeTab) && <div className="cp-preview-note">Preview workspace · Other tabs show sample data. Applications and application reviews use saved records.</div>}
       </header>
       <div className="cp-workspace">
         

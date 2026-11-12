@@ -9,7 +9,8 @@ module.exports = async function moduleAudit(req, res, next) {
   req.auditMetadata = meta;
   const isWrite = !['GET', 'HEAD', 'OPTIONS'].includes(req.method);
   // Routine polling is not a business event; writes and explicit downloads are captured.
-  const download = /export|download|pdf|attachments|certificate|evidence/i.test(path);
+  const privilegeDocument = module.key === 'privileges' && /\/documents\/[^/]+$/.test(path);
+  const download = privilegeDocument || /export|download|pdf|attachments|certificate|evidence/i.test(path);
   if (!isWrite && !download) return context.run({ metadata: meta }, next);
   let entry;
   try {
@@ -34,11 +35,17 @@ module.exports = async function moduleAudit(req, res, next) {
     const body = req.body && typeof req.body === 'object' ? req.body : {};
     const fields = Object.keys(body).filter(key => !secret.test(key)).slice(0, 100).map(key => clean(key, 80));
     const command = typeof body.command === 'string' && /^[a-zA-Z]{1,40}$/.test(body.command) ? body.command : '';
+    let activity = command || entry.action;
+    if (module.key === 'privileges') {
+      if (privilegeDocument) activity = 'Download supporting document';
+      else if (req.method === 'POST' && path === '/api/cp/privileges') activity = 'Submit privilege application';
+      else if (req.method === 'PUT' && path.endsWith('/approve')) activity = body.decision === 'reject' ? 'Reject privilege application' : !body.decision || body.decision === 'approve' ? 'Approve privilege application' : 'Review privilege application';
+    }
     try {
       await AuditLog.updateOne({ _id: entry._id }, { $set: {
         performedBy: user?._id, actorName: clean(user?.employeeName), actorEmployeeId: clean(user?.employeeId, 80), actorRole: clean(user?.role, 80),
         recordId: responseId || path.match(/\b[a-f\d]{24}\b/i)?.[0] || '',
-        activity: command || entry.action, statusCode: res.statusCode, durationMs: Date.now() - started,
+        activity, statusCode: res.statusCode, durationMs: Date.now() - started,
         outcome: aborted ? 'Interrupted' : res.statusCode < 400 ? 'Success' : [401, 403].includes(res.statusCode) ? 'Denied' : 'Failed',
         details: { submittedFields: fields, uploadedFiles: [...(Array.isArray(req.files) ? req.files : Object.values(req.files || {}).flat()), ...(req.file ? [req.file] : [])].slice(0, 20).map(f => ({ size: f.size, mime: clean(f.mimetype, 100) })), note: 'Submitted field names describe the request, not proof that each field changed.' }
       } });

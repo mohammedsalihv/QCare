@@ -3,6 +3,42 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { metadata, moduleFor, allowed, modules } = require('../utils/requestAudit');
+
+test('privilege module captures submission, decisions and document downloads with outcomes', async () => {
+  const { EventEmitter } = require('node:events');
+  const AuditLog = require('../models/AuditLog'), middleware = require('../middleware/moduleAudit');
+  const originalCreate = AuditLog.create, originalUpdate = AuditLog.updateOne;
+  const recordId = '507f1f77bcf86cd799439011';
+  try {
+    for (const [method, suffix, body, statusCode, expected] of [
+      ['POST', '', { reason: 'Reason' }, 201, 'Submit privilege application'],
+      ['PUT', `/${recordId}/approve`, { decision: 'approve' }, 200, 'Approve privilege application'],
+      ['PUT', `/${recordId}/approve`, { decision: 'reject' }, 200, 'Reject privilege application'],
+      ['PUT', `/${recordId}/approve`, { decision: 'approve' }, 403, 'Approve privilege application'],
+      ['GET', `/${recordId}/documents/507f1f77bcf86cd799439012`, {}, 200, 'Download supporting document'],
+      ['GET', `/${recordId}/documents/507f1f77bcf86cd799439012`, {}, 404, 'Download supporting document']
+    ]) {
+      let created, updated, nextCalled = false;
+      AuditLog.create = async data => { created = { ...data, _id: recordId }; return created; };
+      AuditLog.updateOne = async (query, update) => { updated = update.$set; };
+      const req = { originalUrl: '/api/cp/privileges' + suffix, method, body, headers: {}, socket: {}, user: { _id: recordId, employeeName: 'Reviewer', employeeId: 'E1', role: 'QualityManager' } };
+      const res = Object.assign(new EventEmitter(), { statusCode, writableFinished: true, json() {} });
+      await middleware(req, res, () => { nextCalled = true; });
+      assert(nextCalled);
+      assert.equal(created.moduleKey, 'privileges');
+      res.json({ _id: recordId });
+      res.emit('finish');
+      assert.equal(updated.activity, expected);
+      assert.equal(updated.outcome, statusCode === 403 ? 'Denied' : statusCode === 404 ? 'Failed' : 'Success');
+      assert.equal(updated.recordId, recordId);
+      assert.equal(updated.actorEmployeeId, 'E1');
+    }
+    let wrote = false;
+    AuditLog.create = async () => { wrote = true; };
+    await middleware({ originalUrl: '/api/cp/privileges', method: 'GET', headers: {}, socket: {} }, {}, () => {});
+    assert.equal(wrote, false, 'Routine list polling must not create audit events');
+  } finally { AuditLog.create = originalCreate; AuditLog.updateOne = originalUpdate; }
+});
 test('only an explicitly trusted proxy with a single valid client IP can supply the address', () => {
   const { clientAddress } = require('../utils/clientAddress');
   const previous = process.env.QCARE_AUDIT_TRUSTED_PROXIES;
