@@ -4,6 +4,7 @@ import axios from 'axios';
 import ListToolbar from './ListToolbar';
 import Table from './Table';
 import Pagination from './Pagination';
+import PrivilegeAuditLog from './PrivilegeAuditLog';
 import { getAuthConfig } from '../utils/authConfig';
 import modules from '../../../server/utils/auditModules.json';
 import './incidentWorkflow.css';
@@ -27,6 +28,7 @@ export default function ModuleAuditLog({ moduleKey }) {
     }, 250);
     return () => { clearTimeout(timer); controller.abort(); };
   }, [allowed, moduleKey, query, revision]);
+  if (moduleKey === 'privileges') return <PrivilegeAuditLog allowed={allowed} query={query} change={change} result={result} loading={loading} error={error} refresh={() => setRevision(value => value + 1)} setPage={page => setQuery(value => ({ ...value, page }))} />;
   return <div className="iw-page iw-register"><header className="iw-heading"><div><h1>{module ? module.label + ' · Audit log' : 'Module audit logs'}</h1><p>Server-recorded actions, outcomes and connection details. Times shown in UAE time.</p>{module?.pages[0] && <Link to={'/dashboard/' + module.pages[0]}>Back to {module.label}</Link>}</div><button className="iw-secondary" disabled={loading || !allowed} onClick={() => setRevision(v => v + 1)}>Refresh</button></header>
     {!allowed ? <p role="alert">You do not have access to this audit log.</p> : <section className="iw-card">
       <ListToolbar list={{ query, change }} searchLabel="Search user, record ID, IP address or request" statuses={['Success', 'Failed', 'Denied', 'Interrupted', 'Pending']} sorts={[{ value: 'timestamp', label: 'Event time' }, { value: 'actorName', label: 'User' }, { value: 'module', label: 'Module' }, { value: 'outcome', label: 'Outcome' }]} extraFilters={moduleKey ? [] : [{ key: 'module', label: 'Filter by module', allLabel: 'All permitted modules', options: permitted.map(item => ({ value: item.key, label: item.label })) }]}/>
