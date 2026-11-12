@@ -1,3 +1,4 @@
+import DocumentEngagement from '../components/DocumentEngagement';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
@@ -10,10 +11,11 @@ import './DocumentLibrary.css';
 const empty = { name: '', type: 'Policy', department: '', ref: '', description: '', classification: 'Restricted', audience: 'Owner and reviewers', revisedDate: '', nextRevDate: '', expiryDate: '', changeSummary: '', assignedApprover: '', allowDownload: false };
 const date = value => value ? new Date(value).toLocaleDateString('en-GB', { timeZone: 'Asia/Dubai' }) : 'Not set';
 const categories = ['Policy', 'Procedure', 'Guideline', 'Manual', 'Form', 'Certificate', 'Evidence'];
-const tabs = ['Document library', 'My submissions', 'Awaiting approval', 'Review due', 'Archived'];
+const tabs = ['Document library', 'My submissions', 'Awaiting approval', 'My reading tasks', 'Review due', 'Archived'];
 
 export default function DocumentLibrary() {
   const user = JSON.parse(localStorage.getItem('userInfo') || '{}');
+  const [tasks, setTasks] = useState([]);
   const [documents, setDocuments] = useState([]), [approvers, setApprovers] = useState([]);
   const [tab, setTab] = useState('Document library'), [search, setSearch] = useState(''), [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
@@ -23,8 +25,8 @@ export default function DocumentLibrary() {
   const row = documents.find(doc => doc._id === selected);
   useEffect(() => {
     const controller = new AbortController();
-    Promise.all([axios.get('/api/documents', { ...getAuthConfig(), signal: controller.signal }), axios.get('/api/documents/options', { ...getAuthConfig(), signal: controller.signal })])
-      .then(([docs, options]) => { setDocuments(docs.data); setApprovers(options.data.approvers); })
+    Promise.all([axios.get('/api/documents', { ...getAuthConfig(), signal: controller.signal }), axios.get('/api/documents/options', { ...getAuthConfig(), signal: controller.signal }), axios.get('/api/documents/reading-tasks', { ...getAuthConfig(), signal: controller.signal })])
+      .then(([docs, options, reading]) => { setDocuments(docs.data); setApprovers(options.data.approvers); setTasks(reading.data); })
       .catch(e => { if (!controller.signal.aborted) setError(e.response?.data?.message || 'Unable to load the document library.'); })
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
@@ -74,7 +76,7 @@ export default function DocumentLibrary() {
   };
   const filtered = documents.filter(doc => {
     const matches = `${doc.name} ${doc.ref} ${doc.department} ${doc.draft?.name || ''}`.toLowerCase().includes(search.toLowerCase());
-    const section = tab === 'Document library' ? doc.status === 'Active' : tab === 'Archived' ? doc.status === 'Archived' : tab === 'My submissions' ? doc.uploadedBy === user._id && doc.status !== 'Archived' : tab === 'Awaiting approval' ? ['In review', 'Approved'].includes(doc.draftState) : doc.status === 'Active' && new Date(doc.nextRevDate) < new Date();
+    const section = tab === 'My reading tasks' ? tasks.some(task => task.documentId === doc._id && !task.acknowledgedAt) : tab === 'Document library' ? doc.status === 'Active' : tab === 'Archived' ? doc.status === 'Archived' : tab === 'My submissions' ? doc.uploadedBy === user._id && doc.status !== 'Archived' : tab === 'Awaiting approval' ? ['In review', 'Approved'].includes(doc.draftState) : doc.status === 'Active' && new Date(doc.nextRevDate) < new Date();
     return matches && section;
   });
   const shown = filtered.slice((page - 1) * 10, page * 10);
@@ -92,6 +94,7 @@ export default function DocumentLibrary() {
       {version === 'draft' && <p className="dl-notice">This is a proposed revision. It is not published guidance. {row.draft.changeSummary}</p>}
       {version !== 'current' && version !== 'draft' && <p className="dl-notice">Earlier version — use the published version for current guidance.</p>}
       {fileError && <p>{fileError}</p>}{preview ? <iframe key={preview} sandbox="allow-same-origin" title="Document preview" src={preview} className="dl-preview" /> : !fileError && <p>Preview is loading or unavailable for this file type. CSV files can be downloaded when permitted.</p>}
+      <DocumentEngagement key={row._id + row.version} document={row} approvers={approvers} onChanged={() => setRevision(value => value + 1)} />
       {row.permissions.workspace && <><div className="dl-metadata"><p><strong>Assigned approver</strong>{row.approverName || approvers.find(p => p._id === row.assignedApprover)?.employeeName || (row.assignedApprover === user._id ? user.employeeName : 'Reviewer not recorded')}</p><p><strong>Review status</strong>{row.draftState || 'No revision in progress'}</p></div>
         <label>Review or archive reason<textarea maxLength={2000} value={reason} onChange={e => setReason(e.target.value)} placeholder="Explain what needs to change, or why the document should be archived." /></label>
         <div className="dl-actions">{row.permissions.submit && <button disabled={busy} className="dl-primary" onClick={() => action(row, 'submit')}>Submit for review</button>}{row.permissions.review && <><button disabled={busy} onClick={() => action(row, 'return')}>Request changes</button><button disabled={busy} className="dl-primary" onClick={() => action(row, 'approve')}>Approve this revision</button></>}{row.permissions.publish && <button disabled={busy} className="dl-primary" onClick={() => action(row, 'publish')}>Publish approved revision</button>}{row.permissions.archive && <button disabled={busy} onClick={() => action(row, 'archive')}>Archive document</button>}{row.permissions.delete && <details><summary>Delete unsubmitted draft</summary><p>This removes the draft from the library. Submitted or published documents cannot be deleted here.</p><button disabled={busy} onClick={() => action(row, 'delete')}>Confirm delete draft</button></details>}</div>

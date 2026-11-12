@@ -78,6 +78,7 @@ exports.updateDocument = handler(async (req, res) => {
     const version = doc.draft?.version || String((parseInt(doc.version, 10) || 1) + (doc.status === 'Active' ? 1 : 0)).padStart(2, '0');
     doc.draft = { ...base, ...data, version, approvedBy: undefined, approvedAt: undefined, ...(stored ? { fileId: stored._id, fileName: stored.name, fileMime: stored.mime, fileUrl: undefined } : {}) };
     doc.draftState = 'Draft'; doc.assignedApprover = approver;
+    doc.delegatedApprover = undefined; doc.delegationUntil = undefined;
     if (!doc.draftEditors.some(editor => policy.id(editor) === policy.id(req.user._id))) doc.draftEditors.push(req.user._id);
     if (doc.status === 'Draft') for (const key of policy.fields) doc[key] = doc.draft[key];
     history(doc, req.user, 'Draft updated', data.changeSummary); await doc.save();
@@ -114,7 +115,9 @@ exports.command = handler(async (req, res) => {
     if (doc.draft) fail(409, 'Finish the revision before archiving this document.');
     doc.status = 'Archived'; history(doc, req.user, 'Document archived', reason);
   } else fail(400, 'Choose a valid action.');
-  await doc.save(); await sendNotice(req, doc, doc.draftState || doc.status);
+  await doc.save();
+  if (command === 'publish') await require('../utils/documentReading').carryAssignments(doc).catch(error => console.error('Document reading assignments will retry in daily job:', error.message));
+  await sendNotice(req, doc, doc.draftState || doc.status);
   res.json(present(doc, req.user));
 });
 exports.deleteDocument = handler(async (req, res) => {
@@ -155,5 +158,6 @@ exports.download = handler(async (req, res) => {
   const preview = ['application/pdf', 'image/png', 'image/jpeg'].includes(file.mime);
   if (!preview && req.query.download !== 'true') fail(400, 'This file has no preview. Use Download if permitted.');
   res.set({ 'Content-Type': file.mime, 'Content-Disposition': `${req.query.download === 'true' ? 'attachment' : 'inline'}; filename*=UTF-8''${encodeURIComponent(file.name)}`, 'X-Content-Type-Options': 'nosniff', 'Cache-Control': 'no-store', 'Content-Security-Policy': "sandbox; default-src 'none'" });
+  if (doc.status === 'Active' && version === doc) await require('../utils/documentReading').recordAccess(doc, req.user, doc.version, req.query.download === 'true');
   res.send(file.data);
 });

@@ -63,6 +63,7 @@ cron.schedule("0 0 * * *", () => {
 
 // Initialize License Reminders
 require("./scheduledJobs/licenseReminder");
+cron.schedule('0 8 * * *', () => require('./utils/documentReminders')().catch(error => console.error('Document reminders:', error.message)), { timezone: 'Asia/Dubai' });
 
 // Socket.io connection logic
 io.on("connection", (socket) => {

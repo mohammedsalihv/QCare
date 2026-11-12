@@ -38,3 +38,4 @@
 .dl-workspace label { display: grid; gap: 7px; font-size: 13px; font-weight: 550; }
 .dl-workspace .dl-check { display: flex; align-items: center; gap: 10px; }
 @media(max-width:700px) { .dl-grid { grid-template-columns: 1fr; } .dl-heading { flex-direction: column; } .dl-overlay { padding: 10px; } .dl-editor { padding: 18px; } .dl-preview { height: 430px; } }
+.dl-engagement { display:grid; gap:16px; border-top:1px solid #dce6e6; padding-top:20px; font-size:13px; } .dl-engagement h3 { font-size:18px; font-weight:650; } .dl-engagement details { padding:14px; border:1px solid #dce6e6; border-radius:8px; } .dl-engagement details > * + * { margin-top:12px; }
