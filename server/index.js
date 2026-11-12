@@ -44,7 +44,9 @@ app.use('/api/kpi/submit-data', express.json({ limit: '2mb' }));
 app.use(express.json());
 app.use(require('./middleware/moduleAudit'));
 app.use('/api/audit-events', require('./routes/moduleAuditRoutes'));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Document files are served only by permission-checked document routes.
+app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads/profiles')));
+app.use('/uploads', (req, res) => res.status(404).json({ message: 'Open documents through the document library.' }));
 
 // Connect Database
 const databaseReady = connectDB();

@@ -1,0 +1,105 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const os = require('node:os');
+const { spawn } = require('node:child_process');
+const mongoose = require('mongoose');
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const User = require('../models/users');
+const Document = require('../models/Document');
+const { input, fileInput } = require('../utils/documentInput');
+const policy = require('../utils/documentPolicy');
+const payload = { name: 'Hand hygiene', type: 'Policy', department: 'Nursing', ref: 'IPC-01', description: 'Test policy', changeSummary: 'Initial version', classification: 'Restricted', audience: 'Department', allowDownload: 'false', revisedDate: '2026-01-01', nextRevDate: '2030-01-01', expiryDate: '' };
+test('document input rejects unsafe files, invalid dates and conflicting audience settings', () => {
+  assert.equal(input(payload).allowDownload, false);
+  for (const change of [{ revisedDate: '2026-02-30' }, { nextRevDate: '2025-01-01' }, { classification: 'Secret' }, { type: 'Other' }]) assert.throws(() => input({ ...payload, ...change }));
+  assert.throws(() => fileInput({ originalname: 'fake.pdf', buffer: Buffer.from('<html>not pdf') }));
+  assert.throws(() => fileInput({ originalname: 'script.csv', buffer: Buffer.from('<script>alert(1)</script>') }));
+  assert.throws(() => fileInput({ originalname: 'large.csv', buffer: Buffer.alloc(11 * 1024 * 1024, 65) }));
+  assert.equal(fileInput({ originalname: 'real.pdf', buffer: Buffer.from('%PDF-1.4 test') }).mime, 'application/pdf');
+});
+test('audience checks keep drafts, future, expired and sensitive documents private', () => {
+  const user = { _id: 'reader', role: 'user', department: 'Nursing' };
+  const doc = { ...input(payload), status: 'Active', uploadedBy: 'owner' };
+  assert(policy.readable(user, doc));
+  for (const change of [{ status: 'Draft' }, { status: 'Archived' }, { revisedDate: new Date('2999-01-01') }, { expiryDate: new Date('2000-01-01') }, { classification: 'Confidential' }, { department: 'Other' }]) assert(!policy.readable(user, { ...doc, ...change }));
+});
+test('document lifecycle enforces ownership, independent approval, immutable published versions and file access', { timeout: 60000 }, async () => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'qcare-document-test-'));
+  const database = spawn(process.env.QCARE_TEST_MONGOD || 'C:/Program Files/MongoDB/Server/8.2/bin/mongod.exe', ['--dbpath', directory, '--port', '27989', '--bind_ip', '127.0.0.1', '--quiet'], { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+  let output = '', server;
+  database.stdout.on('data', b => { output = (output + b).slice(-12000); });
+  database.stderr.on('data', b => { output = (output + b).slice(-12000); });
+  const exited = new Promise(resolve => database.once('exit', resolve));
+  try {
+    for (let i = 0; i < 150 && !output.includes('Waiting for connections'); i++) { if (database.exitCode !== null) throw Error(output); await new Promise(resolve => setTimeout(resolve, 100)); }
+    assert(output.includes('Waiting for connections'));
+    await mongoose.connect('mongodb://127.0.0.1:27989/qcare_document_test');
+    const make = (name, role = 'user', department = 'Nursing') => User.create({ employeeId: name, employeeName: name, email: name + '@test.invalid', password: 'test-only', role, department, designation: 'Test' });
+    const owner = await make('owner'), reader = await make('reader'), outsider = await make('outsider', 'user', 'Other'), reviewer = await make('reviewer', 'QualityManager'), admin = await make('admin', 'admin');
+    const headers = user => ({ Authorization: 'Bearer ' + jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'default_secret') });
+    const app = express(); app.use(express.json()); app.use('/api/documents', require('../routes/documentRoutes'));
+    server = await new Promise(resolve => { const instance = app.listen(0, '127.0.0.1', () => resolve(instance)); });
+    const base = 'http://127.0.0.1:' + server.address().port + '/api/documents';
+    const save = (user, id, values = {}, content = '%PDF-1.4 original') => {
+      const data = new FormData(); for (const [key, value] of Object.entries({ ...payload, assignedApprover: String(reviewer._id), ...values })) data.append(key, value);
+      if (content) data.append('file', new Blob([content], { type: 'application/pdf' }), 'policy.pdf');
+      return fetch(base + (id ? '/' + id : ''), { method: id ? 'PUT' : 'POST', headers: headers(user), body: data });
+    };
+    const command = (user, id, action, reason = '') => fetch(base + '/' + id + '/actions', { method: 'POST', headers: { ...headers(user), 'Content-Type': 'application/json' }, body: JSON.stringify({ command: action, reason }) });
+    const list = async user => (await fetch(base, { headers: headers(user) })).json();
+    const getFile = (user, id, query = '') => fetch(base + '/' + id + '/download' + query, { headers: headers(user) });
+    assert.equal((await fetch(base)).status, 401);
+    assert.equal((await save(owner, null, { assignedApprover: owner._id })).status, 400);
+    const created = await save(owner, null, { status: 'Active', uploadedBy: admin._id });
+    const doc = await created.json(); assert.equal(created.status, 201, JSON.stringify(doc)); const id = doc._id;
+    assert.equal(doc.status, 'Draft'); assert.equal(doc.uploadedBy, String(owner._id));
+    assert.equal((await list(reader)).length, 0);
+    assert.equal((await getFile(outsider, id)).status, 404);
+    assert.equal((await save(reader, id)).status, 404);
+    assert.equal((await command(owner, id, 'publish')).status, 403);
+    assert.equal((await command(owner, id, 'submit')).status, 200);
+    assert.equal((await save(owner, id)).status, 403);
+    assert.equal((await command(owner, id, 'approve')).status, 403);
+    assert.equal((await command(admin, id, 'approve')).status, 403);
+    assert.equal((await command(reviewer, id, 'return')).status, 400);
+    assert.equal((await command(reviewer, id, 'return', 'Clarify the scope')).status, 200);
+    assert.equal((await save(owner, id)).status, 200);
+    assert.equal((await command(owner, id, 'submit')).status, 200);
+    assert.equal((await command(reviewer, id, 'approve')).status, 200);
+    assert.equal((await command(reviewer, id, 'approve')).status, 403);
+    assert.equal((await command(admin, id, 'publish')).status, 200);
+    let rows = await list(reader); assert.equal(rows.length, 1); assert.equal(rows[0].draft, undefined); assert.equal(rows[0].history, undefined); assert.equal(rows[0].fileUrl, undefined);
+    assert.equal((await list(outsider)).length, 0);
+    assert.equal(await (await getFile(reader, id)).text(), '%PDF-1.4 original');
+    assert.equal((await getFile(reader, id, '?download=true')).status, 403);
+    assert.equal((await getFile(owner, id, '?download=true')).status, 200);
+    assert.equal((await save(owner, id, { name: 'Revised title', changeSummary: 'Updated practice' }, '%PDF-1.4 revision')).status, 200);
+    assert.equal((await list(reader))[0].name, payload.name);
+    assert.equal(await (await getFile(reader, id)).text(), '%PDF-1.4 original');
+    assert.equal((await getFile(reader, id, '?version=draft')).status, 404);
+    assert.equal((await command(owner, id, 'submit')).status, 200);
+    assert.equal((await command(reviewer, id, 'approve')).status, 200);
+    assert.equal((await command(admin, id, 'publish')).status, 200);
+    rows = await list(reader); assert.equal(rows[0].version, '02'); assert.equal(rows[0].name, 'Revised title');
+    assert.equal(await (await getFile(reader, id)).text(), '%PDF-1.4 revision');
+    assert.equal((await getFile(reader, id, '?version=01')).status, 403);
+    assert.equal(await (await getFile(owner, id, '?version=01')).text(), '%PDF-1.4 original');
+    assert.equal((await fetch(base + '/' + id, { method: 'DELETE', headers: headers(owner) })).status, 403);
+    assert.equal((await command(admin, id, 'archive')).status, 400);
+    assert.equal((await command(admin, id, 'archive', 'Replaced by new policy')).status, 200);
+    assert.equal((await list(reader)).length, 0);
+    assert.equal((await getFile(reader, id)).status, 404);
+    const persisted = await Document.findById(id); assert.equal(persisted.versions.length, 1); assert.equal(persisted.history.at(-1).reason, 'Replaced by new policy');
+    // Revision concurrency must not silently overwrite changes.
+    const first = await Document.findById(id), second = await Document.findById(id);
+    first.description = 'First change'; await first.save(); second.description = 'Stale change'; await assert.rejects(second.save(), /version/i);
+    const draft = await (await save(owner)).json();
+    assert.equal((await fetch(base + '/' + draft._id, { method: 'DELETE', headers: headers(owner) })).status, 200);
+  } finally {
+    if (server) await new Promise(resolve => server.close(resolve)); await mongoose.disconnect(); database.kill(); await exited;
+    if (path.resolve(directory).startsWith(path.resolve(os.tmpdir()) + path.sep) && path.basename(directory).startsWith('qcare-document-test-')) await fs.rm(directory, { recursive: true, force: true });
+  }
+});
