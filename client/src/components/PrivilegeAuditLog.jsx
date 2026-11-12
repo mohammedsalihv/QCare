@@ -11,6 +11,15 @@ const results = {
   Interrupted: 'Stopped before completion',
   Pending: 'Completion not confirmed'
 };
+const explanations = {
+  Success: 'This action was completed.',
+  Failed: 'This action could not be completed.',
+  Denied: 'The person did not have permission to carry out this action.',
+  Interrupted: 'The connection ended before completion could be confirmed.',
+  Pending: 'The final result has not been recorded yet.'
+};
+const requestTypes = { new: 'New privileges', renewal: 'Renew existing privileges', extension: 'Add more procedures' };
+const roles = { qualitymanager: 'Quality Manager', superadmin: 'Administrator', admin: 'Administrator', user: 'Staff member' };
 
 function activity(row) {
   const actions = {
@@ -41,17 +50,19 @@ export default function PrivilegeAuditLog({ allowed, query, change, result, load
       {error && <p className="iw-error" role="alert">We couldn’t load the activity history. Select Refresh to try again.</p>}
       <div className="iw-table-wrap" role="region" aria-label="Clinical privilege activity history" tabIndex={0}>
         <Table className="iw-register-table" aria-busy={loading}>
-          <thead><tr>{['Date and time (UAE)', 'Person', 'Activity', 'Result'].map(label => <th scope="col" key={label}>{label}</th>)}</tr></thead>
-          <tbody>{loading ? <tr><td colSpan={4}>Loading activity history…</td></tr> : error ? null : !result.rows.length ? <tr><td colSpan={4}>{query.search || query.status ? 'No activity matches your search. Try another name or choose All results.' : 'No activity has been recorded yet.'}</td></tr> : result.rows.map(row => <tr key={row._id}>
+          <thead><tr>{['Date and time (UAE)', 'Action taken by', 'Clinician / specialty', 'Request details', 'Activity', 'Result'].map(label => <th scope="col" key={label}>{label}</th>)}</tr></thead>
+          <tbody>{loading ? <tr><td colSpan={6}>Loading activity history…</td></tr> : error ? null : !result.rows.length ? <tr><td colSpan={6}>{query.search || query.status ? 'No activity matches your search. Try another name or choose All results.' : 'No activity has been recorded yet.'}</td></tr> : result.rows.map(row => <tr key={row._id}>
             <td>{row.timestamp && !Number.isNaN(Date.parse(row.timestamp)) ? new Date(row.timestamp).toLocaleString('en-GB', { timeZone: 'Asia/Dubai', dateStyle: 'medium', timeStyle: 'short' }) : 'Date not recorded'}</td>
-            <td><strong>{row.actorName || 'Name not recorded'}</strong></td>
+            <td><strong>{row.actorName || 'Name not recorded'}</strong>{row.actorRole && <small>{roles[row.actorRole.toLowerCase()] || row.actorRole.replace(/([a-z])([A-Z])/g, '$1 $2')}</small>}</td>
+            <td><strong>{row.applicationContext?.clinician || 'Clinician not available'}</strong><small>{row.applicationContext?.specialty || 'Specialty not available'}</small></td>
+            <td>{requestTypes[row.applicationContext?.requestType] || 'Request type not available'}<small>Assigned reviewer: {row.applicationContext?.assignedApprover || 'Not available'}</small></td>
             <td>{activity(row)}</td>
-            <td>{results[row.outcome] || 'Result not recorded'}</td>
+            <td><strong>{results[row.outcome] || 'Result not recorded'}</strong><small>{explanations[row.outcome] || 'No result was recorded for this activity.'}</small></td>
           </tr>)}</tbody>
         </Table>
       </div>
       <Pagination totalRecords={error ? 0 : result.total} recordsPerPage={query.limit} currentPage={query.page} onPageChange={setPage} />
     </section>}
-    <p className="iw-note">This history includes recorded activity across clinical privilege applications. Earlier activity may not be available.</p>
+    <p className="iw-note">Clinician, specialty and request details show the application’s current information. Activity and results describe what happened at the time. Details may be unavailable for older or unsuccessful requests.</p>
   </div>;
 }

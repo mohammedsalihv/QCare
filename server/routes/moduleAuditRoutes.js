@@ -23,7 +23,8 @@ router.get('/', async (req, res) => {
     const page = Math.max(1, Math.min(100000, parseInt(req.query.page, 10) || 1)), limit = Math.max(1, Math.min(100, parseInt(req.query.limit, 10) || 10));
     const sortBy = ['timestamp', 'module', 'actorName', 'outcome'].includes(req.query.sortBy) ? req.query.sortBy : 'timestamp';
     const [rows, total] = await Promise.all([AuditLog.find(query).sort({ [sortBy]: req.query.direction === 'asc' ? 1 : -1, _id: -1 }).skip((page - 1) * limit).limit(limit).lean(), AuditLog.countDocuments(query)]);
-    res.set('Cache-Control', 'no-store').json({ rows, total, page, limit });
+    const enrichedRows = await require('../utils/privilegeAuditContext')(rows);
+    res.set('Cache-Control', 'no-store').json({ rows: enrichedRows, total, page, limit });
   } catch { res.status(500).json({ message: 'Could not load audit records.' }); }
 });
 module.exports = router;
