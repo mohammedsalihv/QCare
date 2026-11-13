@@ -79,7 +79,7 @@ exports.updateDocument = handler(async (req, res) => {
   try {
     const base = doc.draft ? doc.draft.toObject() : policy.snapshot(doc);
     const version = doc.draft?.version || String((parseInt(doc.version, 10) || 1) + (doc.status === 'Active' ? 1 : 0)).padStart(2, '0');
-    doc.draft = { ...base, ...data, version, approvedBy: undefined, approvedAt: undefined, ...(stored ? { fileId: stored._id, fileName: stored.name, fileMime: stored.mime, fileUrl: undefined } : {}) };
+    doc.draft = { ...base, ...data, version, approvedBy: undefined, approvedAt: undefined, reviewedAt: undefined, ...(stored ? { fileId: stored._id, fileName: stored.name, fileMime: stored.mime, fileUrl: undefined } : {}) };
     doc.draftState = 'Draft'; doc.assignedApprover = approver;
     doc.delegatedApprover = undefined; doc.delegationUntil = undefined;
     if (!doc.draftEditors.some(editor => policy.id(editor) === policy.id(req.user._id))) doc.draftEditors.push(req.user._id);
@@ -104,13 +104,14 @@ exports.command = handler(async (req, res) => {
     doc.draftState = command === 'approve' ? 'Approved' : 'Changes requested';
     doc.draft.approvedBy = command === 'approve' ? req.user._id : undefined;
     doc.draft.approvedAt = command === 'approve' ? new Date() : undefined;
+    doc.draft.reviewedAt = new Date();
     history(doc, req.user, command === 'approve' ? 'Revision approved' : 'Changes requested', reason);
   } else if (command === 'publish') {
     if (!permissions.publish) fail(403, 'Only a document controller can publish an approved revision.');
     if (doc.draft.expiryDate && doc.draft.expiryDate < new Date()) fail(400, 'An expired revision cannot be published.');
     if (doc.status === 'Active') doc.versions.push(policy.snapshot(doc));
     history(doc, req.user, 'Revision published', doc.draft.changeSummary);
-    for (const key of [...policy.fields, 'version', 'approvedBy', 'approvedAt']) doc[key] = doc.draft[key];
+    for (const key of [...policy.fields, 'version', 'approvedBy', 'approvedAt', 'reviewedAt']) doc[key] = doc.draft[key];
     doc.status = 'Active'; doc.draft = undefined; doc.draftState = undefined; doc.draftEditors = [];
   } else if (command === 'archive') {
     if (!permissions.archive) fail(403, 'Only a document controller can archive a published document.');

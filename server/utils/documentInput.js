@@ -12,8 +12,9 @@ function input(body) {
     return new Date(value);
   };
   const result = { name: text('name', 200), type: text('type', 40), department: text('department', 150), ref: text('ref', 100), description: text('description', 4000, false), changeSummary: text('changeSummary', 2000), classification: text('classification', 30), audience: text('audience', 40), revisedDate: date('revisedDate'), nextRevDate: date('nextRevDate'), expiryDate: date('expiryDate', true), allowDownload: body.allowDownload === true || body.allowDownload === 'true' };
-  if (!types.includes(result.type) || !['Restricted', 'Confidential', 'Secret'].includes(result.classification) || !['All staff', 'Department', 'Owner and reviewers'].includes(result.audience)) throw Error('Choose a valid category, sensitivity and audience.');
-  if (result.classification !== 'Restricted' && result.audience !== 'Owner and reviewers') throw Error('Confidential documents are limited to their owner and reviewers.');
+  if (!types.includes(result.type) || !['Public', 'Restricted', 'Confidential', 'Secret'].includes(result.classification) || !['All staff', 'Department', 'Owner and reviewers'].includes(result.audience)) throw Error('Choose a valid document type, classification and audience.');
+  if (result.classification === 'Public') result.audience = 'All staff';
+  if (['Confidential', 'Secret'].includes(result.classification) && result.audience !== 'Owner and reviewers') throw Error('Confidential documents are limited to their owner and reviewers.');
   if (result.nextRevDate <= result.revisedDate || (result.expiryDate && result.expiryDate <= result.revisedDate)) throw Error('Review and expiry dates must be after the effective date.');
   if (body.source === 'template') result.generatedText = text('generatedText', 8000);
   return result;

@@ -13,5 +13,5 @@ const readable = (user, doc) => {
   return doc.audience === 'All staff' || (doc.audience === 'Department' && String(doc.department).trim().toLowerCase() === String(user.department).trim().toLowerCase());
 };
 const fields = ['name', 'type', 'department', 'ref', 'description', 'generatedText', 'classification', 'revisedDate', 'nextRevDate', 'expiryDate', 'changeSummary', 'audience', 'allowDownload', 'fileId', 'fileName', 'fileMime', 'fileUrl'];
-const snapshot = doc => Object.fromEntries([...fields, 'version', 'approvedBy', 'approvedAt'].map(key => [key, doc[key]]));
+const snapshot = doc => Object.fromEntries([...fields, 'version', 'approvedBy', 'approvedAt', 'reviewedAt'].map(key => [key, doc[key]]));
 module.exports = { id, controller, approver, owner, manage, review, workspace, readable, fields, snapshot };

@@ -15,6 +15,14 @@
 .dl-workspace input:not([type=checkbox]), .dl-workspace textarea, .dl-workspace select { border: 1px solid #cad9dc; padding: 10px 12px; border-radius: 7px; background: white; font-size: 13px; max-width: 100%; }
 .dl-workspace textarea { width: 100%; min-height: 80px; }
 .dl-table { overflow: auto; }
+.dl-register table { min-width: 1280px; }
+.dl-register th { white-space: nowrap; }
+.dl-register td { vertical-align: top; }
+.dl-document-id { min-width: 150px; max-width: 190px; overflow-wrap: anywhere; font-size: 11px !important; }
+.dl-classification { display: inline-block; border: 1px solid #cddfd9; background: #edf5f1; padding: 4px 8px; border-radius: 6px; }
+.dl-empty { padding: 24px; text-align: center; }
+.dl-empty p { color: #60757b; margin: 10px 0 16px; }
+.dl-heading > .dl-primary { flex-shrink: 0; font-weight: 650; padding: 12px 20px; }
 .dl-table table { width: 100%; text-align: left; }
 .dl-table th { background: #f1f6f5; font-size: 12px; padding: 14px 18px; }
 .dl-table td { border-top: 1px solid #e7eeee; padding: 16px 18px; font-size: 13px; }

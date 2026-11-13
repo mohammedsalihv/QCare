@@ -4,6 +4,7 @@ const content = {
   department: { type: String, required: true }, ref: { type: String, required: true },
   description: String, generatedText: String, classification: { type: String, default: 'Restricted' },
   revisedDate: { type: Date, required: true }, nextRevDate: { type: Date, required: true },
+  reviewedAt: Date,
   expiryDate: Date, changeSummary: String,
   audience: { type: String, enum: ['All staff', 'Department', 'Owner and reviewers'], default: 'Owner and reviewers' },
   allowDownload: { type: Boolean, default: false },

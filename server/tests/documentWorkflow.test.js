@@ -14,6 +14,8 @@ const policy = require('../utils/documentPolicy');
 const payload = { name: 'Hand hygiene', type: 'Policy', department: 'Nursing', ref: 'IPC-01', description: 'Test policy', changeSummary: 'Initial version', classification: 'Restricted', audience: 'Department', allowDownload: 'false', revisedDate: '2026-01-01', nextRevDate: '2030-01-01', expiryDate: '' };
 test('document input rejects unsafe files, invalid dates and conflicting audience settings', () => {
   assert.equal(input(payload).allowDownload, false);
+  assert.equal(input({ ...payload, classification: 'Public', audience: 'Owner and reviewers' }).audience, 'All staff');
+  assert.equal(input({ ...payload, reviewedAt: '2000-01-01', documentId: 'fake', uploadDate: '2000-01-01' }).reviewedAt, undefined);
   for (const change of [{ revisedDate: '2026-02-30' }, { nextRevDate: '2025-01-01' }, { classification: 'Secret' }, { type: 'Other' }]) assert.throws(() => input({ ...payload, ...change }));
   assert.throws(() => fileInput({ originalname: 'fake.pdf', buffer: Buffer.from('<html>not pdf') }));
   assert.throws(() => fileInput({ originalname: 'script.csv', buffer: Buffer.from('<script>alert(1)</script>') }));
@@ -63,6 +65,7 @@ test('document lifecycle enforces ownership, independent approval, immutable pub
     const created = await save(owner, null, { status: 'Active', uploadedBy: admin._id });
     const doc = await created.json(); assert.equal(created.status, 201, JSON.stringify(doc)); const id = doc._id;
     assert.equal(doc.status, 'Draft'); assert.equal(doc.uploadedBy, String(owner._id));
+    assert.match(doc.documentId, /^DOC-/); assert(doc.uploadDate); assert.equal(doc.reviewedAt, undefined);
     assert.equal((await list(reader)).length, 0);
     assert.equal((await getFile(outsider, id)).status, 404);
     assert.equal((await save(reader, id)).status, 404);
@@ -73,11 +76,15 @@ test('document lifecycle enforces ownership, independent approval, immutable pub
     assert.equal((await command(admin, id, 'approve')).status, 403);
     assert.equal((await command(reviewer, id, 'return')).status, 400);
     assert.equal((await command(reviewer, id, 'return', 'Clarify the scope')).status, 200);
+    assert((await Document.findById(id)).draft.reviewedAt);
     assert.equal((await save(owner, id)).status, 200);
+    assert.equal((await Document.findById(id)).draft.reviewedAt, undefined);
     assert.equal((await command(owner, id, 'submit')).status, 200);
     assert.equal((await command(reviewer, id, 'approve')).status, 200);
     assert.equal((await command(reviewer, id, 'approve')).status, 403);
     assert.equal((await command(admin, id, 'publish')).status, 200);
+    const published = await Document.findById(id);
+    assert(published.reviewedAt); assert.equal(published.documentId, doc.documentId);
     let rows = await list(reader); assert.equal(rows.length, 1); assert.equal(rows[0].draft, undefined); assert.equal(rows[0].history, undefined); assert.equal(rows[0].fileUrl, undefined);
     assert.equal((await list(outsider)).length, 0);
     assert.equal(await (await getFile(reader, id)).text(), '%PDF-1.4 original');
@@ -142,7 +149,7 @@ test('document lifecycle enforces ownership, independent approval, immutable pub
     first.description = 'First change'; await first.save(); second.description = 'Stale change'; await assert.rejects(second.save(), /version/i);
     const draft = await (await save(owner)).json();
     assert.equal((await fetch(base + '/' + draft._id, { method: 'DELETE', headers: headers(owner) })).status, 200);
-    const generatedResponse = await save(owner, null, { source: 'template', generatedText: 'Purpose\nExplain the approved process.\n\nScope\nNursing team.' }, null);
+    const generatedResponse = await save(owner, null, { classification: 'Public', source: 'template', generatedText: 'Purpose\nExplain the approved process.\n\nScope\nNursing team.' }, null);
     const generated = await generatedResponse.json(); assert.equal(generatedResponse.status, 201, JSON.stringify(generated));
     assert.equal(generated.fileMime, 'application/pdf');
     const preview = await getFile(owner, generated._id, '?version=draft'); assert.equal(preview.status, 200);
@@ -150,6 +157,8 @@ test('document lifecycle enforces ownership, independent approval, immutable pub
     assert.equal((await command(owner, generated._id, 'submit')).status, 200);
     assert.equal((await command(reviewer, generated._id, 'approve')).status, 200);
     assert.equal((await command(admin, generated._id, 'publish')).status, 200);
+    assert((await list(outsider)).some(row => row._id === generated._id), 'Public published documents are available across departments');
+    assert.equal((await fetch(base + '/' + generated._id + '/download')).status, 401, 'Public still requires sign-in');
     const generatedDownload = await getFile(owner, generated._id, '?download=true'); assert.equal(generatedDownload.status, 200);
     assert(generatedDownload.headers.get('content-disposition').includes('IPC-01-v01.pdf'));
     assert.equal((await save(owner, generated._id, {}, null)).status, 400, 'Switching away from a template requires a replacement upload');
