@@ -88,6 +88,16 @@ test('document lifecycle enforces ownership, independent approval, immutable pub
     assert.equal((await post(owner, id, 'reading', { readers: [String(reader._id)], dueDate: '2030-01-01', version: '01', notifyOnOpen: true })).status, 200);
     assert.equal((await post(reader, id, 'acknowledge', { version: 'bad' })).status, 409);
     assert.equal((await post(reader, id, 'acknowledge', { version: '01' })).status, 200);
+    assert.equal((await post(reader, id, 'feedback', { version: '01', kind: 'Question', message: 'Which ward uses this?' })).status, 201);
+    assert.equal((await post(outsider, id, 'feedback', { version: '01', kind: 'Question', message: 'Unauthorized' })).status, 404);
+    const feedback = await (await fetch(base + '/' + id + '/feedback', { headers: headers(owner) })).json();
+    assert.equal(feedback.length, 1); assert.equal(feedback[0].version, '01');
+    assert.equal((await post(reader, id, `feedback/${feedback[0]._id}/respond`, { status: 'Resolved', message: 'Self resolve' })).status, 403);
+    assert.equal((await post(owner, id, `feedback/${feedback[0]._id}/respond`, { status: 'Resolved', message: 'All nursing wards.' })).status, 200);
+    assert.equal((await post(reader, id, 'helpful', { version: '01', helpful: true })).status, 200);
+    assert.equal((await fetch(base + '/' + id + '/report/download', { headers: headers(reader) })).status, 403);
+    const report = await fetch(base + '/' + id + '/report/download', { headers: headers(owner) });
+    assert.equal(report.status, 200); assert((await report.text()).includes('Acknowledged (UAE)'));
     const ownReading = await (await fetch(base + '/' + id + '/reading', { headers: headers(reader) })).json();
     assert(ownReading.mine.acknowledgedAt); assert.deepEqual(ownReading.rows, []);
     const tasks = await (await fetch(base + '/reading-tasks', { headers: headers(reader) })).json();
@@ -124,6 +134,17 @@ test('document lifecycle enforces ownership, independent approval, immutable pub
     first.description = 'First change'; await first.save(); second.description = 'Stale change'; await assert.rejects(second.save(), /version/i);
     const draft = await (await save(owner)).json();
     assert.equal((await fetch(base + '/' + draft._id, { method: 'DELETE', headers: headers(owner) })).status, 200);
+    const generatedResponse = await save(owner, null, { source: 'template', generatedText: 'Purpose\nExplain the approved process.\n\nScope\nNursing team.' }, null);
+    const generated = await generatedResponse.json(); assert.equal(generatedResponse.status, 201, JSON.stringify(generated));
+    assert.equal(generated.fileMime, 'application/pdf');
+    const preview = await getFile(owner, generated._id, '?version=draft'); assert.equal(preview.status, 200);
+    assert.equal(Buffer.from(await preview.arrayBuffer()).subarray(0,5).toString(), '%PDF-');
+    assert.equal((await command(owner, generated._id, 'submit')).status, 200);
+    assert.equal((await command(reviewer, generated._id, 'approve')).status, 200);
+    assert.equal((await command(admin, generated._id, 'publish')).status, 200);
+    const generatedDownload = await getFile(owner, generated._id, '?download=true'); assert.equal(generatedDownload.status, 200);
+    assert(generatedDownload.headers.get('content-disposition').includes('IPC-01-v01.pdf'));
+    assert.equal((await save(owner, generated._id, {}, null)).status, 400, 'Switching away from a template requires a replacement upload');
   } finally {
     if (server) await new Promise(resolve => server.close(resolve)); await mongoose.disconnect(); database.kill(); await exited;
     if (path.resolve(directory).startsWith(path.resolve(os.tmpdir()) + path.sep) && path.basename(directory).startsWith('qcare-document-test-')) await fs.rm(directory, { recursive: true, force: true });

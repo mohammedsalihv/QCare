@@ -15,6 +15,7 @@ function input(body) {
   if (!types.includes(result.type) || !['Restricted', 'Confidential', 'Secret'].includes(result.classification) || !['All staff', 'Department', 'Owner and reviewers'].includes(result.audience)) throw Error('Choose a valid category, sensitivity and audience.');
   if (result.classification !== 'Restricted' && result.audience !== 'Owner and reviewers') throw Error('Confidential documents are limited to their owner and reviewers.');
   if (result.nextRevDate <= result.revisedDate || (result.expiryDate && result.expiryDate <= result.revisedDate)) throw Error('Review and expiry dates must be after the effective date.');
+  if (body.source === 'template') result.generatedText = text('generatedText', 8000);
   return result;
 }
 function fileInput(file) {

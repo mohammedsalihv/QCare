@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Document = require('../models/Document');
 const Reading = require('../models/DocumentReading');
 const User = require('../models/users');
+const Feedback = require('../models/DocumentFeedback');
 const policy = require('../utils/documentPolicy');
 const { alert } = require('../utils/documentReading');
 const fail = (status, message) => { throw Object.assign(Error(message), { status }); };
@@ -72,4 +73,48 @@ exports.delegate = wrap(async (req, res) => {
   await doc.save();
   if (doc.delegatedApprover) await alert(doc, doc.delegatedApprover, `You have been assigned to review ${doc.name} until ${doc.delegationUntil.toLocaleDateString('en-GB', { timeZone: 'Asia/Dubai' })}.`, `doc-delegate:${doc._id}:${doc.__v}`, req.user);
   res.json({ message: req.body.revoke ? 'Delegation revoked.' : 'Temporary review delegation saved.' });
+});
+
+exports.feedback = wrap(async (req, res) => {
+  const doc = await load(req);
+  const rows = await Feedback.find({ document: doc._id, ...(policy.workspace(req.user, doc) ? {} : { author: req.user._id }) }).sort({ createdAt: -1 }).limit(200).lean();
+  res.set('Cache-Control', 'no-store').json(rows);
+});
+exports.addFeedback = wrap(async (req, res) => {
+  const doc = await load(req);
+  if (doc.status !== 'Active' || req.body.version !== doc.version) fail(409, 'Refresh and use the current published version.');
+  if (!['Question', 'Suggestion', 'Outdated information'].includes(req.body.kind) || typeof req.body.message !== 'string' || !req.body.message.trim() || req.body.message.length > 4000) fail(400, 'Choose a feedback type and enter up to 4,000 characters.');
+  const entry = await Feedback.create({ document: doc._id, version: doc.version, kind: req.body.kind, message: req.body.message.trim(), author: req.user._id, authorName: req.user.employeeName });
+  await alert(doc, doc.uploadedBy, `${req.user.employeeName} sent a ${req.body.kind.toLowerCase()} about ${doc.name}, version ${doc.version}.`, `doc-feedback:${entry._id}`, req.user).catch(error => console.error('Feedback notification failed:', error.message));
+  res.status(201).json({ message: 'Your feedback has been sent to the document owner.' });
+});
+exports.respond = wrap(async (req, res) => {
+  const doc = await load(req);
+  if (!policy.manage(req.user, doc)) fail(403, 'Only the document owner or team can respond to feedback.');
+  if (!mongoose.isValidObjectId(req.params.feedbackId)) fail(404, 'Feedback not found.');
+  const entry = await Feedback.findOne({ _id: req.params.feedbackId, document: doc._id });
+  if (!entry) fail(404, 'Feedback not found.');
+  if (!['Under review','Accepted','Declined','Resolved'].includes(req.body.status) || typeof req.body.message !== 'string' || !req.body.message.trim() || req.body.message.length > 4000) fail(400, 'Choose a status and explain your response, up to 4,000 characters.');
+  entry.status = req.body.status;
+  entry.replies.push({ author: req.user._id, authorName: req.user.employeeName, status: entry.status, message: req.body.message.trim(), at: new Date() });
+  await entry.save();
+  const author = await User.findById(entry.author);
+  if (author && policy.readable(author, doc)) await alert(doc, author._id, `The document team responded to your ${entry.kind.toLowerCase()} about ${doc.name}.`, `doc-response:${entry._id}:${entry.__v}`, req.user).catch(error => console.error('Feedback response notification failed:', error.message));
+  res.json({ message: 'Response saved and the author notified if they still have access.' });
+});
+exports.helpful = wrap(async (req, res) => {
+  const doc = await load(req);
+  if (doc.status !== 'Active' || req.body.version !== doc.version || typeof req.body.helpful !== 'boolean') fail(400, 'Choose a reaction for the current published version.');
+  await Reading.updateOne({ document: doc._id, version: doc.version, user: req.user._id }, { $set: { helpful: req.body.helpful } }, { upsert: true });
+  res.json({ message: req.body.helpful ? 'Marked as helpful. This is not a reading confirmation.' : 'Helpful reaction removed.' });
+});
+exports.report = wrap(async (req, res) => {
+  const doc = await load(req);
+  if (!policy.workspace(req.user, doc)) fail(403, 'Only the document team can download a reading report.');
+  const rows = await Reading.find({ document: doc._id, version: doc.version }).populate('user', 'employeeName').lean();
+  const cell = value => '"' + String(value ?? '').replace(/^[=+@\-\t\r]/, match => "'" + match).replace(/"/g, '""') + '"';
+  const time = value => value ? new Date(value).toLocaleString('en-GB', { timeZone: 'Asia/Dubai' }) : '';
+  const lines = [['Document','Reference','Version','Person','First opened (UAE)','Last opened (UAE)','Opens','Downloads','Read by (UAE)','Acknowledged (UAE)','Helpful'], ...rows.map(row => [doc.name,doc.ref,doc.version,row.user?.employeeName || 'Former user',time(row.firstOpenedAt),time(row.lastOpenedAt),row.views,row.downloads,time(row.dueDate),time(row.acknowledgedAt),row.helpful ? 'Yes' : 'No'])];
+  res.set({ 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="document-reading-v${doc.version.replace(/[^0-9]/g, '')}.csv"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
+  res.send('\uFEFF' + lines.map(line => line.map(cell).join(',')).join('\r\n'));
 });

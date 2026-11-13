@@ -1,3 +1,4 @@
+import DocumentFeedback from '../components/DocumentFeedback';
 import DocumentEngagement from '../components/DocumentEngagement';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -8,7 +9,7 @@ import Pagination from '../components/Pagination';
 import { getAuthConfig } from '../utils/authConfig';
 import './DocumentLibrary.css';
 
-const empty = { name: '', type: 'Policy', department: '', ref: '', description: '', classification: 'Restricted', audience: 'Owner and reviewers', revisedDate: '', nextRevDate: '', expiryDate: '', changeSummary: '', assignedApprover: '', allowDownload: false };
+const empty = { source: 'file', generatedText: '', name: '', type: 'Policy', department: '', ref: '', description: '', classification: 'Restricted', audience: 'Owner and reviewers', revisedDate: '', nextRevDate: '', expiryDate: '', changeSummary: '', assignedApprover: '', allowDownload: false };
 const date = value => value ? new Date(value).toLocaleDateString('en-GB', { timeZone: 'Asia/Dubai' }) : 'Not set';
 const categories = ['Policy', 'Procedure', 'Guideline', 'Manual', 'Form', 'Certificate', 'Evidence'];
 const tabs = ['Document library', 'My submissions', 'Awaiting approval', 'My reading tasks', 'Review due', 'Archived'];
@@ -44,7 +45,7 @@ export default function DocumentLibrary() {
   const open = doc => { setSelected(doc._id); setVersion(doc.status === 'Draft' ? 'draft' : 'current'); setPreview(''); setFileError(''); setReason(''); };
   const edit = doc => {
     const data = doc?.draft || doc || {};
-    setForm(Object.fromEntries(Object.entries(empty).map(([key, fallback]) => [key, ['revisedDate', 'nextRevDate', 'expiryDate'].includes(key) ? data[key]?.slice(0,10) || '' : key === 'assignedApprover' ? doc?.assignedApprover || '' : data[key] ?? fallback])));
+    setForm(Object.fromEntries(Object.entries(empty).map(([key, fallback]) => [key, ['revisedDate', 'nextRevDate', 'expiryDate'].includes(key) ? data[key]?.slice(0,10) || '' : key === 'source' ? (data.generatedText ? 'template' : 'file') : key === 'assignedApprover' ? doc?.assignedApprover || '' : data[key] ?? fallback])));
     setFile(null); setEditor(doc?._id || 'new'); setError(''); setNotice('');
   };
   const change = event => setForm(value => ({ ...value, [event.target.name]: event.target.type === 'checkbox' ? event.target.checked : event.target.value }));
@@ -94,7 +95,7 @@ export default function DocumentLibrary() {
       {version === 'draft' && <p className="dl-notice">This is a proposed revision. It is not published guidance. {row.draft.changeSummary}</p>}
       {version !== 'current' && version !== 'draft' && <p className="dl-notice">Earlier version — use the published version for current guidance.</p>}
       {fileError && <p>{fileError}</p>}{preview ? <iframe key={preview} sandbox="allow-same-origin" title="Document preview" src={preview} className="dl-preview" /> : !fileError && <p>Preview is loading or unavailable for this file type. CSV files can be downloaded when permitted.</p>}
-      <DocumentEngagement key={row._id + row.version} document={row} approvers={approvers} onChanged={() => setRevision(value => value + 1)} />
+      <DocumentFeedback key={'feedback-' + row._id + row.version} document={row} /><DocumentEngagement key={row._id + row.version} document={row} approvers={approvers} onChanged={() => setRevision(value => value + 1)} />
       {row.permissions.workspace && <><div className="dl-metadata"><p><strong>Assigned approver</strong>{row.approverName || approvers.find(p => p._id === row.assignedApprover)?.employeeName || (row.assignedApprover === user._id ? user.employeeName : 'Reviewer not recorded')}</p><p><strong>Review status</strong>{row.draftState || 'No revision in progress'}</p></div>
         <label>Review or archive reason<textarea maxLength={2000} value={reason} onChange={e => setReason(e.target.value)} placeholder="Explain what needs to change, or why the document should be archived." /></label>
         <div className="dl-actions">{row.permissions.submit && <button disabled={busy} className="dl-primary" onClick={() => action(row, 'submit')}>Submit for review</button>}{row.permissions.review && <><button disabled={busy} onClick={() => action(row, 'return')}>Request changes</button><button disabled={busy} className="dl-primary" onClick={() => action(row, 'approve')}>Approve this revision</button></>}{row.permissions.publish && <button disabled={busy} className="dl-primary" onClick={() => action(row, 'publish')}>Publish approved revision</button>}{row.permissions.archive && <button disabled={busy} onClick={() => action(row, 'archive')}>Archive document</button>}{row.permissions.delete && <details><summary>Delete unsubmitted draft</summary><p>This removes the draft from the library. Submitted or published documents cannot be deleted here.</p><button disabled={busy} onClick={() => action(row, 'delete')}>Confirm delete draft</button></details>}</div>
@@ -115,7 +116,7 @@ export default function DocumentLibrary() {
         <label>Independent approver *<Select name="assignedApprover" required value={form.assignedApprover} onChange={change}><option value="">Choose an approver</option>{approvers.map(person => <option key={person._id} value={person._id}>{person.employeeName}</option>)}</Select></label>
       </div><label>Short description<textarea name="description" maxLength={4000} value={form.description} onChange={change} /></label><label>What is new or changing? *<textarea name="changeSummary" required maxLength={2000} value={form.changeSummary} onChange={change} /></label>
       <label className="dl-check"><input type="checkbox" name="allowDownload" checked={form.allowDownload} onChange={change} />Allow readers to download</label><p>Viewing cannot prevent screenshots or copying. Document owners and reviewers can download for their work.</p>
-      <label>{editor === 'new' ? 'Attach document *' : 'Replace file (optional)'}<input type="file" required={editor === 'new'} accept=".pdf,.png,.jpg,.jpeg,.csv" onChange={e => setFile(e.target.files[0] || null)} /></label><p>PDF, PNG, JPG or CSV. Maximum 10 MB. Use PDF for approved guidance.</p>
+      <label>Document source<Select name="source" value={form.source} onChange={change}><option value="file">Upload a file</option><option value="template">Generate a PDF from the standard template</option></Select></label>{form.source === 'template' ? <label>Document content *<textarea name="generatedText" required maxLength={8000} rows={12} value={form.generatedText} onChange={change} placeholder={'Purpose\n\nScope\n\nResponsibilities\n\nProcedure / evidence\n\nReferences'} /><span>Write the content under these headings. The PDF includes the title, reference, version, dates and change summary. It remains a draft until approved and published.</span></label> : <><label>{editor === 'new' ? 'Attach document *' : 'Replace file (optional)'}<input type="file" required={editor === 'new' && form.source === 'file'} accept=".pdf,.png,.jpg,.jpeg,.csv" onChange={e => setFile(e.target.files[0] || null)} /></label><p>PDF, PNG, JPG or CSV. Maximum 10 MB. Use PDF for approved guidance.</p></>}
       <footer className="dl-actions"><button type="button" disabled={busy} onClick={() => setEditor(null)}>Cancel</button><button type="submit" className="dl-primary">{busy ? 'Saving…' : 'Save draft'}</button></footer></fieldset></form>
     </section></div>}
   </div></DashboardLayout>;

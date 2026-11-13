@@ -55,7 +55,7 @@ exports.getDocuments = handler(async (req, res) => {
   res.set('Cache-Control', 'no-store').json(docs.filter(doc => policy.readable(req.user, doc)).map(doc => present(doc, req.user)));
 });
 exports.addDocument = handler(async (req, res) => {
-  const data = input(req.body), file = fileInput(req.file);
+  const data = input(req.body), file = data.generatedText ? await require('../utils/documentTemplate')(data, '01') : fileInput(req.file);
   const doc = new Document({ ...data, documentId: 'DOC-' + randomUUID(), uploadedBy: req.user._id, status: 'Draft', version: '01', draftEditors: [req.user._id] });
   doc.assignedApprover = await activeApprover(req.body.assignedApprover, doc, req.user);
   const stored = await DocumentFile.create(file);
@@ -70,9 +70,12 @@ exports.updateDocument = handler(async (req, res) => {
   const doc = await load(req);
   if (!present(doc, req.user).permissions.edit) fail(403, 'Only the owner or document controller can edit an available draft.');
   const data = input(req.body);
+  if ((doc.draft?.generatedText || (!doc.draft && doc.generatedText)) && req.body.source !== 'template' && !req.file) fail(400, 'Attach a replacement file to switch from a generated document to an upload.');
   const approver = await activeApprover(req.body.assignedApprover, doc, req.user);
   let stored;
-  if (req.file) stored = await DocumentFile.create(fileInput(req.file));
+  const nextVersion = doc.draft?.version || String((parseInt(doc.version, 10) || 1) + (doc.status === 'Active' ? 1 : 0)).padStart(2, '0');
+  if (data.generatedText) stored = await DocumentFile.create(await require('../utils/documentTemplate')(data, nextVersion));
+  else if (req.file) { stored = await DocumentFile.create(fileInput(req.file)); data.generatedText = undefined; }
   try {
     const base = doc.draft ? doc.draft.toObject() : policy.snapshot(doc);
     const version = doc.draft?.version || String((parseInt(doc.version, 10) || 1) + (doc.status === 'Active' ? 1 : 0)).padStart(2, '0');
@@ -146,7 +149,8 @@ exports.download = handler(async (req, res) => {
   }
   if (req.query.download === 'true' && !workspace && !version.allowDownload) fail(403, 'Downloading is not permitted for this document.');
   let file;
-  if (version.fileId) file = await DocumentFile.findById(version.fileId).select('+data');
+  if (version.generatedText) file = await require('../utils/documentTemplate')(version, version.version, doc.status !== 'Draft' && version !== doc.draft, req.query.download === 'true' ? req.user.employeeName : '');
+  else if (version.fileId) file = await DocumentFile.findById(version.fileId).select('+data');
   else if (version.fileUrl) {
     const match = /^\/uploads\/([a-zA-Z0-9_.-]+)$/.exec(version.fileUrl);
     if (!match || match[1].includes('..')) fail(404, 'File not available.');

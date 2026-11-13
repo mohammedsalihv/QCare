@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const content = {
   name: { type: String, required: true }, type: { type: String, required: true },
   department: { type: String, required: true }, ref: { type: String, required: true },
-  description: String, classification: { type: String, default: 'Restricted' },
+  description: String, generatedText: String, classification: { type: String, default: 'Restricted' },
   revisedDate: { type: Date, required: true }, nextRevDate: { type: Date, required: true },
   expiryDate: Date, changeSummary: String,
   audience: { type: String, enum: ['All staff', 'Department', 'Owner and reviewers'], default: 'Owner and reviewers' },
