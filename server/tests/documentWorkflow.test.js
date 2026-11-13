@@ -119,6 +119,14 @@ test('document lifecycle enforces ownership, independent approval, immutable pub
     rows = await list(reader); assert.equal(rows[0].version, '02'); assert.equal(rows[0].name, 'Revised title');
     const renewedTasks = await (await fetch(base + '/reading-tasks', { headers: headers(reader) })).json();
     assert.equal(renewedTasks.length, 1); assert.equal(renewedTasks[0].version, '02'); assert.equal(renewedTasks[0].acknowledgedAt, undefined);
+    // An early view/reaction must not prevent the scheduled carry-forward assigning reading.
+    const Reading = require('../models/DocumentReading');
+    await Reading.updateOne({ document: id, version: '02', user: reader._id }, { $unset: { assignedAt: '', dueDate: '' }, $set: { helpful: true } });
+    await require('../utils/documentReading').carryAssignments(await Document.findById(id));
+    const carried = await Reading.findOne({ document: id, version: '02', user: reader._id });
+    assert(carried.assignedAt); assert(carried.dueDate); assert.equal(carried.helpful, true);
+    await require('../utils/documentReading').carryAssignments(await Document.findById(id));
+    assert.equal((await Reading.findById(carried._id)).dueDate.toISOString(), carried.dueDate.toISOString());
     assert.equal((await post(reader, id, 'acknowledge', { version: '02' })).status, 400);
     assert.equal(await (await getFile(reader, id)).text(), '%PDF-1.4 revision');
     assert.equal((await getFile(reader, id, '?version=01')).status, 403);

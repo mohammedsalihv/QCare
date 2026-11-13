@@ -26,6 +26,8 @@ async function carryAssignments(doc) {
     if (!item.user || item.user.isActive === false || ['blocked','inactive'].includes(item.user.status) || !policy.readable(item.user, doc)) continue;
     const deadline = new Date(Math.max(Date.now(), new Date(doc.revisedDate).getTime()) + 14 * 86400000);
     await Reading.updateOne({ document: doc._id, version: doc.version, user: item.user._id }, { $setOnInsert: { assignedAt: new Date(), dueDate: deadline } }, { upsert: true });
+    // A reader may have opened/reacted to the revision before assignments were carried forward.
+    await Reading.updateOne({ document: doc._id, version: doc.version, user: item.user._id, assignedAt: { $exists: false } }, { $set: { assignedAt: new Date(), dueDate: deadline } });
     await alert(doc, item.user._id, `${doc.name} has a new published version (${doc.version}). Please read it and confirm again within 14 days.`, `doc-revision:${doc._id}:${doc.version}:${item.user._id}`, { _id: policy.id(doc.uploadedBy), employeeName: 'Document team' });
   }
 }

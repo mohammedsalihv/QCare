@@ -25,7 +25,7 @@ New files are stored in a private MongoDB collection, served only through authen
 
 Existing document records and legacy files are preserved. Legacy `/uploads/<filename>` links are blocked; use the library's protected file route instead. Public profile images remain on `/uploads/profiles`. Legacy records with no audience default to owner/reviewer/document-team access until reviewed. Existing published records do not acquire invented approval history. An ownerless legacy record can be managed by the document team.
 
-Deploy client and server together: the new UI requires `/api/documents/options`, `/:id/actions` and `/:id/download`. The browser inspected during development was still connected to an API returning 404 for the options route; live workflow validation awaits the server update. No production document was submitted, approved, archived or deleted during review.
+Deploy client and server together: the new UI requires `/api/documents/options`, `/:id/actions` and `/:id/download`. A subsequent unauthenticated check of the local and configured portal API returned 401 for the options route, indicating the protected route is now available. Authenticated visual verification remains pending: the computer-use tool could not reliably identify the browser URL. No production document was submitted, approved, archived or deleted during review.
 
 ## Verification and remaining stages
 
@@ -38,3 +38,5 @@ The daily 08:00 Asia/Dubai job sends deduplicated in-app review/expiry reminders
 Version-specific questions, suggestions and outdated-information reports are implemented, with owner/team responses and statuses. Readers see their own feedback; the document team can see submitted feedback. Helpful reactions are independent of reading confirmations. Authorized document teams can export reading progress as a CSV with formula-safe cells.
 
 Authors may generate a PDF using the standard template and their own supplied content. Generated PDFs include the title, reference, department, version, effective/review dates and change summary. Drafts are labelled as unapproved; published downloads include the downloader and date plus a reminder to check the portal for the current version. The same approval workflow applies. Uploaded original files are not modified or watermarked. Office uploads, antivirus integration, custom template administration and stronger print/download controls remain outside this release.
+
+Follow-up verification: reading assignments now carry forward even when a reader already opened or reacted to the new version, without resetting an existing deadline. Document titles, descriptions and dates follow the selected version. Reading confirmations and feedback appear only beside the current published version; proposed revisions retain review-delegation controls.
