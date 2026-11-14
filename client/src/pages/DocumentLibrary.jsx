@@ -1,7 +1,7 @@
-import { BookOpen, FileText, Clock3, ShieldCheck, Plus, RefreshCw, ArrowUpRight, FolderOpen } from 'lucide-react';
+import { BookOpen, FileText, Clock3, ShieldCheck, Plus, RefreshCw, ArrowUpRight, FolderOpen, Eye, Pencil, Trash2, CheckCheck, LockKeyhole } from 'lucide-react';
 import DocumentFeedback from '../components/DocumentFeedback';
 import DocumentEngagement from '../components/DocumentEngagement';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../components/DashboardLayout';
 import Select from '../components/Select';
@@ -13,17 +13,20 @@ import './DocumentLibrary.css';
 const empty = { source: 'file', generatedText: '', name: '', type: 'Policy', department: '', ref: '', description: '', classification: 'Restricted', audience: 'Owner and reviewers', revisedDate: '', nextRevDate: '', expiryDate: '', changeSummary: '', assignedApprover: '', allowDownload: false };
 const date = value => value ? new Date(value).toLocaleDateString('en-GB', { timeZone: 'Asia/Dubai' }) : 'Not set';
 const categories = ['Policy', 'Procedure', 'Guideline', 'Manual', 'Form', 'Certificate', 'Evidence'];
-const tabs = ['Document library', 'My submissions', 'Awaiting approval', 'My reading tasks', 'Review due', 'Archived'];
+const tabs = ['All documents', 'Document library', 'My submissions', 'Awaiting approval', 'My reading tasks', 'Review due', 'Archived'];
 
 export default function DocumentLibrary() {
   const user = JSON.parse(localStorage.getItem('userInfo') || '{}');
   const [tasks, setTasks] = useState([]);
   const [documents, setDocuments] = useState([]), [approvers, setApprovers] = useState([]);
-  const [tab, setTab] = useState('Document library'), [search, setSearch] = useState(''), [page, setPage] = useState(1);
+  const [tab, setTab] = useState('All documents'), [search, setSearch] = useState(''), [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const [revision, setRevision] = useState(0), [selected, setSelected] = useState(null), [editor, setEditor] = useState(null);
   const [form, setForm] = useState(empty), [file, setFile] = useState(null), [reason, setReason] = useState('');
   const [version, setVersion] = useState('current'), [preview, setPreview] = useState(''), [fileError, setFileError] = useState('');
+  const detailRef = useRef(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  useEffect(() => { if (selected) detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, [selected]);
   const row = documents.find(doc => doc._id === selected);
   const viewed = row && (version === 'draft' ? row.draft : version === 'current' ? row : row.versions?.find(item => item.version === version));
   useEffect(() => {
@@ -44,7 +47,7 @@ export default function DocumentLibrary() {
       .catch(() => { if (!controller.signal.aborted) setFileError('Preview is unavailable. Download the file if permitted, or ask the owner to check it.'); });
     return () => { controller.abort(); if (url) URL.revokeObjectURL(url); };
   }, [row, version]);
-  const open = doc => { setSelected(doc._id); setVersion(doc.status === 'Draft' ? 'draft' : 'current'); setPreview(''); setFileError(''); setReason(''); };
+  const open = doc => { if (selected === doc._id) detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); setSelected(doc._id); setVersion(doc.status === 'Draft' ? 'draft' : 'current'); setPreview(''); setFileError(''); setReason(''); };
   const edit = doc => {
     const data = doc?.draft || doc || {};
     setForm(Object.fromEntries(Object.entries(empty).map(([key, fallback]) => [key, ['revisedDate', 'nextRevDate', 'expiryDate'].includes(key) ? data[key]?.slice(0,10) || '' : key === 'source' ? (data.generatedText ? 'template' : 'file') : key === 'assignedApprover' ? doc?.assignedApprover || '' : data[key] ?? fallback])));
@@ -66,6 +69,7 @@ export default function DocumentLibrary() {
       if (command === 'delete') await axios.delete(`/api/documents/${doc._id}`, getAuthConfig());
       else await axios.post(`/api/documents/${doc._id}/actions`, { command, reason }, getAuthConfig());
       setPreview(''); setFileError(''); setSelected(null); setRevision(v => v + 1); setReason('');
+      setDeleteTarget(null);
       setNotice(({ submit: 'Submitted to the assigned approver.', approve: 'Revision approved. The document team can now publish it.', return: 'Returned to the owner for changes.', publish: 'Approved revision published.', archive: 'Document archived. Its history is retained.', delete: 'Unsubmitted draft deleted.' })[command]);
     } catch (e) { setError(e.response?.data?.message || 'Unable to complete this action.'); } finally { setBusy(false); }
   };
@@ -79,7 +83,7 @@ export default function DocumentLibrary() {
   };
   const filtered = documents.filter(doc => {
     const matches = `${doc.name} ${doc.documentId} ${doc.ref} ${doc.department} ${doc.draft?.name || ''}`.toLowerCase().includes(search.toLowerCase());
-    const section = tab === 'My reading tasks' ? tasks.some(task => task.documentId === doc._id && !task.acknowledgedAt) : tab === 'Document library' ? doc.status === 'Active' : tab === 'Archived' ? doc.status === 'Archived' : tab === 'My submissions' ? doc.uploadedBy === user._id && doc.status !== 'Archived' : tab === 'Awaiting approval' ? ['In review', 'Approved'].includes(doc.draftState) : doc.status === 'Active' && new Date(doc.nextRevDate) < new Date();
+    const section = tab === 'All documents' ? doc.status !== 'Archived' : tab === 'My reading tasks' ? tasks.some(task => task.documentId === doc._id && !task.acknowledgedAt) : tab === 'Document library' ? doc.status === 'Active' : tab === 'Archived' ? doc.status === 'Archived' : tab === 'My submissions' ? doc.uploadedBy === user._id && doc.status !== 'Archived' : tab === 'Awaiting approval' ? ['In review', 'Approved'].includes(doc.draftState) : doc.status === 'Active' && new Date(doc.nextRevDate) < new Date();
     return matches && section;
   });
   const summaries = [
@@ -90,24 +94,24 @@ export default function DocumentLibrary() {
   ];
   const shown = filtered.slice((page - 1) * 10, page * 10);
   return <DashboardLayout><div className="dl-workspace">
-    <header className="dl-hero"><div className="dl-hero-copy"><p className="dl-eyebrow"><span /> EVIDENCE & DOCUMENTATION</p><h1>Knowledge you can<br /><em>put into practice.</em></h1><p>Your shared home for trusted guidance, supporting evidence<br className="dl-desktop-break" /> and the decisions behind every document.</p><button className="dl-primary" onClick={() => edit(null)}><Plus size={17} aria-hidden="true" /> Add document</button></div><div className="dl-hero-art" aria-hidden="true"><div className="dl-art-back" /><div className="dl-art-paper"><span className="dl-art-mark"><ShieldCheck size={24} /></span><span className="dl-art-caption">DOCUMENT CONTROL</span><strong>Clear guidance.<br />Confident teams.</strong><i /><i /><i /><div><span /><span /><span /></div><small>REVIEWED · VERSIONED · CONNECTED</small></div><div className="dl-art-seal"><ShieldCheck size={17} /> Built on accountability</div></div></header>
+    <header className="dl-page-header"><div><p className="dl-eyebrow">EVIDENCE & DOCUMENTATION</p><h1>Document register</h1><p>Find, review and manage your team's documents.</p></div><button className="dl-primary" onClick={() => edit(null)}><Plus size={18} aria-hidden="true" /> Add document</button></header>
     <section className="dl-summary-grid" aria-label="Document overview">{summaries.map(({label,count,icon,tone,target,hint}) => <button className={'dl-summary dl-tone-' + tone} key={label} onClick={() => { setTab(target); setPage(1); }}><span className="dl-summary-icon">{icon}</span><span className="dl-summary-body"><span>{label}</span><strong>{loading ? '—' : count}</strong><small>{hint}</small></span><ArrowUpRight className="dl-summary-arrow" size={17} aria-hidden="true" /></button>)}</section>
     {error && <p role="alert" className="dl-error">{error}</p>}{notice && <p role="status" className="dl-notice">{notice}</p>}
     <nav className="dl-tabs" aria-label="Document sections">{tabs.map(item => <button key={item} aria-current={tab === item ? 'page' : undefined} onClick={() => { setTab(item); setPage(1); }}>{item}</button>)}</nav>
     <section className="dl-card"><header className="dl-register-heading"><div><span className="dl-eyebrow">YOUR WORKSPACE</span><h2>{tab}</h2><p>{tab === 'My submissions' ? 'Your drafts and submissions, from first version to publication.' : 'Find the right document and see its status at a glance.'}</p></div><span className="dl-record-count">{filtered.length} {filtered.length === 1 ? 'document' : 'documents'}</span></header><div className="dl-toolbar"><input aria-label="Search documents" placeholder="Search name, document ID, reference or department" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} /><button onClick={() => { setError(''); setRevision(v => v + 1); }}><RefreshCw size={15} aria-hidden="true" /> Refresh</button></div>
-      <div className="dl-table dl-register" role="region" aria-label="Document register" tabIndex={0}><Table><thead><tr>{['Document name', 'Unique document ID', 'Uploaded date', 'Reviewed date', 'Next revision date', 'Document type', 'Classification', 'Version / status', 'Actions'].map(label => <th scope="col" key={label}>{label}</th>)}</tr></thead><tbody>{loading ? <tr><td colSpan={9}>Loading documents…</td></tr> : shown.length ? shown.map(doc => <tr key={doc._id}>
-        <td><strong>{doc.name}</strong><small>{doc.department} · {doc.ref}</small></td>
-        <td className="dl-document-id">{doc.documentId || 'Not recorded'}</td>
-        <td>{date(doc.uploadDate || doc.createdAt)}</td>
-        <td>{(doc.status === 'Draft' ? doc.draft?.reviewedAt || doc.draft?.approvedAt : doc.reviewedAt || doc.approvedAt) ? date(doc.status === 'Draft' ? doc.draft.reviewedAt || doc.draft.approvedAt : doc.reviewedAt || doc.approvedAt) : doc.status === 'Draft' ? 'Not reviewed yet' : 'Not recorded'}</td>
-        <td>{date(doc.nextRevDate)}{new Date(doc.nextRevDate) < new Date() && <small className="dl-due">Revision review overdue</small>}</td>
-        <td>{doc.type}</td><td><span className={'dl-classification dl-class-' + doc.classification?.toLowerCase()}>{doc.classification}</span></td>
-        <td>Version {doc.version}<small>{doc.status === 'Active' ? 'Published' : doc.status}{doc.draftState ? ' · Revision: ' + doc.draftState : ''}</small>{doc.status === 'Active' && new Date(doc.revisedDate) > new Date() && <small>Effective from {date(doc.revisedDate)}</small>}{doc.expiryDate && new Date(doc.expiryDate) < new Date() && <small>Expired</small>}</td>
-        <td><button onClick={() => open(doc)}>Open document</button>{doc.permissions.edit && <button onClick={() => edit(doc)}>{doc.status === 'Active' && !doc.draft ? 'Create revision' : 'Edit draft'}</button>}</td>
-      </tr>) : <tr><td colSpan={9}><div className="dl-empty"><span className="dl-empty-icon"><FolderOpen size={30} aria-hidden="true" /></span><strong>No documents in this view.</strong><p>New drafts appear in My submissions. Approved and published documents appear in Document library.</p><button className="dl-primary" onClick={() => edit(null)}>+ Add document</button>{tab !== 'My submissions' && <button onClick={() => { setTab('My submissions'); setPage(1); }}>View my submissions</button>}</div></td></tr>}</tbody></Table></div>
+      <div className="dl-table dl-register" role="region" aria-label="Document register" tabIndex={0}><Table><thead><tr>{['S/N', 'Document', 'Reference number', 'Document dates', 'Type', 'Who can view', 'Version / status', 'Actions'].map(label => <th scope="col" key={label}>{label}</th>)}</tr></thead><tbody>{loading ? <tr><td colSpan={8}>Loading documents…</td></tr> : shown.length ? shown.map((doc, index) => <tr key={doc._id} className={selected === doc._id ? 'dl-selected-row' : ''}>
+        <td className="dl-serial">{(page - 1) * 10 + index + 1}</td>
+        <td className="dl-name-cell"><button className="dl-name-link" onClick={() => open(doc)}>{doc.name}</button><small>{doc.department}</small><small className="dl-document-id"><span>Unique ID</span> {doc.documentId || 'Not recorded'}</small></td>
+        <td className="dl-reference">{doc.ref || 'Not recorded'}</td>
+        <td><dl className="dl-row-dates"><div><dt>Uploaded</dt><dd>{date(doc.uploadDate || doc.createdAt)}</dd></div><div><dt>Reviewed</dt><dd>{(doc.status === 'Draft' ? doc.draft?.reviewedAt || doc.draft?.approvedAt : doc.reviewedAt || doc.approvedAt) ? date(doc.status === 'Draft' ? doc.draft.reviewedAt || doc.draft.approvedAt : doc.reviewedAt || doc.approvedAt) : doc.status === 'Draft' ? 'Not reviewed yet' : 'Not recorded'}</dd></div><div><dt>Next revision</dt><dd>{date(doc.nextRevDate)}</dd></div></dl>{new Date(doc.nextRevDate) < new Date() && <small className="dl-due">Review overdue</small>}</td>
+        <td>{doc.type}</td>
+        <td className="dl-access-cell"><span className={'dl-classification dl-class-' + doc.classification?.toLowerCase()}>{doc.classification}</span><strong>{doc.status === 'Draft' ? 'Owner and reviewers' : doc.audience}</strong>{doc.status === 'Draft' && <small>After publication: {doc.draft?.audience || doc.audience}</small>}{doc.permissions.edit && <button onClick={() => edit(doc)}><LockKeyhole size={13} aria-hidden="true" /> Manage access</button>}</td>
+        <td><span className={'dl-status dl-status-' + doc.status.toLowerCase()}>{doc.status === 'Active' ? 'Published' : doc.status}</span><small>Version {doc.version}</small>{doc.draftState && doc.status !== 'Draft' && <small>Revision: {doc.draftState}</small>}{doc.status === 'Active' && new Date(doc.revisedDate) > new Date() && <small>Effective {date(doc.revisedDate)}</small>}{doc.expiryDate && new Date(doc.expiryDate) < new Date() && <small className="dl-due">Expired</small>}</td>
+        <td><div className="dl-row-actions"><button onClick={() => open(doc)}><Eye size={14} aria-hidden="true" /> View</button>{doc.permissions.edit && <button onClick={() => edit(doc)}><Pencil size={14} aria-hidden="true" />{doc.status === 'Active' && !doc.draft ? 'Revise' : 'Edit'}</button>}{doc.status === 'Active' && new Date(doc.revisedDate) <= new Date() && (!doc.expiryDate || new Date(doc.expiryDate) > new Date()) && <button onClick={() => open(doc)}><CheckCheck size={14} aria-hidden="true" /> Read & acknowledge</button>}{doc.permissions.delete && <button className="dl-delete" onClick={() => setDeleteTarget(doc)}><Trash2 size={14} aria-hidden="true" /> Delete</button>}</div></td>
+      </tr>) : <tr><td colSpan={8}><div className="dl-empty"><span className="dl-empty-icon"><FolderOpen size={30} aria-hidden="true" /></span><strong>No documents in this view.</strong><p>Try another section or add your first document.</p><button className="dl-primary" onClick={() => edit(null)}>+ Add document</button></div></td></tr>}</tbody></Table></div>
       <Pagination totalRecords={filtered.length} recordsPerPage={10} currentPage={page} onPageChange={setPage} />
     </section>
-    {row && <section className="dl-card dl-detail" aria-label="Document details"><header className="dl-heading"><div><h2>{viewed?.name || row.name}</h2><p>{viewed?.description || 'No description provided.'}</p></div><button onClick={() => { setSelected(null); setPreview(''); }}>Close document</button></header>
+    {row && <section ref={detailRef} className="dl-card dl-detail" aria-label="Document details"><header className="dl-heading"><div><h2>{viewed?.name || row.name}</h2><p>{viewed?.description || 'No description provided.'}</p></div><button onClick={() => { setSelected(null); setPreview(''); }}>Close document</button></header>
       <div className="dl-metadata"><p><strong>Owner</strong>{row.ownerName || (row.uploadedBy === user._id ? user.employeeName : 'Owner not recorded')}</p><p><strong>Who can view</strong>{viewed?.audience}</p><p><strong>Effective date</strong>{date(viewed?.revisedDate)}</p><p><strong>Expiry date</strong>{date(viewed?.expiryDate)}</p></div>
       <div className="dl-toolbar"><label>Version to view <Select value={version} onChange={e => { setVersion(e.target.value); setPreview(''); setFileError(''); }}>{row.status !== 'Draft' && <option value="current">Published version {row.version}</option>}{row.draft && <option value="draft">Proposed version {row.draft.version} · {row.draftState}</option>}{row.versions?.map(v => <option key={v.version} value={v.version}>Earlier version {v.version}</option>)}</Select></label>{row.permissions.download && <button onClick={() => download(row)}>Download selected version</button>}</div>
       {version === 'draft' && <p className="dl-notice">This is a proposed revision. It is not published guidance. {row.draft.changeSummary}</p>}
@@ -121,12 +125,13 @@ export default function DocumentLibrary() {
         <details><summary>Document history</summary><ul>{row.history?.length ? row.history.map(entry => <li key={entry._id}><strong>{entry.action}</strong> · {entry.actorName} · {date(entry.at)} · Version {entry.version}{entry.reason && <p>{entry.reason}</p>}</li>) : <li>No earlier history was recorded for this legacy document.</li>}</ul></details>
       </>}
     </section>}
+    {deleteTarget && <div className="dl-overlay"><section className="dl-editor dl-confirm" role="dialog" aria-modal="true" aria-labelledby="delete-document-title"><h2 id="delete-document-title">Delete this draft?</h2><p><strong>{deleteTarget.name}</strong></p><p>This permanently removes this unsubmitted draft. Published documents are archived instead.</p>{error && <p role="alert" className="dl-error">{error}</p>}<div className="dl-actions"><button disabled={busy} autoFocus onClick={() => setDeleteTarget(null)}>Keep document</button><button className="dl-delete" disabled={busy} onClick={() => action(deleteTarget, 'delete')}>{busy ? 'Deleting…' : 'Delete draft'}</button></div></section></div>}
     {editor && <div className="dl-overlay"><section role="dialog" aria-modal="true" aria-labelledby="document-editor-title" className="dl-editor"><header className="dl-heading"><div><h2 id="document-editor-title">{editor === 'new' ? 'Add a document' : 'Prepare a revision'}</h2><p>Save a draft first, then submit it to an independent approver.</p></div><button disabled={busy} onClick={() => setEditor(null)}>Close</button></header>{error && <p role="alert" className="dl-error">{error}</p>}
       <p>Unique document ID and uploaded date are assigned automatically when you save. Reviewed date is recorded when the approver reviews this version. Public means all signed-in staff after publication; it does not create a public internet link.</p><form onSubmit={save}><fieldset disabled={busy}><div className="dl-grid">
         <label>Document name *<input name="name" required maxLength={200} value={form.name} onChange={change} /></label>
         <label>Document type *<Select name="type" value={form.type} onChange={change}>{categories.map(value => <option key={value}>{value}</option>)}</Select></label>
         <label>Department *<input name="department" required maxLength={150} value={form.department} onChange={change} /></label>
-        <label>Reference *<input name="ref" required maxLength={100} value={form.ref} onChange={change} /></label>
+        <label>Reference number *<input name="ref" required maxLength={100} value={form.ref} onChange={change} /></label>
         <label>Document classification<Select name="classification" value={form.classification} onChange={e => setForm(v => ({ ...v, classification: e.target.value, audience: e.target.value === 'Public' ? 'All staff' : 'Owner and reviewers' }))}><option>Public</option><option>Restricted</option><option>Confidential</option>{form.classification === 'Secret' && <option>Secret</option>}</Select></label>
         <label>Who can view after publication<Select name="audience" disabled={form.classification === 'Public'} value={form.audience} onChange={change}><option>Owner and reviewers</option>{['Restricted', 'Public'].includes(form.classification) && <><option>Department</option><option>All staff</option></>}</Select></label>
         <label>Effective date *<input type="date" required name="revisedDate" value={form.revisedDate} onChange={change} /></label>
