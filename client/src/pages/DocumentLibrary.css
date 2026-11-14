@@ -127,3 +127,21 @@
 .dl-pdf-paper canvas { display:block; }.dl-pdf-paper .textLayer { z-index:1; }
 .dl-pdf-loading { padding:10px 16px; margin:0; background:#eef5fa; font-size:13px; }
 @media(max-width:700px) { .dl-pdf-toolbar { gap:10px; padding:10px; }.dl-pdf-toolbar > strong { flex-basis:100%; }.dl-pdf-zoom { flex-wrap:wrap; }.dl-pdf-stage { padding:12px; } }
+
+/* Dates remain individually scannable; secondary actions live in the top layer. */
+.dl-register table { min-width:1540px; }
+.dl-register .dl-date-cell { min-width:110px; white-space:nowrap; }
+.dl-register td:last-child { min-width:112px; width:112px; }
+.dl-action-menu { position:fixed; inset:auto; margin:0; padding:0; border:1px solid #d8e3ec; border-radius:14px; background:white; color:#243d52; box-shadow:0 14px 45px #19364a30; overflow:auto; text-align:left; }
+.dl-action-menu::backdrop { background:transparent; }
+.dl-action-menu header { padding:15px 16px; border-bottom:1px solid #e7edf3; background:#f6f9fb; }
+.dl-action-menu header strong { display:block; font-size:13px; line-height:1.5; }
+.dl-action-menu header span { display:block; font-size:11px; margin-top:5px; color:#63788c; }
+.dl-menu-options { display:grid; padding:6px; gap:2px; }
+.dl-workspace .dl-action-menu button { display:flex; width:100%; justify-content:flex-start; margin:0; padding:10px; border:0; background:transparent; border-radius:7px; font-size:12px; text-align:left; }
+.dl-workspace .dl-action-menu button:hover { background:#edf5f7; }
+.dl-menu-controls { border-top:1px solid #e7edf3; border-bottom:1px solid #e7edf3; background:#f8fbfc; padding:12px 16px; }
+.dl-menu-controls h3 { display:flex; align-items:center; gap:7px; font-size:12px; font-weight:700; color:#176e65; margin:0 0 12px; }
+.dl-menu-controls dl { margin:0; }.dl-menu-controls dt { font-size:10px; color:#6b7f91; margin-top:10px; }.dl-menu-controls dd { margin:3px 0 0; font-size:12px; }
+.dl-workspace .dl-menu-controls button { padding:9px 0; margin-top:10px; color:#116b60; font-weight:650; }
+.dl-workspace .dl-menu-danger button:hover { background:#fff0f1; }
