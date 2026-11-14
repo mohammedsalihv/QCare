@@ -70,7 +70,7 @@
 .dl-register .qc-table th { background:#f6f8fb; color:#66768b; font-size:10px; font-weight:650; padding:14px 15px; border-top:1px solid #e8edf3; border-bottom:1px solid #e8edf3; }
 .dl-register .qc-table td { padding:20px 15px; font-size:12px; color:#3e5267; border-color:#edf1f5; }.dl-register tbody tr:hover { background:#f9fcfc; }.dl-register td:first-child { min-width:200px; }.dl-register td strong { color:#213b50; font-weight:650; }.dl-register td:last-child { min-width:160px; }.dl-register td button { font-size:11px; padding:7px 10px; }
 .dl-register small { font-size:10px; line-height:1.6; color:#7b8999; }
-.dl-classification { border:0; font-size:10px; font-weight:650; border-radius:20px; padding:5px 9px; }.dl-class-public { color:#187052; background:#e7f5ed; }.dl-class-restricted { color:#80611f; background:#fbf2dd; }.dl-class-confidential,.dl-class-secret { color:#9c4a62; background:#fbeaf0; }
+.dl-classification { border:0; font-size:10px; font-weight:650; border-radius:20px; padding:5px 9px; }.dl-class-public { color:#187052; background:#e7f5ed; }.dl-class-restricted { color:#1855a4; background:#e6f0ff; }.dl-class-confidential { color:#9a480c; background:#fff0dc; }.dl-class-secret { color:#b32632; background:#ffe7e9; }
 .dl-empty { padding:38px 20px 44px; }.dl-empty-icon { display:flex; width:64px; height:64px; align-items:center; justify-content:center; margin:0 auto 15px; color:#438578; background:#edf6f2; border-radius:20px; }.dl-empty > strong { display:block; font-size:16px; }.dl-empty p { max-width:420px; margin:10px auto 20px; line-height:1.8; }
 .dl-detail { padding:28px; }.dl-metadata { background:#f5f8fa; padding:20px; border-radius:12px; }.dl-detail .dl-heading { padding-bottom:18px; border-bottom:1px solid var(--dl-line); }.dl-detail .dl-heading h2 { letter-spacing:-.4px; }.dl-engagement details { border-color:var(--dl-line); border-radius:12px; background:#fbfcfe; }
 .dl-overlay { backdrop-filter:blur(5px); background:#142b4966; }.dl-editor { border-radius:22px; box-shadow:0 24px 80px #10263d45; padding:30px; }.dl-editor > .dl-heading { border-bottom:1px solid var(--dl-line); padding-bottom:18px; margin-bottom:18px; }.dl-editor fieldset > .dl-actions { border-top:1px solid var(--dl-line); padding-top:20px; justify-content:flex-end; }
@@ -115,3 +115,15 @@
 .dl-workspace .dl-delete { color:#ad3540; border-color:#efd3d6; }.dl-workspace .dl-delete:hover:not(:disabled) { background:#fff1f2; border-color:#d698a0; }
 .dl-detail { scroll-margin-top:100px; }.dl-confirm { max-width:460px; }.dl-confirm h2 { font-size:22px; font-weight:650; }.dl-confirm p { margin:16px 0; }.dl-confirm .dl-actions { justify-content:flex-end; }
 @media(max-width:700px) { .dl-page-header { align-items:flex-start; flex-direction:column; gap:14px; }.dl-page-header h1 { font-size:26px; }.dl-workspace .dl-summary { padding:12px; flex-direction:row; }.dl-summary-body { display:flex; flex-direction:column; align-items:flex-start; gap:5px; }.dl-summary-body strong { font-size:22px; }.dl-summary-icon { padding:7px; }.dl-register td:last-child,.dl-register th:last-child { position:static; } }
+
+.dl-register table { min-width:1320px; }
+.dl-access-cell > small:first-child { margin-top:0; color:#63768a; }.dl-access-cell > strong { margin-top:5px; }
+.dl-image-preview { display:block; max-width:100%; max-height:80vh; object-fit:contain; margin:auto; }
+.dl-pdf { border:1px solid #cbd8e3; border-radius:14px; overflow:hidden; min-width:0; }
+.dl-pdf-toolbar { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; background:#f5f8fb; padding:12px 16px; border-bottom:1px solid #cbd8e3; font-size:13px; }
+.dl-pdf-pages,.dl-pdf-zoom { display:flex; align-items:center; gap:10px; }.dl-pdf-toolbar button { padding:7px 10px; }.dl-pdf-pages span { min-width:90px; text-align:center; }
+.dl-pdf-stage { background:#dce4ec; overflow:auto; max-height:78vh; padding:20px; min-height:280px; }
+.dl-pdf-paper { position:relative; width:fit-content; margin:0 auto; box-shadow:0 3px 16px #142b4926; background:white; --user-unit:1; --total-scale-factor:calc(var(--scale-factor) * var(--user-unit)); }
+.dl-pdf-paper canvas { display:block; }.dl-pdf-paper .textLayer { z-index:1; }
+.dl-pdf-loading { padding:10px 16px; margin:0; background:#eef5fa; font-size:13px; }
+@media(max-width:700px) { .dl-pdf-toolbar { gap:10px; padding:10px; }.dl-pdf-toolbar > strong { flex-basis:100%; }.dl-pdf-zoom { flex-wrap:wrap; }.dl-pdf-stage { padding:12px; } }
