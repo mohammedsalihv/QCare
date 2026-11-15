@@ -30,7 +30,7 @@ export default function DocumentActions({ document: doc, canUpload = false, onVi
         {canRead && <button onClick={() => choose(onView)}><CheckCheck size={16} aria-hidden="true" /> Read & acknowledge</button>}
       </div>
       <section className="dl-menu-controls" aria-label="Document controls"><h3><LockKeyhole size={14} aria-hidden="true" /> Controls</h3><dl><dt>Who can view</dt><dd>{doc.status === 'Draft' ? 'Owner and reviewers' : doc.audience}</dd>{doc.status === 'Draft' && <><dt>After publication</dt><dd>{doc.draft?.audience || doc.audience}</dd></>}<dt>Reader downloads</dt><dd>{(doc.status === 'Draft' ? doc.draft?.allowDownload : doc.allowDownload) ? 'Allowed' : 'Not allowed'}</dd></dl>
-        {canUpload && doc.permissions.edit && <button onClick={() => choose(onEdit)}>Manage access & downloads</button>}
+        {canUpload && doc.permissions.edit ? <button onClick={() => choose(onEdit)}>Manage access & downloads</button> : <p className="dl-control-help">{doc.permissions.edit && !canUpload ? 'Management permissions are unavailable. The document service needs updating to enable these controls.' : 'Only authorized document managers can change these controls.'}</p>}
       </section>
       {doc.permissions.delete && <div className="dl-menu-options dl-menu-danger"><button className="dl-delete" onClick={() => choose(onDelete)}><Trash2 size={16} aria-hidden="true" /> Delete draft</button></div>}
     </div>

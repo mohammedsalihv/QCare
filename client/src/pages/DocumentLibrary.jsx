@@ -1,4 +1,4 @@
-import { BookOpen, FileText, Clock3, ShieldCheck, Plus, RefreshCw, ArrowUpRight, FolderOpen } from 'lucide-react';
+import { BookOpen, FileText, Clock3, ShieldCheck, Plus, RefreshCw, ArrowUpRight, FolderOpen, X } from 'lucide-react';
 import DocumentActions from '../components/DocumentActions';
 import DocumentFeedback from '../components/DocumentFeedback';
 import DocumentEngagement from '../components/DocumentEngagement';
@@ -31,9 +31,18 @@ export default function DocumentLibrary() {
   const [form, setForm] = useState(empty), [file, setFile] = useState(null), [reason, setReason] = useState('');
   const [version, setVersion] = useState('current'), [preview, setPreview] = useState(''), [fileError, setFileError] = useState('');
   const detailRef = useRef(null);
+  const [readerTab, setReaderTab] = useState('read');
   const [deleteTarget, setDeleteTarget] = useState(null);
-  useEffect(() => { if (selected) detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, [selected]);
   const row = documents.find(doc => doc._id === selected);
+  const hasSelectedDocument = Boolean(row);
+  useEffect(() => {
+    const dialog = detailRef.current;
+    if (!selected || !dialog) return;
+    const previousOverflow = document.body.style.overflow;
+    dialog.showModal();
+    document.body.style.overflow = 'hidden';
+    return () => { dialog.close(); document.body.style.overflow = previousOverflow; };
+  }, [selected, hasSelectedDocument]);
   const viewed = row && (version === 'draft' ? row.draft : version === 'current' ? row : row.versions?.find(item => item.version === version));
   useEffect(() => {
     const controller = new AbortController();
@@ -63,7 +72,7 @@ export default function DocumentLibrary() {
       .catch(() => { if (!controller.signal.aborted) setFileError('Preview is unavailable. Download the file if permitted, or ask the owner to check it.'); });
     return () => { controller.abort(); if (url) URL.revokeObjectURL(url); };
   }, [row, version]);
-  const open = doc => { if (selected === doc._id && version === (doc.status === 'Draft' ? 'draft' : 'current')) { detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; } setSelected(doc._id); setVersion(doc.status === 'Draft' ? 'draft' : 'current'); setPreview(''); setFileError(''); setReason(''); };
+  const open = doc => { setReaderTab('read'); setSelected(doc._id); setVersion(doc.status === 'Draft' ? 'draft' : 'current'); setPreview(''); setFileError(''); setReason(''); };
   const edit = doc => {
     if (!canUpload || (doc && !doc.permissions?.edit)) { setError('You do not have permission to edit this document.'); return; }
     const data = doc?.draft || doc || {};
@@ -132,12 +141,17 @@ export default function DocumentLibrary() {
       </tr>) : <tr><td colSpan={12}><div className="dl-empty"><span className="dl-empty-icon"><FolderOpen size={30} aria-hidden="true" /></span><strong>No documents in this view.</strong><p>{canUpload ? 'Try another section or add your first document.' : 'No documents are currently available to you in this view.'}</p>{canUpload && <button className="dl-primary" onClick={() => edit(null)}>+ Add document</button>}</div></td></tr>}</tbody></Table></div>
       <Pagination totalRecords={filtered.length} recordsPerPage={10} currentPage={page} onPageChange={setPage} />
     </section>}
-    {tab !== 'Dashboard' && row && <section ref={detailRef} className="dl-card dl-detail" aria-label="Document details"><header className="dl-heading"><div><h2>{viewed?.name || row.name}</h2><p>{viewed?.description || 'No description provided.'}</p></div><button onClick={() => { setSelected(null); setPreview(''); }}>Close document</button></header>
-      <div className="dl-metadata"><p><strong>Owner</strong>{row.ownerName || (row.uploadedBy === user._id ? user.employeeName : 'Owner not recorded')}</p><p><strong>Who can view</strong>{viewed?.audience}</p><p><strong>Effective date</strong>{date(viewed?.revisedDate)}</p><p><strong>Expiry date</strong>{date(viewed?.expiryDate)}</p></div>
+    {row && <dialog ref={detailRef} className="dl-reader" aria-labelledby="document-reader-title" onCancel={() => { setSelected(null); setPreview(''); }}><section className="dl-detail"><header className="dl-heading"><div><h2 id="document-reader-title">{viewed?.name || row.name}</h2><p>{viewed?.description || 'No description provided.'}</p></div><button onClick={() => { setSelected(null); setPreview(''); }} aria-label="Close document reader"><X size={18} aria-hidden="true" /> Close</button></header>
+      <nav className="dl-reader-tabs" aria-label="Reader sections"><button aria-pressed={readerTab === 'read'} onClick={() => setReaderTab('read')}>Read document</button><button aria-pressed={readerTab === 'details'} onClick={() => setReaderTab('details')}>Details, controls & activity</button></nav>
+      {error && <p role="alert" className="dl-error">{error}</p>}
+
       <div className="dl-toolbar"><label>Version to view <Select value={version} onChange={e => { setVersion(e.target.value); setPreview(''); setFileError(''); }}>{row.status !== 'Draft' && <option value="current">Published version {row.version}</option>}{row.draft && <option value="draft">Proposed version {row.draft.version} · {row.draftState}</option>}{row.versions?.map(v => <option key={v.version} value={v.version}>Earlier version {v.version}</option>)}</Select></label>{row.permissions.download && <button onClick={() => download(row)}>Download selected version</button>}</div>
       {version === 'draft' && <p className="dl-notice">This is a proposed revision. It is not published guidance. {row.draft.changeSummary}</p>}
       {version !== 'current' && version !== 'draft' && <p className="dl-notice">Earlier version — use the published version for current guidance.</p>}
-      {fileError && <p>{fileError}</p>}{preview ? preview.mime === 'application/pdf' ? <Suspense fallback={<p role="status">Loading PDF reader…</p>}><DocumentPdfViewer key={preview.url} src={preview.url} name={viewed?.name || row.name} /></Suspense> : <img src={preview.url} alt={viewed?.name || row.name} className="dl-image-preview" /> : !fileError && <p>Preview is loading or unavailable for this file type. CSV files can be downloaded when permitted.</p>}
+      <div hidden={readerTab !== 'read'} className="dl-reader-content">{fileError && <p>{fileError}</p>}{preview ? preview.mime === 'application/pdf' ? <Suspense fallback={<p role="status">Loading PDF reader…</p>}><DocumentPdfViewer key={preview.url} src={preview.url} name={viewed?.name || row.name} /></Suspense> : <img src={preview.url} alt={viewed?.name || row.name} className="dl-image-preview" /> : !fileError && <p>Preview is loading or unavailable for this file type. CSV files can be downloaded when permitted.</p>}</div>
+      <div hidden={readerTab !== 'details'} className="dl-reader-details">
+      <div className="dl-metadata"><p><strong>Owner</strong>{row.ownerName || (row.uploadedBy === user._id ? user.employeeName : 'Owner not recorded')}</p><p><strong>Who can view</strong>{viewed?.audience}</p><p><strong>Effective date</strong>{date(viewed?.revisedDate)}</p><p><strong>Expiry date</strong>{date(viewed?.expiryDate)}</p></div>
+      <section className="dl-reader-controls"><h3>Controls</h3><p>Reader downloads: {viewed?.allowDownload ? 'Allowed' : 'Not allowed'}</p>{canUpload && row.permissions.edit ? <button onClick={() => { setSelected(null); edit(row); }}>Manage access & downloads</button> : <p>{row.permissions.edit && !canUpload ? 'Management permissions are unavailable from the server. The document service needs updating before these controls can be enabled.' : 'Only authorized document managers can change access and download settings.'}</p>}</section>
       {version === 'current' && <><DocumentFeedback key={'feedback-' + row._id + row.version} document={row} /><DocumentEngagement key={row._id + row.version} document={row} approvers={approvers} onChanged={() => setRevision(value => value + 1)} /></>}
       {version === 'draft' && <DocumentEngagement reviewOnly key={row._id + '-draft'} document={row} approvers={approvers} onChanged={() => setRevision(value => value + 1)} />}
       {row.permissions.workspace && <><div className="dl-metadata"><p><strong>Assigned approver</strong>{row.approverName || approvers.find(p => p._id === row.assignedApprover)?.employeeName || (row.assignedApprover === user._id ? user.employeeName : 'Reviewer not recorded')}</p><p><strong>Review status</strong>{row.draftState || 'No revision in progress'}</p></div>
@@ -145,7 +159,7 @@ export default function DocumentLibrary() {
         <div className="dl-actions">{row.permissions.submit && <button disabled={busy} className="dl-primary" onClick={() => action(row, 'submit')}>Submit for review</button>}{row.permissions.review && <><button disabled={busy} onClick={() => action(row, 'return')}>Request changes</button><button disabled={busy} className="dl-primary" onClick={() => action(row, 'approve')}>Approve this revision</button></>}{row.permissions.publish && <button disabled={busy} className="dl-primary" onClick={() => action(row, 'publish')}>Publish approved revision</button>}{row.permissions.archive && <button disabled={busy} onClick={() => action(row, 'archive')}>Archive document</button>}{row.permissions.delete && <details><summary>Delete unsubmitted draft</summary><p>This removes the draft from the library. Submitted or published documents cannot be deleted here.</p><button disabled={busy} onClick={() => action(row, 'delete')}>Confirm delete draft</button></details>}</div>
         <details><summary>Document history</summary><ul>{row.history?.length ? row.history.map(entry => <li key={entry._id}><strong>{entry.action}</strong> · {entry.actorName} · {date(entry.at)} · Version {entry.version}{entry.reason && <p>{entry.reason}</p>}</li>) : <li>No earlier history was recorded for this legacy document.</li>}</ul></details>
       </>}
-    </section>}
+    </div></section></dialog>}
     {deleteTarget && <div className="dl-overlay"><section className="dl-editor dl-confirm" role="dialog" aria-modal="true" aria-labelledby="delete-document-title"><h2 id="delete-document-title">Delete this draft?</h2><p><strong>{deleteTarget.name}</strong></p><p>This permanently removes this unsubmitted draft. Published documents are archived instead.</p>{error && <p role="alert" className="dl-error">{error}</p>}<div className="dl-actions"><button disabled={busy} autoFocus onClick={() => setDeleteTarget(null)}>Keep document</button><button className="dl-delete" disabled={busy} onClick={() => action(deleteTarget, 'delete')}>{busy ? 'Deleting…' : 'Delete draft'}</button></div></section></div>}
     {canUpload && editor && <div className="dl-overlay"><section role="dialog" aria-modal="true" aria-labelledby="document-editor-title" className="dl-editor"><header className="dl-heading"><div><h2 id="document-editor-title">{editor === 'new' ? 'Add a document' : 'Prepare a revision'}</h2><p>Upload your PDF, set its details and access, then save a draft for review.</p></div><button disabled={busy} onClick={() => setEditor(null)}>Close</button></header>{error && <p role="alert" className="dl-error">{error}</p>}
       <p>Unique document ID and uploaded date are assigned automatically when you save. Reviewed date is recorded when the approver reviews this version. Public means all signed-in staff after publication; it does not create a public internet link.</p><form onSubmit={save}><fieldset disabled={busy}><div className="dl-grid">

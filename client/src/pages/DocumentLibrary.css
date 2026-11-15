@@ -173,3 +173,24 @@
   .dl-register td[colspan] { grid-column:1 / -1; }
   .dl-register .dl-document-id { max-width:100%; }
 }
+
+/* Top-layer reader keeps focus and reading separate from the register. */
+.dl-reader { margin:auto; width:calc(100vw - 32px); max-width:1600px; height:calc(100dvh - 32px); max-height:none; padding:0; border:1px solid #cfdee8; border-radius:18px; background:white; color:#12334d; overflow:auto; box-shadow:0 24px 90px #10263d55; }
+.dl-reader::backdrop { background:#10263dcc; backdrop-filter:blur(5px); }
+.dl-reader .dl-detail { padding:20px 24px; gap:12px; }
+.dl-reader .dl-heading { padding-bottom:12px; }
+.dl-reader .dl-heading h2 { font-size:20px; }
+.dl-reader .dl-heading p { margin:4px 0 0; }
+.dl-reader .dl-heading > button { flex-shrink:0; }
+.dl-reader-tabs { display:flex; gap:8px; }
+.dl-reader-tabs button[aria-pressed="true"] { background:#087e80; color:white; border-color:#087e80; }
+.dl-reader [hidden] { display:none !important; }
+.dl-reader .dl-toolbar { gap:12px; }
+.dl-reader .dl-toolbar label { display:flex; align-items:center; gap:12px; }
+.dl-reader .dl-notice { margin:0; padding:10px 14px; }
+.dl-reader .dl-pdf-stage { height:calc(100dvh - 340px); max-height:none; min-height:260px; }
+.dl-reader-details { display:grid; gap:20px; }
+.dl-reader-controls { padding:16px; border:1px solid #dce6ed; border-radius:12px; background:#f5f9fc; }
+.dl-reader-controls h3 { font-weight:650; }
+.dl-reader-controls p,.dl-control-help { font-size:12px; line-height:1.6; color:#526c7c; margin:8px 0; }
+@media(max-width:700px) { .dl-reader { width:100vw; height:100dvh; border-radius:0; }.dl-reader .dl-detail { padding:12px; }.dl-reader .dl-heading { flex-direction:row; }.dl-reader .dl-heading h2 { font-size:16px; }.dl-reader .dl-heading p { display:none; }.dl-reader .dl-toolbar label { flex-wrap:wrap; }.dl-reader .dl-pdf-stage { height:calc(100dvh - 370px); } }
