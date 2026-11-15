@@ -1,5 +1,5 @@
 import { useId, useRef, useState } from 'react';
-import { ChevronDown, Eye, Pencil, Trash2, CheckCheck, LockKeyhole } from 'lucide-react';
+import { EllipsisVertical, Eye, Pencil, Trash2, CheckCheck, LockKeyhole } from 'lucide-react';
 
 export default function DocumentActions({ document: doc, onView, onEdit, onDelete }) {
   const id = useId(), panel = useRef(null), trigger = useRef(null);
@@ -21,7 +21,7 @@ export default function DocumentActions({ document: doc, onView, onEdit, onDelet
   };
   const canRead = doc.status === 'Active' && new Date(doc.revisedDate) <= new Date() && (!doc.expiryDate || new Date(doc.expiryDate) > new Date());
   return <>
-    <button ref={trigger} popoverTarget={id} aria-haspopup="dialog" aria-expanded={expanded} aria-controls={id} onClick={position}>Actions <ChevronDown size={14} aria-hidden="true" /></button>
+    <button className="dl-menu-trigger" aria-label={`Actions for ${doc.name}`} title="Document actions" ref={trigger} popoverTarget={id} aria-haspopup="dialog" aria-expanded={expanded} aria-controls={id} onClick={position}><EllipsisVertical size={18} aria-hidden="true" /></button>
     <div id={id} ref={panel} popover="auto" role="dialog" aria-label={`Actions for ${doc.name}`} className="dl-action-menu" onToggle={event => { setExpanded(event.newState === 'open'); if (event.newState === 'open') position(); }}>
       <header><strong>{doc.name}</strong><span>{doc.ref} · Version {doc.version}</span></header>
       <div className="dl-menu-options">

@@ -145,3 +145,28 @@
 .dl-menu-controls dl { margin:0; }.dl-menu-controls dt { font-size:10px; color:#6b7f91; margin-top:10px; }.dl-menu-controls dd { margin:3px 0 0; font-size:12px; }
 .dl-workspace .dl-menu-controls button { padding:9px 0; margin-top:10px; color:#116b60; font-weight:650; }
 .dl-workspace .dl-menu-danger button:hover { background:#fff0f1; }
+
+/* Fit the register to its container; narrow screens use labelled document cards. */
+.dl-register { overflow:visible; }
+.dl-register table { min-width:0; width:100%; table-layout:fixed; }
+.dl-register .qc-table th { white-space:normal; padding:12px 7px !important; font-size:11px !important; line-height:1.4; overflow-wrap:normal; }
+.dl-register .qc-table td { padding:14px 7px !important; font-size:11px; min-width:0; max-width:none; width:auto; overflow-wrap:anywhere; }
+.dl-register td.dl-name-cell,.dl-register .dl-reference,.dl-register .dl-date-cell { min-width:0; max-width:none; white-space:normal; }
+.dl-register td:first-child,.dl-register td:last-child { min-width:0; width:auto; }
+.dl-register td:last-child,.dl-register th:last-child { position:static; border-left:0; }
+.dl-register .dl-name-link { font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
+.dl-register .dl-document-id { min-width:0; max-width:100%; font-size:9px !important; }
+.dl-register .dl-classification { padding:4px 6px; font-size:10px; max-width:100%; }
+.dl-register td button.dl-menu-trigger { width:32px; height:32px; padding:5px; margin:0; border-color:#d5e2e9; color:#36566c; background:#f5f9fb; }
+@media(max-width:1100px) {
+  .dl-register table,.dl-register tbody { display:block; width:100%; }
+  .dl-register colgroup { display:none; }
+  .dl-register thead { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); }
+  .dl-register tbody tr { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 16px; padding:12px 16px; border-top:1px solid #dce6ed; }
+  .dl-register .qc-table td { display:block; border:0; padding:8px 0 !important; font-size:12px; }
+  .dl-register td[data-label]::before { content:attr(data-label); display:block; font-size:10px; font-weight:650; color:#687d8e; margin-bottom:5px; }
+  .dl-register td.dl-name-cell { grid-column:1 / -1; }
+  .dl-register .dl-name-link { font-size:14px; }
+  .dl-register td[colspan] { grid-column:1 / -1; }
+  .dl-register .dl-document-id { max-width:100%; }
+}
