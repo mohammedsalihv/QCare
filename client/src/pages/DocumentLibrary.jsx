@@ -37,9 +37,19 @@ export default function DocumentLibrary() {
   const viewed = row && (version === 'draft' ? row.draft : version === 'current' ? row : row.versions?.find(item => item.version === version));
   useEffect(() => {
     const controller = new AbortController();
-    Promise.all([axios.get('/api/documents', { ...getAuthConfig(), signal: controller.signal }), axios.get('/api/documents/options', { ...getAuthConfig(), signal: controller.signal }), axios.get('/api/documents/reading-tasks', { ...getAuthConfig(), signal: controller.signal })])
-      .then(([docs, options, reading]) => { setDocuments(docs.data); setApprovers(options.data.approvers); setPermissions(options.data.permissions || {}); setTasks(reading.data); })
-      .catch(e => { if (!controller.signal.aborted) setError(e.response?.data?.message || 'Unable to load the document library.'); })
+    Promise.allSettled([axios.get('/api/documents', { ...getAuthConfig(), signal: controller.signal }), axios.get('/api/documents/options', { ...getAuthConfig(), signal: controller.signal }), axios.get('/api/documents/reading-tasks', { ...getAuthConfig(), signal: controller.signal })])
+      .then(([docs, options, reading]) => {
+        if (controller.signal.aborted) return;
+        // Reading documents must not depend on optional management capabilities.
+        if (docs.status === 'fulfilled') { setDocuments(docs.value.data); setError(''); }
+        else setError(docs.reason.response?.data?.message || 'Unable to load documents. Please refresh.');
+        if (options.status === 'fulfilled') {
+          setApprovers(options.value.data.approvers || []);
+          setPermissions({ upload: options.value.data.permissions?.upload === true, dashboard: options.value.data.permissions?.dashboard === true });
+        } else { setApprovers([]); setPermissions({ upload: false, dashboard: false }); }
+        setTasks(reading.status === 'fulfilled' ? reading.value.data : []);
+        if (reading.status === 'rejected') setNotice('Reading tasks could not be loaded. You can still view available documents in All documents.');
+      })
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
   }, [revision]);
@@ -55,7 +65,7 @@ export default function DocumentLibrary() {
   }, [row, version]);
   const open = doc => { if (selected === doc._id && version === (doc.status === 'Draft' ? 'draft' : 'current')) { detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; } setSelected(doc._id); setVersion(doc.status === 'Draft' ? 'draft' : 'current'); setPreview(''); setFileError(''); setReason(''); };
   const edit = doc => {
-    if (!canUpload) return;
+    if (!canUpload || (doc && !doc.permissions?.edit)) { setError('You do not have permission to edit this document.'); return; }
     const data = doc?.draft || doc || {};
     setForm(Object.fromEntries(Object.entries(empty).map(([key, fallback]) => [key, ['revisedDate', 'nextRevDate', 'expiryDate'].includes(key) ? data[key]?.slice(0,10) || '' : key === 'source' ? (data.generatedText ? 'template' : 'file') : key === 'assignedApprover' ? doc?.assignedApprover || '' : data[key] ?? fallback])));
     setFile(null); setEditor(doc?._id || 'new'); setError(''); setNotice('');
@@ -118,7 +128,7 @@ export default function DocumentLibrary() {
         <td data-label="Type">{doc.type}</td>
         <td data-label="Classification"><span className={'dl-classification dl-class-' + doc.classification?.toLowerCase()}>{doc.classification}</span></td>
         <td data-label="Version / status"><span className={'dl-status dl-status-' + doc.status.toLowerCase()}>{doc.status === 'Active' ? 'Published' : doc.status}</span><small>Version {doc.version}</small>{doc.draftState && doc.status !== 'Draft' && <small>Revision: {doc.draftState}</small>}</td>
-        <td data-label="Actions"><DocumentActions document={doc} onView={open} onEdit={edit} onDelete={setDeleteTarget} /></td>
+        <td data-label="Actions"><DocumentActions document={doc} canUpload={canUpload} onView={open} onEdit={edit} onDelete={setDeleteTarget} /></td>
       </tr>) : <tr><td colSpan={12}><div className="dl-empty"><span className="dl-empty-icon"><FolderOpen size={30} aria-hidden="true" /></span><strong>No documents in this view.</strong><p>{canUpload ? 'Try another section or add your first document.' : 'No documents are currently available to you in this view.'}</p>{canUpload && <button className="dl-primary" onClick={() => edit(null)}>+ Add document</button>}</div></td></tr>}</tbody></Table></div>
       <Pagination totalRecords={filtered.length} recordsPerPage={10} currentPage={page} onPageChange={setPage} />
     </section>}
