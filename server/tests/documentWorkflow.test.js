@@ -46,7 +46,7 @@ test('document lifecycle enforces ownership, independent approval, immutable pub
     assert(output.includes('Waiting for connections'));
     await mongoose.connect('mongodb://127.0.0.1:27989/qcare_document_test');
     const make = (name, role = 'user', department = 'Nursing') => User.create({ employeeId: name, employeeName: name, email: name + '@test.invalid', password: 'test-only', role, department, designation: 'Test' });
-    const owner = await make('owner'), reader = await make('reader'), outsider = await make('outsider', 'user', 'Other'), reviewer = await make('reviewer', 'QualityManager'), admin = await make('admin', 'admin');
+    const owner = await make('owner', 'QualityOfficer'), reader = await make('reader'), outsider = await make('outsider', 'user', 'Other'), reviewer = await make('reviewer', 'QualityManager'), admin = await make('admin', 'admin');
     const headers = user => ({ Authorization: 'Bearer ' + jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'default_secret') });
     const app = express(); app.use(express.json()); app.use('/api/documents', require('../routes/documentRoutes'));
     server = await new Promise(resolve => { const instance = app.listen(0, '127.0.0.1', () => resolve(instance)); });
@@ -61,6 +61,14 @@ test('document lifecycle enforces ownership, independent approval, immutable pub
     const list = async user => (await fetch(base, { headers: headers(user) })).json();
     const getFile = (user, id, query = '') => fetch(base + '/' + id + '/download' + query, { headers: headers(user) });
     assert.equal((await fetch(base)).status, 401);
+    const readerOptions = await (await fetch(base + '/options', { headers: headers(reader) })).json();
+    assert.equal(readerOptions.permissions.upload, false);
+    assert.equal(readerOptions.permissions.dashboard, false);
+    assert.deepEqual(readerOptions.approvers, []);
+    assert.equal((await (await fetch(base + '/options', { headers: headers(owner) })).json()).permissions.upload, true);
+    assert.equal((await save(reader)).status, 403, 'Regular users cannot upload files');
+    assert.equal((await save(reader, null, { source: 'template', generatedText: 'Unauthorized generated document' }, null)).status, 403);
+    assert.equal(await Document.countDocuments(), 0, 'Rejected uploads must not create documents');
     assert.equal((await save(owner, null, { assignedApprover: owner._id })).status, 400);
     const created = await save(owner, null, { status: 'Active', uploadedBy: admin._id });
     const doc = await created.json(); assert.equal(created.status, 201, JSON.stringify(doc)); const id = doc._id;
@@ -68,7 +76,7 @@ test('document lifecycle enforces ownership, independent approval, immutable pub
     assert.match(doc.documentId, /^DOC-/); assert(doc.uploadDate); assert.equal(doc.reviewedAt, undefined);
     assert.equal((await list(reader)).length, 0);
     assert.equal((await getFile(outsider, id)).status, 404);
-    assert.equal((await save(reader, id)).status, 404);
+    assert.equal((await save(reader, id)).status, 403);
     assert.equal((await command(owner, id, 'publish')).status, 403);
     assert.equal((await command(owner, id, 'submit')).status, 200);
     assert.equal((await save(owner, id)).status, 403);
@@ -118,7 +126,7 @@ test('document lifecycle enforces ownership, independent approval, immutable pub
     assert.equal((await getFile(reader, id, '?version=draft')).status, 404);
     assert.equal((await command(owner, id, 'submit')).status, 200);
     const delegate = await make('delegate', 'QualityManager');
-    assert.equal((await post(owner, id, 'delegate', { delegateId: delegate._id, until: new Date(Date.now() + 86400000).toISOString(), reason: 'Cover leave' })).status, 403);
+    assert.equal((await post(owner, id, 'delegate', { delegateId: delegate._id, until: new Date(Date.now() + 86400000).toISOString(), reason: 'Cover leave' })).status, 200);
     assert.equal((await post(reviewer, id, 'delegate', { delegateId: owner._id, until: new Date(Date.now() + 86400000).toISOString(), reason: 'Cover leave' })).status, 400);
     assert.equal((await post(reviewer, id, 'delegate', { delegateId: delegate._id, until: new Date(Date.now() + 86400000).toISOString(), reason: 'Cover leave' })).status, 200);
     assert.equal((await command(delegate, id, 'approve')).status, 200);

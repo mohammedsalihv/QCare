@@ -30,7 +30,7 @@ function present(doc, user) {
   row.approverName = row.assignedApprover?.employeeName || '';
   row.uploadedBy = policy.id(row.uploadedBy);
   row.assignedApprover = policy.id(row.assignedApprover);
-  const editable = policy.manage(user, doc) && doc.status !== 'Archived';
+  const editable = policy.controller(user) && policy.manage(user, doc) && doc.status !== 'Archived';
   row.permissions = { edit: editable && (!doc.draftState || ['Draft', 'Changes requested'].includes(doc.draftState)), submit: editable && !!doc.draft && ['Draft', 'Changes requested'].includes(doc.draftState), review: policy.review(user, doc) && doc.draftState === 'In review', publish: policy.controller(user) && doc.draftState === 'Approved', archive: policy.controller(user) && doc.status === 'Active', delete: policy.owner(user, doc) && doc.status === 'Draft' && !doc.history.some(h => h.action === 'Submitted for review'), workspace, download: workspace || doc.allowDownload };
   if (!workspace) { delete row.draft; delete row.draftState; delete row.versions; delete row.history; delete row.draftEditors; }
   if (!row.fileName && row.fileUrl) row.fileName = path.basename(row.fileUrl);
@@ -47,14 +47,18 @@ const activeApprover = async (value, doc, user) => {
   return person._id;
 };
 exports.options = handler(async (req, res) => {
+  const canUpload = policy.controller(req.user);
+  const permissions = { upload: canUpload, dashboard: ['superadmin', 'qualitymanager'].includes(String(req.user.role).toLowerCase()) };
+  if (!canUpload && !policy.approver(req.user)) return res.json({ approvers: [], permissions });
   const people = await User.find({ isActive: { $ne: false }, status: { $nin: ['blocked', 'inactive'] } }).select('employeeName role designation');
-  res.json({ approvers: people.filter(p => policy.approver(p) && policy.id(p._id) !== policy.id(req.user._id)) });
+  res.json({ approvers: people.filter(p => policy.approver(p) && policy.id(p._id) !== policy.id(req.user._id)), permissions });
 });
 exports.getDocuments = handler(async (req, res) => {
   const docs = await Document.find().populate('uploadedBy assignedApprover', 'employeeName').sort({ updatedAt: -1 });
   res.set('Cache-Control', 'no-store').json(docs.filter(doc => policy.readable(req.user, doc)).map(doc => present(doc, req.user)));
 });
 exports.addDocument = handler(async (req, res) => {
+  if (!policy.controller(req.user)) fail(403, 'Only authorized document controllers can upload documents.');
   const data = input(req.body), file = data.generatedText ? await require('../utils/documentTemplate')(data, '01') : fileInput(req.file);
   const doc = new Document({ ...data, documentId: 'DOC-' + randomUUID(), uploadedBy: req.user._id, status: 'Draft', version: '01', draftEditors: [req.user._id] });
   doc.assignedApprover = await activeApprover(req.body.assignedApprover, doc, req.user);
