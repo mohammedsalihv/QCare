@@ -1,4 +1,7 @@
 .dl-workspace { display: grid; gap: 22px; color: #193c43; }
+.dl-dashboard-heading { margin-bottom:18px; }
+.dl-dashboard-heading h2 { font-size:22px; font-weight:650; margin-bottom:6px; }
+.dl-dashboard-heading p { font-size:13px; color:#63768a; }
 .dl-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
 .dl-heading h1 { font-size: 28px; font-weight: 650; margin: 4px 0 8px; }
 .dl-heading h2 { font-size: 21px; font-weight: 650; }
