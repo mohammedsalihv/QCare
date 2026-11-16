@@ -74,7 +74,7 @@ exports.addDocument = handler(async (req, res) => {
 exports.updateDocument = handler(async (req, res) => {
   const doc = await load(req);
   if (!present(doc, req.user).permissions.edit) fail(403, 'Only the owner or document controller can edit an available draft.');
-  const data = input(req.body);
+  const data = input({ ...req.body, classification: doc.classification, audience: doc.audience, allowDownload: doc.allowDownload });
   if ((doc.draft?.generatedText || (!doc.draft && doc.generatedText)) && req.body.source !== 'template' && !req.file) fail(400, 'Attach a replacement file to switch from a generated document to an upload.');
   const approver = await activeApprover(req.body.assignedApprover, doc, req.user);
   let stored;

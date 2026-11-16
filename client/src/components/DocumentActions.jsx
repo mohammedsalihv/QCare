@@ -29,12 +29,9 @@ export default function DocumentActions({ document: doc, onView, onDetails, onEd
         {doc.permissions.edit && <button onClick={() => choose(onEdit)}><Pencil size={16} aria-hidden="true" />{doc.status === 'Active' && !doc.draft ? 'Create revision' : 'Edit document'}</button>}
         {canRead && <button onClick={() => choose(onDetails)}><CheckCheck size={16} aria-hidden="true" /> Read & acknowledge</button>}
       </div>
-      <section className="dl-menu-controls" aria-label="Document controls"><h3><LockKeyhole size={14} aria-hidden="true" /> Controls</h3><dl><dt>Who can view</dt><dd>{doc.status === 'Draft' ? 'Owner and reviewers' : doc.audience}</dd>{doc.status === 'Draft' && <><dt>After publication</dt><dd>{doc.draft?.audience || doc.audience}</dd></>}<dt>Reader downloads</dt><dd>{(doc.status === 'Draft' ? doc.draft?.allowDownload : doc.allowDownload) ? 'Allowed' : 'Not allowed'}</dd></dl>
-        <p className="dl-control-help">{doc.visibilityMessage}</p>
-        {doc.permissions.manageAccess && <button onClick={() => choose(onManage)}>Manage access & downloads</button>}
-        {doc.permissions.workspace && !doc.permissions.edit && <p className="dl-control-help">Content editing is locked during review. Access controls remain available to the document owner and team.</p>}
-        {doc.permissions.archive && <button onClick={() => choose(onDetails)}>Archive / remove from staff view</button>}
-      </section>
+      {doc.permissions.manageAccess && <section className="dl-menu-controls" aria-label="Document controls"><button onClick={() => choose(onManage)}><LockKeyhole size={16} aria-hidden="true" /> Manage access</button><p className="dl-control-help">{doc.visibilityMessage}</p></section>}
+      {doc.permissions.workspace && !doc.permissions.edit && <p className="dl-control-help">Content editing is locked during review.</p>}
+      {doc.permissions.archive && <div className="dl-menu-options"><button onClick={() => choose(onDetails)}>Archive document</button></div>}
       {doc.permissions.delete && <div className="dl-menu-options dl-menu-danger"><button className="dl-delete" onClick={() => choose(onDelete)}><Trash2 size={16} aria-hidden="true" /> Delete draft</button></div>}
     </div>
   </>;

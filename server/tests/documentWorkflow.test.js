@@ -189,6 +189,7 @@ test('document lifecycle enforces ownership, independent approval, immutable pub
     assert.equal((await save(owner)).status, 403);
     assert.equal((await access(owner, current, 'All staff')).status, 200);
     assert.equal((await save(owner, current._id, { source: 'template', generatedText: 'Revised test text' }, null)).status, 200);
+    assert.equal((await Document.findById(current._id)).audience, 'All staff', 'Content edits must not overwrite separately managed access');
     assert.equal((await command(owner, current._id, 'submit')).status, 200);
     current = (await list(owner)).find(row => row._id === generated._id);
     assert.equal(current.permissions.edit, false); assert.equal(current.permissions.manageAccess, true);
