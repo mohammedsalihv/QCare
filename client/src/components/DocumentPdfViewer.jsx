@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Minus, Plus, Maximize2 } from 'lucide-react';
 import { getDocument, GlobalWorkerOptions, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs';
-import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
+// Bundle as a worker so production emits a .js asset with a JavaScript MIME type.
+import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?worker&url';
 import 'pdfjs-dist/web/pdf_viewer.css';
 
 GlobalWorkerOptions.workerSrc = workerUrl;
@@ -32,7 +33,7 @@ export default function DocumentPdfViewer({ src, name }) {
     const task = getDocument({ url: src, cMapUrl: `${base}cmaps/`, cMapPacked: true, standardFontDataUrl: `${base}standard_fonts/`, wasmUrl: `${base}wasm/`, enableXfa: false });
     task.promise.then(document => { if (active) setPdf(document); }).catch(e => {
       if (active) console.error('PDF reader initialization failed:', e.name, e.message);
-      if (active) setError(e.name === 'PasswordException' ? 'This PDF is password protected. Ask the owner to upload an unlocked copy.' : 'This PDF could not be opened. Ask the owner to check the file or upload a replacement.');
+      if (active) setError(e.name === 'PasswordException' ? 'This PDF is password protected. Ask the owner to upload an unlocked copy.' : /worker|dynamically imported module/i.test(e.message || '') ? 'The PDF viewer could not start. Please contact support; the document does not need to be replaced.' : 'This PDF could not be opened. Ask the owner to check the file or upload a replacement.');
     });
     return () => { active = false; void task.destroy(); };
   }, [src]);
