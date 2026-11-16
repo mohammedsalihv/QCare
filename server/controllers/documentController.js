@@ -30,8 +30,9 @@ function present(doc, user) {
   row.approverName = row.assignedApprover?.employeeName || '';
   row.uploadedBy = policy.id(row.uploadedBy);
   row.assignedApprover = policy.id(row.assignedApprover);
-  const editable = policy.controller(user) && policy.manage(user, doc) && doc.status !== 'Archived';
-  row.permissions = { edit: editable && (!doc.draftState || ['Draft', 'Changes requested'].includes(doc.draftState)), submit: editable && !!doc.draft && ['Draft', 'Changes requested'].includes(doc.draftState), review: policy.review(user, doc) && doc.draftState === 'In review', publish: policy.controller(user) && doc.draftState === 'Approved', archive: policy.controller(user) && doc.status === 'Active', delete: policy.owner(user, doc) && doc.status === 'Draft' && !doc.history.some(h => h.action === 'Submitted for review'), workspace, download: workspace || doc.allowDownload };
+  const editable = policy.manage(user, doc) && doc.status !== 'Archived';
+  row.visibilityMessage = doc.status === 'Archived' ? 'Not visible to staff: this document is archived.' : doc.status !== 'Active' ? 'Not visible to staff: this document must be approved and published.' : doc.revisedDate > new Date() ? 'Not visible to staff until its effective date.' : doc.expiryDate && doc.expiryDate < new Date() ? 'Not visible to staff: this document has expired.' : doc.audience === 'All staff' && !['Confidential', 'Secret'].includes(doc.classification) ? 'Visible to all signed-in staff.' : 'Visible only to the selected audience.';
+  row.permissions = { manageAccess: policy.manage(user, doc) && doc.status !== 'Archived', edit: editable && (!doc.draftState || ['Draft', 'Changes requested'].includes(doc.draftState)), submit: editable && !!doc.draft && ['Draft', 'Changes requested'].includes(doc.draftState), review: policy.review(user, doc) && doc.draftState === 'In review', publish: policy.manage(user, doc) && doc.draftState === 'Approved', archive: policy.manage(user, doc) && doc.status === 'Active', delete: (policy.owner(user, doc) || String(user.role).toLowerCase() === 'superadmin') && doc.status === 'Draft' && !doc.history.some(h => h.action === 'Submitted for review'), workspace, download: workspace || doc.allowDownload };
   if (!workspace) { delete row.draft; delete row.draftState; delete row.versions; delete row.history; delete row.draftEditors; }
   if (!row.fileName && row.fileUrl) row.fileName = path.basename(row.fileUrl);
   delete row.fileUrl;
@@ -49,7 +50,7 @@ const activeApprover = async (value, doc, user) => {
 exports.options = handler(async (req, res) => {
   const canUpload = policy.controller(req.user);
   const permissions = { upload: canUpload, dashboard: ['superadmin', 'qualitymanager'].includes(String(req.user.role).toLowerCase()) };
-  if (!canUpload && !policy.approver(req.user)) return res.json({ approvers: [], permissions });
+  if (!canUpload && !policy.approver(req.user) && !await Document.exists({ uploadedBy: req.user._id })) return res.json({ approvers: [], permissions });
   const people = await User.find({ isActive: { $ne: false }, status: { $nin: ['blocked', 'inactive'] } }).select('employeeName role designation');
   res.json({ approvers: people.filter(p => policy.approver(p) && policy.id(p._id) !== policy.id(req.user._id)), permissions });
 });
@@ -92,6 +93,21 @@ exports.updateDocument = handler(async (req, res) => {
   } catch (error) { if (stored) await DocumentFile.deleteOne({ _id: stored._id }); throw error; }
   res.json(present(doc, req.user));
 });
+exports.updateAccess = handler(async (req, res) => {
+  const doc = await load(req);
+  if (!present(doc, req.user).permissions.manageAccess) fail(403, 'Only the owner or document team can change access.');
+  if (!Number.isInteger(req.body.revision) || req.body.revision !== doc.__v) fail(409, 'This document changed. Refresh before saving access.');
+  const { classification, audience, allowDownload } = req.body;
+  if (!['Public', 'Restricted', 'Confidential', 'Secret'].includes(classification) || !['All staff', 'Department', 'Owner and reviewers'].includes(audience) || typeof allowDownload !== 'boolean') fail(400, 'Choose valid access settings.');
+  if (['Confidential', 'Secret'].includes(classification) && audience !== 'Owner and reviewers') fail(400, 'Confidential and Secret documents are limited to their owner and reviewers.');
+  const settings = { classification, audience: classification === 'Public' ? 'All staff' : audience, allowDownload };
+  const before = doc.audience;
+  Object.assign(doc, settings);
+  if (doc.draft) Object.assign(doc.draft, settings);
+  history(doc, req.user, 'Access settings changed', 'Audience: ' + before + ' to ' + settings.audience + '; classification: ' + classification + '; reader downloads: ' + (allowDownload ? 'allowed' : 'not allowed'));
+  await doc.save();
+  res.json(present(doc, req.user));
+});
 exports.command = handler(async (req, res) => {
   const doc = await load(req), command = req.body.command;
   const permissions = present(doc, req.user).permissions;
@@ -130,7 +146,7 @@ exports.command = handler(async (req, res) => {
 });
 exports.deleteDocument = handler(async (req, res) => {
   const doc = await load(req);
-  if (!present(doc, req.user).permissions.delete) fail(403, 'Only an unsubmitted draft can be deleted by its owner. Published documents must be archived.');
+  if (!present(doc, req.user).permissions.delete) fail(403, 'Only an unsubmitted draft can be deleted by its owner or Super Admin. Published documents must be archived.');
   const result = await Document.deleteOne({ _id: doc._id, __v: doc.__v });
   if (!result.deletedCount) fail(409, 'The document changed. Refresh and try again.');
   // Retain file objects; purging is a separate retention-policy operation.

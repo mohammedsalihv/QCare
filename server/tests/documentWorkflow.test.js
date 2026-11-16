@@ -170,6 +170,37 @@ test('document lifecycle enforces ownership, independent approval, immutable pub
     const generatedDownload = await getFile(owner, generated._id, '?download=true'); assert.equal(generatedDownload.status, 200);
     assert(generatedDownload.headers.get('content-disposition').includes('IPC-01-v01.pdf'));
     assert.equal((await save(owner, generated._id, {}, null)).status, 400, 'Switching away from a template requires a replacement upload');
+    // Access management is independent of content revision and global upload rights.
+    const superadmin = await make('superadmin', 'SuperAdmin');
+    const access = async (user, document, audience, extra = {}) => fetch(base + '/' + document._id + '/access', { method: 'PUT', headers: { ...headers(user), 'Content-Type': 'application/json' }, body: JSON.stringify({ revision: document.__v, classification: 'Restricted', audience, allowDownload: false, ...extra }) });
+    let current = (await list(owner)).find(row => row._id === generated._id);
+    let changed = await access(owner, current, 'Owner and reviewers'); assert.equal(changed.status, 200);
+    current = await changed.json();
+    assert(!(await list(outsider)).some(row => row._id === current._id));
+    assert.equal((await access(superadmin, { ...current, __v: current.__v - 1 }, 'All staff')).status, 409);
+    changed = await access(superadmin, current, 'All staff'); assert.equal(changed.status, 200); current = await changed.json();
+    assert((await list(outsider)).some(row => row._id === current._id));
+    assert(current.permissions.manageAccess); assert(current.permissions.edit);
+    assert.equal((await access(reader, current, 'Owner and reviewers')).status, 403);
+    assert.equal((await access(superadmin, current, 'All staff', { classification: 'Secret' })).status, 400);
+    // A regular-role document owner retains management, without gaining upload rights.
+    await User.updateOne({ _id: owner._id }, { role: 'user' });
+    assert.equal((await (await fetch(base + '/options', { headers: headers(owner) })).json()).permissions.upload, false);
+    assert.equal((await save(owner)).status, 403);
+    assert.equal((await access(owner, current, 'All staff')).status, 200);
+    assert.equal((await save(owner, current._id, { source: 'template', generatedText: 'Revised test text' }, null)).status, 200);
+    assert.equal((await command(owner, current._id, 'submit')).status, 200);
+    current = (await list(owner)).find(row => row._id === generated._id);
+    assert.equal(current.permissions.edit, false); assert.equal(current.permissions.manageAccess, true);
+    assert.equal((await access(owner, current, 'All staff')).status, 200);
+    assert.equal((await command(reviewer, current._id, 'approve')).status, 200);
+    assert.equal((await command(owner, current._id, 'publish')).status, 200);
+    const disposable = await (await save(superadmin)).json();
+    await Document.updateOne({ _id: disposable._id }, { uploadedBy: owner._id });
+    const ownerPermissions = (await list(owner)).find(row => row._id === disposable._id).permissions;
+    const adminPermissions = (await list(superadmin)).find(row => row._id === disposable._id).permissions;
+    for (const key of ['edit','manageAccess','delete','submit']) assert.equal(ownerPermissions[key], adminPermissions[key]);
+    assert.equal((await fetch(base + '/' + disposable._id, { method: 'DELETE', headers: headers(superadmin) })).status, 200);
   } finally {
     if (server) await new Promise(resolve => server.close(resolve)); await mongoose.disconnect(); database.kill(); await exited;
     if (path.resolve(directory).startsWith(path.resolve(os.tmpdir()) + path.sep) && path.basename(directory).startsWith('qcare-document-test-')) await fs.rm(directory, { recursive: true, force: true });

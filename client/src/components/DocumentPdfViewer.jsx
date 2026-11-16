@@ -64,7 +64,7 @@ export default function DocumentPdfViewer({ src, name }) {
   }, [pdf, page, zoom, width, renderKey]);
 
   return <section className="dl-pdf" aria-label={`PDF reader: ${name}`}>
-    <div className="dl-pdf-toolbar"><strong>PDF preview</strong><div className="dl-pdf-pages">
+    <div className="dl-pdf-toolbar"><div className="dl-pdf-pages">
       <button aria-label="Previous PDF page" disabled={!pdf || page <= 1} onClick={() => setPage(value => value - 1)}><ChevronLeft size={16} /></button>
       <span aria-live="polite">Page {page} of {pdf?.numPages || '…'}</span>
       <button aria-label="Next PDF page" disabled={!pdf || page >= pdf.numPages} onClick={() => setPage(value => value + 1)}><ChevronRight size={16} /></button>

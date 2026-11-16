@@ -4,11 +4,11 @@ Open `/dashboard/documents`. Sections are Document library, My submissions, Awai
 
 ## Permissions and lifecycle
 
-- Authenticated staff can create drafts. The recorded owner and document controllers (Admin, SuperAdmin, Quality Manager and Quality Officer) may edit available drafts.
+- Only document controllers (Admin, SuperAdmin, Quality Manager and Quality Officer) can upload new documents. The recorded owner and document controllers may edit available drafts.
 - Select an active Quality Manager or Medical Director as the independent approver. The owner and anyone who edited the revision cannot approve it. Admin access alone does not confer approval authority.
 - Draft → In review → Approved → Published. An approver can return a draft with a reason. A document controller publishes the approved revision. Publication is a separate explicit action.
 - Published content stays unchanged while a new revision is prepared. Publishing retains the previous version, file and approval record. Earlier versions are available to the document team, not general readers.
-- Controllers can archive a published document with a reason once any revision is finished. Only the owner can delete a draft that was never submitted. File purging is not implemented; stored files remain retained.
+- Controllers can archive a published document with a reason once any revision is finished. The owner or Super Admin can delete a draft that was never submitted. File purging is not implemented; stored files remain retained.
 - Optimistic concurrency prevents stale edits or decisions from silently overwriting newer changes. Lifecycle history is saved in the same document as the transition. The existing request audit middleware captures API writes and file retrievals.
 
 ## Access and dates
@@ -46,3 +46,11 @@ Follow-up verification: reading assignments now carry forward even when a reader
 The register shows document name, unique document ID, uploaded date, reviewed date, next revision date, document type, classification, version/status and actions. The ID and original upload date are assigned by the server and remain stable across revisions. Reviewed date is stamped on approval or return for changes; a newly edited draft clears that review stamp until reviewed again. Older published records fall back to their recorded approval date, otherwise show Not recorded. The next revision date is the scheduled review date, not an automatic expiry.
 
 Classification choices are Public, Restricted and Confidential. Public means all signed-in staff after publication and effective date; authentication and download restrictions still apply. Existing Secret records retain their classification and restrictions. New drafts appear in My submissions, while published records appear in Document library. An Add document button is available in the header and empty-list view.
+
+## Access controls and focused reader (16 November 2026)
+
+Access management is separate from content editing. The owner and document controllers can change classification, audience and reader downloads through `PUT /api/documents/:id/access`, including during a pending review. Updates require the current document revision number and are recorded in history. Published access changes take effect immediately and are copied to a pending draft so publication cannot silently restore older access settings. Confidential and Secret audiences remain restricted.
+
+Owners retain management rights even if their current role cannot upload new documents. Owners and Super Admins can edit available drafts, manage access, submit, publish after independent approval, archive published documents and delete never-submitted drafts. Submitted/published records remain protected from permanent deletion; use archive for published records. General users still cannot upload new documents. Review independence remains enforced.
+
+All staff is an audience, not a publication action: draft, future-effective, expired and archived documents remain hidden from general readers. The Controls section reports the current visibility reason. The reader has one document-name heading; version selection, access details and activity are behind its options button, leaving more room for PDF pages and zoom controls.

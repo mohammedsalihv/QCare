@@ -194,3 +194,13 @@
 .dl-reader-controls h3 { font-weight:650; }
 .dl-reader-controls p,.dl-control-help { font-size:12px; line-height:1.6; color:#526c7c; margin:8px 0; }
 @media(max-width:700px) { .dl-reader { width:100vw; height:100dvh; border-radius:0; }.dl-reader .dl-detail { padding:12px; }.dl-reader .dl-heading { flex-direction:row; }.dl-reader .dl-heading h2 { font-size:16px; }.dl-reader .dl-heading p { display:none; }.dl-reader .dl-toolbar label { flex-wrap:wrap; }.dl-reader .dl-pdf-stage { height:calc(100dvh - 370px); } }
+.dl-access-dialog { margin:auto; border:1px solid #d5e1eb; color:#12334d; }
+.dl-access-dialog::backdrop { background:#10263d99; backdrop-filter:blur(4px); }
+.dl-access-dialog select { display:block; width:100%; padding:12px; border:1px solid #cbd8e3; border-radius:8px; }
+.dl-reader .dl-heading > div { flex:1; min-width:0; }
+.dl-reader .dl-heading { gap:10px; margin:0; }
+.dl-reader .dl-pdf-stage { height:calc(100dvh - 190px); }
+.dl-reader .dl-detail { gap:8px; padding:12px; }
+.dl-reader .dl-heading h2 { font-size:17px; }
+.dl-reader .dl-heading > button { padding:7px 10px; }
+@media(max-width:700px) { .dl-reader .dl-pdf-stage { height:calc(100dvh - 220px); } }

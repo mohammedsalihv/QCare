@@ -13,7 +13,16 @@ router.get('/reading-tasks', engagement.readingTasks);
 router.get('/', controller.getDocuments);
 router.post('/', requireDocumentController, receive, controller.addDocument);
 router.get('/:id/download', controller.download);
-router.put('/:id', requireDocumentController, receive, controller.updateDocument);
+const requireDocumentManager = async (req, res, next) => {
+  try {
+    const valid = require('mongoose').isValidObjectId(req.params.id);
+    const doc = valid ? await require('../models/Document').findById(req.params.id) : null;
+    if (!doc || !policy.manage(req.user, doc)) return res.status(403).json({ message: 'Only the owner or document team can edit this document.' });
+    next();
+  } catch (error) { next(error); }
+};
+router.put('/:id', requireDocumentManager, receive, controller.updateDocument);
+router.put('/:id/access', controller.updateAccess);
 router.post('/:id/actions', controller.command);
 router.get('/:id/reading', engagement.reading);
 router.post('/:id/reading', engagement.assign);

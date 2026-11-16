@@ -1,4 +1,5 @@
 import { BookOpen, FileText, Clock3, ShieldCheck, Plus, RefreshCw, ArrowUpRight, FolderOpen, X } from 'lucide-react';
+import DocumentAccess from '../components/DocumentAccess';
 import DocumentActions from '../components/DocumentActions';
 import DocumentFeedback from '../components/DocumentFeedback';
 import DocumentEngagement from '../components/DocumentEngagement';
@@ -24,7 +25,7 @@ export default function DocumentLibrary() {
   const canUpload = permissions.upload === true, canViewDashboard = permissions.dashboard === true;
   const [tasks, setTasks] = useState([]);
   const [documents, setDocuments] = useState([]), [approvers, setApprovers] = useState([]);
-  const visibleTabs = [...tabs.filter(item => canUpload || !['My submissions', 'Review due', 'Archived'].includes(item)).filter(item => item !== 'Awaiting approval' || canUpload || documents.some(doc => doc.permissions?.review)), ...(canViewDashboard ? ['Dashboard'] : [])];
+  const visibleTabs = [...tabs.filter(item => canUpload || documents.some(doc => doc.permissions?.manageAccess) || !['My submissions', 'Review due', 'Archived'].includes(item)).filter(item => item !== 'Awaiting approval' || canUpload || documents.some(doc => doc.permissions?.review)), ...(canViewDashboard ? ['Dashboard'] : [])];
   const [tab, setTab] = useState('All documents'), [search, setSearch] = useState(''), [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const [revision, setRevision] = useState(0), [selected, setSelected] = useState(null), [editor, setEditor] = useState(null);
@@ -33,6 +34,9 @@ export default function DocumentLibrary() {
   const detailRef = useRef(null);
   const [readerTab, setReaderTab] = useState('read');
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [accessTarget, setAccessTarget] = useState(null);
+  const manageAccess = doc => { setSelected(null); setAccessTarget(doc); };
+  const canManageExisting = documents.some(doc => doc.permissions?.manageAccess);
   const row = documents.find(doc => doc._id === selected);
   const hasSelectedDocument = Boolean(row);
   useEffect(() => {
@@ -74,14 +78,14 @@ export default function DocumentLibrary() {
   }, [row, version]);
   const open = doc => { setReaderTab('read'); setSelected(doc._id); setVersion(doc.status === 'Draft' ? 'draft' : 'current'); setPreview(''); setFileError(''); setReason(''); };
   const edit = doc => {
-    if (!canUpload || (doc && !doc.permissions?.edit)) { setError('You do not have permission to edit this document.'); return; }
+    if (doc ? !doc.permissions?.edit : !canUpload) { setError('You do not have permission to edit this document.'); return; }
     const data = doc?.draft || doc || {};
     setForm(Object.fromEntries(Object.entries(empty).map(([key, fallback]) => [key, ['revisedDate', 'nextRevDate', 'expiryDate'].includes(key) ? data[key]?.slice(0,10) || '' : key === 'source' ? (data.generatedText ? 'template' : 'file') : key === 'assignedApprover' ? doc?.assignedApprover || '' : data[key] ?? fallback])));
     setFile(null); setEditor(doc?._id || 'new'); setError(''); setNotice('');
   };
   const change = event => setForm(value => ({ ...value, [event.target.name]: event.target.type === 'checkbox' ? event.target.checked : event.target.value }));
   const save = async event => {
-    event.preventDefault(); if (!canUpload) return; setBusy(true); setError('');
+    event.preventDefault(); if (editor === 'new' ? !canUpload : !documents.find(doc => doc._id === editor)?.permissions?.edit) return; setBusy(true); setError('');
     const body = new FormData(); Object.entries(form).forEach(([key, value]) => body.append(key, value)); if (file) body.append('file', file);
     try {
       const { data } = editor === 'new' ? await axios.post('/api/documents', body, getAuthConfig()) : await axios.put(`/api/documents/${editor}`, body, getAuthConfig());
@@ -137,21 +141,21 @@ export default function DocumentLibrary() {
         <td data-label="Type">{doc.type}</td>
         <td data-label="Classification"><span className={'dl-classification dl-class-' + doc.classification?.toLowerCase()}>{doc.classification}</span></td>
         <td data-label="Version / status"><span className={'dl-status dl-status-' + doc.status.toLowerCase()}>{doc.status === 'Active' ? 'Published' : doc.status}</span><small>Version {doc.version}</small>{doc.draftState && doc.status !== 'Draft' && <small>Revision: {doc.draftState}</small>}</td>
-        <td data-label="Actions"><DocumentActions document={doc} canUpload={canUpload} onView={open} onEdit={edit} onDelete={setDeleteTarget} /></td>
+        <td data-label="Actions"><DocumentActions document={doc} onView={open} onDetails={doc => { open(doc); setReaderTab('details'); }} onEdit={edit} onManage={manageAccess} onDelete={setDeleteTarget} /></td>
       </tr>) : <tr><td colSpan={12}><div className="dl-empty"><span className="dl-empty-icon"><FolderOpen size={30} aria-hidden="true" /></span><strong>No documents in this view.</strong><p>{canUpload ? 'Try another section or add your first document.' : 'No documents are currently available to you in this view.'}</p>{canUpload && <button className="dl-primary" onClick={() => edit(null)}>+ Add document</button>}</div></td></tr>}</tbody></Table></div>
       <Pagination totalRecords={filtered.length} recordsPerPage={10} currentPage={page} onPageChange={setPage} />
     </section>}
-    {row && <dialog ref={detailRef} className="dl-reader" aria-labelledby="document-reader-title" onCancel={() => { setSelected(null); setPreview(''); }}><section className="dl-detail"><header className="dl-heading"><div><h2 id="document-reader-title">{viewed?.name || row.name}</h2><p>{viewed?.description || 'No description provided.'}</p></div><button onClick={() => { setSelected(null); setPreview(''); }} aria-label="Close document reader"><X size={18} aria-hidden="true" /> Close</button></header>
-      <nav className="dl-reader-tabs" aria-label="Reader sections"><button aria-pressed={readerTab === 'read'} onClick={() => setReaderTab('read')}>Read document</button><button aria-pressed={readerTab === 'details'} onClick={() => setReaderTab('details')}>Details, controls & activity</button></nav>
+    {row && <dialog ref={detailRef} className="dl-reader" aria-labelledby="document-reader-title" onCancel={() => { setSelected(null); setPreview(''); }}><section className="dl-detail"><header className="dl-heading"><div><h2 id="document-reader-title">{viewed?.name || row.name}</h2></div><button title="Document options" aria-label="Toggle document options" aria-expanded={readerTab === 'details'} onClick={() => setReaderTab(v => v === 'read' ? 'details' : 'read')}>•••</button><button onClick={() => { setSelected(null); setPreview(''); }} aria-label="Close document reader"><X size={18} aria-hidden="true" /> Close</button></header>
+
       {error && <p role="alert" className="dl-error">{error}</p>}
 
-      <div className="dl-toolbar"><label>Version to view <Select value={version} onChange={e => { setVersion(e.target.value); setPreview(''); setFileError(''); }}>{row.status !== 'Draft' && <option value="current">Published version {row.version}</option>}{row.draft && <option value="draft">Proposed version {row.draft.version} · {row.draftState}</option>}{row.versions?.map(v => <option key={v.version} value={v.version}>Earlier version {v.version}</option>)}</Select></label>{row.permissions.download && <button onClick={() => download(row)}>Download selected version</button>}</div>
-      {version === 'draft' && <p className="dl-notice">This is a proposed revision. It is not published guidance. {row.draft.changeSummary}</p>}
+      <div hidden={readerTab !== 'details'} className="dl-toolbar"><label>Version to view <Select value={version} onChange={e => { setVersion(e.target.value); setPreview(''); setFileError(''); }}>{row.status !== 'Draft' && <option value="current">Published version {row.version}</option>}{row.draft && <option value="draft">Proposed version {row.draft.version} · {row.draftState}</option>}{row.versions?.map(v => <option key={v.version} value={v.version}>Earlier version {v.version}</option>)}</Select></label>{row.permissions.download && <button onClick={() => download(row)}>Download selected version</button>}</div>
+      {version === 'draft' && <p className="dl-notice">Draft — not approved for use.</p>}
       {version !== 'current' && version !== 'draft' && <p className="dl-notice">Earlier version — use the published version for current guidance.</p>}
       <div hidden={readerTab !== 'read'} className="dl-reader-content">{fileError && <p>{fileError}</p>}{preview ? preview.mime === 'application/pdf' ? <Suspense fallback={<p role="status">Loading PDF reader…</p>}><DocumentPdfViewer key={preview.url} src={preview.url} name={viewed?.name || row.name} /></Suspense> : <img src={preview.url} alt={viewed?.name || row.name} className="dl-image-preview" /> : !fileError && <p>Preview is loading or unavailable for this file type. CSV files can be downloaded when permitted.</p>}</div>
       <div hidden={readerTab !== 'details'} className="dl-reader-details">
       <div className="dl-metadata"><p><strong>Owner</strong>{row.ownerName || (row.uploadedBy === user._id ? user.employeeName : 'Owner not recorded')}</p><p><strong>Who can view</strong>{viewed?.audience}</p><p><strong>Effective date</strong>{date(viewed?.revisedDate)}</p><p><strong>Expiry date</strong>{date(viewed?.expiryDate)}</p></div>
-      <section className="dl-reader-controls"><h3>Controls</h3><p>Reader downloads: {viewed?.allowDownload ? 'Allowed' : 'Not allowed'}</p>{canUpload && row.permissions.edit ? <button onClick={() => { setSelected(null); edit(row); }}>Manage access & downloads</button> : <p>{row.permissions.edit && !canUpload ? 'Management permissions are unavailable from the server. The document service needs updating before these controls can be enabled.' : 'Only authorized document managers can change access and download settings.'}</p>}</section>
+      <section className="dl-reader-controls"><h3>Controls</h3><p>Reader downloads: {viewed?.allowDownload ? 'Allowed' : 'Not allowed'}</p><p>{row.visibilityMessage}</p>{row.permissions.manageAccess && <button onClick={() => manageAccess(row)}>Manage access & downloads</button>}</section>
       {version === 'current' && <><DocumentFeedback key={'feedback-' + row._id + row.version} document={row} /><DocumentEngagement key={row._id + row.version} document={row} approvers={approvers} onChanged={() => setRevision(value => value + 1)} /></>}
       {version === 'draft' && <DocumentEngagement reviewOnly key={row._id + '-draft'} document={row} approvers={approvers} onChanged={() => setRevision(value => value + 1)} />}
       {row.permissions.workspace && <><div className="dl-metadata"><p><strong>Assigned approver</strong>{row.approverName || approvers.find(p => p._id === row.assignedApprover)?.employeeName || (row.assignedApprover === user._id ? user.employeeName : 'Reviewer not recorded')}</p><p><strong>Review status</strong>{row.draftState || 'No revision in progress'}</p></div>
@@ -160,8 +164,9 @@ export default function DocumentLibrary() {
         <details><summary>Document history</summary><ul>{row.history?.length ? row.history.map(entry => <li key={entry._id}><strong>{entry.action}</strong> · {entry.actorName} · {date(entry.at)} · Version {entry.version}{entry.reason && <p>{entry.reason}</p>}</li>) : <li>No earlier history was recorded for this legacy document.</li>}</ul></details>
       </>}
     </div></section></dialog>}
+    {accessTarget && <DocumentAccess key={accessTarget._id} document={accessTarget} onClose={() => setAccessTarget(null)} onSaved={doc => { setDocuments(items => items.map(item => item._id === doc._id ? doc : item)); setAccessTarget(null); setNotice('Access updated. ' + doc.visibilityMessage); }} />}
     {deleteTarget && <div className="dl-overlay"><section className="dl-editor dl-confirm" role="dialog" aria-modal="true" aria-labelledby="delete-document-title"><h2 id="delete-document-title">Delete this draft?</h2><p><strong>{deleteTarget.name}</strong></p><p>This permanently removes this unsubmitted draft. Published documents are archived instead.</p>{error && <p role="alert" className="dl-error">{error}</p>}<div className="dl-actions"><button disabled={busy} autoFocus onClick={() => setDeleteTarget(null)}>Keep document</button><button className="dl-delete" disabled={busy} onClick={() => action(deleteTarget, 'delete')}>{busy ? 'Deleting…' : 'Delete draft'}</button></div></section></div>}
-    {canUpload && editor && <div className="dl-overlay"><section role="dialog" aria-modal="true" aria-labelledby="document-editor-title" className="dl-editor"><header className="dl-heading"><div><h2 id="document-editor-title">{editor === 'new' ? 'Add a document' : 'Prepare a revision'}</h2><p>Upload your PDF, set its details and access, then save a draft for review.</p></div><button disabled={busy} onClick={() => setEditor(null)}>Close</button></header>{error && <p role="alert" className="dl-error">{error}</p>}
+    {editor && (canUpload || canManageExisting) && <div className="dl-overlay"><section role="dialog" aria-modal="true" aria-labelledby="document-editor-title" className="dl-editor"><header className="dl-heading"><div><h2 id="document-editor-title">{editor === 'new' ? 'Add a document' : 'Prepare a revision'}</h2><p>Upload your PDF, set its details and access, then save a draft for review.</p></div><button disabled={busy} onClick={() => setEditor(null)}>Close</button></header>{error && <p role="alert" className="dl-error">{error}</p>}
       <p>Unique document ID and uploaded date are assigned automatically when you save. Reviewed date is recorded when the approver reviews this version. Public means all signed-in staff after publication; it does not create a public internet link.</p><form onSubmit={save}><fieldset disabled={busy}><div className="dl-grid">
         <label>Document name *<input name="name" required maxLength={200} value={form.name} onChange={change} /></label>
         <label>Document type *<Select name="type" value={form.type} onChange={change}>{categories.map(value => <option key={value}>{value}</option>)}</Select></label>
