@@ -2,6 +2,7 @@ import { unreadArrivals } from '../utils/notificationArrival';
 import { playNotificationSound, unlockNotificationSound, cancelPendingSound } from '../utils/notificationSound';
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import UserMessage from './feedback/UserMessage';
+import ToastOutlet from './feedback/ToastOutlet';
 import ConfirmationDialog from './ConfirmationDialog';
 import axios from 'axios';
 import { getAuthConfig } from '../utils/authConfig';
@@ -111,7 +112,7 @@ export const NotificationProvider = ({ children }) => {
             {children}
 
             {/* Notifications Container */}
-            <div className="qc-message-stack">
+            <ToastOutlet>
                 {notifications.map((notification) => (
                     <UserMessage
                         key={notification.id}
@@ -119,7 +120,7 @@ export const NotificationProvider = ({ children }) => {
                         onClose={() => removeNotification(notification.id)}
                     />
                 ))}
-            </div>
+            </ToastOutlet>
 
             {confirmState && <ConfirmationDialog state={confirmState} onCancel={closeConfirm} onConfirm={handleConfirmAction} />}
         </NotificationContext.Provider>

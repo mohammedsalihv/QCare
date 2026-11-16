@@ -225,3 +225,22 @@
 .dl-edit-dialog .dl-download-choice { display:flex; justify-content:space-between; align-items:center; gap:16px; }.dl-download-choice small { display:block; margin-top:4px; color:#62778b; font-weight:400; }.dl-download-choice input { width:20px; height:20px; accent-color:#0c8275; }
 .dl-reader { overflow:hidden; }.dl-reader .dl-detail { height:100%; box-sizing:border-box; display:flex; flex-direction:column; }.dl-reader-content { flex:1; min-height:0; }.dl-reader .dl-pdf { height:100%; display:flex; flex-direction:column; }.dl-reader .dl-pdf-stage { flex:1; min-height:0; height:auto; }.dl-reader-details { overflow:auto; min-height:0; }.dl-reader .dl-heading,.dl-reader .dl-notice,.dl-reader .dl-pdf-toolbar { flex-shrink:0; }
 @media(max-width:650px) { .dl-edit-dialog { width:calc(100vw - 16px); max-height:calc(100dvh - 16px); height:calc(100dvh - 16px); }.dl-modal-head,.dl-modal-foot { padding:14px 16px; }.dl-edit-body { padding:16px; }.dl-date-grid { grid-template-columns:1fr; }.dl-choice-grid { grid-template-columns:1fr 1fr; } }
+
+/* Shared calendar fields reused by document forms and reading assignments. */
+:is(.dl-edit-dialog,.dl-reader) .iw-date { position:relative; min-width:0; }
+:is(.dl-edit-dialog,.dl-reader) .iw-label { display:block; font-size:13px; font-weight:600; margin-bottom:8px; }
+:is(.dl-edit-dialog,.dl-reader) .iw-date-trigger { display:flex; align-items:center; gap:8px; width:100%; min-height:44px; }
+:is(.dl-edit-dialog,.dl-reader) .iw-calendar { position:relative; width:100%; min-width:220px; margin-top:8px; padding:12px; border:1px solid #cddce5; border-radius:12px; background:white; box-shadow:0 8px 24px #16324c12; }
+:is(.dl-edit-dialog,.dl-reader) .iw-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+:is(.dl-edit-dialog,.dl-reader) .iw-days { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin:10px 0; text-align:center; font-size:12px; }
+:is(.dl-edit-dialog,.dl-reader) .iw-days button { padding:6px 2px; border:0; min-width:0; justify-content:center; }
+:is(.dl-edit-dialog,.dl-reader) .iw-days button[aria-pressed=true] { background:#0f766e; color:white; }
+.dl-workflow { display:grid; grid-template-columns:repeat(4,1fr); list-style:none; gap:8px; margin:0; padding:0; }
+.dl-workflow li { padding:12px!important; background:#f2f7f8; border:1px solid #dce8ec!important; border-radius:10px; font-size:12px; }
+.dl-workflow small { display:block; margin-top:5px; color:#576d7d; }
+.dl-workflow li[aria-current=step] { background:#e8f6f3; border-color:#87c8bc!important; }
+.dl-acknowledgement { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 4px 0; flex-shrink:0; border-top:1px solid #dce8ec; font-size:12px; }
+.dl-version-badge { align-self:flex-start; border-radius:7px; background:#fff1d7; color:#765009; padding:4px 10px; font-size:12px; }
+.dl-loading { width:24px; height:24px; border:3px solid #dce8ec; border-top-color:#0f766e; border-radius:50%; animation:dl-spin .8s linear infinite; margin:20px auto; }
+@keyframes dl-spin { to { transform:rotate(360deg); } }
+@media(max-width:700px) { .dl-workflow { grid-template-columns:1fr 1fr; } .dl-acknowledgement { flex-wrap:wrap; } }

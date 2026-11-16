@@ -1,3 +1,4 @@
+import FeedbackToast from './feedback/FeedbackToast';
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Minus, Plus, Maximize2 } from 'lucide-react';
 import { getDocument, GlobalWorkerOptions, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs';
@@ -9,7 +10,7 @@ GlobalWorkerOptions.workerSrc = workerUrl;
 
 // Render authenticated file bytes locally. Never execute PDF actions or embed
 // the file as an active browser document (Chrome blocks sandboxed PDF plugins).
-export default function DocumentPdfViewer({ src, name }) {
+export default function DocumentPdfViewer({ src, name, onReady }) {
   const [pdf, setPdf] = useState(null);
   const [page, setPage] = useState(1);
   const [zoom, setZoom] = useState(1);
@@ -59,10 +60,10 @@ export default function DocumentPdfViewer({ src, name }) {
       if (!active) return;
       textLayer = new TextLayer({ textContentSource: pdfPage.streamTextContent(), container: layer, viewport });
       await textLayer.render();
-      if (active) { setRendered(renderKey); setError(''); }
+      if (active) { setRendered(renderKey); setError(''); onReady?.(true); }
     }).catch(e => { if (active && e.name !== 'RenderingCancelledException') setError('This page could not be displayed. Try another page or ask the owner to check the PDF.'); });
     return () => { active = false; painting?.cancel(); textLayer?.cancel(); };
-  }, [pdf, page, zoom, width, renderKey]);
+  }, [pdf, page, zoom, width, renderKey, onReady]);
 
   return <section className="dl-pdf" aria-label={`PDF reader: ${name}`}>
     <div className="dl-pdf-toolbar"><div className="dl-pdf-pages">
@@ -70,7 +71,7 @@ export default function DocumentPdfViewer({ src, name }) {
       <span aria-live="polite">Page {page} of {pdf?.numPages || '…'}</span>
       <button aria-label="Next PDF page" disabled={!pdf || page >= pdf.numPages} onClick={() => setPage(value => value + 1)}><ChevronRight size={16} /></button>
     </div><div className="dl-pdf-zoom"><button aria-label="Zoom out" disabled={!pdf || zoom <= 0.5} onClick={() => setZoom(value => Math.max(.5, value - .25))}><Minus size={16} /></button><span>{Math.round(zoom * 100)}%</span><button aria-label="Zoom in" disabled={!pdf || zoom >= 2} onClick={() => setZoom(value => Math.min(2, value + .25))}><Plus size={16} /></button><button disabled={!pdf} onClick={() => setZoom(1)}><Maximize2 size={15} /> Fit width</button></div></div>
-    {error ? <p role="alert" className="dl-error">{error}</p> : rendered !== renderKey && <p role="status" className="dl-pdf-loading">Loading PDF page…</p>}
+    <FeedbackToast message={error} type="error" />{!error && rendered !== renderKey && <div className="dl-loading" role="progressbar" aria-label="Loading PDF page" />}
     <div ref={host} className="dl-pdf-stage" tabIndex={0} aria-label="PDF page; scroll to read"><div className="dl-pdf-paper" style={{ visibility: pdf ? 'visible' : 'hidden' }}><canvas ref={canvas} aria-label={`Page ${page} of ${name}`} /><div ref={text} className="textLayer" /></div></div>
   </section>;
 }

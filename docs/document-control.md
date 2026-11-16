@@ -56,3 +56,11 @@ Owners retain management rights even if their current role cannot upload new doc
 All staff is an audience, not a publication action: draft, future-effective, expired and archived documents remain hidden from general readers. The Controls section reports the current visibility reason. The reader has one document-name heading; version selection, access details and activity are behind its options button, leaving more room for PDF pages and zoom controls.
 
 Editor refinement: document content, dates and file replacement use a compact dialog with a fixed header/footer and one scrollable body. Access has one entry point in the row actions menu. Classification cards and audience buttons replace native selects; sensitive-classification restrictions are explained explicitly. New uploads start Restricted/owner-reviewers; change access after saving through Manage access. The content-update API retains the current access settings, preventing a stale editor from undoing a separate access change.
+
+## Staff reading and document workflow
+
+New uploads save as private drafts. The owner submits for review to the selected independent Quality Manager or Medical Director. After approval, the owner or document controller publishes. Staff visibility then follows audience, classification, effective date and expiry. Setting All staff alone does not publish a draft.
+
+The published document reader offers a direct acknowledgement action after the preview loads. Acknowledgement is recorded per person and version; opening a PDF is not acknowledgement or proof of understanding. Owners and the document team assign readers and deadlines, inspect opened/acknowledged/pending records, and export the reading report through Workflow & reading report. New published versions require fresh acknowledgement.
+
+Document success and error feedback uses the shared toast system, including inside modal dialogs. Date inputs reuse the custom calendar used elsewhere in QCare. Status badges, field labels and workflow guidance remain document information, not transient alert banners.

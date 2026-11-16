@@ -27,10 +27,11 @@ export default function DocumentActions({ document: doc, onView, onDetails, onEd
       <div className="dl-menu-options">
         <button autoFocus onClick={() => choose(onView)}><Eye size={16} aria-hidden="true" /> View document</button>
         {doc.permissions.edit && <button onClick={() => choose(onEdit)}><Pencil size={16} aria-hidden="true" />{doc.status === 'Active' && !doc.draft ? 'Create revision' : 'Edit document'}</button>}
-        {canRead && <button onClick={() => choose(onDetails)}><CheckCheck size={16} aria-hidden="true" /> Read & acknowledge</button>}
+        {canRead && <button onClick={() => choose(onView)}><CheckCheck size={16} aria-hidden="true" /> Read & acknowledge</button>}
       </div>
       {doc.permissions.manageAccess && <section className="dl-menu-controls" aria-label="Document controls"><button onClick={() => choose(onManage)}><LockKeyhole size={16} aria-hidden="true" /> Manage access</button><p className="dl-control-help">{doc.visibilityMessage}</p></section>}
       {doc.permissions.workspace && !doc.permissions.edit && <p className="dl-control-help">Content editing is locked during review.</p>}
+      {doc.permissions.workspace && <div className="dl-menu-options"><button onClick={() => choose(onDetails)}>Workflow & reading report</button></div>}
       {doc.permissions.archive && <div className="dl-menu-options"><button onClick={() => choose(onDetails)}>Archive document</button></div>}
       {doc.permissions.delete && <div className="dl-menu-options dl-menu-danger"><button className="dl-delete" onClick={() => choose(onDelete)}><Trash2 size={16} aria-hidden="true" /> Delete draft</button></div>}
     </div>
